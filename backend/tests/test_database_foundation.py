@@ -12,8 +12,8 @@ def test_database_engine_uses_postgresql() -> None:
     assert SessionLocal.kw["expire_on_commit"] is False
 
 
-def test_metadata_starts_without_domain_tables() -> None:
-    assert Base.metadata.tables == {}
+def test_metadata_is_available_for_migrations() -> None:
+    assert "users" in Base.metadata.tables
 
 
 def test_database_url_is_required_without_environment_default(
