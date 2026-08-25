@@ -1,6 +1,6 @@
 # CyberRakshak
 
-CyberRakshak is a bilingual cybercrime reporting and Cyber Warrior prototype. This repository is being built in phased sessions; the initial workspace foundation contains no product implementation yet.
+CyberRakshak is a bilingual cybercrime reporting and Cyber Warrior prototype. This repository is being built in phased sessions; its foundation includes runnable frontend and backend scaffolds, but no product journeys yet.
 
 ## Project Documentation
 
@@ -16,6 +16,52 @@ Phase execution playbooks are in `prompts/`. Follow `GIT-WORKFLOW.md` after ever
 
 ## Local Development
 
-Frontend, backend, and database setup will be introduced in the Foundation phase. `docker-compose.yml` provides an optional local PostgreSQL service for later database work.
+The frontend runs on http://localhost:3000; the backend runs on http://localhost:8000 and exposes GET /health plus FastAPI development docs at /docs.
+
+### Environment Files
+
+In PowerShell, create local environment files from the safe examples:
+
+~~~powershell
+Copy-Item frontend/.env.example frontend/.env.local
+Copy-Item backend/.env.example backend/.env
+~~~
+
+Keep the example values synthetic. Replace them only in uncommitted local environment files.
+
+### Frontend
+
+~~~powershell
+Set-Location frontend
+npm install
+npm run dev
+~~~
+
+Open http://localhost:3000/en for English or http://localhost:3000/hi for Hindi. Run the available checks with:
+
+~~~powershell
+npm run lint
+npm run build
+~~~
+
+### Backend
+
+From the repository root:
+
+~~~powershell
+python -m venv backend/.venv
+backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt
+Set-Location backend
+.venv/Scripts/python.exe -m pytest
+.venv/Scripts/python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+~~~
+
+### Local PostgreSQL
+
+PostgreSQL is optional until the database phase. Start the local service when it is needed:
+
+~~~powershell
+docker compose up -d postgres
+~~~
 
 Use only synthetic development data. Do not add real government credentials, identity details, payment data, or secrets to this repository.
