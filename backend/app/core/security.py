@@ -50,19 +50,15 @@ def create_access_token(user_id: UUID) -> tuple[str, int]:
     return token, expires_in
 
 
-def get_current_user(
+def get_optional_current_user(
     credentials: Annotated[
         HTTPAuthorizationCredentials | None,
         Depends(bearer_scheme),
     ],
     session: Annotated[Session, Depends(get_db_session)],
-) -> User:
+) -> User | None:
     if credentials is None:
-        raise APIError(
-            status_code=401,
-            code="UNAUTHORIZED",
-            message="Authentication is required.",
-        )
+        return None
 
     settings = get_settings()
     try:
@@ -88,6 +84,23 @@ def get_current_user(
         )
 
     return user
+
+
+def get_current_user(
+    credentials: Annotated[
+        HTTPAuthorizationCredentials | None,
+        Depends(bearer_scheme),
+    ],
+    session: Annotated[Session, Depends(get_db_session)],
+) -> User:
+    current_user = get_optional_current_user(credentials, session)
+    if current_user is None:
+        raise APIError(
+            status_code=401,
+            code="UNAUTHORIZED",
+            message="Authentication is required.",
+        )
+    return current_user
 
 
 def require_roles(*allowed_roles: UserRole):
