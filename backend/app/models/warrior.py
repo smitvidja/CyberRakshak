@@ -10,6 +10,7 @@ from sqlalchemy import (
     DateTime,
     Enum,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -35,6 +36,9 @@ if TYPE_CHECKING:
 
 class CyberWarriorProfile(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "cyber_warrior_profiles"
+    __table_args__ = (
+        Index("ix_cyber_warrior_profiles_verification_status", "verification_status"),
+    )
 
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
@@ -154,6 +158,10 @@ class WarriorCertification(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
 class WarriorApplication(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "warrior_applications"
+    __table_args__ = (
+        Index("ix_warrior_applications_status", "status"),
+        Index("ix_warrior_applications_warrior_id", "warrior_id"),
+    )
 
     warrior_id: Mapped[UUID] = mapped_column(
         ForeignKey("cyber_warrior_profiles.id"),
@@ -199,6 +207,10 @@ class ResumeParsingResult(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
 class WarriorReport(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "warrior_reports"
+    __table_args__ = (
+        Index("ix_warrior_reports_warrior_id", "warrior_id"),
+        Index("ix_warrior_reports_status", "status"),
+    )
 
     warrior_id: Mapped[UUID] = mapped_column(
         ForeignKey("cyber_warrior_profiles.id"),

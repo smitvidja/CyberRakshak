@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import BigInteger, CheckConstraint, ForeignKey, String, Text
+from sqlalchemy import BigInteger, CheckConstraint, ForeignKey, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -24,6 +24,9 @@ class Evidence(UUIDPrimaryKeyMixin, TimestampMixin, Base):
             "(warrior_report_id IS NOT NULL)::integer) = 1",
             name="ck_evidence_single_parent",
         ),
+        Index("ix_evidence_complaint_id", "complaint_id"),
+        Index("ix_evidence_suspect_report_id", "suspect_report_id"),
+        Index("ix_evidence_warrior_report_id", "warrior_report_id"),
     )
 
     complaint_id: Mapped[UUID | None] = mapped_column(ForeignKey("complaints.id"))

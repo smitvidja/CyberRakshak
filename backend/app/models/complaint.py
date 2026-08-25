@@ -11,6 +11,7 @@ from sqlalchemy import (
     DateTime,
     Enum,
     ForeignKey,
+    Index,
     Numeric,
     String,
     Text,
@@ -46,6 +47,10 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
             "(NOT is_anonymous AND user_id IS NOT NULL)",
             name="ck_complaints_anonymous_identity",
         ),
+        Index("ix_complaints_user_id", "user_id"),
+        Index("ix_complaints_category_id", "category_id"),
+        Index("ix_complaints_status", "status"),
+        Index("ix_complaints_created_at", "created_at"),
     )
 
     complaint_number: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
@@ -110,6 +115,7 @@ class ComplaintLocation(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
 class ComplaintSuspect(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "complaint_suspects"
+    __table_args__ = (Index("ix_complaint_suspects_complaint_id", "complaint_id"),)
 
     complaint_id: Mapped[UUID] = mapped_column(
         ForeignKey("complaints.id", ondelete="CASCADE"),
@@ -125,6 +131,9 @@ class ComplaintSuspect(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
 class ComplaintStatusHistory(UUIDPrimaryKeyMixin, Base):
     __tablename__ = "complaint_status_history"
+    __table_args__ = (
+        Index("ix_complaint_status_history_complaint_id", "complaint_id"),
+    )
 
     complaint_id: Mapped[UUID] = mapped_column(
         ForeignKey("complaints.id", ondelete="CASCADE"),
