@@ -1,0 +1,18 @@
+{
+  "common": {
+    "projectName": "CyberRakshak",
+    "foundationLabel": "आधार परिवेश",
+    "foundationMessage": "द्विभाषी एप्लिकेशन का आधार अगले विकास चरण के लिए तैयार है।",
+    "activeLanguage": "वर्तमान भाषा: {language}",
+    "languages": {
+      "en": "अंग्रेज़ी",
+      "hi": "हिंदी"
+    }
+  },
+  "navigation": {
+    "languageSelector": "भाषा चयनकर्ता"
+  },
+  "validation": {
+    "required": "यह फ़ील्ड आवश्यक है।"
+  }
+}

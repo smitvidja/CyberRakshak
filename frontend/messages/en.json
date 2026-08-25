@@ -1,0 +1,18 @@
+{
+  "common": {
+    "projectName": "CyberRakshak",
+    "foundationLabel": "Foundation environment",
+    "foundationMessage": "The bilingual application foundation is ready for the next development phase.",
+    "activeLanguage": "Current language: {language}",
+    "languages": {
+      "en": "English",
+      "hi": "Hindi"
+    }
+  },
+  "navigation": {
+    "languageSelector": "Language selector"
+  },
+  "validation": {
+    "required": "This field is required."
+  }
+}
