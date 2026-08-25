@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     app_environment: str = "development"
     app_version: str = "0.1.0"
     log_level: str = "INFO"
+    database_url: str = Field(..., min_length=1)
     cors_origins: list[str] = Field(
         default_factory=lambda: ["http://localhost:3000"]
     )
