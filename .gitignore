@@ -1,0 +1,38 @@
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/coverage/
+
+# Python environments, caches, and test output
+backend/.venv/
+backend/venv/
+backend/__pycache__/
+backend/**/*.py[cod]
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.coverage
+backend/htmlcov/
+
+# Environment configuration (example files remain trackable)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+frontend/.env
+frontend/.env.local
+backend/.env
+backend/.env.local
+
+# Local runtime data and uploaded artifacts
+postgres_data/
+uploads/
+storage/
+backend/uploads/
+backend/storage/
+
+# Logs and operating-system files
+*.log
+.DS_Store
+Thumbs.db
