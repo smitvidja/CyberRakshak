@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(
         default_factory=lambda: ["http://localhost:3000"]
     )
+    local_storage_path: str = "storage"
+    evidence_max_file_size: int = Field(default=10 * 1024 * 1024, ge=1)
 
     model_config = SettingsConfigDict(
         env_file=".env",

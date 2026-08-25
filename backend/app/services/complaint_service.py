@@ -9,6 +9,8 @@ from app.models import Complaint, ComplaintLocation, ComplaintStatusHistory, Com
 from app.models.enums import ComplaintStatus
 from app.repositories.complaint_repository import ComplaintRepository
 from app.schemas.complaint import ComplaintDraftCreate, ComplaintDraftUpdate
+from app.services.audit_service import AuditService
+from app.services.notification_service import NotificationService
 
 
 class ComplaintService:
@@ -119,6 +121,23 @@ class ComplaintService:
                 note="Complaint submitted.",
             ),
         )
+        AuditService.record(
+            session,
+            action="complaint.submitted",
+            entity_type="complaint",
+            entity_id=complaint.id,
+            user_id=complaint.user_id,
+            details={"status": ComplaintStatus.SUBMITTED.value},
+        )
+        if complaint.user_id is not None:
+            NotificationService.create(
+                session,
+                user_id=complaint.user_id,
+                notification_type="COMPLAINT_SUBMITTED",
+                title="Complaint submitted",
+                message="Your complaint has been submitted for review.",
+                data={"complaint_number": complaint.complaint_number},
+            )
         session.commit()
         return ComplaintService._get_details_or_not_found(session, complaint.id)
 
