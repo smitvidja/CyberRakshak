@@ -17,6 +17,19 @@
     "primaryNavigation": "Primary navigation",
     "footerNavigation": "Footer navigation",
     "breadcrumbCurrent": "Portal",
+    "breadcrumbs": {
+      "label": "Breadcrumb",
+      "dashboard": "Dashboard",
+      "verifyIdentity": "Verify Identity",
+      "myProfile": "My Profile",
+      "reportIncident": "Report Incident",
+      "peopleInvolved": "People Involved",
+      "reviewSubmit": "Review & Submit",
+      "myReports": "My Reports",
+      "trackReport": "Track Your Report",
+      "submitted": "Report Submitted",
+      "reportDetails": "Report Details"
+    },
     "nav": {
       "home": "Home",
       "report": "Register Complaint",

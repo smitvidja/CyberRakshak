@@ -17,6 +17,19 @@
     "primaryNavigation": "मुख्य नेविगेशन",
     "footerNavigation": "फुटर नेविगेशन",
     "breadcrumbCurrent": "पोर्टल",
+    "breadcrumbs": {
+      "label": "ब्रेडक्रंब",
+      "dashboard": "डैशबोर्ड",
+      "verifyIdentity": "पहचान सत्यापित करें",
+      "myProfile": "मेरी प्रोफ़ाइल",
+      "reportIncident": "घटना रिपोर्ट करें",
+      "peopleInvolved": "शामिल लोग",
+      "reviewSubmit": "समीक्षा और जमा करें",
+      "myReports": "मेरी रिपोर्ट",
+      "trackReport": "अपनी रिपोर्ट ट्रैक करें",
+      "submitted": "रिपोर्ट जमा हुई",
+      "reportDetails": "रिपोर्ट विवरण"
+    },
     "nav": {
       "home": "होम",
       "report": "शिकायत दर्ज करें",

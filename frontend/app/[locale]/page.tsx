@@ -28,6 +28,7 @@ export default async function LocaleHomePage({params}: Props) {
   const t = await getTranslations({locale, namespace: "home"});
   const reportHref = `/${locale}/report-crime`;
   const trackHref = `/${locale}/complaints/track`;
+  const categoryEntryHref = (category: string) => `${reportHref}?category=${category}`;
   const reportingHref = (mode: "anonymous" | "identified", category: string) => `${reportHref}?mode=${mode}&category=${category}`;
   const categories: CategoryKey[] = ["women", "financial", "identity", "harassment", "commerce", "other"];
   const updates = [
@@ -96,11 +97,13 @@ export default async function LocaleHomePage({params}: Props) {
           <div className="report-category-grid grid grid-flow-dense gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {categories.map((category) => (
               <article key={category} className="report-category-card group flex min-w-0 flex-col rounded-[8px] border border-slate-200 bg-white p-3 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]">
-                <div className="category-media relative aspect-[4/3] overflow-hidden rounded-[6px] border border-[#e3eef8] bg-[#f7fbff]">
-                  <Image alt="" className="object-contain p-2 transition-transform duration-200 group-hover:scale-[1.03]" fill sizes="(max-width: 640px) 90vw, (max-width: 1280px) 30vw, 14vw" src={categoryAssets[category]} />
-                </div>
-                <h3 className="mt-3 text-[15px] font-bold leading-5 text-[#092a58]">{t(`categories.${category}.title`)}</h3>
-                <p className="mt-1.5 flex-1 text-[12px] leading-[1.5] text-slate-600">{t(`categories.${category}.copy`)}</p>
+                <Link aria-label={t(`categories.${category}.title`)} className="report-category-card-entry flex flex-1 flex-col rounded-[6px]" href={categoryEntryHref(category)}>
+                  <span className="category-media relative aspect-[4/3] overflow-hidden rounded-[6px] border border-[#e3eef8] bg-[#f7fbff]">
+                    <Image alt="" className="object-contain p-2 transition-transform duration-200 group-hover:scale-[1.03]" fill sizes="(max-width: 640px) 90vw, (max-width: 1280px) 30vw, 14vw" src={categoryAssets[category]} />
+                  </span>
+                  <h3 className="mt-3 text-[15px] font-bold leading-5 text-[#092a58]">{t(`categories.${category}.title`)}</h3>
+                  <p className="mt-1.5 flex-1 text-[12px] leading-[1.5] text-slate-600">{t(`categories.${category}.copy`)}</p>
+                </Link>
                 <div className="mt-3 grid gap-1.5">
                   <Link className="report-card-action" href={reportingHref(category === "women" ? "anonymous" : "identified", category)}>{category === "women" ? t("anonymousAction") : t("reportAction")}</Link>
                   {category === "women" ? <Link className="report-card-action report-card-action-secondary" href={reportingHref("identified", category)}>{t("reportAction")}</Link> : null}

@@ -50,7 +50,7 @@ button, input, select, textarea { font: inherit; }
 .nav-list a { border-bottom: 3px solid transparent; padding: 11px 16px 9px; font-size: 13px; font-weight: 700; transition: background-color 150ms ease, border-color 150ms ease; white-space: nowrap; }
 .nav-list a:hover { border-bottom-color: #c9e5ff; background: #064f9f; }
 .breadcrumbs { border-bottom: 1px solid var(--border); background: #fff; color: var(--muted); font-size: 13px; }
-.breadcrumbs > div { display: flex; gap: 8px; padding: 9px 0; }
+.breadcrumbs > ol { display: flex; flex-wrap: wrap; gap: 8px; padding: 9px 0; }
 .breadcrumbs a { color: var(--blue); font-weight: 700; }
 .support-band { border-top: 1px solid #c5dff8; background: var(--blue-soft); }
 .support-band > div { padding: 16px 0; }
