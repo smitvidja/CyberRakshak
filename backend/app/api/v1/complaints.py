@@ -15,6 +15,7 @@ from app.schemas.complaint import (
     ComplaintResponse,
     ComplaintStatusHistoryResponse,
     ComplaintSummaryResponse,
+    ComplaintTrackingHistoryItem,
     ComplaintTrackingResponse,
 )
 from app.services.complaint_service import ComplaintService
@@ -122,6 +123,10 @@ def track_complaint(
             priority=complaint.priority,
             created_at=complaint.created_at,
             submitted_at=complaint.submitted_at,
+            history=[
+                ComplaintTrackingHistoryItem(status=item.status, created_at=item.created_at)
+                for item in sorted(complaint.status_history, key=lambda item: item.created_at)
+            ],
         )
     )
 

@@ -36,8 +36,10 @@ class ComplaintRepository:
 
     @staticmethod
     def get_by_number(session: Session, complaint_number: str) -> Complaint | None:
-        statement = select(Complaint).where(
-            Complaint.complaint_number == complaint_number
+        statement = (
+            select(Complaint)
+            .options(selectinload(Complaint.status_history))
+            .where(Complaint.complaint_number == complaint_number)
         )
         return session.scalar(statement)
 

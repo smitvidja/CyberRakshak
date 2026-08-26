@@ -123,9 +123,12 @@ def test_anonymous_complaint_submission_tracks_without_identity(
         f"/api/v1/complaints/track/{submitted_data['complaint_number']}"
     )
     assert tracking.status_code == 200
-    assert tracking.json()["data"]["status"] == "SUBMITTED"
-    assert "description" not in tracking.json()["data"]
-    assert "user_id" not in tracking.json()["data"]
+    tracking_data = tracking.json()["data"]
+    assert tracking_data["status"] == "SUBMITTED"
+    assert tracking_data["history"][0]["status"] == "SUBMITTED"
+    assert "note" not in tracking_data["history"][0]
+    assert "description" not in tracking_data
+    assert "user_id" not in tracking_data
 
 
 def test_identified_complaints_require_authentication_and_enforce_ownership(

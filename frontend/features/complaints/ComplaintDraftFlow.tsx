@@ -11,7 +11,7 @@ import {TextArea, TextInput} from "@/components/ui/FormFields";
 import {StatePanel, SurfaceCard} from "@/components/ui/Surface";
 import {complaintCategoriesApi, complaintsApi, evidenceApi} from "@/lib/api/complaints";
 import type {ApiRecord} from "@/lib/api/auth";
-import {getAccessToken, getComplaintDraft, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
+import {addComplaintEvidence, getAccessToken, getComplaintDraft, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
 
 type Category = {description: string | null; id: string; name: string};
 type FieldErrors = Record<string, string>;
@@ -94,6 +94,10 @@ function incidentPath(locale: string, draftId: string) {
 
 function peoplePath(locale: string, draftId: string) {
   return "/" + locale + "/report-crime/" + draftId + "/people";
+}
+
+function reviewPath(locale: string, draftId: string) {
+  return "/" + locale + "/report-crime/" + draftId + "/review";
 }
 
 function workflowSteps(t: ReturnType<typeof useTranslations>, current: "incident" | "people") {
@@ -302,7 +306,9 @@ function EvidenceUploader({complaintId}: {complaintId: string}) {
       setUploading(false);
       return;
     }
-    setItems((current) => [...current, {fileName: asString(result.data.file_name) || file.name, fileSize: Number(result.data.file_size) || file.size, id: asString(result.data.id)}]);
+    const evidenceItem = {fileName: asString(result.data.file_name) || file.name, fileSize: Number(result.data.file_size) || file.size, id: asString(result.data.id)};
+    setItems((current) => [...current, evidenceItem]);
+    addComplaintEvidence(complaintId, evidenceItem);
     setDescription("");
     setFile(null);
     setUploading(false);
@@ -381,5 +387,5 @@ export function ComplaintPeopleStep({draftId}: {draftId: string}) {
     return <main className="shell-container py-8 sm:py-12"><StatePanel title={t("loadingTitle")} tone="loading">{t("loadingCopy")}</StatePanel></main>;
   }
 
-  return <main className="shell-container py-8 sm:py-12"><div className="mx-auto max-w-5xl space-y-6"><p className="eyebrow">{t("peopleEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("peopleTitle")}</h1><p className="max-w-3xl text-base leading-7 text-[var(--muted)]">{t("peopleIntro")}</p><StepIndicator label={t("steps.label")} steps={workflowSteps(t, "people")} />{error ? <StatePanel title={t("errorTitle")} tone="error">{error}</StatePanel> : null}{saved ? <StatePanel action={<Button onClick={() => router.push(incidentPath(locale, draftId))} variant="outline">{t("backToIncident")}</Button>} title={t("peopleSavedTitle")} tone="success">{t("peopleSavedCopy")}</StatePanel> : null}<form className="space-y-5" onSubmit={savePeople}><SurfaceCard heading={t("peopleFormTitle")}><div className="space-y-6">{people.map((person, index) => <fieldset className="border-b border-[var(--border)] pb-6 last:border-0 last:pb-0" key={index}><legend className="text-sm font-bold text-[var(--navy)]">{t("personNumber", {number: index + 1})}</legend><div className="mt-3 grid gap-4 sm:grid-cols-2"><TextInput id={"person-name-" + index} label={t("personName")} onChange={(event) => updatePerson(index, "name", event.target.value)} value={person.name} /><TextInput id={"person-alias-" + index} label={t("personAlias")} onChange={(event) => updatePerson(index, "alias", event.target.value)} value={person.alias} /><TextInput id={"person-contact-" + index} label={t("personContact")} onChange={(event) => updatePerson(index, "contactDetails", event.target.value)} value={person.contactDetails} /><div className="flex items-end"><Button onClick={() => removePerson(index)} variant="outline">{t("removePerson")}</Button></div></div><div className="mt-4"><TextArea id={"person-description-" + index} label={t("personDescription")} onChange={(event) => updatePerson(index, "description", event.target.value)} value={person.description} /></div></fieldset>)}</div><div className="mt-5 flex flex-wrap gap-3"><Button onClick={() => setPeople((current) => [...current, emptyPersonForm])} variant="outline">{t("addPerson")}</Button><Button isLoading={saving} type="submit">{t("savePeople")}</Button></div></SurfaceCard></form></div></main>;
+  return <main className="shell-container py-8 sm:py-12"><div className="mx-auto max-w-5xl space-y-6"><p className="eyebrow">{t("peopleEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("peopleTitle")}</h1><p className="max-w-3xl text-base leading-7 text-[var(--muted)]">{t("peopleIntro")}</p><StepIndicator label={t("steps.label")} steps={workflowSteps(t, "people")} />{error ? <StatePanel title={t("errorTitle")} tone="error">{error}</StatePanel> : null}{saved ? <StatePanel action={<div className="flex flex-wrap gap-2"><Button onClick={() => router.push(incidentPath(locale, draftId))} variant="outline">{t("backToIncident")}</Button><Button onClick={() => router.push(reviewPath(locale, draftId))}>{t("continueReview")}</Button></div>} title={t("peopleSavedTitle")} tone="success">{t("peopleSavedCopy")}</StatePanel> : null}<form className="space-y-5" onSubmit={savePeople}><SurfaceCard heading={t("peopleFormTitle")}><div className="space-y-6">{people.map((person, index) => <fieldset className="border-b border-[var(--border)] pb-6 last:border-0 last:pb-0" key={index}><legend className="text-sm font-bold text-[var(--navy)]">{t("personNumber", {number: index + 1})}</legend><div className="mt-3 grid gap-4 sm:grid-cols-2"><TextInput id={"person-name-" + index} label={t("personName")} onChange={(event) => updatePerson(index, "name", event.target.value)} value={person.name} /><TextInput id={"person-alias-" + index} label={t("personAlias")} onChange={(event) => updatePerson(index, "alias", event.target.value)} value={person.alias} /><TextInput id={"person-contact-" + index} label={t("personContact")} onChange={(event) => updatePerson(index, "contactDetails", event.target.value)} value={person.contactDetails} /><div className="flex items-end"><Button onClick={() => removePerson(index)} variant="outline">{t("removePerson")}</Button></div></div><div className="mt-4"><TextArea id={"person-description-" + index} label={t("personDescription")} onChange={(event) => updatePerson(index, "description", event.target.value)} value={person.description} /></div></fieldset>)}</div><div className="mt-5 flex flex-wrap gap-3"><Button onClick={() => setPeople((current) => [...current, emptyPersonForm])} variant="outline">{t("addPerson")}</Button><Button isLoading={saving} type="submit">{t("savePeople")}</Button></div></SurfaceCard></form></div></main>;
 }

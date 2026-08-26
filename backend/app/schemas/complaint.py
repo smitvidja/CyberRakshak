@@ -101,9 +101,15 @@ class ComplaintStatusHistoryResponse(BaseModel):
     created_at: datetime
 
 
+class ComplaintTrackingHistoryItem(BaseModel):
+    status: ComplaintStatus
+    created_at: datetime
+
+
 class ComplaintTrackingResponse(BaseModel):
     complaint_number: str
     status: ComplaintStatus
     priority: ComplaintPriority
     created_at: datetime
     submitted_at: datetime | None
+    history: list[ComplaintTrackingHistoryItem] = Field(default_factory=list)

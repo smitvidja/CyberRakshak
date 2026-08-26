@@ -18,7 +18,7 @@ export function ProductShell({children}: ProductShellProps) {
     parts[1] = nextLocale;
     return parts.join("/") || "/" + nextLocale;
   };
-  const navItems = [["home", "/" + locale], ["report", "/" + locale + "/report-crime"], ["track", "/" + locale + "/complaints"], ["suspects", "/" + locale + "/suspects/report"], ["warriors", "/" + locale + "/cyber-warrior"], ["learn", "/" + locale + "/resources"], ["contact", "/" + locale + "/contact"]] as const;
+  const navItems = [["home", "/" + locale], ["report", "/" + locale + "/report-crime"], ["track", "/" + locale + "/complaints/track"], ["suspects", "/" + locale + "/suspects/report"], ["warriors", "/" + locale + "/cyber-warrior"], ["learn", "/" + locale + "/resources"], ["contact", "/" + locale + "/contact"]] as const;
 
   return <div className="app-shell">
     <div className="utility-bar"><div className="shell-container utility-content"><span>{t("utilityNotice")}</span><div className="utility-actions"><span>{t("textSize")}</span><span aria-hidden="true">|</span>{routing.locales.map((nextLocale) => <Link className={nextLocale === locale ? "language-current" : ""} href={localeHref(nextLocale)} key={nextLocale}>{t("languages." + nextLocale)}</Link>)}</div></div></div>
