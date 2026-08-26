@@ -1,1 +1,58 @@
-{"common":{"projectName":"CyberRakshak","foundationMessage":"A safe bilingual prototype for cybercrime reporting and community cyber support."},"shell":{"utilityNotice":"Safe prototype - no live government verification","textSize":"A- A+","languages":{"en":"English","hi":"Hindi"},"brandHindi":"CyberRakshak","brandEnglish":"Cyber Safety Support Portal","supportLabel":"Cyber support helpline","supportNumber":"1930","primaryNavigation":"Primary navigation","footerNavigation":"Footer navigation","breadcrumbCurrent":"Portal","nav":{"home":"Home","report":"Register Complaint","track":"Track Complaint","suspects":"Report / Check Suspect","warriors":"Cyber Warriors","learn":"Learning Corner","contact":"Contact"},"supportTitle":"Need urgent cyber support?","supportCopy":"Use the official cyber helpline for urgent financial fraud assistance.","callSupport":"Call 1930","footerCopyright":"CyberRakshak prototype - safe, non-government demonstration","privacy":"Privacy","accessibility":"Accessibility","terms":"Terms"},"home":{"eyebrow":"Cyber safety support","title":"A safer place to report cyber harm","copy":"The shared portal shell is ready for citizen and Cyber Warrior journeys.","reportAction":"Register a complaint","warriorAction":"Become a Cyber Warrior"}}
+{
+  "common": {
+    "projectName": "CyberRakshak",
+    "foundationMessage": "A safe bilingual prototype for cybercrime reporting and community cyber support."
+  },
+  "shell": {
+    "utilityNotice": "Safe prototype - no live government verification",
+    "textSize": "A- A+",
+    "languages": {
+      "en": "English",
+      "hi": "Hindi"
+    },
+    "brandHindi": "CyberRakshak",
+    "brandEnglish": "Cyber Safety Support Portal",
+    "supportLabel": "Cyber support helpline",
+    "supportNumber": "1930",
+    "primaryNavigation": "Primary navigation",
+    "footerNavigation": "Footer navigation",
+    "breadcrumbCurrent": "Portal",
+    "nav": {
+      "home": "Home",
+      "report": "Register Complaint",
+      "track": "Track Complaint",
+      "suspects": "Report / Check Suspect",
+      "warriors": "Cyber Warriors",
+      "learn": "Learning Corner",
+      "contact": "Contact"
+    },
+    "supportTitle": "Need urgent cyber support?",
+    "supportCopy": "Use the official cyber helpline for urgent financial fraud assistance.",
+    "callSupport": "Call 1930",
+    "footerCopyright": "CyberRakshak prototype - safe, non-government demonstration",
+    "privacy": "Privacy",
+    "accessibility": "Accessibility",
+    "terms": "Terms"
+  },
+  "home": {
+    "eyebrow": "Cyber safety support",
+    "title": "A safer place to report cyber harm",
+    "copy": "The shared portal shell is ready for citizen and Cyber Warrior journeys.",
+    "reportAction": "Register a complaint",
+    "warriorAction": "Become a Cyber Warrior"
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalid": "Enter a valid value.",
+    "review": "Please review the highlighted fields."
+  },
+  "apiErrors": {
+    "network": "We could not reach the service. Please try again.",
+    "unauthorized": "Please sign in to continue.",
+    "forbidden": "You do not have permission to complete this action.",
+    "validation": "Please review the highlighted fields.",
+    "notFound": "The requested record was not found.",
+    "server": "Something went wrong. Please try again.",
+    "unknown": "Unable to complete this action right now."
+  }
+}
