@@ -22,6 +22,7 @@ export function ProductShell({children}: ProductShellProps) {
   const homeHref = "/" + locale;
   const dashboardHref = homeHref + "/report-crime/dashboard";
   const reportHref = homeHref + "/report-crime";
+  const warriorHref = homeHref + "/cyber-warrior";
   const breadcrumbItems: Array<{href?: string; label: string}> = [{href: homeHref, label: t("nav.home")}];
 
   if (pathname !== homeHref) {
@@ -51,8 +52,16 @@ export function ProductShell({children}: ProductShellProps) {
       breadcrumbItems.push({href: dashboardHref, label: t("breadcrumbs.dashboard")}, {label: t("breadcrumbs.myReports")});
     } else if (pathname.startsWith(homeHref + "/suspects")) {
       breadcrumbItems.push({label: t("nav.suspects")});
-    } else if (pathname.startsWith(homeHref + "/cyber-warrior")) {
+    } else if (pathname === warriorHref) {
       breadcrumbItems.push({label: t("nav.warriors")});
+    } else if (pathname === warriorHref + "/verify") {
+      breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbs.warriorRegistration")});
+    } else if (pathname === warriorHref + "/profile") {
+      breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbs.warriorProfileSetup")});
+    } else if (pathname === warriorHref + "/apply") {
+      breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbs.warriorApplication")});
+    } else if (pathname.startsWith(warriorHref)) {
+      breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbCurrent")});
     } else {
       breadcrumbItems.push({label: t("breadcrumbCurrent")});
     }

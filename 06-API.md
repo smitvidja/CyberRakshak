@@ -148,7 +148,7 @@ Frontend route guards never replace backend authorization.
 The local-only mock eKYC flow is intentionally separate from real identity providers:
 
 - `POST /api/v1/auth/mock-identity/request-otp` accepts a supplied `demo_identity_id`, checks the synthetic database record, and returns only a masked linked demo mobile and expiry. It does not send an SMS or return an OTP.
-- `POST /api/v1/auth/mock-identity/verify-otp` accepts that ID plus a six-digit demonstration OTP. It consumes the requested OTP once, creates or reuses the linked local citizen account, returns an access token, and returns synthetic autofill data.
+- `POST /api/v1/auth/mock-identity/verify-otp` accepts that ID plus a six-digit demonstration OTP and an optional `role` intent limited to `CITIZEN` or `CYBER_WARRIOR`. It consumes the requested OTP once, creates or reuses a role-specific local prototype account, returns an access token, and returns synthetic autofill data. It never permits this mock flow to issue an administrator session.
 - `PUT /api/v1/users/me/profile` saves editable profile fields. For a mock-verified user, the server rejects a changed `full_name`; the primary mobile is not an input and remains immutable.
 
 These endpoints accept only the supplied non-real demo identities. They must never call Aadhaar, UIDAI, mobile carriers, or any government service.

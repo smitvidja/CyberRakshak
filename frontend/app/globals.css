@@ -196,3 +196,116 @@ button, input, select, textarea { font: inherit; }
   .citizen-success-page .status-timeline > li > span:nth-child(2),
   .citizen-track-detail-page .status-timeline > li > span:nth-child(2) { margin-top: 0; }
 }
+/* Cyber Warrior onboarding - Session 6.1 */
+.warrior-page { background: #f4f8fc; color: var(--ink); }
+.warrior-page h1, .warrior-page h2, .warrior-page h3 { letter-spacing: 0; color: var(--navy); }
+.warrior-landing-page { padding: 36px 0 44px; }
+.warrior-landing-hero { display: grid; min-height: 450px; grid-template-columns: minmax(0, .92fr) minmax(0, 1.18fr); align-items: stretch; gap: 28px; }
+.warrior-landing-copy { display: flex; flex-direction: column; justify-content: center; padding: 28px 0; }
+.warrior-landing-copy h1 { margin-top: 8px; max-width: 620px; font-size: clamp(38px, 4.4vw, 66px); font-weight: 800; line-height: 1.02; }
+.warrior-landing-subtitle { margin-top: 14px; color: #334866; font-size: clamp(19px, 2vw, 26px); font-weight: 650; line-height: 1.35; }
+.warrior-landing-description { margin-top: 20px; max-width: 58ch; color: var(--muted); font-size: 16px; line-height: 1.75; }
+.warrior-landing-actions { display: flex; margin-top: 26px; align-items: center; flex-wrap: wrap; gap: 16px; }
+.warrior-landing-actions .portal-primary-link { gap: 8px; }
+.warrior-text-link { display: inline-flex; min-height: 42px; align-items: center; gap: 8px; color: var(--blue); font-size: 14px; font-weight: 750; }
+.warrior-text-link:hover { text-decoration: underline; }
+.warrior-landing-media { position: relative; min-height: 450px; overflow: hidden; border: 1px solid #bfd7ec; border-radius: 8px; background: #06295b; box-shadow: 0 10px 24px rgb(15 42 74 / .13); }
+.warrior-landing-image { object-fit: cover; object-position: center; }
+.warrior-media-shade { position: absolute; inset: 0; background: rgb(4 38 82 / .30); }
+.warrior-media-callout { position: absolute; display: flex; max-width: 180px; align-items: center; gap: 10px; border: 1px solid rgb(255 255 255 / .65); border-radius: 7px; background: rgb(255 255 255 / .94); padding: 11px 13px; color: #073a7c; box-shadow: 0 5px 14px rgb(2 29 68 / .18); font-size: 12px; font-weight: 800; line-height: 1.35; }
+.warrior-media-callout-top { top: 22px; left: 22px; }
+.warrior-media-callout-bottom { right: 22px; bottom: 22px; }
+.warrior-media-caption { position: absolute; right: 22px; bottom: 92px; left: 22px; display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; border-left: 4px solid #7cc4ff; background: rgb(4 38 82 / .88); padding: 16px; color: #fff; }
+.warrior-media-caption > svg { grid-row: 1 / span 2; align-self: center; }
+.warrior-media-caption strong { font-size: 17px; }
+.warrior-media-caption span { color: #dbeafe; font-size: 13px; line-height: 1.5; }
+.warrior-duties { padding-top: 40px; }
+.warrior-section-heading { display: grid; grid-template-columns: minmax(30px, 1fr) minmax(280px, auto) minmax(30px, 1fr); align-items: center; gap: 18px; text-align: center; }
+.warrior-section-heading > span { height: 1px; background: #b9d7f1; }
+.warrior-section-heading h2 { font-size: clamp(24px, 2.5vw, 34px); font-weight: 800; }
+.warrior-section-heading p { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.warrior-duty-grid { display: grid; margin-top: 26px; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.warrior-duty { display: flex; min-height: 220px; flex-direction: column; align-items: center; border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 22px 16px; text-align: center; box-shadow: 0 3px 10px rgb(15 42 74 / .06); transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease; }
+.warrior-duty:hover { transform: translateY(-2px); border-color: #90bde4; box-shadow: 0 7px 16px rgb(15 42 74 / .10); }
+.warrior-duty-icon { display: grid; height: 58px; width: 58px; place-items: center; border-radius: 50%; background: #eaf4ff; color: var(--blue); }
+.warrior-duty h3 { margin-top: 16px; font-size: 15px; font-weight: 800; }
+.warrior-duty p { margin-top: 9px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.warrior-important-note { display: flex; margin-top: 18px; align-items: center; gap: 12px; border: 1px solid #b8d7f1; border-left: 4px solid var(--blue); border-radius: 7px; background: #edf6ff; padding: 14px 16px; color: #173e70; font-size: 13px; line-height: 1.55; }
+.warrior-identity-layout { display: grid; overflow: hidden; border: 1px solid #c8dcec; border-radius: 8px; background: #fff; box-shadow: 0 8px 22px rgb(15 42 74 / .09); grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); }
+.warrior-identity-form-panel { padding: 34px; }
+.warrior-step-label { display: inline-flex; min-height: 26px; align-items: center; border-radius: 5px; background: #eaf4ff; padding: 5px 9px; color: var(--blue); font-size: 12px; font-weight: 850; text-transform: uppercase; }
+.warrior-identity-form-panel h1 { margin-top: 13px; font-size: clamp(28px, 3vw, 40px); font-weight: 800; line-height: 1.15; }
+.warrior-form-intro { margin-top: 10px; max-width: 50ch; color: var(--muted); line-height: 1.65; }
+.warrior-data-note { display: flex; align-items: flex-start; gap: 10px; border-radius: 7px; background: #eef6ff; padding: 14px; color: #174a83; font-size: 13px; line-height: 1.55; }
+.warrior-data-note svg { margin-top: 1px; flex: 0 0 auto; }
+.warrior-otp-panel { margin-top: 22px; display: grid; gap: 16px; border-top: 1px solid var(--border); padding-top: 20px; }
+.warrior-otp-heading { display: flex; align-items: flex-start; gap: 12px; }
+.warrior-otp-heading > span { display: grid; height: 42px; width: 42px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #e6f7ee; color: #08794f; }
+.warrior-otp-heading h2 { font-size: 17px; font-weight: 800; }
+.warrior-otp-heading p { margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.warrior-back-link { display: inline-flex; margin-top: 24px; align-items: center; gap: 7px; color: var(--blue); font-size: 13px; font-weight: 750; }
+.warrior-back-link:hover { text-decoration: underline; }
+.warrior-identity-visual { display: flex; min-height: 600px; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid #d5e4f1; background: #f5f9fd; padding: 42px; text-align: center; }
+.warrior-identity-orbit { position: relative; display: grid; height: 270px; width: min(100%, 440px); place-items: center; border: 1px dashed #aacceb; border-radius: 50%; }
+.warrior-shield-mark { display: grid; height: 176px; width: 176px; place-items: center; border: 18px solid #dbeeff; border-radius: 50%; background: #0c5fc0; color: #fff; box-shadow: 0 12px 24px rgb(7 95 185 / .20); }
+.warrior-orbit-icon { position: absolute; display: grid; height: 52px; width: 52px; place-items: center; border: 1px solid #9fc7e9; border-radius: 50%; background: #fff; color: var(--blue); box-shadow: 0 4px 12px rgb(15 42 74 / .09); }
+.warrior-orbit-person { top: -8px; left: 50%; transform: translateX(-50%); }
+.warrior-orbit-fingerprint { top: 50%; right: -10px; transform: translateY(-50%); }
+.warrior-orbit-phone { bottom: 3px; left: 40px; }
+.warrior-identity-visual h2 { margin-top: 28px; font-size: 26px; font-weight: 800; }
+.warrior-identity-visual > p { margin-top: 10px; max-width: 50ch; color: var(--muted); font-size: 15px; line-height: 1.7; }
+.warrior-privacy-strip { display: flex; margin-top: 28px; width: 100%; align-items: center; justify-content: center; gap: 10px; border: 1px solid #c7dcec; border-radius: 7px; background: #fff; padding: 14px; color: #174a83; font-size: 13px; font-weight: 700; }
+.warrior-profile-layout { display: grid; overflow: hidden; border: 1px solid #c8dcec; border-radius: 8px; background: #fff; box-shadow: 0 8px 22px rgb(15 42 74 / .09); grid-template-columns: 270px minmax(0, 1fr); }
+.warrior-profile-rail { border-right: 1px solid #d5e4f1; background: #f8fbfe; padding: 28px 24px; }
+.warrior-profile-rail h1 { margin-top: 12px; font-size: 25px; font-weight: 800; }
+.warrior-profile-rail > p:not(.warrior-step-label) { margin-top: 9px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.warrior-profile-rail ol { display: grid; margin-top: 26px; gap: 14px; }
+.warrior-profile-rail li { display: flex; align-items: center; gap: 9px; color: #0d7451; font-size: 13px; font-weight: 800; }
+.warrior-locked-note { display: flex; margin-top: 26px; align-items: flex-start; gap: 10px; border: 1px solid #c7dcec; border-radius: 7px; background: #edf6ff; padding: 14px; color: #174a83; font-size: 12px; line-height: 1.6; }
+.warrior-locked-note svg { flex: 0 0 auto; }
+.warrior-profile-form { min-width: 0; padding: 30px; }
+.warrior-profile-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.warrior-profile-heading h2 { margin-top: 5px; font-size: 27px; font-weight: 800; }
+.warrior-profile-heading p:last-child { margin-top: 6px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.warrior-profile-heading > svg { color: #16835d; }
+.warrior-profile-form .portal-state-panel { margin-top: 18px; }
+.warrior-profile-grid { display: grid; margin-top: 22px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.warrior-form-error { margin-top: 17px; color: var(--danger); font-size: 13px; font-weight: 800; }
+.warrior-profile-actions { display: flex; margin-top: 26px; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--border); padding-top: 20px; }
+.warrior-application-ready { display: flex; min-height: 440px; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #c7dcec; border-top: 4px solid #1c9a68; border-radius: 8px; background: #fff; padding: 46px 24px; text-align: center; box-shadow: 0 8px 22px rgb(15 42 74 / .08); }
+.warrior-ready-icon { display: grid; height: 82px; width: 82px; place-items: center; border-radius: 50%; background: #dcf6e8; color: #128356; }
+.warrior-application-ready .warrior-step-label { margin-top: 22px; }
+.warrior-application-ready h1 { margin-top: 10px; font-size: clamp(30px, 3vw, 42px); font-weight: 800; }
+.warrior-application-ready > p:not(.warrior-step-label) { margin-top: 10px; max-width: 62ch; color: var(--muted); line-height: 1.65; }
+.warrior-ready-next { display: flex; margin: 26px 0 22px; width: min(100%, 620px); align-items: center; gap: 14px; border: 1px solid #b8d7f1; border-radius: 7px; background: #edf6ff; padding: 17px; text-align: left; color: #174a83; }
+.warrior-ready-next svg { flex: 0 0 auto; }
+.warrior-ready-next strong, .warrior-ready-next span { display: block; }
+.warrior-ready-next span { margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+@media (max-width: 1000px) {
+  .warrior-landing-hero, .warrior-identity-layout, .warrior-profile-layout { grid-template-columns: 1fr; }
+  .warrior-identity-visual { min-height: 480px; border-top: 1px solid #d5e4f1; border-left: 0; }
+  .warrior-profile-rail { border-right: 0; border-bottom: 1px solid #d5e4f1; }
+  .warrior-duty-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .warrior-landing-page { padding-top: 20px; }
+  .warrior-landing-hero { min-height: 0; gap: 18px; }
+  .warrior-landing-copy { padding: 10px 0; }
+  .warrior-landing-copy h1 { font-size: 40px; }
+  .warrior-landing-media { min-height: 390px; }
+  .warrior-media-callout { max-width: 150px; }
+  .warrior-media-caption { right: 14px; bottom: 82px; left: 14px; }
+  .warrior-section-heading { grid-template-columns: 1fr; }
+  .warrior-section-heading > span { display: none; }
+  .warrior-duty-grid { grid-template-columns: 1fr; }
+  .warrior-duty { min-height: 0; }
+  .warrior-identity-form-panel, .warrior-identity-visual, .warrior-profile-form { padding: 24px 18px; }
+  .warrior-identity-visual { min-height: 410px; }
+  .warrior-identity-orbit { height: 220px; }
+  .warrior-shield-mark { height: 138px; width: 138px; border-width: 14px; }
+  .warrior-profile-grid { grid-template-columns: 1fr; }
+  .warrior-profile-actions { align-items: stretch; flex-direction: column-reverse; }
+  .warrior-profile-actions button { width: 100%; }
+}

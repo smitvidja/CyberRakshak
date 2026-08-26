@@ -109,8 +109,9 @@ class MockIdentityService:
                 message="The demo OTP is incorrect.",
             )
 
-        user = MockIdentityService._get_or_create_user(session, identity)
-        MockIdentityService._create_profile_if_missing(session, user, identity)
+        user = MockIdentityService._get_or_create_user(session, identity, payload.role)
+        if payload.role is UserRole.CITIZEN:
+            MockIdentityService._create_profile_if_missing(session, user, identity)
         identity.otp_consumed_at = now
         session.commit()
         session.refresh(identity)
@@ -166,22 +167,36 @@ class MockIdentityService:
     def _get_or_create_user(
         session: Session,
         identity: MockIdentityProfile,
+        role: UserRole,
     ) -> User:
-        if identity.user is not None:
+        if role is UserRole.CITIZEN and identity.user is not None:
             return identity.user
 
-        user = session.scalar(select(User).where(User.email == identity.synthetic_email))
+        email = (
+            identity.synthetic_email
+            if role is UserRole.CITIZEN
+            else MockIdentityService._warrior_email(identity.synthetic_email)
+        )
+        user = session.scalar(select(User).where(User.email == email))
         if user is None:
             user = User(
-                email=identity.synthetic_email,
-                phone=identity.registered_mobile,
+                email=email,
+                phone=identity.registered_mobile if role is UserRole.CITIZEN else None,
                 password_hash=hash_password(token_urlsafe(32)),
-                role=UserRole.CITIZEN,
+                role=role,
             )
             session.add(user)
             session.flush()
-        identity.user = user
+        if role is UserRole.CITIZEN:
+            identity.user = user
         return user
+
+    @staticmethod
+    def _warrior_email(synthetic_email: str) -> str:
+        local_part, separator, _ = synthetic_email.partition("@")
+        if not separator:
+            raise ValueError("Synthetic identity email is invalid.")
+        return f"{local_part}.warrior@cyberrakshak.example.com"
 
     @staticmethod
     def _create_profile_if_missing(

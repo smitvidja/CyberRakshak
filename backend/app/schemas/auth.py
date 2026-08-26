@@ -62,6 +62,16 @@ class MockIdentityOtpRequestResponse(BaseModel):
 
 class MockIdentityOtpVerificationRequest(MockIdentityOtpRequest):
     otp: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+    role: UserRole = UserRole.CITIZEN
+
+    @field_validator("role")
+    @classmethod
+    def allow_prototype_identity_roles(cls, value: UserRole) -> UserRole:
+        if value not in {UserRole.CITIZEN, UserRole.CYBER_WARRIOR}:
+            raise ValueError(
+                "Mock identity verification supports citizen and Cyber Warrior roles only."
+            )
+        return value
 
 
 class MockIdentityProfileResponse(BaseModel):

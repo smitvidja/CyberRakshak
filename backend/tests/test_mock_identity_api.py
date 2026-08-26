@@ -108,3 +108,66 @@ def test_mock_identity_rejects_unknown_identity_and_wrong_otp(
     )
     assert wrong_otp.status_code == 422
     assert wrong_otp.json()["error"]["code"] == "INVALID_OTP"
+
+
+def test_mock_identity_can_issue_a_separate_cyber_warrior_session(
+    api_client: tuple[TestClient, Session],
+) -> None:
+    client, _ = api_client
+    request_demo_otp(client)
+
+    verified = client.post(
+        "/api/v1/auth/mock-identity/verify-otp",
+        json={
+            "demo_identity_id": "99000000000001",
+            "otp": "123456",
+            "role": "CYBER_WARRIOR",
+        },
+    )
+
+    assert verified.status_code == 200
+    token = verified.json()["data"]["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+    current_user = client.get("/api/v1/auth/me", headers=headers)
+    assert current_user.status_code == 200
+    assert current_user.json()["data"]["role"] == "CYBER_WARRIOR"
+
+    profile = client.post(
+        "/api/v1/cyber-warriors/profile",
+        headers=headers,
+        json={
+            "display_name": "Rahul Kumar",
+            "location": "New Delhi, Delhi",
+        },
+    )
+    assert profile.status_code == 201
+    assert profile.json()["data"]["display_name"] == "Rahul Kumar"
+
+    request_demo_otp(client)
+    citizen = client.post(
+        "/api/v1/auth/mock-identity/verify-otp",
+        json={"demo_identity_id": "99000000000001", "otp": "123456"},
+    )
+    assert citizen.status_code == 200
+    citizen_headers = {
+        "Authorization": f"Bearer {citizen.json()['data']['access_token']}"
+    }
+    citizen_profile = client.get("/api/v1/users/me/profile", headers=citizen_headers)
+    assert citizen_profile.status_code == 200
+    assert citizen_profile.json()["data"]["full_name"] == "Rahul Kumar"
+
+
+def test_mock_identity_rejects_admin_intent(
+    api_client: tuple[TestClient, Session],
+) -> None:
+    client, _ = api_client
+    request_demo_otp(client)
+    response = client.post(
+        "/api/v1/auth/mock-identity/verify-otp",
+        json={
+            "demo_identity_id": "99000000000001",
+            "otp": "123456",
+            "role": "ADMIN",
+        },
+    )
+    assert response.status_code == 422

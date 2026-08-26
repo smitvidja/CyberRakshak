@@ -22,7 +22,7 @@ export const authApi = {
   login: (payload: ApiRecord) => apiClient.post<AccessToken>("/auth/login", payload),
   register: (payload: ApiRecord) => apiClient.post<AuthenticatedUser>("/auth/register", payload),
   requestMockIdentityOtp: (payload: {demo_identity_id: string}) => apiClient.post<MockIdentityOtpIssued>("/auth/mock-identity/request-otp", payload),
-  verifyMockIdentityOtp: (payload: {demo_identity_id: string; otp: string}) => apiClient.post<MockIdentityVerification>("/auth/mock-identity/verify-otp", payload)
+  verifyMockIdentityOtp: (payload: {demo_identity_id: string; otp: string; role?: "CITIZEN" | "CYBER_WARRIOR"}) => apiClient.post<MockIdentityVerification>("/auth/mock-identity/verify-otp", payload)
 };
 
 export type AuthenticatedRequest = ApiRequestOptions & {accessToken: string};
