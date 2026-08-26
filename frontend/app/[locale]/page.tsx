@@ -8,6 +8,17 @@ import {routing} from "@/lib/i18n/routing";
 
 type Props = {params: Promise<{locale: string}>};
 
+type CategoryKey = "women" | "financial" | "identity" | "harassment" | "commerce" | "other";
+
+const categoryAssets: Record<CategoryKey, string> = {
+  women: "/images/home/categories/women-child.png",
+  financial: "/images/home/categories/financial-fraud.png",
+  identity: "/images/home/categories/identity-misuse.png",
+  harassment: "/images/home/categories/online-harassment.png",
+  commerce: "/images/home/categories/ecommerce-fraud.png",
+  other: "/images/home/categories/other-concern.png"
+};
+
 export default async function LocaleHomePage({params}: Props) {
   const {locale} = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
@@ -17,63 +28,54 @@ export default async function LocaleHomePage({params}: Props) {
   const reportHref = `/${locale}/report-crime`;
   const trackHref = `/${locale}/complaints/track`;
   const reportingHref = (mode: "anonymous" | "identified", category: string) => `${reportHref}?mode=${mode}&category=${category}`;
-
-  const quickLinks = [
-    {key: "warrior", href: `/${locale}/cyber-warrior`, mark: "CW"},
-    {key: "learn", href: "#learning", mark: "LE"},
-    {key: "track", href: trackHref, mark: "TR"},
-    {key: "report", href: reportHref, mark: "RP"}
-  ] as const;
-
-  const categories = ["women", "financial", "identity", "harassment", "commerce", "other"] as const;
+  const categories: CategoryKey[] = ["women", "financial", "identity", "harassment", "commerce", "other"];
   const updates = ["fakeCalls", "advisory", "tips"] as const;
+  const quickLinks = [
+    {key: "warrior", href: `/${locale}/cyber-warrior`},
+    {key: "learn", href: "#learning"},
+    {key: "track", href: trackHref},
+    {key: "report", href: reportHref}
+  ] as const;
 
   return (
     <main className="home-portal overflow-x-hidden bg-[#f5f8fc] pb-10">
       <section className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,2.15fr)_minmax(300px,0.85fr)]">
-          <section className="home-hero relative h-[258px] overflow-hidden rounded-[8px] bg-[#062d68] lg:h-[282px]" aria-labelledby="home-title">
-            <Image
-              src="/images/home/cyber-safety-hero.png"
-              alt=""
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 70vw"
-              className="object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-[#062044]/75" />
-            <div className="relative flex h-full max-w-2xl flex-col justify-center px-6 py-7 text-white sm:px-9">
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-sky-100">{t("heroEyebrow")}</p>
-              <h1 id="home-title" className="max-w-xl text-[2rem] font-bold leading-[1.12] sm:text-[2.5rem]">{t("heroTitle")}</h1>
-              <p className="mt-4 max-w-lg text-base leading-7 text-sky-50 sm:text-lg">{t("heroCopy")}</p>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.95fr)_minmax(292px,0.82fr)]">
+          <section className="home-hero relative min-h-[292px] overflow-hidden rounded-[8px] bg-[#062d68]" aria-labelledby="home-title">
+            <Image alt="" className="object-cover object-center" fill priority sizes="(max-width: 1024px) 100vw, 70vw" src="/images/home/cyber-safety-hero.png" />
+            <div className="absolute inset-0 bg-[#052552]/80" />
+            <div className="relative flex min-h-[292px] max-w-2xl flex-col justify-center px-6 py-7 text-white sm:px-9">
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-sky-100">{t("heroEyebrow")}</p>
+              <h1 id="home-title" className="max-w-xl text-[2rem] font-bold leading-[1.12] sm:text-[2.45rem]">{t("heroTitle")}</h1>
+              <p className="mt-4 max-w-lg text-[15px] leading-6 text-sky-50 sm:text-base sm:leading-7">{t("heroCopy")}</p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <Link href={reportHref} className="rounded-lg bg-white px-5 py-3 text-sm font-bold text-[#064fae] shadow-sm transition hover:bg-sky-50">{t("reportAction")}</Link>
-                <Link href={trackHref} className="rounded-lg border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10">{t("trackAction")}</Link>
+                <Link className="portal-primary-link" href={reportHref}>{t("reportAction")}</Link>
+                <Link className="portal-secondary-link" href={trackHref}>{t("trackAction")}</Link>
               </div>
             </div>
           </section>
 
-          <aside className="grid grid-rows-4 gap-2" aria-label={t("quickLinksLabel")}>
-            {quickLinks.map(({key, href, mark}) => (
-              <Link key={key} href={href} className="portal-action-card group flex min-h-[62px] items-center gap-3 rounded-[8px] border border-slate-200 bg-white px-4 py-2.5 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)] transition hover:border-[#82b5e8] hover:bg-[#f7fbff]">
-                <span aria-hidden="true" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-blue-50 text-xs font-bold text-[#075bbf]">{mark}</span>
+          <aside className="grid gap-2 lg:grid-rows-4" aria-label={t("quickLinksLabel")}>
+            {quickLinks.map(({key, href}, index) => (
+              <Link key={key} href={href} className="portal-action-card group flex min-h-[66px] items-center gap-3 rounded-[8px] border border-slate-200 bg-white px-4 py-3 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]">
+                <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#bfd9f2] bg-[#edf6ff] text-xs font-bold text-[#075bbf]">0{index + 1}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-base font-bold text-slate-900">{t(`quick.${key}.title`)}</span>
-                  <span className="mt-1 block text-sm leading-5 text-slate-600">{t(`quick.${key}.copy`)}</span>
+                  <span className="block text-[15px] font-bold leading-5 text-[#092a58]">{t(`quick.${key}.title`)}</span>
+                  <span className="mt-0.5 block text-xs leading-5 text-slate-600">{t(`quick.${key}.copy`)}</span>
                 </span>
-                <span aria-hidden="true" className="text-xl font-medium text-slate-500 transition group-hover:translate-x-0.5">&gt;</span>
+                <span aria-hidden="true" className="text-lg text-[#315274] transition-transform duration-150 group-hover:translate-x-0.5">&gt;</span>
               </Link>
             ))}
           </aside>
         </div>
 
         <section className="mt-3 grid overflow-hidden rounded-[8px] bg-[#073d87] text-white sm:grid-cols-2" aria-label={t("helplineLabel")}>
-          <a href="tel:1930" className="flex min-h-[58px] items-center gap-3 px-5 py-3 transition hover:bg-[#0a4c9f] sm:px-8">
-            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/60 text-lg">19</span>
+          <a className="support-action flex min-h-[64px] items-center gap-3 px-5 py-3 sm:px-8" href="tel:1930">
+            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70 text-sm font-bold">19</span>
             <span><span className="block text-xl font-bold">1930</span><span className="text-sm text-blue-100">{t("helplinePrimary")}</span></span>
           </a>
-          <Link href="#learning" className="flex min-h-20 items-center gap-4 border-t border-white/20 px-5 py-4 transition hover:bg-[#0a4c9f] sm:border-l sm:border-t-0 sm:px-8">
-            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/60 text-sm font-bold">CS</span>
+          <Link className="support-action flex min-h-[64px] items-center gap-3 border-t border-white/20 px-5 py-3 sm:border-l sm:border-t-0 sm:px-8" href="#learning">
+            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70 text-sm font-bold">CS</span>
             <span><span className="block text-base font-bold">{t("helplineSecondaryTitle")}</span><span className="text-sm text-blue-100">{t("helplineSecondary")}</span></span>
           </Link>
         </section>
@@ -81,24 +83,22 @@ export default async function LocaleHomePage({params}: Props) {
 
       <section className="mx-auto grid max-w-[1440px] gap-5 px-4 sm:px-6 xl:grid-cols-[minmax(0,1fr)_282px] xl:px-8">
         <section aria-labelledby="report-categories">
-          <div className="mb-4 flex items-center gap-3">
-            <span className="h-px flex-1 bg-blue-200" />
-            <h2 id="report-categories" className="text-lg font-bold text-[#063d86]">{t("categoriesTitle")}</h2>
-            <span className="h-px flex-1 bg-blue-200" />
+          <div className="portal-section-heading mb-4">
+            <span aria-hidden="true" />
+            <h2 id="report-categories">{t("categoriesTitle")}</h2>
+            <span aria-hidden="true" />
           </div>
           <div className="report-category-grid grid grid-flow-dense gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            {categories.map((category, index) => (
-              <article key={category} className="report-category-card group flex min-h-[276px] flex-col overflow-hidden rounded-[8px] border border-slate-200 bg-white p-3.5 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)] transition">
-                <span
-                  aria-hidden="true"
-                  className="category-illustration h-[72px] w-full rounded-[6px] bg-[#edf5fd]"
-                  style={{backgroundImage: "url(/images/home/report-category-sprite.png)", backgroundPosition: ["0% 0%", "50% 0%", "100% 0%", "0% 100%", "50% 100%", "100% 100%"][index], backgroundSize: "300% 200%"}}
-                />
+            {categories.map((category) => (
+              <article key={category} className="report-category-card group flex min-w-0 flex-col rounded-[8px] border border-slate-200 bg-white p-3 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]">
+                <div className="category-media relative aspect-[4/3] overflow-hidden rounded-[6px] border border-[#e3eef8] bg-[#f7fbff]">
+                  <Image alt="" className="object-contain p-2 transition-transform duration-200 group-hover:scale-[1.03]" fill sizes="(max-width: 640px) 90vw, (max-width: 1280px) 30vw, 14vw" src={categoryAssets[category]} />
+                </div>
                 <h3 className="mt-3 text-[15px] font-bold leading-5 text-[#092a58]">{t(`categories.${category}.title`)}</h3>
-                <p className="mt-1.5 flex-1 text-[12px] leading-[1.45] text-slate-600">{t(`categories.${category}.copy`)}</p>
+                <p className="mt-1.5 flex-1 text-[12px] leading-[1.5] text-slate-600">{t(`categories.${category}.copy`)}</p>
                 <div className="mt-3 grid gap-1.5">
-                  <Link href={reportingHref(category === "women" ? "anonymous" : "identified", category)} className="rounded-[5px] bg-[#075bbf] px-2 py-2 text-center text-xs font-bold text-white transition hover:bg-[#064b9d]">{category === "women" ? t("anonymousAction") : t("reportAction")}</Link>
-                  {category === "women" && <Link href={reportingHref("identified", category)} className="rounded-[5px] border border-[#075bbf] bg-white px-2 py-2 text-center text-xs font-bold text-[#075bbf] transition hover:bg-blue-50">{t("reportAction")}</Link>}
+                  <Link className="report-card-action" href={reportingHref(category === "women" ? "anonymous" : "identified", category)}>{category === "women" ? t("anonymousAction") : t("reportAction")}</Link>
+                  {category === "women" ? <Link className="report-card-action report-card-action-secondary" href={reportingHref("identified", category)}>{t("reportAction")}</Link> : null}
                 </div>
               </article>
             ))}
@@ -108,24 +108,24 @@ export default async function LocaleHomePage({params}: Props) {
         <aside className="portal-updates rounded-[8px] border border-slate-200 bg-white p-5 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]" aria-labelledby="updates-title">
           <div className="flex items-center justify-between gap-3 border-b border-slate-200 pb-3">
             <h2 id="updates-title" className="text-lg font-bold text-[#063d86]">{t("updatesTitle")}</h2>
-            <Link href="#learning" className="text-xs font-bold text-[#075bbf] hover:underline">{t("viewUpdates")}</Link>
+            <Link className="text-xs font-bold text-[#075bbf] hover:underline" href="#learning">{t("viewUpdates")}</Link>
           </div>
           <div className="divide-y divide-slate-200">
             {updates.map((update, index) => (
               <article key={update} className="flex gap-3 py-4">
-                <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-blue-50 text-xs font-bold text-[#075bbf]">{["01", "02", "03"][index]}</span>
-                <div><h3 className="text-sm font-bold text-slate-900">{t(`updates.${update}.title`)}</h3><p className="mt-1 text-xs leading-5 text-slate-600">{t(`updates.${update}.copy`)}</p><Link href="#learning" className="mt-1 inline-block text-xs font-bold text-[#075bbf] hover:underline">{t("readMore")}</Link></div>
+                <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-blue-50 text-xs font-bold text-[#075bbf]">0{index + 1}</span>
+                <div><h3 className="text-sm font-bold text-slate-900">{t(`updates.${update}.title`)}</h3><p className="mt-1 text-xs leading-5 text-slate-600">{t(`updates.${update}.copy`)}</p><Link className="mt-1 inline-block text-xs font-bold text-[#075bbf] hover:underline" href="#learning">{t("readMore")}</Link></div>
               </article>
             ))}
           </div>
-          <Link href="#learning" className="mt-2 block rounded-lg bg-[#075bbf] px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-[#064b9d]">{t("viewUpdates")}</Link>
+          <Link className="mt-2 block rounded-[6px] bg-[#075bbf] px-4 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-[#064b9d]" href="#learning">{t("viewUpdates")}</Link>
         </aside>
       </section>
 
-      <section id="learning" className="mx-auto mt-7 max-w-[1500px] px-4 sm:px-6 lg:px-8">
+      <section id="learning" className="mx-auto mt-7 max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 rounded-[8px] border border-blue-100 bg-[#edf6ff] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4"><span aria-hidden="true" className="grid h-12 w-12 place-items-center rounded-lg bg-[#075bbf] text-sm font-bold text-white">LC</span><div><h2 className="text-lg font-bold text-[#063d86]">{t("learningTitle")}</h2><p className="mt-1 text-sm text-slate-600">{t("learningCopy")}</p></div></div>
-          <Link href={`/${locale}/cyber-warrior`} className="w-fit rounded-lg border border-[#075bbf] px-4 py-2 text-sm font-bold text-[#075bbf] transition hover:bg-white">{t("learningAction")}</Link>
+          <div className="flex items-center gap-4"><span aria-hidden="true" className="grid h-12 w-12 place-items-center rounded-[6px] bg-[#075bbf] text-sm font-bold text-white">LC</span><div><h2 className="text-lg font-bold text-[#063d86]">{t("learningTitle")}</h2><p className="mt-1 text-sm text-slate-600">{t("learningCopy")}</p></div></div>
+          <Link className="portal-outline-link w-fit" href={`/${locale}/cyber-warrior`}>{t("learningAction")}</Link>
         </div>
       </section>
     </main>

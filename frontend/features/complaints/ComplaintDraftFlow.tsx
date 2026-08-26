@@ -252,8 +252,8 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
 
   const savedDraftId = draftId === "new" ? null : draftId;
   return (
-    <main className="citizen-page shell-container py-8 sm:py-12">
-      <div className="mx-auto max-w-5xl space-y-6">
+    <main className="citizen-page citizen-incident-page shell-container py-8 sm:py-12">
+      <div className="citizen-workspace mx-auto max-w-5xl space-y-6">
         <p className="eyebrow">{t("incidentEyebrow")}</p>
         <h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("incidentTitle")}</h1>
         <p className="max-w-3xl text-base leading-7 text-[var(--muted)]">{t("incidentIntro")}</p>
@@ -261,7 +261,7 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
         {serviceError ? <StatePanel title={t("errorTitle")} tone="error">{serviceError}</StatePanel> : null}
         {message ? <StatePanel title={t("savedTitle")} tone="success">{message}</StatePanel> : null}
         <form className="space-y-6" onSubmit={saveDraft} noValidate>
-          <SurfaceCard heading={t("categoryTitle")}>
+          <SurfaceCard className="citizen-category-panel" heading={t("categoryTitle")}>
             <fieldset>
               <legend className="text-sm font-bold text-[var(--ink)]">{t("categoryLabel")}</legend>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -270,7 +270,7 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
               {errors.categoryId ? <p className="mt-2 text-sm font-medium text-[var(--danger)]" role="alert">{errors.categoryId}</p> : null}
             </fieldset>
           </SurfaceCard>
-          <SurfaceCard heading={t("detailsTitle")}>
+          <SurfaceCard className="citizen-detail-panel" heading={t("detailsTitle")}>
             <div className="grid gap-4 sm:grid-cols-2">
               <TextInput error={errors.title} id="incident-title" label={t("titleLabel")} onChange={(event) => updateField("title", event.target.value)} required value={form.title} />
               <TextInput id="incident-date" label={t("incidentAtLabel")} onChange={(event) => updateField("incidentAt", event.target.value)} type="datetime-local" value={form.incidentAt} />
@@ -279,7 +279,7 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
             </div>
             <div className="mt-4"><TextArea description={t("descriptionHelp")} error={errors.description} id="incident-description" label={t("descriptionLabel")} onChange={(event) => updateField("description", event.target.value)} required value={form.description} /></div>
           </SurfaceCard>
-          <SurfaceCard heading={t("locationTitle")}>
+          <SurfaceCard className="citizen-location-panel" heading={t("locationTitle")}>
             <div className="grid gap-4 sm:grid-cols-3">
               <TextInput id="incident-city" label={t("cityLabel")} onChange={(event) => updateField("city", event.target.value)} value={form.city} />
               <TextInput id="incident-district" label={t("districtLabel")} onChange={(event) => updateField("district", event.target.value)} value={form.district} />
@@ -400,5 +400,5 @@ export function ComplaintPeopleStep({draftId}: {draftId: string}) {
     return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("loadingTitle")} tone="loading">{t("loadingCopy")}</StatePanel></main>;
   }
 
-  return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-5xl space-y-6"><p className="eyebrow">{t("peopleEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("peopleTitle")}</h1><p className="max-w-3xl text-base leading-7 text-[var(--muted)]">{t("peopleIntro")}</p><StepIndicator label={t("steps.label")} steps={workflowSteps(t, "people")} />{error ? <StatePanel title={t("errorTitle")} tone="error">{error}</StatePanel> : null}{saved ? <StatePanel action={<div className="flex flex-wrap gap-2"><Button onClick={() => router.push(incidentPath(locale, draftId))} variant="outline">{t("backToIncident")}</Button><Button onClick={() => router.push(reviewPath(locale, draftId))}>{t("continueReview")}</Button></div>} title={t("peopleSavedTitle")} tone="success">{t("peopleSavedCopy")}</StatePanel> : null}<form className="space-y-5" onSubmit={savePeople}><SurfaceCard heading={t("peopleFormTitle")}><div className="space-y-6">{people.map((person, index) => <fieldset className="border-b border-[var(--border)] pb-6 last:border-0 last:pb-0" key={index}><legend className="text-sm font-bold text-[var(--navy)]">{t("personNumber", {number: index + 1})}</legend><div className="mt-3 grid gap-4 sm:grid-cols-2"><TextInput id={"person-name-" + index} label={t("personName")} onChange={(event) => updatePerson(index, "name", event.target.value)} value={person.name} /><TextInput id={"person-alias-" + index} label={t("personAlias")} onChange={(event) => updatePerson(index, "alias", event.target.value)} value={person.alias} /><TextInput id={"person-contact-" + index} label={t("personContact")} onChange={(event) => updatePerson(index, "contactDetails", event.target.value)} value={person.contactDetails} /><div className="flex items-end"><Button onClick={() => removePerson(index)} variant="outline">{t("removePerson")}</Button></div></div><div className="mt-4"><TextArea id={"person-description-" + index} label={t("personDescription")} onChange={(event) => updatePerson(index, "description", event.target.value)} value={person.description} /></div></fieldset>)}</div><div className="mt-5 flex flex-wrap gap-3"><Button onClick={() => setPeople((current) => [...current, emptyPersonForm])} variant="outline">{t("addPerson")}</Button><Button isLoading={saving} type="submit">{t("savePeople")}</Button></div></SurfaceCard></form></div></main>;
+  return <main className="citizen-page citizen-people-page shell-container py-8 sm:py-12"><div className="citizen-workspace mx-auto max-w-5xl space-y-6"><p className="eyebrow">{t("peopleEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("peopleTitle")}</h1><p className="max-w-3xl text-base leading-7 text-[var(--muted)]">{t("peopleIntro")}</p><StepIndicator label={t("steps.label")} steps={workflowSteps(t, "people")} />{error ? <StatePanel title={t("errorTitle")} tone="error">{error}</StatePanel> : null}{saved ? <StatePanel action={<div className="flex flex-wrap gap-2"><Button onClick={() => router.push(incidentPath(locale, draftId))} variant="outline">{t("backToIncident")}</Button><Button onClick={() => router.push(reviewPath(locale, draftId))}>{t("continueReview")}</Button></div>} title={t("peopleSavedTitle")} tone="success">{t("peopleSavedCopy")}</StatePanel> : null}<form className="space-y-5" onSubmit={savePeople}><SurfaceCard heading={t("peopleFormTitle")}><div className="space-y-6">{people.map((person, index) => <fieldset className="border-b border-[var(--border)] pb-6 last:border-0 last:pb-0" key={index}><legend className="text-sm font-bold text-[var(--navy)]">{t("personNumber", {number: index + 1})}</legend><div className="mt-3 grid gap-4 sm:grid-cols-2"><TextInput id={"person-name-" + index} label={t("personName")} onChange={(event) => updatePerson(index, "name", event.target.value)} value={person.name} /><TextInput id={"person-alias-" + index} label={t("personAlias")} onChange={(event) => updatePerson(index, "alias", event.target.value)} value={person.alias} /><TextInput id={"person-contact-" + index} label={t("personContact")} onChange={(event) => updatePerson(index, "contactDetails", event.target.value)} value={person.contactDetails} /><div className="flex items-end"><Button onClick={() => removePerson(index)} variant="outline">{t("removePerson")}</Button></div></div><div className="mt-4"><TextArea id={"person-description-" + index} label={t("personDescription")} onChange={(event) => updatePerson(index, "description", event.target.value)} value={person.description} /></div></fieldset>)}</div><div className="mt-5 flex flex-wrap gap-3"><Button onClick={() => setPeople((current) => [...current, emptyPersonForm])} variant="outline">{t("addPerson")}</Button><Button isLoading={saving} type="submit">{t("savePeople")}</Button></div></SurfaceCard></form></div></main>;
 }

@@ -17,7 +17,7 @@ export function ResponsiveDataList({caption, columns, emptyMessage, rows}: Respo
 
   return (
     <>
-      <div className="hidden overflow-x-auto rounded-[var(--radius)] border border-[var(--border)] md:block">
+      <div className="report-table hidden overflow-x-auto rounded-[var(--radius)] border border-[var(--border)] md:block">
         <table className="min-w-full border-collapse text-left text-sm">
           <caption className="sr-only">{caption}</caption>
           <thead className="bg-[#eef5fb] text-[var(--navy)]">
@@ -30,7 +30,7 @@ export function ResponsiveDataList({caption, columns, emptyMessage, rows}: Respo
       </div>
       <div className="space-y-3 md:hidden">
         {rows.map((row) => (
-          <article className="rounded-[var(--radius)] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow)]" key={row.id}>
+          <article className="report-list-card rounded-[var(--radius)] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow)]" key={row.id}>
             <dl className="space-y-3">
               {columns.map((column) => <div key={column.key}><dt className="text-xs font-bold uppercase text-[var(--muted)]">{column.label}</dt><dd className="mt-1 break-words text-sm leading-6 text-[var(--ink)]">{row.values[column.key]}</dd></div>)}
             </dl>

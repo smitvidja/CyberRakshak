@@ -32,7 +32,7 @@ export function UploadDropzone({
   }
 
   return (
-    <section className="rounded-[var(--radius)] border border-dashed border-[var(--blue)] bg-[#f7fbff] p-5 text-center">
+    <section className="evidence-dropzone rounded-[var(--radius)] border border-dashed border-[var(--blue)] bg-[#f7fbff] p-5 text-center">
       <h2 className="text-base font-bold text-[var(--navy)]">{title}</h2>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[var(--muted)]">{description}</p>
       {maxSizeLabel ? <p className="mt-2 text-xs font-medium text-[var(--muted)]">{maxSizeLabel}</p> : null}

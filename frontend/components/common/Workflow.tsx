@@ -65,7 +65,7 @@ const timelineToneClasses = {
 
 export function StatusTimeline({events, label}: {events: TimelineEvent[]; label: string}) {
   return (
-    <ol aria-label={label} className="space-y-5">
+    <ol aria-label={label} className="status-timeline space-y-5">
       {events.map((event, index) => (
         <li className="relative flex gap-4" key={event.label + index}>
           {index < events.length - 1 ? <span aria-hidden="true" className="absolute left-[9px] top-5 h-[calc(100%+8px)] w-px bg-[var(--border)]" /> : null}
@@ -81,7 +81,7 @@ export type ReviewItem = {label: string; value: ReactNode};
 
 export function ReviewSection({action, items, title}: {action?: ReactNode; items: ReviewItem[]; title: string}) {
   return (
-    <section className="rounded-[var(--radius)] border border-[var(--border)] bg-white shadow-[var(--shadow)]">
+    <section className="review-section rounded-[var(--radius)] border border-[var(--border)] bg-white shadow-[var(--shadow)]">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] px-5 py-4"><h2 className="text-lg font-bold text-[var(--navy)]">{title}</h2>{action}</div>
       <dl className="divide-y divide-[var(--border)]">{items.map((item) => <div className="grid gap-1 px-5 py-4 sm:grid-cols-[minmax(10rem,1fr)_2fr] sm:gap-6" key={item.label}><dt className="text-sm font-bold text-[var(--muted)]">{item.label}</dt><dd className="break-words text-sm leading-6 text-[var(--ink)]">{item.value}</dd></div>)}</dl>
     </section>
