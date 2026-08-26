@@ -49,6 +49,16 @@ If two sources conflict, document the conflict and ask for confirmation before c
 - Preserve steps, review states, tracking timelines, declarations, cards, sidebars, and support bands shown in the references.
 - Do not redesign the app into a generic SaaS UI.
 
+### Mandatory Reference Acceptance Gate
+
+- The relevant journey folder under `design/` is the non-negotiable visual, UX, interaction, state, and feature acceptance contract (the project owner's "GOD document"). A phase prompt may narrow scope, but an omission in the prompt does not waive a requirement visibly present in the relevant reference images.
+- Before coding, inventory the complete relevant folder and create a screen-to-route-to-component-to-API/data coverage matrix. Do not treat screenshots as mood boards.
+- Preserve the referenced layout, hierarchy, density, navigation, breadcrumbs, interactions, forms, dashboards, intermediate states, success states, and tracking states. Safe CyberRakshak branding may replace prohibited government marks or political imagery without changing the composition.
+- Verify the whole interactive surface, not only CTA buttons. Images, cards, navigation items, previous/next controls, uploads, forms, status steps, and linked destinations must behave as their visual affordances imply.
+- Before every frontend session is committed or pushed, reopen the complete relevant design folder, compare every in-scope rendered route and state against its exact reference, and record any intentional safe substitution. A green lint/build is necessary but is not visual or feature acceptance.
+- For Phase 6, `design/cyber_warrior/` is the mandatory final acceptance contract after every session. Do not push a Cyber Warrior session until its in-scope images, states, interactions, backend behavior, and responsive layouts have been checked against that folder.
+- Phase 7 and Phase 8 must preserve this achieved fidelity. Integration or deployment work must not replace complete screens with generic fallbacks, disconnected mocks, duplicate architecture, or simplified journeys.
+
 ## Security Rules
 
 - Never use live government systems, private APIs, real Aadhaar/PAN/OTP/payment credentials, or restricted personal data.

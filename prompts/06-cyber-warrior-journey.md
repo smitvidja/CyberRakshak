@@ -3,6 +3,13 @@
 ## Purpose
 
 Implement the Cyber Warrior experience as connected vertical slices: onboarding, mock identity/eligibility, resume upload and parsing, application review/submission, dashboard, Cyber Warrior reports, tracking, profile, leaderboard, badges/rewards, and resources.
+## Mandatory Design Acceptance Gate
+
+`design/cyber_warrior/` is the non-negotiable visual, UX, interaction, state, and feature acceptance contract for this phase. A requirement visible in those references remains required even when a session prompt does not restate it. Replace official government branding, emblems, political photographs, real identity systems, and other unsafe elements with neutral CyberRakshak equivalents while preserving the referenced composition and behavior.
+
+At the start of every session, inventory the complete folder and map the session's exact references to routes, components, interactions, API/data dependencies, and mocked boundaries. Before marking the session complete, committing, or pushing, reopen the complete folder and compare every in-scope route and state at desktop and mobile sizes. Verify the visible hierarchy, navigation, forms, intermediate states, dashboards, back/next behavior, persistence, responsive behavior, and all interactive surfaces. A working CTA alone is not sufficient.
+
+Do not start the next session until this design acceptance gate and the session's automated verification both pass. Record any safe substitution or genuine out-of-scope reference in the session report; prompt omission alone is not an out-of-scope justification.
 
 ## Prerequisites
 
