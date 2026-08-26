@@ -35,11 +35,43 @@
     "terms": "Terms"
   },
   "home": {
-    "eyebrow": "Cyber safety support",
-    "title": "A safer place to report cyber harm",
-    "copy": "The shared portal shell is ready for citizen and Cyber Warrior journeys.",
+    "heroEyebrow": "Cyber safety support",
+    "heroTitle": "A safer way to report cyber harm",
+    "heroCopy": "Report cyber harm, find urgent support, and learn how to protect yourself online.",
     "reportAction": "Register a complaint",
-    "warriorAction": "Become a Cyber Warrior"
+    "trackAction": "Track a complaint",
+    "anonymousAction": "Report anonymously",
+    "quickLinksLabel": "Quick cyber safety actions",
+    "helplineLabel": "Urgent support options",
+    "helplinePrimary": "Report urgent financial fraud",
+    "helplineSecondaryTitle": "Cyber safety guidance",
+    "helplineSecondary": "Learn how to stay safe online",
+    "categoriesTitle": "Report Cyber Crime",
+    "updatesTitle": "What's new",
+    "viewUpdates": "View all updates",
+    "readMore": "Read more",
+    "learningTitle": "Learning Corner",
+    "learningCopy": "Awareness is the first step towards a safer cyber world.",
+    "learningAction": "Explore now",
+    "quick": {
+      "warrior": {"title": "Be a Cyber Warrior", "copy": "Join hands in building a safer cyber world."},
+      "learn": {"title": "Stay Alert", "copy": "Learn. Prevent. Protect."},
+      "track": {"title": "Track Your Complaint", "copy": "Check the status of a submitted report."},
+      "report": {"title": "Report Cyber Harm", "copy": "Start a secure report in a few steps."}
+    },
+    "categories": {
+      "women": {"title": "Women and Child Safety", "copy": "Report online abuse, stalking, blackmail, or child-safety concerns."},
+      "financial": {"title": "Financial Fraud", "copy": "Report UPI, card, banking, investment, or payment fraud."},
+      "identity": {"title": "Identity Misuse", "copy": "Report misuse of your identity, documents, or accounts."},
+      "harassment": {"title": "Online Harassment", "copy": "Report threats, abusive messages, stalking, or cyberbullying."},
+      "commerce": {"title": "E-commerce Fraud", "copy": "Report suspicious shopping, delivery, or marketplace fraud."},
+      "other": {"title": "Other Cyber Concern", "copy": "Tell us about any other cyber incident needing support."}
+    },
+    "updates": {
+      "fakeCalls": {"title": "Beware of fake calls", "copy": "Do not share OTPs, passwords, or banking details with anyone."},
+      "advisory": {"title": "New safety advisory", "copy": "Keep social profiles private and verify before you pay."},
+      "tips": {"title": "Cyber security tips", "copy": "Simple steps to protect your digital life every day."}
+    }
   },
   "validation": {
     "required": "This field is required.",
