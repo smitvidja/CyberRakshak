@@ -177,15 +177,19 @@ def test_reported_suspects_are_owned_and_use_nonjudgmental_contracts(
     api_client: tuple[TestClient, Session],
 ) -> None:
     client, _ = api_client
+    payload = {
+        "identifier_type": "UPI",
+        "identifier_value": "fake-seller@upi",
+        "description": "Reported in connection with a suspected online scam.",
+    }
+    unauthenticated = client.post("/api/v1/suspects/reports", json=payload)
+    assert unauthenticated.status_code == 401
+
     owner_headers = authenticated_headers(client)
     created = client.post(
         "/api/v1/suspects/reports",
         headers=owner_headers,
-        json={
-            "identifier_type": "UPI",
-            "identifier_value": "fake-seller@upi",
-            "description": "Reported in connection with a suspected online scam.",
-        },
+        json=payload,
     )
 
     assert created.status_code == 201

@@ -258,5 +258,62 @@
       "rejected": "Closed",
       "unknown": "Status unavailable"
     }
+  },
+  "suspectReport": {
+    "eyebrow": "Reported identifier",
+    "title": "Report a suspicious identifier",
+    "intro": "Share information about an identifier you believe may be connected to suspicious online activity. This report does not determine that a person or service has committed a crime.",
+    "loadingTitle": "Preparing reported identifier form",
+    "loadingCopy": "Please wait while the safe prototype session is checked.",
+    "profileRequiredTitle": "A prototype profile is needed",
+    "profileRequiredCopy": "Reported identifier records and their evidence are protected by account ownership. Create a safe prototype profile before submitting a report.",
+    "createProfileAction": "Create prototype profile",
+    "checkTitle": "Check information",
+    "checkCopy": "This prototype accepts reports but does not expose a public list of submitted identifiers or make verification decisions.",
+    "formTitle": "Identifier details",
+    "identifierTypeLabel": "Identifier type",
+    "identifierValueLabel": "Identifier value",
+    "identifierValueHelp": "Enter only the suspicious identifier. Never enter passwords, OTPs, PINs, CVV values, or payment secrets.",
+    "descriptionLabel": "Why does this seem suspicious? (optional)",
+    "descriptionHelp": "Describe the observed activity without claiming that someone is a confirmed criminal. Avoid unnecessary personal information.",
+    "evidenceTitle": "Evidence (optional)",
+    "evidenceUploadTitle": "Add supporting file",
+    "evidenceHelp": "Upload only material you are permitted to share. Files are validated and only their metadata is stored in the database.",
+    "evidenceSize": "Supported file types: PDF, PNG, JPG, JPEG. File limits are checked by the server.",
+    "browseEvidence": "Choose file",
+    "evidenceNoteLabel": "Evidence note (optional)",
+    "submitAction": "Submit reported identifier",
+    "errorTitle": "The report could not be submitted",
+    "submitError": "Check the details and try again.",
+    "evidenceError": "The identifier report was submitted, but the evidence file could not be uploaded. You can retry the file upload.",
+    "submittedEyebrow": "Identifier report submitted",
+    "submittedTitle": "Your report was recorded",
+    "submittedPanelTitle": "Reported identifier saved",
+    "submittedCopy": "The identifier is recorded as a submitted report. It has not been publicly verified or labelled as criminal activity.",
+    "submittedDetailsTitle": "Submission details",
+    "statusLabel": "Status",
+    "evidenceUploadedTitle": "Evidence metadata saved",
+    "evidenceUploaded": "{fileName} ({fileSize} bytes)",
+    "evidencePendingTitle": "Evidence upload pending",
+    "retryEvidence": "Retry evidence upload",
+    "identifierTypes": {
+      "PHONE": "Phone number",
+      "EMAIL": "Email address",
+      "UPI": "UPI ID",
+      "BANK_ACCOUNT": "Bank account identifier",
+      "WEBSITE": "Website URL",
+      "SOCIAL_MEDIA": "Social media handle",
+      "OTHER": "Other identifier"
+    },
+    "status": {
+      "submitted": "Submitted"
+    },
+    "validation": {
+      "required": "Enter the suspicious identifier.",
+      "phone": "Enter a valid phone number with 8 to 15 digits.",
+      "email": "Enter a valid email address.",
+      "upi": "Enter a valid UPI ID, for example sample@upi.",
+      "website": "Enter a full website URL starting with http:// or https://."
+    }
   }
 }

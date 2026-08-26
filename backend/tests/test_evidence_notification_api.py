@@ -321,3 +321,39 @@ def test_storage_failure_does_not_create_evidence_metadata(
     assert unavailable.status_code == 503
     assert unavailable.json()["error"]["code"] == "STORAGE_UNAVAILABLE"
     assert session.scalar(select(Evidence).where(Evidence.complaint_id == complaint_id)) is None
+
+
+def test_evidence_attaches_to_an_owned_reported_suspect(
+    api_client: tuple[TestClient, Session],
+) -> None:
+    client, session = api_client
+    headers = authenticated_headers(client)
+    reported = client.post(
+        "/api/v1/suspects/reports",
+        headers=headers,
+        json={
+            "identifier_type": "UPI",
+            "identifier_value": "synthetic-seller@upi",
+            "description": "Reported after a suspected marketplace scam.",
+        },
+    )
+    assert reported.status_code == 201
+
+    uploaded = client.post(
+        "/api/v1/evidence",
+        headers=headers,
+        data={
+            "suspect_report_id": reported.json()["data"]["id"],
+            "description": "Synthetic screenshot metadata.",
+        },
+        files={"file": ("reported-identifier.png", b"synthetic-image", "image/png")},
+    )
+
+    assert uploaded.status_code == 201
+    evidence_data = uploaded.json()["data"]
+    assert evidence_data["suspect_report_id"] == reported.json()["data"]["id"]
+    assert evidence_data["complaint_id"] is None
+    assert "storage_key" not in evidence_data
+    evidence = session.get(Evidence, evidence_data["id"])
+    assert evidence is not None
+    get_storage_adapter().delete(evidence.storage_key)
