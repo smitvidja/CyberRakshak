@@ -12,6 +12,8 @@ For every implementation task, read:
 
 Then load only the minimum sufficient task-specific context.
 
+For frontend work, also read `design.md` and inspect the visual references in all three `design/` folders before making a design decision.
+
 ## Source Hierarchy
 
 ```mermaid
@@ -41,7 +43,7 @@ If two sources conflict, document the conflict and ask for confirmation before c
 
 ## Design Rules
 
-- Treat `design/` as the visual source of truth.
+- Treat `design.md` and `design/` as the visual source of truth. Before frontend work, inspect `design/cyber_warrior/`, `design/home/`, and `design/victim_Report/`; implement only the folders within the requested scope.
 - Apply the victim report navbar/header pattern across the product.
 - Do not use official government emblems/logos or political photos in the implemented prototype; use neutral placeholder branding.
 - Preserve steps, review states, tracking timelines, declarations, cards, sidebars, and support bands shown in the references.

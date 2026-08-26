@@ -8,7 +8,7 @@ type SurfaceCardProps = {
 
 export function SurfaceCard({children, className = "", heading}: SurfaceCardProps) {
   return (
-    <section className={["rounded-[var(--radius)] border border-[var(--border)] border-t-2 border-t-[#8dbde9] bg-white p-5 shadow-[0_3px_12px_rgb(15_42_74_/_0.08)]", className].join(" ")}>
+    <section className={["portal-surface rounded-[var(--radius)] border border-[var(--border)] border-t-2 border-t-[#8dbde9] bg-white p-5 shadow-[0_3px_12px_rgb(15_42_74_/_0.08)] sm:p-6", className].join(" ")}>
       {heading ? <div className="mb-4 flex min-h-8 items-center border-b border-[var(--border)] pb-3 text-lg font-bold text-[var(--navy)]">{heading}</div> : null}
       {children}
     </section>
@@ -42,7 +42,7 @@ const stateToneClasses: Record<StateTone, string> = {
 
 export function StatePanel({action, children, title, tone}: {action?: ReactNode; children: ReactNode; title: string; tone: StateTone}) {
   return (
-    <section className={["flex flex-col items-start gap-3 rounded-[var(--radius)] border p-5 sm:flex-row sm:items-center sm:justify-between", stateToneClasses[tone]].join(" ")}>
+    <section className={["flex flex-col items-start gap-3 portal-state-panel rounded-[var(--radius)] border p-5 sm:flex-row sm:items-center sm:justify-between", stateToneClasses[tone]].join(" ")}>
       <div><h2 className="font-bold">{title}</h2><div className="mt-1 text-sm leading-6">{children}</div></div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </section>

@@ -103,8 +103,8 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
     router.push("/" + locale + "/complaints/submitted/" + encodeURIComponent(complaintNumber));
   }
 
-  if (loading) return <main className="shell-container py-8 sm:py-12"><StatePanel title={t("loadingTitle")} tone="loading">{t("loadingCopy")}</StatePanel></main>;
-  if (!draft) return <main className="shell-container py-8 sm:py-12"><StatePanel action={<Button onClick={() => router.push("/" + locale + "/report-crime")}>{t("startAgain")}</Button>} title={t("errorTitle")} tone="error">{error || t("draftUnavailable")}</StatePanel></main>;
+  if (loading) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("loadingTitle")} tone="loading">{t("loadingCopy")}</StatePanel></main>;
+  if (!draft) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel action={<Button onClick={() => router.push("/" + locale + "/report-crime")}>{t("startAgain")}</Button>} title={t("errorTitle")} tone="error">{error || t("draftUnavailable")}</StatePanel></main>;
 
   const category = asRecord(draft.category);
   const location = asRecord(draft.location);
@@ -112,7 +112,7 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
   const evidence = getComplaintEvidence(draftId);
   const locationValue = [asString(location?.city), asString(location?.district), asString(location?.state)].filter(Boolean).join(", ") || "-";
 
-  return <main className="shell-container py-8 sm:py-12"><div className="mx-auto max-w-5xl space-y-6">
+  return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-5xl space-y-6">
     <p className="eyebrow">{t("eyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("title")}</h1><p className="max-w-3xl text-base leading-7 text-[var(--muted)]">{t("intro")}</p>
     <StepIndicator label={t("stepsLabel")} steps={[{label: t("steps.incident"), status: "completed"}, {label: t("steps.people"), status: "completed"}, {label: t("steps.review"), status: "current"}]} />
     {error ? <StatePanel title={t("errorTitle")} tone="error">{error}</StatePanel> : null}
@@ -138,7 +138,7 @@ export function ComplaintSubmitted({complaintNumber}: {complaintNumber: string})
 
   useEffect(() => { setIdentified(getReportMode() === "identified"); }, []);
 
-  return <main className="shell-container py-8 sm:py-12"><div className="mx-auto max-w-3xl space-y-6"><p className="eyebrow">{t("submittedEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("submittedTitle")}</h1><StatePanel title={t("referenceTitle")} tone="success"><strong className="block text-lg">{complaintNumber}</strong><span>{t("referenceCopy")}</span></StatePanel><SurfaceCard heading={t("whatNextTitle")}><p className="text-sm leading-6 text-[var(--muted)]">{t("whatNextCopy")}</p><div className="mt-5 flex flex-wrap gap-3"><Button onClick={() => router.push("/" + locale + "/complaints/track/" + encodeURIComponent(complaintNumber))}>{t("trackAction")}</Button>{identified ? <Button onClick={() => router.push("/" + locale + "/complaints")} variant="outline">{t("myReportsAction")}</Button> : null}</div></SurfaceCard></div></main>;
+  return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-3xl space-y-6"><p className="eyebrow">{t("submittedEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("submittedTitle")}</h1><StatePanel title={t("referenceTitle")} tone="success"><strong className="block text-lg">{complaintNumber}</strong><span>{t("referenceCopy")}</span></StatePanel><SurfaceCard heading={t("whatNextTitle")}><p className="text-sm leading-6 text-[var(--muted)]">{t("whatNextCopy")}</p><div className="mt-5 flex flex-wrap gap-3"><Button onClick={() => router.push("/" + locale + "/complaints/track/" + encodeURIComponent(complaintNumber))}>{t("trackAction")}</Button>{identified ? <Button onClick={() => router.push("/" + locale + "/complaints")} variant="outline">{t("myReportsAction")}</Button> : null}</div></SurfaceCard></div></main>;
 }
 export function ComplaintTrackingLookup() {
   const t = useTranslations("complaintCompletion");
@@ -151,7 +151,7 @@ export function ComplaintTrackingLookup() {
     if (!number.trim()) { setError(t("referenceRequired")); return; }
     router.push("/" + locale + "/complaints/track/" + encodeURIComponent(number.trim().toUpperCase()));
   }
-  return <main className="shell-container py-8 sm:py-12"><div className="mx-auto max-w-3xl space-y-6"><p className="eyebrow">{t("trackEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("trackTitle")}</h1><p className="text-base leading-7 text-[var(--muted)]">{t("trackIntro")}</p><SurfaceCard heading={t("trackFormTitle")}><form className="space-y-4" noValidate onSubmit={track}><TextInput error={error} id="complaint-number" label={t("referenceLabel")} onChange={(event) => { setNumber(event.target.value); setError(""); }} placeholder="CR-2026-XXXXXXXXXX" value={number} /><Button type="submit">{t("trackAction")}</Button></form></SurfaceCard></div></main>;
+  return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-3xl space-y-6"><p className="eyebrow">{t("trackEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("trackTitle")}</h1><p className="text-base leading-7 text-[var(--muted)]">{t("trackIntro")}</p><SurfaceCard heading={t("trackFormTitle")}><form className="space-y-4" noValidate onSubmit={track}><TextInput error={error} id="complaint-number" label={t("referenceLabel")} onChange={(event) => { setNumber(event.target.value); setError(""); }} placeholder="CR-2026-XXXXXXXXXX" value={number} /><Button type="submit">{t("trackAction")}</Button></form></SurfaceCard></div></main>;
 }
 
 export function ComplaintTrackingDetail({complaintNumber}: {complaintNumber: string}) {
@@ -171,11 +171,11 @@ export function ComplaintTrackingDetail({complaintNumber}: {complaintNumber: str
     void load();
     return () => { active = false; };
   }, [complaintNumber]);
-  if (loading) return <main className="shell-container py-8 sm:py-12"><StatePanel title={t("trackingLoadingTitle")} tone="loading">{t("trackingLoadingCopy")}</StatePanel></main>;
-  if (!complaint || error) return <main className="shell-container py-8 sm:py-12"><StatePanel action={<Button onClick={() => window.location.assign("/" + locale + "/complaints/track")} variant="outline">{t("tryAnother")}</Button>} title={t("trackingErrorTitle")} tone="error">{t("trackingErrorCopy")}</StatePanel></main>;
+  if (loading) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("trackingLoadingTitle")} tone="loading">{t("trackingLoadingCopy")}</StatePanel></main>;
+  if (!complaint || error) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel action={<Button onClick={() => window.location.assign("/" + locale + "/complaints/track")} variant="outline">{t("tryAnother")}</Button>} title={t("trackingErrorTitle")} tone="error">{t("trackingErrorCopy")}</StatePanel></main>;
   const history = Array.isArray(complaint.history) ? complaint.history : [];
   const events = history.length ? history.map((item) => ({label: statusLabel(t, item.status), timestamp: displayDate(item.created_at, locale), tone: statusTone(asString(item.status))})) : [{label: statusLabel(t, complaint.status), timestamp: displayDate(complaint.submitted_at || complaint.created_at, locale), tone: statusTone(asString(complaint.status))}];
-  return <main className="shell-container py-8 sm:py-12"><div className="mx-auto max-w-4xl space-y-6"><p className="eyebrow">{t("trackEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("trackingTitle")}</h1><SurfaceCard heading={t("trackingSummaryTitle")}><dl className="grid gap-4 sm:grid-cols-3"><div><dt className="text-sm font-bold text-[var(--muted)]">{t("referenceLabel")}</dt><dd className="mt-1 font-bold text-[var(--navy)]">{asString(complaint.complaint_number)}</dd></div><div><dt className="text-sm font-bold text-[var(--muted)]">{t("statusLabel")}</dt><dd className="mt-1"><StatusChip label={statusLabel(t, complaint.status)} tone={statusTone(asString(complaint.status))} /></dd></div><div><dt className="text-sm font-bold text-[var(--muted)]">{t("priorityLabel")}</dt><dd className="mt-1 text-sm text-[var(--ink)]">{asString(complaint.priority) || "-"}</dd></div></dl></SurfaceCard><SurfaceCard heading={t("timelineTitle")}><StatusTimeline events={events} label={t("timelineLabel")} /></SurfaceCard><StatePanel title={t("prototypeUpdateTitle")} tone="info">{t("prototypeUpdateCopy")}</StatePanel></div></main>;
+  return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-4xl space-y-6"><p className="eyebrow">{t("trackEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("trackingTitle")}</h1><SurfaceCard heading={t("trackingSummaryTitle")}><dl className="grid gap-4 sm:grid-cols-3"><div><dt className="text-sm font-bold text-[var(--muted)]">{t("referenceLabel")}</dt><dd className="mt-1 font-bold text-[var(--navy)]">{asString(complaint.complaint_number)}</dd></div><div><dt className="text-sm font-bold text-[var(--muted)]">{t("statusLabel")}</dt><dd className="mt-1"><StatusChip label={statusLabel(t, complaint.status)} tone={statusTone(asString(complaint.status))} /></dd></div><div><dt className="text-sm font-bold text-[var(--muted)]">{t("priorityLabel")}</dt><dd className="mt-1 text-sm text-[var(--ink)]">{asString(complaint.priority) || "-"}</dd></div></dl></SurfaceCard><SurfaceCard heading={t("timelineTitle")}><StatusTimeline events={events} label={t("timelineLabel")} /></SurfaceCard><StatePanel title={t("prototypeUpdateTitle")} tone="info">{t("prototypeUpdateCopy")}</StatePanel></div></main>;
 }
 
 export function MyComplaints() {
@@ -211,13 +211,13 @@ export function MyComplaints() {
     return () => { active = false; };
   }, [identified, sessionReady]);
 
-  if (!sessionReady || loading) return <main className="shell-container py-8 sm:py-12"><StatePanel title={t("myReportsLoadingTitle")} tone="loading">{t("myReportsLoadingCopy")}</StatePanel></main>;
-  if (!identified) return <main className="shell-container py-8 sm:py-12"><div className="mx-auto max-w-3xl"><StatePanel action={<Button onClick={() => router.push("/" + locale + "/complaints/track")} variant="outline">{t("trackAction")}</Button>} title={t("anonymousReportsTitle")} tone="info">{t("anonymousReportsCopy")}</StatePanel></div></main>;
-  if (error) return <main className="shell-container py-8 sm:py-12"><StatePanel title={t("myReportsErrorTitle")} tone="error">{t("myReportsErrorCopy")}</StatePanel></main>;
+  if (!sessionReady || loading) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("myReportsLoadingTitle")} tone="loading">{t("myReportsLoadingCopy")}</StatePanel></main>;
+  if (!identified) return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-3xl"><StatePanel action={<Button onClick={() => router.push("/" + locale + "/complaints/track")} variant="outline">{t("trackAction")}</Button>} title={t("anonymousReportsTitle")} tone="info">{t("anonymousReportsCopy")}</StatePanel></div></main>;
+  if (error) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("myReportsErrorTitle")} tone="error">{t("myReportsErrorCopy")}</StatePanel></main>;
 
   const rows = (items: ApiRecord[]): DataListRow[] => items.map((item) => ({id: asString(item.id), values: {title: asString(item.title), reference: asString(item.complaint_number), status: <StatusChip label={statusLabel(t, item.status)} tone={statusTone(asString(item.status))} />, action: <Button onClick={() => router.push(asString(item.status) === "DRAFT" ? "/" + locale + "/report-crime/" + asString(item.id) + "/incident" : "/" + locale + "/complaints/track/" + encodeURIComponent(asString(item.complaint_number)))} size="sm" variant="outline">{asString(item.status) === "DRAFT" ? t("continueDraft") : t("viewTracking")}</Button>}}));
   const drafts = complaints.filter((item) => asString(item.status) === "DRAFT");
   const submitted = complaints.filter((item) => asString(item.status) !== "DRAFT");
   const columns = [{key: "title", label: t("tableTitle")}, {key: "reference", label: t("tableReference")}, {key: "status", label: t("tableStatus")}, {key: "action", label: t("tableAction")}];
-  return <main className="shell-container py-8 sm:py-12"><div className="mx-auto max-w-5xl space-y-8"><p className="eyebrow">{t("myReportsEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("myReportsTitle")}</h1><section><h2 className="mb-4 text-xl font-bold text-[var(--navy)]">{t("draftsTitle")}</h2><ResponsiveDataList caption={t("draftsTitle")} columns={columns} emptyMessage={t("noDrafts")} rows={rows(drafts)} /></section><section><h2 className="mb-4 text-xl font-bold text-[var(--navy)]">{t("submittedReportsTitle")}</h2><ResponsiveDataList caption={t("submittedReportsTitle")} columns={columns} emptyMessage={t("noSubmitted")} rows={rows(submitted)} /></section></div></main>;
+  return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-5xl space-y-8"><p className="eyebrow">{t("myReportsEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("myReportsTitle")}</h1><section><h2 className="mb-4 text-xl font-bold text-[var(--navy)]">{t("draftsTitle")}</h2><ResponsiveDataList caption={t("draftsTitle")} columns={columns} emptyMessage={t("noDrafts")} rows={rows(drafts)} /></section><section><h2 className="mb-4 text-xl font-bold text-[var(--navy)]">{t("submittedReportsTitle")}</h2><ResponsiveDataList caption={t("submittedReportsTitle")} columns={columns} emptyMessage={t("noSubmitted")} rows={rows(submitted)} /></section></div></main>;
 }

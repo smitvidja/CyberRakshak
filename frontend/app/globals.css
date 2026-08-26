@@ -13,3 +13,75 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Reference-led portal polish for home and the citizen reporting journey. */
+.portal-action-card,
+.report-category-card,
+.portal-updates,
+.citizen-route-card,
+.portal-surface,
+.workflow-step,
+.portal-state-panel {
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+.portal-action-card:hover,
+.report-category-card:hover,
+.citizen-route-card:hover,
+.portal-surface:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgb(15 42 74 / .11);
+}
+.report-category-card:hover { border-color: #92bee9; }
+.category-illustration {
+  background-repeat: no-repeat;
+  transition: transform 220ms ease;
+}
+.report-category-card:hover .category-illustration { transform: scale(1.025); }
+.home-portal .report-category-grid { align-items: stretch; }
+.home-portal .portal-updates { min-height: 100%; }
+.citizen-page { position: relative; }
+.citizen-page > div > .eyebrow:first-child,
+.citizen-page .citizen-page-heading .eyebrow { color: #075fb9; font-size: 12px; letter-spacing: .045em; }
+.citizen-page h1 { letter-spacing: 0; }
+.citizen-page > div > h1 + p { max-width: 54rem; }
+.citizen-page .portal-surface { border-top-color: #8dbde9; }
+.citizen-page .portal-surface > div:first-child { min-height: 38px; }
+.citizen-page .workflow-steps { border-left: 3px solid #c8e0f6; padding-left: 12px; }
+.citizen-page .workflow-step { min-height: 60px; box-shadow: 0 1px 5px rgb(15 42 74 / .05); }
+.citizen-page .workflow-step:hover { border-color: #9dc8ef; background: #fbfdff; }
+.citizen-page .portal-state-panel { box-shadow: 0 2px 8px rgb(15 42 74 / .05); }
+.citizen-entry-page .citizen-page-heading { position: relative; overflow: hidden; }
+.citizen-entry-page .citizen-page-heading::after {
+  content: "";
+  position: absolute;
+  right: -42px;
+  top: -72px;
+  height: 175px;
+  width: 175px;
+  border: 26px solid #edf6ff;
+  border-radius: 999px;
+}
+.citizen-entry-page .citizen-page-heading > * { position: relative; z-index: 1; }
+.citizen-entry-page .citizen-route-card { min-height: 270px; }
+.citizen-entry-page .citizen-route-card ul { list-style: none; }
+.citizen-entry-page .citizen-route-card li { position: relative; padding-left: 18px; }
+.citizen-entry-page .citizen-route-card li::before { content: ""; position: absolute; left: 0; top: 9px; height: 6px; width: 6px; border-radius: 50%; background: #075fb9; }
+input, select, textarea { transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease; }
+input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px rgb(7 95 185 / .14); outline: none; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled):active, .home-portal a:active { transform: translateY(1px); }
+@media (min-width: 1280px) {
+  .home-portal .report-category-card { min-height: 290px; }
+  .citizen-page > div { position: relative; }
+  .citizen-page > div::before { content: ""; position: absolute; left: -14px; top: 0; bottom: 0; width: 1px; background: #dce8f4; }
+}
+@media (max-width: 1279px) {
+  .home-portal .report-category-card { min-height: 250px; }
+}
+@media (max-width: 639px) {
+  .home-portal .home-hero { height: auto; min-height: 320px; }
+  .home-portal .report-category-card { min-height: 0; }
+  .home-portal .category-illustration { height: 92px; }
+  .citizen-page .workflow-steps { grid-template-columns: 1fr; }
+  .citizen-page > div::before { display: none; }
+}

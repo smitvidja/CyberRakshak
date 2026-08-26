@@ -18,9 +18,9 @@ const stepStatusClasses: Record<StepStatus, string> = {
 
 export function StepIndicator({label, steps}: {label: string; steps: WorkflowStep[]}) {
   return (
-    <ol aria-label={label} className="grid gap-2 sm:grid-cols-3">
+    <ol aria-label={label} className="workflow-steps grid gap-2 sm:grid-cols-3">
       {steps.map((step, index) => (
-        <li className="relative flex min-w-0 items-start gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3" key={step.label}>
+        <li className="workflow-step relative flex min-w-0 items-start gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-white px-3 py-3" key={step.label}>
           <span aria-hidden="true" className={["grid h-8 w-8 shrink-0 place-items-center rounded-full border text-xs font-bold", stepStatusClasses[step.status]].join(" ")}>{index + 1}</span>
           <span className="min-w-0 pt-1"><strong className="block break-words text-sm text-[var(--ink)]">{step.label}</strong>{step.description ? <span className="mt-1 block break-words text-xs leading-5 text-[var(--muted)]">{step.description}</span> : null}</span>
         </li>

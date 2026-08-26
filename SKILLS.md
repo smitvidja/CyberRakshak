@@ -28,7 +28,8 @@ Read:
 - `PROJECT-STRUCTURE.md`
 - `05-FRONTEND.md`
 - `07-DESIGN-SYSTEM.md`
-- Relevant files under `design/`
+- `design.md`
+- Inspect `design/cyber_warrior/`, `design/home/`, and `design/victim_Report/`; use only the in-scope references to implement the requested screens
 
 Also read `06-API.md` when API integration is involved. Read `03-ARCHITECTURE.md` when module boundaries or cross-layer behavior are affected.
 
