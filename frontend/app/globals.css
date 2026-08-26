@@ -177,3 +177,22 @@ button, input, select, textarea { font: inherit; }
 .citizen-reports-page .report-table { box-shadow: 0 2px 8px rgb(15 42 74 / .06); }
 .evidence-dropzone { min-height: 190px; transition: border-color 160ms ease, background-color 160ms ease; }
 .evidence-dropzone:hover { border-color: #064b9d; background: #f2f8ff; }
+/* Reference-aligned citizen journey refinements */
+.citizen-dashboard-welcome { border-left: 4px solid var(--blue); }
+.citizen-dashboard-action { transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+.citizen-dashboard-action:hover { transform: translateY(-2px); border-color: #91bfe9; box-shadow: 0 8px 18px rgb(15 42 74 / .10); }
+.citizen-evidence-panel { border-top-color: #7aaee0; }
+.citizen-evidence-panel .evidence-dropzone { min-height: 142px; }
+.affected-person-option { transition: transform 150ms ease, border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease; }
+.affected-person-option:hover { transform: translateY(-1px); border-color: #8abbe6; box-shadow: 0 4px 10px rgb(15 42 74 / .07); }
+
+@media (min-width: 768px) {
+  .citizen-success-page .status-timeline,
+  .citizen-track-detail-page .status-timeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-left: 0; padding-left: 0; }
+  .citizen-success-page .status-timeline > li,
+  .citizen-track-detail-page .status-timeline > li { align-items: center; flex-direction: column; gap: 8px; padding: 0 10px; text-align: center; }
+  .citizen-success-page .status-timeline > li > span:first-child,
+  .citizen-track-detail-page .status-timeline > li > span:first-child { left: calc(50% + 10px); top: 10px; width: calc(100% - 20px); height: 2px; }
+  .citizen-success-page .status-timeline > li > span:nth-child(2),
+  .citizen-track-detail-page .status-timeline > li > span:nth-child(2) { margin-top: 0; }
+}

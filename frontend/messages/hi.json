@@ -69,6 +69,10 @@
       "report": {
         "title": "साइबर नुकसान रिपोर्ट करें",
         "copy": "कुछ चरणों में सुरक्षित रिपोर्ट शुरू करें।"
+      },
+      "secure": {
+        "title": "सुरक्षित भारत",
+        "copy": "सुरक्षित डिजिटल गतिविधि के व्यावहारिक तरीके।"
       }
     },
     "categories": {
@@ -201,7 +205,25 @@
     "address": "पता",
     "postalCode": "पिन कोड",
     "goDashboard": "डैशबोर्ड पर जाएं",
-    "saveProfile": "प्रोफ़ाइल सहेजें और आगे बढ़ें"
+    "saveProfile": "प्रोफ़ाइल सहेजें और आगे बढ़ें",
+    "dashboardWelcomeName": "स्वागत है, {name}",
+    "dashboardSafetyCopy": "साइबर नुकसान की रिपोर्ट करें और सभी शिकायतें एक सुरक्षित स्थान पर रखें।",
+    "dashboardTitle": "नागरिक डैशबोर्ड",
+    "dashboardCopy": "अपनी प्रोफ़ाइल, रिपोर्ट और शिकायत ट्रैकिंग प्रबंधित करें।",
+    "dashboardProfileTitle": "मेरी प्रोफ़ाइल",
+    "dashboardProfileCopy": "अपनी प्रोटोटाइप पहचान से जुड़े सत्यापित विवरण देखें।",
+    "dashboardProfileAction": "प्रोफ़ाइल देखें",
+    "dashboardReportTitle": "घटना रिपोर्ट करें",
+    "dashboardReportCopy": "साइबर अपराध रिपोर्ट शुरू करें और सहायक साक्ष्य जोड़ें।",
+    "dashboardReportAction": "अभी रिपोर्ट करें",
+    "dashboardReportsTitle": "मेरी रिपोर्ट",
+    "dashboardReportsCopy": "ड्राफ्ट जारी रखें और जमा शिकायतें देखें।",
+    "dashboardReportsAction": "रिपोर्ट देखें",
+    "dashboardTrackTitle": "अपनी रिपोर्ट ट्रैक करें",
+    "dashboardTrackCopy": "संदर्भ नंबर से शिकायत की चारों प्रगति अवस्थाएं देखें।",
+    "dashboardTrackAction": "अभी ट्रैक करें",
+    "dashboardSecurityTitle": "आपकी जानकारी हमारे साथ सुरक्षित है",
+    "dashboardSecurityCopy": "प्रोटोटाइप प्रोफ़ाइल और शिकायत डेटा सर्वर-स्तरीय स्वामित्व नियमों से सुरक्षित है।"
   },
   "complaintDraft": {
     "incidentEyebrow": "शिकायत ड्राफ्ट",
@@ -269,7 +291,25 @@
       "futureIncident": "घटना की तारीख और समय भविष्य का नहीं हो सकता।"
     },
     "evidenceUploaded": "{fileName} ({fileSize} बाइट)",
-    "continueReview": "समीक्षा और सबमिट पर जाएं"
+    "continueReview": "समीक्षा और सबमिट पर जाएं",
+    "evidenceSaveCopy": "घटना ड्राफ्ट सहेजते समय चुनी गई फ़ाइल सुरक्षित रूप से अपलोड होगी।",
+    "affectedTitle": "इस घटना से कौन प्रभावित है?",
+    "affectedLegend": "मुख्य प्रभावित व्यक्ति का सही विकल्प चुनें।",
+    "affectedSelfTitle": "मैं स्वयं",
+    "affectedSelfCopy": "मैं इस घटना से सीधे प्रभावित हूं।",
+    "affectedChildTitle": "मेरा बच्चा (नाबालिग)",
+    "affectedChildCopy": "मैं अपनी देखभाल में बच्चे के लिए रिपोर्ट कर रहा/रही हूं।",
+    "affectedOtherTitle": "कोई अन्य व्यक्ति",
+    "affectedOtherCopy": "मैं किसी अन्य व्यक्ति के लिए रिपोर्ट कर रहा/रही हूं।",
+    "affectedNameLabel": "प्रभावित व्यक्ति का नाम",
+    "affectedNameRequired": "आगे बढ़ने से पहले प्रभावित व्यक्ति का नाम दर्ज करें।",
+    "suspectQuestionTitle": "क्या आपको संदिग्ध के बारे में कुछ पता है?",
+    "suspectQuestionCopy": "उपलब्ध जानकारी साझा करें। संदिग्ध अज्ञात होने पर भी आगे बढ़ सकते हैं।",
+    "suspectYes": "हां, मेरे पास जानकारी है",
+    "suspectNo": "नहीं, मेरे पास जानकारी नहीं है",
+    "noSuspectTitle": "संदिग्ध की जानकारी वैकल्पिक है",
+    "noSuspectCopy": "अनुमान लगाए बिना आगे बढ़ें। केवल वही बताएं जो आप जानते हैं।",
+    "saveContinue": "सहेजें और आगे बढ़ें"
   },
   "complaintCompletion": {
     "eyebrow": "शिकायत समीक्षा",
@@ -362,7 +402,27 @@
       "closed": "बंद",
       "rejected": "बंद",
       "unknown": "स्थिति उपलब्ध नहीं"
-    }
+    },
+    "reportingForLabel": "किसके लिए रिपोर्ट",
+    "reportingFor": {
+      "self": "मैं स्वयं",
+      "child": "मेरा बच्चा",
+      "other": "कोई अन्य व्यक्ति"
+    },
+    "timelineStages": {
+      "submitted": "जमा",
+      "underReview": "समीक्षा में",
+      "investigation": "जांच",
+      "resolution": "कार्रवाई / समाधान"
+    },
+    "timelineStageCopy": {
+      "submitted": "शिकायत सफलतापूर्वक दर्ज हुई।",
+      "underReview": "शिकायत समीक्षा के लिए कतार में है।",
+      "investigation": "समीक्षा के बाद जांच शुरू होगी।",
+      "resolution": "उपलब्ध होने पर अंतिम कार्रवाई दिखेगी।"
+    },
+    "timelinePending": "अभी शुरू नहीं",
+    "timelineNow": "अभी"
   },
   "suspectReport": {
     "eyebrow": "रिपोर्ट किया गया पहचानकर्ता",

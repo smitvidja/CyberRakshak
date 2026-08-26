@@ -47,6 +47,10 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
             "(NOT is_anonymous AND user_id IS NOT NULL)",
             name="ck_complaints_anonymous_identity",
         ),
+        CheckConstraint(
+            "reporting_for IN ('SELF', 'CHILD', 'OTHER')",
+            name="ck_complaints_reporting_for",
+        ),
         Index("ix_complaints_user_id", "user_id"),
         Index("ix_complaints_category_id", "category_id"),
         Index("ix_complaints_status", "status"),
@@ -60,6 +64,8 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         nullable=False,
     )
     is_anonymous: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    reporting_for: Mapped[str] = mapped_column(String(16), nullable=False, default="SELF")
+    affected_person_name: Mapped[str | None] = mapped_column(String(255))
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     incident_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

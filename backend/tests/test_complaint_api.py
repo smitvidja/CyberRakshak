@@ -100,19 +100,27 @@ def test_anonymous_complaint_submission_tracks_without_identity(
     api_client: tuple[TestClient, Session],
 ) -> None:
     client, session = api_client
-    draft = client.post(
-        "/api/v1/complaints/drafts",
-        json=complaint_payload(anonymous_category_id(session), is_anonymous=True),
+    payload = complaint_payload(anonymous_category_id(session), is_anonymous=True)
+    payload.update(
+        {
+            "reporting_for": "CHILD",
+            "affected_person_name": "Synthetic Child",
+        }
     )
+    draft = client.post("/api/v1/complaints/drafts", json=payload)
 
     assert draft.status_code == 201
     draft_data = draft.json()["data"]
     complaint_id = draft_data["id"]
     assert draft_data["is_anonymous"] is True
+    assert draft_data["reporting_for"] == "CHILD"
+    assert draft_data["affected_person_name"] == "Synthetic Child"
 
     complaint = session.get(Complaint, complaint_id)
     assert complaint is not None
     assert complaint.user_id is None
+    assert complaint.reporting_for == "CHILD"
+    assert complaint.affected_person_name == "Synthetic Child"
     assert complaint.status.value == "DRAFT"
 
     submitted = client.post(f"/api/v1/complaints/{complaint_id}/submit")

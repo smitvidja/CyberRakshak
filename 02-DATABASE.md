@@ -72,6 +72,8 @@ erDiagram
 
 Anonymous and identified reports are distinct flows.
 
+Complaint drafts also record who the citizen is reporting for through `complaints.reporting_for` (`SELF`, `CHILD`, or `OTHER`) and the optional `complaints.affected_person_name`. These fields describe the affected person; they do not change complaint ownership or anonymous-reporting privacy.
+
 ```mermaid
 flowchart TD
   A[Citizen chooses report type] --> B{Anonymous?}

@@ -53,6 +53,28 @@ function statusLabel(t: ReturnType<typeof useTranslations>, status: unknown) {
   return normalized ? t("status." + normalized) : t("status.unknown");
 }
 
+function trackingStages(t: ReturnType<typeof useTranslations>, complaint: TrackingRecord, locale: string) {
+  const history = Array.isArray(complaint.history) ? complaint.history : [];
+  const status = asString(complaint.status);
+  const statusOrder: Record<string, number> = {SUBMITTED: 0, UNDER_REVIEW: 1, IN_REVIEW: 1, IN_PROGRESS: 2, RESOLVED: 3, CLOSED: 3, REJECTED: 3};
+  const currentIndex = statusOrder[status] ?? 0;
+  const timestampFor = (statuses: string[]) => {
+    const item = history.find((entry) => statuses.includes(asString(entry.status)));
+    return item ? displayDate(item.created_at, locale) : undefined;
+  };
+  const definitions = [
+    {key: "submitted", statuses: ["SUBMITTED"]},
+    {key: "underReview", statuses: ["UNDER_REVIEW", "IN_REVIEW"]},
+    {key: "investigation", statuses: ["IN_PROGRESS"]},
+    {key: "resolution", statuses: ["RESOLVED", "CLOSED", "REJECTED"]}
+  ];
+  return definitions.map((stage, index) => ({
+    label: t("timelineStages." + stage.key),
+    description: t("timelineStageCopy." + stage.key),
+    timestamp: timestampFor(stage.statuses) ?? (index === 0 ? displayDate(complaint.submitted_at || complaint.created_at, locale) : t("timelinePending")),
+    tone: index < currentIndex ? "success" as const : index === currentIndex ? (index === 0 ? "success" as const : "info" as const) : "neutral" as const
+  }));
+}
 export function ComplaintReviewStep({draftId}: {draftId: string}) {
   const t = useTranslations("complaintCompletion");
   const locale = useLocale();
@@ -125,7 +147,7 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
       {label: t("amountLabel"), value: displayAmount(draft.financial_loss_amount, locale)},
       {label: t("locationLabel"), value: locationValue}
     ]} />
-    <ReviewSection action={<Button onClick={() => router.push("/" + locale + "/report-crime/" + draftId + "/people")} size="sm" variant="outline">{t("editPeople")}</Button>} title={t("peopleSection")} items={[{label: t("peopleLabel"), value: suspects.length ? <ul className="space-y-2">{suspects.map((person, index) => <li key={index}>{[asString(person.name), asString(person.alias), asString(person.contact_details), asString(person.description)].filter(Boolean).join(" - ")}</li>)}</ul> : t("noneProvided")}]} />
+    <ReviewSection action={<Button onClick={() => router.push("/" + locale + "/report-crime/" + draftId + "/people")} size="sm" variant="outline">{t("editPeople")}</Button>} title={t("peopleSection")} items={[{label: t("reportingForLabel"), value: t("reportingFor." + (asString(draft.reporting_for).toLowerCase() || "self")) + (asString(draft.affected_person_name) ? " - " + asString(draft.affected_person_name) : "")}, {label: t("peopleLabel"), value: suspects.length ? <ul className="space-y-2">{suspects.map((person, index) => <li key={index}>{[asString(person.name), asString(person.alias), asString(person.contact_details), asString(person.description)].filter(Boolean).join(" - ")}</li>)}</ul> : t("noneProvided")}]} />
     <ReviewSection action={<Button onClick={() => router.push("/" + locale + "/report-crime/" + draftId + "/incident")} size="sm" variant="outline">{t("editEvidence")}</Button>} title={t("evidenceSection")} items={[{label: t("evidenceLabel"), value: evidence.length ? <ul className="space-y-2">{evidence.map((item) => <li key={item.id}>{item.fileName} ({item.fileSize} {t("bytes")})</li>)}</ul> : t("noneProvided") }]} />
     <SurfaceCard heading={t("submitSection")}><div className="space-y-4"><DeclarationBox checked={accepted} description={t("declarationCopy")} id="complaint-declaration" label={t("declarationLabel")} onCheckedChange={(event) => { setAccepted(event.target.checked); setError(""); }} /><Button isLoading={submitting} onClick={submit}>{t("submitAction")}</Button></div></SurfaceCard>
   </div></main>;
@@ -136,10 +158,14 @@ export function ComplaintSubmitted({complaintNumber}: {complaintNumber: string})
   const locale = useLocale();
   const router = useRouter();
   const [identified, setIdentified] = useState(false);
-
   useEffect(() => { setIdentified(getReportMode() === "identified"); }, []);
-
-  return <main className="citizen-page citizen-success-page shell-container py-8 sm:py-12"><div className="citizen-success-panel mx-auto max-w-3xl space-y-6"><p className="eyebrow">{t("submittedEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("submittedTitle")}</h1><StatePanel title={t("referenceTitle")} tone="success"><strong className="block text-lg">{complaintNumber}</strong><span>{t("referenceCopy")}</span></StatePanel><SurfaceCard heading={t("whatNextTitle")}><p className="text-sm leading-6 text-[var(--muted)]">{t("whatNextCopy")}</p><div className="mt-5 flex flex-wrap gap-3"><Button onClick={() => router.push("/" + locale + "/complaints/track/" + encodeURIComponent(complaintNumber))}>{t("trackAction")}</Button>{identified ? <Button onClick={() => router.push("/" + locale + "/complaints")} variant="outline">{t("myReportsAction")}</Button> : null}</div></SurfaceCard></div></main>;
+  const events = [
+    {label: t("timelineStages.submitted"), description: t("timelineStageCopy.submitted"), timestamp: t("timelineNow"), tone: "success" as const},
+    {label: t("timelineStages.underReview"), description: t("timelineStageCopy.underReview"), timestamp: t("timelinePending"), tone: "neutral" as const},
+    {label: t("timelineStages.investigation"), description: t("timelineStageCopy.investigation"), timestamp: t("timelinePending"), tone: "neutral" as const},
+    {label: t("timelineStages.resolution"), description: t("timelineStageCopy.resolution"), timestamp: t("timelinePending"), tone: "neutral" as const}
+  ];
+  return <main className="citizen-page citizen-success-page shell-container py-8 sm:py-12"><div className="citizen-success-panel mx-auto max-w-5xl space-y-6"><p className="eyebrow">{t("submittedEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("submittedTitle")}</h1><StatePanel title={t("referenceTitle")} tone="success"><strong className="block text-lg">{complaintNumber}</strong><span>{t("referenceCopy")}</span></StatePanel><div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px]"><SurfaceCard heading={t("timelineTitle")}><StatusTimeline events={events} label={t("timelineLabel")} /></SurfaceCard><SurfaceCard heading={t("whatNextTitle")}><p className="text-sm leading-6 text-[var(--muted)]">{t("whatNextCopy")}</p><div className="mt-5 grid gap-3"><Button onClick={() => router.push("/" + locale + "/complaints/track/" + encodeURIComponent(complaintNumber))}>{t("trackAction")}</Button>{identified ? <Button onClick={() => router.push("/" + locale + "/complaints")} variant="outline">{t("myReportsAction")}</Button> : null}</div></SurfaceCard></div></div></main>;
 }
 export function ComplaintTrackingLookup() {
   const t = useTranslations("complaintCompletion");
@@ -174,8 +200,7 @@ export function ComplaintTrackingDetail({complaintNumber}: {complaintNumber: str
   }, [complaintNumber]);
   if (loading) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("trackingLoadingTitle")} tone="loading">{t("trackingLoadingCopy")}</StatePanel></main>;
   if (!complaint || error) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel action={<Button onClick={() => window.location.assign("/" + locale + "/complaints/track")} variant="outline">{t("tryAnother")}</Button>} title={t("trackingErrorTitle")} tone="error">{t("trackingErrorCopy")}</StatePanel></main>;
-  const history = Array.isArray(complaint.history) ? complaint.history : [];
-  const events = history.length ? history.map((item) => ({label: statusLabel(t, item.status), timestamp: displayDate(item.created_at, locale), tone: statusTone(asString(item.status))})) : [{label: statusLabel(t, complaint.status), timestamp: displayDate(complaint.submitted_at || complaint.created_at, locale), tone: statusTone(asString(complaint.status))}];
+  const events = trackingStages(t, complaint, locale);
   return <main className="citizen-page citizen-track-detail-page shell-container py-8 sm:py-12"><div className="citizen-workspace mx-auto max-w-4xl space-y-6"><p className="eyebrow">{t("trackEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("trackingTitle")}</h1><SurfaceCard heading={t("trackingSummaryTitle")}><dl className="grid gap-4 sm:grid-cols-3"><div><dt className="text-sm font-bold text-[var(--muted)]">{t("referenceLabel")}</dt><dd className="mt-1 font-bold text-[var(--navy)]">{asString(complaint.complaint_number)}</dd></div><div><dt className="text-sm font-bold text-[var(--muted)]">{t("statusLabel")}</dt><dd className="mt-1"><StatusChip label={statusLabel(t, complaint.status)} tone={statusTone(asString(complaint.status))} /></dd></div><div><dt className="text-sm font-bold text-[var(--muted)]">{t("priorityLabel")}</dt><dd className="mt-1 text-sm text-[var(--ink)]">{asString(complaint.priority) || "-"}</dd></div></dl></SurfaceCard><SurfaceCard heading={t("timelineTitle")}><StatusTimeline events={events} label={t("timelineLabel")} /></SurfaceCard><StatePanel title={t("prototypeUpdateTitle")} tone="info">{t("prototypeUpdateCopy")}</StatePanel></div></main>;
 }
 

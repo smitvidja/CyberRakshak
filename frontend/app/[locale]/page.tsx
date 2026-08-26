@@ -3,6 +3,7 @@ import Link from "next/link";
 import {hasLocale} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
+import {BellRing, BookOpenCheck, ClipboardCheck, GraduationCap, Lightbulb, Megaphone, PhoneCall, ShieldCheck, Siren, UserRoundPlus} from "lucide-react";
 
 import {routing} from "@/lib/i18n/routing";
 
@@ -29,12 +30,16 @@ export default async function LocaleHomePage({params}: Props) {
   const trackHref = `/${locale}/complaints/track`;
   const reportingHref = (mode: "anonymous" | "identified", category: string) => `${reportHref}?mode=${mode}&category=${category}`;
   const categories: CategoryKey[] = ["women", "financial", "identity", "harassment", "commerce", "other"];
-  const updates = ["fakeCalls", "advisory", "tips"] as const;
+  const updates = [
+    {key: "fakeCalls", icon: PhoneCall},
+    {key: "advisory", icon: Megaphone},
+    {key: "tips", icon: Lightbulb}
+  ] as const;
   const quickLinks = [
-    {key: "warrior", href: `/${locale}/cyber-warrior`},
-    {key: "learn", href: "#learning"},
-    {key: "track", href: trackHref},
-    {key: "report", href: reportHref}
+    {key: "warrior", href: `/${locale}/cyber-warrior`, icon: UserRoundPlus},
+    {key: "learn", href: "#learning", icon: BellRing},
+    {key: "secure", href: "#learning", icon: ShieldCheck},
+    {key: "track", href: trackHref, icon: ClipboardCheck}
   ] as const;
 
   return (
@@ -56,9 +61,9 @@ export default async function LocaleHomePage({params}: Props) {
           </section>
 
           <aside className="grid gap-2 lg:grid-rows-4" aria-label={t("quickLinksLabel")}>
-            {quickLinks.map(({key, href}, index) => (
+            {quickLinks.map(({key, href, icon: Icon}) => (
               <Link key={key} href={href} className="portal-action-card group flex min-h-[66px] items-center gap-3 rounded-[8px] border border-slate-200 bg-white px-4 py-3 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]">
-                <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#bfd9f2] bg-[#edf6ff] text-xs font-bold text-[#075bbf]">0{index + 1}</span>
+                <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#bfd9f2] bg-[#edf6ff] text-[#075bbf]"><Icon size={20} strokeWidth={1.8} /></span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[15px] font-bold leading-5 text-[#092a58]">{t(`quick.${key}.title`)}</span>
                   <span className="mt-0.5 block text-xs leading-5 text-slate-600">{t(`quick.${key}.copy`)}</span>
@@ -71,11 +76,11 @@ export default async function LocaleHomePage({params}: Props) {
 
         <section className="mt-3 grid overflow-hidden rounded-[8px] bg-[#073d87] text-white sm:grid-cols-2" aria-label={t("helplineLabel")}>
           <a className="support-action flex min-h-[64px] items-center gap-3 px-5 py-3 sm:px-8" href="tel:1930">
-            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70 text-sm font-bold">19</span>
+            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70"><Siren size={21} strokeWidth={1.8} /></span>
             <span><span className="block text-xl font-bold">1930</span><span className="text-sm text-blue-100">{t("helplinePrimary")}</span></span>
           </a>
           <Link className="support-action flex min-h-[64px] items-center gap-3 border-t border-white/20 px-5 py-3 sm:border-l sm:border-t-0 sm:px-8" href="#learning">
-            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70 text-sm font-bold">CS</span>
+            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70"><BookOpenCheck size={21} strokeWidth={1.8} /></span>
             <span><span className="block text-base font-bold">{t("helplineSecondaryTitle")}</span><span className="text-sm text-blue-100">{t("helplineSecondary")}</span></span>
           </Link>
         </section>
@@ -111,10 +116,10 @@ export default async function LocaleHomePage({params}: Props) {
             <Link className="text-xs font-bold text-[#075bbf] hover:underline" href="#learning">{t("viewUpdates")}</Link>
           </div>
           <div className="divide-y divide-slate-200">
-            {updates.map((update, index) => (
-              <article key={update} className="flex gap-3 py-4">
-                <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-blue-50 text-xs font-bold text-[#075bbf]">0{index + 1}</span>
-                <div><h3 className="text-sm font-bold text-slate-900">{t(`updates.${update}.title`)}</h3><p className="mt-1 text-xs leading-5 text-slate-600">{t(`updates.${update}.copy`)}</p><Link className="mt-1 inline-block text-xs font-bold text-[#075bbf] hover:underline" href="#learning">{t("readMore")}</Link></div>
+            {updates.map(({key, icon: Icon}) => (
+              <article key={key} className="flex gap-3 py-4">
+                <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-blue-50 text-[#075bbf]"><Icon size={18} strokeWidth={1.8} /></span>
+                <div><h3 className="text-sm font-bold text-slate-900">{t(`updates.${key}.title`)}</h3><p className="mt-1 text-xs leading-5 text-slate-600">{t(`updates.${key}.copy`)}</p><Link className="mt-1 inline-block text-xs font-bold text-[#075bbf] hover:underline" href="#learning">{t("readMore")}</Link></div>
               </article>
             ))}
           </div>
@@ -124,7 +129,7 @@ export default async function LocaleHomePage({params}: Props) {
 
       <section id="learning" className="mx-auto mt-7 max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 rounded-[8px] border border-blue-100 bg-[#edf6ff] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4"><span aria-hidden="true" className="grid h-12 w-12 place-items-center rounded-[6px] bg-[#075bbf] text-sm font-bold text-white">LC</span><div><h2 className="text-lg font-bold text-[#063d86]">{t("learningTitle")}</h2><p className="mt-1 text-sm text-slate-600">{t("learningCopy")}</p></div></div>
+          <div className="flex items-center gap-4"><span aria-hidden="true" className="grid h-12 w-12 place-items-center rounded-[6px] bg-[#075bbf] text-white"><GraduationCap size={24} strokeWidth={1.8} /></span><div><h2 className="text-lg font-bold text-[#063d86]">{t("learningTitle")}</h2><p className="mt-1 text-sm text-slate-600">{t("learningCopy")}</p></div></div>
           <Link className="portal-outline-link w-fit" href={`/${locale}/cyber-warrior`}>{t("learningAction")}</Link>
         </div>
       </section>

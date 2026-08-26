@@ -69,6 +69,10 @@
       "report": {
         "title": "Report Cyber Harm",
         "copy": "Start a secure report in a few steps."
+      },
+      "secure": {
+        "title": "Secure India",
+        "copy": "Practical steps for safer digital activity."
       }
     },
     "categories": {
@@ -201,7 +205,25 @@
     "address": "Address",
     "postalCode": "Postal code",
     "goDashboard": "Go to dashboard",
-    "saveProfile": "Save profile and continue"
+    "saveProfile": "Save profile and continue",
+    "dashboardWelcomeName": "Welcome, {name}",
+    "dashboardSafetyCopy": "Report cyber harm and keep every complaint in one secure place.",
+    "dashboardTitle": "Citizen dashboard",
+    "dashboardCopy": "Manage your profile, reports, and complaint tracking.",
+    "dashboardProfileTitle": "My Profile",
+    "dashboardProfileCopy": "Review the verified details linked to your prototype identity.",
+    "dashboardProfileAction": "View profile",
+    "dashboardReportTitle": "Report Incident",
+    "dashboardReportCopy": "Start a cybercrime report and attach supporting evidence.",
+    "dashboardReportAction": "Report now",
+    "dashboardReportsTitle": "My Reports",
+    "dashboardReportsCopy": "Continue drafts and review all submitted complaints.",
+    "dashboardReportsAction": "View reports",
+    "dashboardTrackTitle": "Track Your Report",
+    "dashboardTrackCopy": "Check all four complaint progress stages using a reference number.",
+    "dashboardTrackAction": "Track now",
+    "dashboardSecurityTitle": "Your information is safe with us",
+    "dashboardSecurityCopy": "Prototype profile and complaint data remain protected by server-side ownership rules."
   },
   "complaintDraft": {
     "incidentEyebrow": "Complaint draft",
@@ -269,7 +291,25 @@
       "futureIncident": "The incident date and time cannot be in the future."
     },
     "evidenceUploaded": "{fileName} ({fileSize} bytes)",
-    "continueReview": "Continue to review and submit"
+    "continueReview": "Continue to review and submit",
+    "evidenceSaveCopy": "Your selected file uploads securely when you save this incident draft.",
+    "affectedTitle": "Who is affected by this incident?",
+    "affectedLegend": "Choose the option that best describes the primary affected person.",
+    "affectedSelfTitle": "Myself",
+    "affectedSelfCopy": "I am directly affected by this incident.",
+    "affectedChildTitle": "My Child (Minor)",
+    "affectedChildCopy": "I am reporting for a child under my care.",
+    "affectedOtherTitle": "Someone Else",
+    "affectedOtherCopy": "I am reporting for another person.",
+    "affectedNameLabel": "Affected person name",
+    "affectedNameRequired": "Enter the affected person name before continuing.",
+    "suspectQuestionTitle": "Do you know anything about the suspect?",
+    "suspectQuestionCopy": "Share any available details. You can continue even when the suspect is unknown.",
+    "suspectYes": "Yes, I have information",
+    "suspectNo": "No, I do not have information",
+    "noSuspectTitle": "Suspect information is optional",
+    "noSuspectCopy": "Continue without guessing. You can report only what you know.",
+    "saveContinue": "Save and continue"
   },
   "complaintCompletion": {
     "eyebrow": "Complaint review",
@@ -362,7 +402,27 @@
       "closed": "Closed",
       "rejected": "Closed",
       "unknown": "Status unavailable"
-    }
+    },
+    "reportingForLabel": "Reporting for",
+    "reportingFor": {
+      "self": "Myself",
+      "child": "My child",
+      "other": "Someone else"
+    },
+    "timelineStages": {
+      "submitted": "Submitted",
+      "underReview": "Under Review",
+      "investigation": "Investigation",
+      "resolution": "Action / Resolution"
+    },
+    "timelineStageCopy": {
+      "submitted": "The complaint was registered successfully.",
+      "underReview": "The complaint is queued for review.",
+      "investigation": "Investigation begins after review.",
+      "resolution": "The final action appears when available."
+    },
+    "timelinePending": "Yet to start",
+    "timelineNow": "Just now"
   },
   "suspectReport": {
     "eyebrow": "Reported identifier",

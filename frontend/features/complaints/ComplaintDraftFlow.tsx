@@ -3,6 +3,7 @@
 import {useEffect, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
+import {Baby, UserRound, UsersRound} from "lucide-react";
 
 import {Button} from "@/components/ui/Button";
 import {StepIndicator} from "@/components/common/Workflow";
@@ -11,7 +12,7 @@ import {TextArea, TextInput} from "@/components/ui/FormFields";
 import {StatePanel, SurfaceCard} from "@/components/ui/Surface";
 import {complaintCategoriesApi, complaintsApi, evidenceApi} from "@/lib/api/complaints";
 import type {ApiRecord} from "@/lib/api/auth";
-import {addComplaintEvidence, getAccessToken, getComplaintDraft, getReportCategoryHint, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
+import {addComplaintEvidence, getAccessToken, getComplaintDraft, getComplaintEvidence, getReportCategoryHint, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
 
 type Category = {description: string | null; id: string; name: string};
 type FieldErrors = Record<string, string>;
@@ -128,13 +129,16 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
   const locale = useLocale();
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
-  const [draft, setDraft] = useState<ApiRecord | null>(null);
   const [form, setForm] = useState<IncidentForm>(emptyIncidentForm);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [serviceError, setServiceError] = useState("");
+  const [evidenceDescription, setEvidenceDescription] = useState("");
+  const [evidenceError, setEvidenceError] = useState("");
+  const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
+  const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -161,14 +165,13 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
       if (draftId !== "new") {
         const cachedDraft = getComplaintDraft();
         if (cachedDraft?.id === draftId) {
-          setDraft(cachedDraft.data);
           setForm(incidentFromDraft(cachedDraft.data));
+          setEvidenceItems(getComplaintEvidence(draftId));
         }
 
         if (isIdentifiedReport() && getAccessToken()) {
           const draftResult = await complaintsApi.getById(draftId, requestOptions());
           if (active && draftResult.ok) {
-            setDraft(draftResult.data);
             setForm(incidentFromDraft(draftResult.data));
             setComplaintDraft({data: draftResult.data, id: draftId});
           } else if (active && !cachedDraft) {
@@ -217,6 +220,8 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
 
   async function saveDraft(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+    const shouldContinue = submitter?.value === "continue";
     if (!validate()) {
       return;
     }
@@ -245,11 +250,34 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
     }
 
     const savedDraftId = asString(result.data.id);
+    if (evidenceFile) {
+      const evidencePayload = new FormData();
+      evidencePayload.set("complaint_id", savedDraftId);
+      evidencePayload.set("description", evidenceDescription.trim());
+      evidencePayload.set("file", evidenceFile);
+      const uploadResult = await evidenceApi.upload(evidencePayload, requestOptions());
+      if (!uploadResult.ok) {
+        setEvidenceError(t("evidenceError"));
+      } else {
+        const item = {
+          fileName: asString(uploadResult.data.file_name) || evidenceFile.name,
+          fileSize: Number(uploadResult.data.file_size) || evidenceFile.size,
+          id: asString(uploadResult.data.id)
+        };
+        addComplaintEvidence(savedDraftId, item);
+        setEvidenceItems((current) => [...current, item]);
+        setEvidenceFile(null);
+        setEvidenceDescription("");
+        setEvidenceError("");
+      }
+    }
     setComplaintDraft({data: result.data, id: savedDraftId});
-    setDraft(result.data);
     setForm(incidentFromDraft(result.data));
     setMessage(t("saved"));
     setSaving(false);
+    if (shouldContinue) {
+      router.push(peoplePath(locale, savedDraftId));
+    }
     if (draftId === "new") {
       router.replace(incidentPath(locale, savedDraftId));
     }
@@ -295,74 +323,50 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
               <TextInput id="incident-state" label={t("stateLabel")} onChange={(event) => updateField("state", event.target.value)} value={form.state} />
             </div>
           </SurfaceCard>
-          <div className="flex flex-wrap gap-3"><Button isLoading={saving} type="submit">{savedDraftId ? t("saveChanges") : t("saveDraft")}</Button>{savedDraftId ? <Button onClick={() => router.push(peoplePath(locale, savedDraftId))} variant="outline">{t("continuePeople")}</Button> : null}</div>
+          <SurfaceCard className="citizen-evidence-panel" heading={t("evidenceTitle")}>
+            <UploadDropzone accept=".pdf,.png,.jpg,.jpeg" browseLabel={t("browseEvidence")} description={t("evidenceDescription")} error={evidenceError} id="complaint-evidence" maxSizeLabel={t("evidenceSize")} onFilesSelected={(files) => { setEvidenceFile(files[0] ?? null); setEvidenceError(""); }} title={evidenceFile ? evidenceFile.name : t("evidenceUploadTitle")} />
+            <div className="mt-4 max-w-xl"><TextInput id="evidence-description" label={t("evidenceDescriptionLabel")} onChange={(event) => setEvidenceDescription(event.target.value)} value={evidenceDescription} /></div>
+            <p className="mt-3 text-xs leading-5 text-[var(--muted)]">{t("evidenceSaveCopy")}</p>
+            {evidenceItems.length > 0 ? <ul className="mt-4 divide-y divide-[var(--border)] rounded-[var(--radius)] border border-[var(--border)]">{evidenceItems.map((item) => <li className="px-4 py-3 text-sm text-[var(--ink)]" key={item.id}>{t("evidenceUploaded", {fileName: item.fileName, fileSize: item.fileSize})}</li>)}</ul> : null}
+          </SurfaceCard>
+          <div className="flex flex-wrap gap-3"><Button isLoading={saving} name="intent" type="submit" value="save">{savedDraftId ? t("saveChanges") : t("saveDraft")}</Button><Button disabled={saving} name="intent" type="submit" value="continue" variant="outline">{t("continuePeople")}</Button></div>
         </form>
-        {savedDraftId && draft ? <EvidenceUploader complaintId={savedDraftId} /> : <StatePanel title={t("evidenceTitle")} tone="info">{t("evidenceAfterSave")}</StatePanel>}
       </div>
     </main>
   );
-}
-
-function EvidenceUploader({complaintId}: {complaintId: string}) {
-  const t = useTranslations("complaintDraft");
-  const [description, setDescription] = useState("");
-  const [error, setError] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [items, setItems] = useState<EvidenceItem[]>([]);
-  const [uploading, setUploading] = useState(false);
-
-  async function upload() {
-    if (!file) {
-      setError(t("evidenceFileRequired"));
-      return;
-    }
-    setUploading(true);
-    setError("");
-    const payload = new FormData();
-    payload.set("complaint_id", complaintId);
-    payload.set("description", description);
-    payload.set("file", file);
-    const result = await evidenceApi.upload(payload, requestOptions());
-    if (!result.ok) {
-      setError(t("evidenceError"));
-      setUploading(false);
-      return;
-    }
-    const evidenceItem = {fileName: asString(result.data.file_name) || file.name, fileSize: Number(result.data.file_size) || file.size, id: asString(result.data.id)};
-    setItems((current) => [...current, evidenceItem]);
-    addComplaintEvidence(complaintId, evidenceItem);
-    setDescription("");
-    setFile(null);
-    setUploading(false);
-  }
-
-  return <SurfaceCard heading={t("evidenceTitle")}><UploadDropzone accept=".pdf,.png,.jpg,.jpeg" browseLabel={t("browseEvidence")} description={t("evidenceDescription")} error={error} id="complaint-evidence" maxSizeLabel={t("evidenceSize")} onFilesSelected={(files) => { setFile(files[0] ?? null); setError(""); }} title={file ? file.name : t("evidenceUploadTitle")} /><div className="mt-4 max-w-xl"><TextInput id="evidence-description" label={t("evidenceDescriptionLabel")} onChange={(event) => setDescription(event.target.value)} value={description} /></div><Button className="mt-4" disabled={!file} isLoading={uploading} onClick={upload}>{t("uploadEvidence")}</Button>{items.length > 0 ? <ul className="mt-4 divide-y divide-[var(--border)] rounded-[var(--radius)] border border-[var(--border)]">{items.map((item) => <li className="px-4 py-3 text-sm text-[var(--ink)]" key={item.id}>{t("evidenceUploaded", {fileName: item.fileName, fileSize: item.fileSize})}</li>)}</ul> : null}</SurfaceCard>;
 }
 
 export function ComplaintPeopleStep({draftId}: {draftId: string}) {
   const t = useTranslations("complaintDraft");
   const locale = useLocale();
   const router = useRouter();
+  const [reportingFor, setReportingFor] = useState<"SELF" | "CHILD" | "OTHER">("SELF");
+  const [affectedPersonName, setAffectedPersonName] = useState("");
+  const [hasSuspectInfo, setHasSuspectInfo] = useState(false);
   const [people, setPeople] = useState<PersonForm[]>([emptyPersonForm]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+
+  function applyDraft(data: ApiRecord) {
+    const nextPeople = peopleFromDraft(data);
+    const mode = asString(data.reporting_for);
+    setReportingFor(mode === "CHILD" || mode === "OTHER" ? mode : "SELF");
+    setAffectedPersonName(asString(data.affected_person_name));
+    setPeople(nextPeople);
+    setHasSuspectInfo(nextPeople.some((person) => Object.values(person).some(Boolean)));
+  }
 
   useEffect(() => {
     let active = true;
     async function load() {
       const cachedDraft = getComplaintDraft();
-      if (cachedDraft?.id === draftId) {
-        setPeople(peopleFromDraft(cachedDraft.data));
-      }
+      if (cachedDraft?.id === draftId) applyDraft(cachedDraft.data);
       if (isIdentifiedReport() && getAccessToken()) {
         const result = await complaintsApi.getById(draftId, requestOptions());
-        if (!active) {
-          return;
-        }
+        if (!active) return;
         if (result.ok) {
-          setPeople(peopleFromDraft(result.data));
+          applyDraft(result.data);
           setComplaintDraft({data: result.data, id: draftId});
         } else if (!cachedDraft) {
           setError(t("draftUnavailable"));
@@ -370,44 +374,67 @@ export function ComplaintPeopleStep({draftId}: {draftId: string}) {
       } else if (!cachedDraft) {
         setError(t("draftUnavailable"));
       }
-      if (active) {
-        setLoading(false);
-      }
+      if (active) setLoading(false);
     }
     void load();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [draftId, t]);
 
   function updatePerson(index: number, field: keyof PersonForm, value: string) {
     setPeople((current) => current.map((person, personIndex) => personIndex === index ? {...person, [field]: value} : person));
   }
 
-  function removePerson(index: number) {
-    setPeople((current) => current.length === 1 ? [emptyPersonForm] : current.filter((_, personIndex) => personIndex !== index));
-  }
-
   async function savePeople(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (reportingFor !== "SELF" && affectedPersonName.trim().length < 2) {
+      setError(t("affectedNameRequired"));
+      return;
+    }
     setSaving(true);
     setError("");
-    const suspects = people.filter((person) => Object.values(person).some(Boolean)).map((person) => ({alias: person.alias || null, contact_details: person.contactDetails || null, description: person.description || null, name: person.name || null}));
-    const result = await complaintsApi.updateDraft(draftId, {suspects}, requestOptions());
+    const suspects = hasSuspectInfo ? people.filter((person) => Object.values(person).some(Boolean)).map((person) => ({alias: person.alias || null, contact_details: person.contactDetails || null, description: person.description || null, name: person.name || null})) : [];
+    const result = await complaintsApi.updateDraft(draftId, {
+      reporting_for: reportingFor,
+      affected_person_name: reportingFor === "SELF" ? null : affectedPersonName.trim(),
+      suspects
+    }, requestOptions());
     if (!result.ok) {
       setError(t("saveError"));
       setSaving(false);
       return;
     }
     setComplaintDraft({data: result.data, id: draftId});
-    setPeople(peopleFromDraft(result.data));
-    setSaved(true);
     setSaving(false);
+    router.push(reviewPath(locale, draftId));
   }
 
-  if (loading) {
-    return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("loadingTitle")} tone="loading">{t("loadingCopy")}</StatePanel></main>;
-  }
+  if (loading) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("loadingTitle")} tone="loading">{t("loadingCopy")}</StatePanel></main>;
 
-  return <main className="citizen-page citizen-people-page shell-container py-8 sm:py-12"><div className="citizen-workspace mx-auto max-w-5xl space-y-6"><p className="eyebrow">{t("peopleEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("peopleTitle")}</h1><p className="max-w-3xl text-base leading-7 text-[var(--muted)]">{t("peopleIntro")}</p><StepIndicator label={t("steps.label")} steps={workflowSteps(t, "people")} />{error ? <StatePanel title={t("errorTitle")} tone="error">{error}</StatePanel> : null}{saved ? <StatePanel action={<div className="flex flex-wrap gap-2"><Button onClick={() => router.push(incidentPath(locale, draftId))} variant="outline">{t("backToIncident")}</Button><Button onClick={() => router.push(reviewPath(locale, draftId))}>{t("continueReview")}</Button></div>} title={t("peopleSavedTitle")} tone="success">{t("peopleSavedCopy")}</StatePanel> : null}<form className="space-y-5" onSubmit={savePeople}><SurfaceCard heading={t("peopleFormTitle")}><div className="space-y-6">{people.map((person, index) => <fieldset className="border-b border-[var(--border)] pb-6 last:border-0 last:pb-0" key={index}><legend className="text-sm font-bold text-[var(--navy)]">{t("personNumber", {number: index + 1})}</legend><div className="mt-3 grid gap-4 sm:grid-cols-2"><TextInput id={"person-name-" + index} label={t("personName")} onChange={(event) => updatePerson(index, "name", event.target.value)} value={person.name} /><TextInput id={"person-alias-" + index} label={t("personAlias")} onChange={(event) => updatePerson(index, "alias", event.target.value)} value={person.alias} /><TextInput id={"person-contact-" + index} label={t("personContact")} onChange={(event) => updatePerson(index, "contactDetails", event.target.value)} value={person.contactDetails} /><div className="flex items-end"><Button onClick={() => removePerson(index)} variant="outline">{t("removePerson")}</Button></div></div><div className="mt-4"><TextArea id={"person-description-" + index} label={t("personDescription")} onChange={(event) => updatePerson(index, "description", event.target.value)} value={person.description} /></div></fieldset>)}</div><div className="mt-5 flex flex-wrap gap-3"><Button onClick={() => setPeople((current) => [...current, emptyPersonForm])} variant="outline">{t("addPerson")}</Button><Button isLoading={saving} type="submit">{t("savePeople")}</Button></div></SurfaceCard></form></div></main>;
+  const affectedOptions = [
+    {value: "SELF" as const, icon: UserRound, title: t("affectedSelfTitle"), copy: t("affectedSelfCopy")},
+    {value: "CHILD" as const, icon: Baby, title: t("affectedChildTitle"), copy: t("affectedChildCopy")},
+    {value: "OTHER" as const, icon: UsersRound, title: t("affectedOtherTitle"), copy: t("affectedOtherCopy")}
+  ];
+
+  return (
+    <main className="citizen-page citizen-people-page shell-container py-8 sm:py-12">
+      <div className="citizen-workspace mx-auto max-w-5xl space-y-6">
+        <p className="eyebrow">{t("peopleEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("peopleTitle")}</h1><p className="max-w-3xl text-base leading-7 text-[var(--muted)]">{t("peopleIntro")}</p>
+        <StepIndicator label={t("steps.label")} steps={workflowSteps(t, "people")} />
+        {error ? <StatePanel title={t("errorTitle")} tone="error">{error}</StatePanel> : null}
+        <form className="space-y-6" onSubmit={savePeople}>
+          <SurfaceCard heading={t("affectedTitle")}>
+            <fieldset><legend className="text-sm font-semibold text-[var(--muted)]">{t("affectedLegend")}</legend><div className="mt-4 grid gap-3 md:grid-cols-3">{affectedOptions.map(({value, icon: Icon, title, copy}) => <button aria-pressed={reportingFor === value} className={["affected-person-option flex min-h-[118px] items-start gap-4 rounded-[7px] border p-4 text-left", reportingFor === value ? "border-[var(--blue)] bg-[var(--blue-soft)]" : "border-[var(--border)] bg-white"].join(" ")} key={value} onClick={() => { setReportingFor(value); setError(""); }} type="button"><span aria-hidden="true" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-[var(--blue)]"><Icon size={23} strokeWidth={1.7} /></span><span><strong className="block text-sm text-[var(--navy)]">{title}</strong><span className="mt-1 block text-xs leading-5 text-[var(--muted)]">{copy}</span></span></button>)}</div></fieldset>
+            {reportingFor !== "SELF" ? <div className="mt-5 max-w-xl"><TextInput id="affected-person-name" label={t("affectedNameLabel")} onChange={(event) => { setAffectedPersonName(event.target.value); setError(""); }} required value={affectedPersonName} /></div> : null}
+          </SurfaceCard>
+          <SurfaceCard heading={t("suspectQuestionTitle")}>
+            <p className="text-sm leading-6 text-[var(--muted)]">{t("suspectQuestionCopy")}</p>
+            <div className="mt-4 flex flex-wrap gap-3"><Button onClick={() => setHasSuspectInfo(true)} variant={hasSuspectInfo ? "primary" : "outline"}>{t("suspectYes")}</Button><Button onClick={() => setHasSuspectInfo(false)} variant={!hasSuspectInfo ? "primary" : "outline"}>{t("suspectNo")}</Button></div>
+            {hasSuspectInfo ? <div className="mt-6 space-y-6">{people.map((person, index) => <fieldset className="border-t border-[var(--border)] pt-5" key={index}><legend className="text-sm font-bold text-[var(--navy)]">{t("personNumber", {number: index + 1})}</legend><div className="mt-3 grid gap-4 sm:grid-cols-2"><TextInput id={"person-name-" + index} label={t("personName")} onChange={(event) => updatePerson(index, "name", event.target.value)} value={person.name} /><TextInput id={"person-alias-" + index} label={t("personAlias")} onChange={(event) => updatePerson(index, "alias", event.target.value)} value={person.alias} /><TextInput id={"person-contact-" + index} label={t("personContact")} onChange={(event) => updatePerson(index, "contactDetails", event.target.value)} value={person.contactDetails} /><TextArea id={"person-description-" + index} label={t("personDescription")} onChange={(event) => updatePerson(index, "description", event.target.value)} value={person.description} /></div></fieldset>)}</div> : <StatePanel title={t("noSuspectTitle")} tone="info">{t("noSuspectCopy")}</StatePanel>}
+          </SurfaceCard>
+          <div className="flex flex-wrap justify-between gap-3"><Button onClick={() => router.push(incidentPath(locale, draftId))} variant="outline">{t("backToIncident")}</Button><Button isLoading={saving} type="submit">{t("saveContinue")}</Button></div>
+        </form>
+      </div>
+    </main>
+  );
 }

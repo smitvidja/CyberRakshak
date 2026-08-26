@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from decimal import Decimal
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -36,6 +37,8 @@ class ComplaintSuspectInput(BaseModel):
 class ComplaintDraftCreate(BaseModel):
     category_id: UUID
     is_anonymous: bool
+    reporting_for: Literal["SELF", "CHILD", "OTHER"] = "SELF"
+    affected_person_name: str | None = Field(default=None, max_length=255)
     title: str = Field(min_length=3, max_length=255)
     description: str = Field(min_length=10)
     incident_at: datetime | None = None
@@ -52,6 +55,8 @@ class ComplaintDraftCreate(BaseModel):
 
 class ComplaintDraftUpdate(BaseModel):
     category_id: UUID | None = None
+    reporting_for: Literal["SELF", "CHILD", "OTHER"] | None = None
+    affected_person_name: str | None = Field(default=None, max_length=255)
     title: str | None = Field(default=None, min_length=3, max_length=255)
     description: str | None = Field(default=None, min_length=10)
     incident_at: datetime | None = None
@@ -93,6 +98,8 @@ class ComplaintSummaryResponse(BaseModel):
     id: UUID
     complaint_number: str
     is_anonymous: bool
+    reporting_for: str
+    affected_person_name: str | None
     title: str
     status: ComplaintStatus
     priority: ComplaintPriority

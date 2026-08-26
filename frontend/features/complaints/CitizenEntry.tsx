@@ -3,6 +3,7 @@
 import {useEffect, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
+import {FilePlus2, Files, Search, ShieldCheck, UserRound} from "lucide-react";
 
 import {authApi, type MockIdentityProfile} from "@/lib/api/auth";
 import {usersApi} from "@/lib/api/users";
@@ -187,7 +188,37 @@ export function CitizenStartState() {
   const locale = useLocale();
   const router = useRouter();
   const [identified, setIdentified] = useState(false);
-  useEffect(() => { setIdentified(getReportMode() === "identified" && Boolean(getAccessToken())); }, []);
-  const steps = [{title: t("stepOne"), copy: t("stepOneCopy")}, {title: t("stepTwo"), copy: t("stepTwoCopy")}, {title: t("stepThree"), copy: t("stepThreeCopy")}];
-  return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-6xl"><div className="citizen-dashboard-intro"><div><p className="eyebrow">{t("dashboardEyebrow")}</p><h1 className="mt-2 text-3xl font-bold text-[var(--navy)] sm:text-4xl">{identified ? t("identifiedReadyTitle") : t("anonymousReadyTitle")}</h1><p className="mt-3 max-w-3xl text-base leading-7 text-[var(--muted)]">{identified ? t("identifiedReadyCopy") : t("anonymousReadyCopy")}</p></div><Button onClick={() => router.push(`/${locale}/report-crime/new/incident`)}>{t("startIncident")}</Button></div><div className="mt-6 grid gap-4 md:grid-cols-3">{steps.map((step, index) => <SurfaceCard key={step.title} className="citizen-dashboard-card" heading={<span className="flex items-center gap-3"><span className="grid h-8 w-8 place-items-center rounded-full bg-[#eaf4ff] text-xs font-bold text-[#075bbf]">0{index + 1}</span>{step.title}</span>}><p className="text-sm leading-6 text-[var(--muted)]">{step.copy}</p></SurfaceCard>)}</div><StatePanel action={<Button onClick={() => router.push(`/${locale}/report-crime/new/incident`)}>{t("startIncident")}</Button>} title={t("nextTitle")} tone="success">{t("nextCopy")}</StatePanel></div></main>;
+  const [profileName, setProfileName] = useState("");
+
+  useEffect(() => {
+    const isIdentified = getReportMode() === "identified" && Boolean(getAccessToken());
+    setIdentified(isIdentified);
+    setProfileName(getMockIdentityProfile()?.full_name ?? "");
+  }, []);
+
+  const cards = [
+    {icon: UserRound, title: t("dashboardProfileTitle"), copy: t("dashboardProfileCopy"), action: t("dashboardProfileAction"), href: identified ? "/" + locale + "/report-crime/profile" : "/" + locale + "/report-crime"},
+    {icon: FilePlus2, title: t("dashboardReportTitle"), copy: t("dashboardReportCopy"), action: t("dashboardReportAction"), href: "/" + locale + "/report-crime/new/incident"},
+    {icon: Files, title: t("dashboardReportsTitle"), copy: t("dashboardReportsCopy"), action: t("dashboardReportsAction"), href: identified ? "/" + locale + "/complaints" : "/" + locale + "/complaints/track"},
+    {icon: Search, title: t("dashboardTrackTitle"), copy: t("dashboardTrackCopy"), action: t("dashboardTrackAction"), href: "/" + locale + "/complaints/track"}
+  ];
+
+  return (
+    <main className="citizen-page citizen-dashboard-page shell-container py-8 sm:py-12">
+      <div className="mx-auto max-w-6xl space-y-7">
+        <section className="citizen-dashboard-welcome flex flex-col gap-5 rounded-[8px] border border-[#c9def2] bg-white p-6 shadow-[var(--shadow)] sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div className="flex items-center gap-5">
+            <span aria-hidden="true" className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-[#eaf4ff] text-[#075fb9]"><UserRound size={34} strokeWidth={1.6} /></span>
+            <div><p className="eyebrow">{t("dashboardEyebrow")}</p><h1 className="mt-1 text-3xl font-bold text-[var(--navy)]">{identified && profileName ? t("dashboardWelcomeName", {name: profileName}) : t("anonymousReadyTitle")}</h1><p className="mt-2 text-sm leading-6 text-[var(--muted)]">{identified ? t("identifiedReadyCopy") : t("anonymousReadyCopy")}</p></div>
+          </div>
+          <div className="flex items-center gap-3 text-[#075fb9]"><ShieldCheck size={42} strokeWidth={1.5} /><p className="max-w-[220px] text-sm font-semibold leading-6 text-[var(--navy)]">{t("dashboardSafetyCopy")}</p></div>
+        </section>
+        <div><h2 className="text-2xl font-bold text-[var(--navy)]">{t("dashboardTitle")}</h2><p className="mt-1 text-sm text-[var(--muted)]">{t("dashboardCopy")}</p></div>
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {cards.map(({icon: Icon, title, copy, action, href}) => <article className="citizen-dashboard-action flex min-h-[250px] flex-col rounded-[8px] border border-[var(--border)] bg-white p-5 text-center shadow-[var(--shadow)]" key={title}><span aria-hidden="true" className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#edf6ff] text-[#075fb9]"><Icon size={27} strokeWidth={1.7} /></span><h3 className="mt-4 text-lg font-bold text-[var(--navy)]">{title}</h3><p className="mt-2 flex-1 text-sm leading-6 text-[var(--muted)]">{copy}</p><Button className="mt-5 w-full" onClick={() => router.push(href)} variant="outline">{action}</Button></article>)}
+        </section>
+        <StatePanel title={t("dashboardSecurityTitle")} tone="info">{t("dashboardSecurityCopy")}</StatePanel>
+      </div>
+    </main>
+  );
 }

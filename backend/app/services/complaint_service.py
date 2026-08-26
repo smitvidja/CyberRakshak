@@ -52,6 +52,8 @@ class ComplaintService:
             user_id=None if payload.is_anonymous else current_user.id,
             category_id=payload.category_id,
             is_anonymous=payload.is_anonymous,
+            reporting_for=payload.reporting_for,
+            affected_person_name=payload.affected_person_name,
             title=payload.title,
             description=payload.description,
             incident_at=payload.incident_at,
