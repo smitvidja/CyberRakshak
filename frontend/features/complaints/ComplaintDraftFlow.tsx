@@ -11,7 +11,7 @@ import {TextArea, TextInput} from "@/components/ui/FormFields";
 import {StatePanel, SurfaceCard} from "@/components/ui/Surface";
 import {complaintCategoriesApi, complaintsApi, evidenceApi} from "@/lib/api/complaints";
 import type {ApiRecord} from "@/lib/api/auth";
-import {addComplaintEvidence, getAccessToken, getComplaintDraft, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
+import {addComplaintEvidence, getAccessToken, getComplaintDraft, getReportCategoryHint, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
 
 type Category = {description: string | null; id: string; name: string};
 type FieldErrors = Record<string, string>;
@@ -43,6 +43,15 @@ const emptyPersonForm: PersonForm = {alias: "", contactDetails: "", description:
 
 function asString(value: unknown) {
   return typeof value === "string" ? value : "";
+}
+
+function categoryMatchesHint(name: string, hint: string) {
+  const normalized = name.toLowerCase();
+  const keywords: Record<string, string[]> = {
+    women: ["women", "child"], financial: ["financial", "fraud"], identity: ["identity"], harassment: ["harassment", "bullying"], commerce: ["commerce", "shopping", "marketplace"], other: ["other"]
+  };
+  const key = hint === "women-child" ? "women" : hint;
+  return (keywords[key] ?? [key]).some((keyword) => normalized.includes(keyword));
 }
 
 function asRecord(value: unknown): ApiRecord | null {
@@ -130,11 +139,15 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
         return;
       }
       if (categoryResult.ok) {
-        setCategories(categoryResult.data.map((item) => ({
+        const loadedCategories = categoryResult.data.map((item) => ({
           description: typeof item.description === "string" ? item.description : null,
           id: asString(item.id),
           name: asString(item.name)
-        })));
+        }));
+        setCategories(loadedCategories);
+        const categoryHint = getReportCategoryHint();
+        const hintedCategory = categoryHint ? loadedCategories.find((category) => categoryMatchesHint(category.name, categoryHint)) : undefined;
+        if (hintedCategory) setForm((current) => current.categoryId ? current : {...current, categoryId: hintedCategory.id});
       } else {
         setServiceError(t("categoriesError"));
       }

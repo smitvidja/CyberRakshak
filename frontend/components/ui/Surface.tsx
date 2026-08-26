@@ -8,8 +8,8 @@ type SurfaceCardProps = {
 
 export function SurfaceCard({children, className = "", heading}: SurfaceCardProps) {
   return (
-    <section className={["rounded-[var(--radius)] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow)]", className].join(" ")}>
-      {heading ? <div className="mb-4 border-b border-[var(--border)] pb-3 text-lg font-bold text-[var(--navy)]">{heading}</div> : null}
+    <section className={["rounded-[var(--radius)] border border-[var(--border)] border-t-2 border-t-[#8dbde9] bg-white p-5 shadow-[0_3px_12px_rgb(15_42_74_/_0.08)]", className].join(" ")}>
+      {heading ? <div className="mb-4 flex min-h-8 items-center border-b border-[var(--border)] pb-3 text-lg font-bold text-[var(--navy)]">{heading}</div> : null}
       {children}
     </section>
   );

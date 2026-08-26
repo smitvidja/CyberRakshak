@@ -6,7 +6,7 @@ import {useRouter} from "next/navigation";
 
 import {authApi} from "@/lib/api/auth";
 import {usersApi} from "@/lib/api/users";
-import {getAccessToken, getReportMode, setAccessToken, setReportMode} from "@/lib/auth/citizen-session";
+import {getAccessToken, getReportMode, setAccessToken, setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
 import {Button} from "@/components/ui/Button";
 import {TextInput} from "@/components/ui/FormFields";
 import {StatePanel, SurfaceCard} from "@/components/ui/Surface";
@@ -18,6 +18,16 @@ export function ReportTypeChoice() {
   const locale = useLocale();
   const router = useRouter();
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+    const category = params.get("category");
+    if (mode !== "anonymous" && mode !== "identified") return;
+    if (category) setReportCategoryHint(category);
+    setReportMode(mode);
+    router.replace(mode === "anonymous" ? dashboardPath(locale) : "/" + locale + "/report-crime/verify");
+  }, [locale, router]);
+
   function chooseAnonymous() {
     setReportMode("anonymous");
     router.push(dashboardPath(locale));
@@ -28,7 +38,22 @@ export function ReportTypeChoice() {
     router.push("/" + locale + "/report-crime/verify");
   }
 
-  return <main className="shell-container py-8 sm:py-12"><div className="mx-auto max-w-5xl"><p className="eyebrow">{t("eyebrow")}</p><h1 className="mt-2 text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("title")}</h1><p className="mt-3 max-w-3xl text-base leading-7 text-[var(--muted)]">{t("intro")}</p><StatePanel title={t("noticeTitle")} tone="info">{t("noticeCopy")}</StatePanel><div className="mt-6 grid gap-5 md:grid-cols-2"><SurfaceCard heading={t("anonymousTitle")}><p className="text-sm leading-6 text-[var(--muted)]">{t("anonymousCopy")}</p><ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink)]"><li>{t("anonymousPointOne")}</li><li>{t("anonymousPointTwo")}</li></ul><Button className="mt-6 w-full" onClick={chooseAnonymous}>{t("anonymousAction")}</Button></SurfaceCard><SurfaceCard heading={t("identifiedTitle")}><p className="text-sm leading-6 text-[var(--muted)]">{t("identifiedCopy")}</p><ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink)]"><li>{t("identifiedPointOne")}</li><li>{t("identifiedPointTwo")}</li></ul><Button className="mt-6 w-full" onClick={chooseIdentified} variant="outline">{t("identifiedAction")}</Button></SurfaceCard></div></div></main>;
+  return (
+    <main className="bg-[#f3f7fb] py-6 sm:py-8">
+      <div className="shell-container mx-auto max-w-6xl">
+        <header className="border-l-4 border-[#075fb9] bg-white px-5 py-5 shadow-sm sm:px-7">
+          <p className="eyebrow">{t("eyebrow")}</p>
+          <h1 className="mt-2 text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("title")}</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-base">{t("intro")}</p>
+        </header>
+        <div className="mt-4 border border-[#abd2f5] bg-[#f7fbff] px-5 py-4 text-[#07529d]"><strong className="block text-sm">{t("noticeTitle")}</strong><p className="mt-1 text-sm leading-6">{t("noticeCopy")}</p></div>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <section className="border-t-4 border-t-[#075fb9] bg-white p-5 shadow-[0_3px_12px_rgb(15_42_74_/_0.08)] sm:p-6"><div className="flex items-start gap-3"><span aria-hidden="true" className="mt-1 h-9 w-1 bg-[#075fb9]" /><div><h2 className="text-xl font-bold text-[var(--navy)]">{t("anonymousTitle")}</h2><p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t("anonymousCopy")}</p></div></div><ul className="mt-5 space-y-2 border-t border-[var(--border)] pt-4 text-sm leading-6 text-[var(--ink)]"><li>{t("anonymousPointOne")}</li><li>{t("anonymousPointTwo")}</li></ul><Button className="mt-5 w-full sm:w-auto" onClick={chooseAnonymous}>{t("anonymousAction")}</Button></section>
+          <section className="border-t-4 border-t-[#8dbde9] bg-white p-5 shadow-[0_3px_12px_rgb(15_42_74_/_0.08)] sm:p-6"><div className="flex items-start gap-3"><span aria-hidden="true" className="mt-1 h-9 w-1 bg-[#f6b400]" /><div><h2 className="text-xl font-bold text-[var(--navy)]">{t("identifiedTitle")}</h2><p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t("identifiedCopy")}</p></div></div><ul className="mt-5 space-y-2 border-t border-[var(--border)] pt-4 text-sm leading-6 text-[var(--ink)]"><li>{t("identifiedPointOne")}</li><li>{t("identifiedPointTwo")}</li></ul><Button className="mt-5 w-full sm:w-auto" onClick={chooseIdentified} variant="outline">{t("identifiedAction")}</Button></section>
+        </div>
+      </div>
+    </main>
+  );
 }
 
 export function MockIdentityForm() {
