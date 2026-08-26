@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 
-def request_demo_otp(client: TestClient, demo_identity_id: str = "DEMO-AADHAAR-RAHUL") -> None:
+def request_demo_otp(client: TestClient, demo_identity_id: str = "99000000000001") -> None:
     response = client.post(
         "/api/v1/auth/mock-identity/request-otp",
         json={"demo_identity_id": demo_identity_id},
@@ -24,7 +24,7 @@ def test_mock_identity_verification_autofills_a_profile_and_uses_otp_once(
 
     verified = client.post(
         "/api/v1/auth/mock-identity/verify-otp",
-        json={"demo_identity_id": "DEMO-AADHAAR-RAHUL", "otp": "123456"},
+        json={"demo_identity_id": "99000000000001", "otp": "123456"},
     )
 
     assert verified.status_code == 200
@@ -40,7 +40,7 @@ def test_mock_identity_verification_autofills_a_profile_and_uses_otp_once(
 
     reused = client.post(
         "/api/v1/auth/mock-identity/verify-otp",
-        json={"demo_identity_id": "DEMO-AADHAAR-RAHUL", "otp": "123456"},
+        json={"demo_identity_id": "99000000000001", "otp": "123456"},
     )
     assert reused.status_code == 409
     assert reused.json()["error"]["code"] == "OTP_ALREADY_USED"
@@ -56,10 +56,10 @@ def test_verified_profile_allows_supporting_edits_but_locks_verified_name(
     api_client: tuple[TestClient, Session],
 ) -> None:
     client, _ = api_client
-    request_demo_otp(client, "DEMO-AADHAAR-ANANYA")
+    request_demo_otp(client, "99000000000002")
     verified = client.post(
         "/api/v1/auth/mock-identity/verify-otp",
-        json={"demo_identity_id": "DEMO-AADHAAR-ANANYA", "otp": "654321"},
+        json={"demo_identity_id": "99000000000002", "otp": "654321"},
     )
     token = verified.json()["data"]["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
@@ -88,16 +88,23 @@ def test_mock_identity_rejects_unknown_identity_and_wrong_otp(
     api_client: tuple[TestClient, Session],
 ) -> None:
     client, _ = api_client
+    for invalid_id in ("123456789012", "DEMO-ID-NOT14"):
+        invalid = client.post(
+            "/api/v1/auth/mock-identity/request-otp",
+            json={"demo_identity_id": invalid_id},
+        )
+        assert invalid.status_code == 422
+
     missing = client.post(
         "/api/v1/auth/mock-identity/request-otp",
-        json={"demo_identity_id": "DEMO-AADHAAR-NOT-FOUND"},
+        json={"demo_identity_id": "99999999999999"},
     )
     assert missing.status_code == 404
 
     request_demo_otp(client)
     wrong_otp = client.post(
         "/api/v1/auth/mock-identity/verify-otp",
-        json={"demo_identity_id": "DEMO-AADHAAR-RAHUL", "otp": "000000"},
+        json={"demo_identity_id": "99000000000001", "otp": "000000"},
     )
     assert wrong_otp.status_code == 422
     assert wrong_otp.json()["error"]["code"] == "INVALID_OTP"

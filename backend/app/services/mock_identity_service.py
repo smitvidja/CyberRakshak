@@ -20,7 +20,7 @@ from app.schemas.auth import (
 
 DEMO_IDENTITIES = (
     {
-        "demo_identity_id": "DEMO-AADHAAR-RAHUL",
+        "demo_identity_id": "99000000000001",
         "synthetic_email": "rahul.kumar@demo.cyberrakshak.local",
         "registered_mobile": "+91 90000 00001",
         "full_name": "Rahul Kumar",
@@ -33,7 +33,7 @@ DEMO_IDENTITIES = (
         "otp": "123456",
     },
     {
-        "demo_identity_id": "DEMO-AADHAAR-ANANYA",
+        "demo_identity_id": "99000000000002",
         "synthetic_email": "ananya.shah@demo.cyberrakshak.local",
         "registered_mobile": "+91 90000 00002",
         "full_name": "Ananya Shah",
@@ -123,25 +123,27 @@ class MockIdentityService:
 
     @staticmethod
     def ensure_demo_identities(session: Session) -> None:
-        existing_ids = set(session.scalars(select(MockIdentityProfile.demo_identity_id)).all())
         for demo_identity in DEMO_IDENTITIES:
-            if demo_identity["demo_identity_id"] in existing_ids:
-                continue
-            session.add(
-                MockIdentityProfile(
-                    demo_identity_id=demo_identity["demo_identity_id"],
-                    synthetic_email=demo_identity["synthetic_email"],
-                    registered_mobile=demo_identity["registered_mobile"],
-                    full_name=demo_identity["full_name"],
-                    date_of_birth=demo_identity["date_of_birth"],
-                    gender=demo_identity["gender"],
-                    address=demo_identity["address"],
-                    city=demo_identity["city"],
-                    state=demo_identity["state"],
-                    postal_code=demo_identity["postal_code"],
-                    otp_code_hash=hash_password(demo_identity["otp"]),
+            identity = session.scalar(
+                select(MockIdentityProfile).where(
+                    MockIdentityProfile.synthetic_email == demo_identity["synthetic_email"]
                 )
             )
+            if identity is None:
+                identity = MockIdentityProfile(
+                    synthetic_email=demo_identity["synthetic_email"],
+                    otp_code_hash=hash_password(demo_identity["otp"]),
+                )
+                session.add(identity)
+            identity.demo_identity_id = demo_identity["demo_identity_id"]
+            identity.registered_mobile = demo_identity["registered_mobile"]
+            identity.full_name = demo_identity["full_name"]
+            identity.date_of_birth = demo_identity["date_of_birth"]
+            identity.gender = demo_identity["gender"]
+            identity.address = demo_identity["address"]
+            identity.city = demo_identity["city"]
+            identity.state = demo_identity["state"]
+            identity.postal_code = demo_identity["postal_code"]
         session.commit()
 
     @staticmethod

@@ -25,6 +25,15 @@ def create_application() -> FastAPI:
     )
     register_exception_handlers(application)
 
+    @application.get("/", tags=["system"])
+    async def root() -> dict[str, str]:
+        return {
+            "service": settings.app_name,
+            "status": "ok",
+            "health": "/health",
+            "docs": "/docs",
+        }
+
     @application.get("/health", tags=["system"])
     async def health_check() -> dict[str, str]:
         return {

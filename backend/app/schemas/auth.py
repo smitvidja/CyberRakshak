@@ -47,12 +47,12 @@ class AccessToken(BaseModel):
 
 
 class MockIdentityOtpRequest(BaseModel):
-    demo_identity_id: str = Field(min_length=8, max_length=64)
+    demo_identity_id: str = Field(min_length=14, max_length=14, pattern=r"^\d{14}$")
 
-    @field_validator("demo_identity_id")
+    @field_validator("demo_identity_id", mode="before")
     @classmethod
     def normalize_demo_identity_id(cls, value: str) -> str:
-        return value.strip().upper()
+        return value.strip() if isinstance(value, str) else value
 
 
 class MockIdentityOtpRequestResponse(BaseModel):
