@@ -54,23 +54,62 @@
     "learningCopy": "Awareness is the first step towards a safer cyber world.",
     "learningAction": "Explore now",
     "quick": {
-      "warrior": {"title": "Be a Cyber Warrior", "copy": "Join hands in building a safer cyber world."},
-      "learn": {"title": "Stay Alert", "copy": "Learn. Prevent. Protect."},
-      "track": {"title": "Track Your Complaint", "copy": "Check the status of a submitted report."},
-      "report": {"title": "Report Cyber Harm", "copy": "Start a secure report in a few steps."}
+      "warrior": {
+        "title": "Be a Cyber Warrior",
+        "copy": "Join hands in building a safer cyber world."
+      },
+      "learn": {
+        "title": "Stay Alert",
+        "copy": "Learn. Prevent. Protect."
+      },
+      "track": {
+        "title": "Track Your Complaint",
+        "copy": "Check the status of a submitted report."
+      },
+      "report": {
+        "title": "Report Cyber Harm",
+        "copy": "Start a secure report in a few steps."
+      }
     },
     "categories": {
-      "women": {"title": "Women and Child Safety", "copy": "Report online abuse, stalking, blackmail, or child-safety concerns."},
-      "financial": {"title": "Financial Fraud", "copy": "Report UPI, card, banking, investment, or payment fraud."},
-      "identity": {"title": "Identity Misuse", "copy": "Report misuse of your identity, documents, or accounts."},
-      "harassment": {"title": "Online Harassment", "copy": "Report threats, abusive messages, stalking, or cyberbullying."},
-      "commerce": {"title": "E-commerce Fraud", "copy": "Report suspicious shopping, delivery, or marketplace fraud."},
-      "other": {"title": "Other Cyber Concern", "copy": "Tell us about any other cyber incident needing support."}
+      "women": {
+        "title": "Women and Child Safety",
+        "copy": "Report online abuse, stalking, blackmail, or child-safety concerns."
+      },
+      "financial": {
+        "title": "Financial Fraud",
+        "copy": "Report UPI, card, banking, investment, or payment fraud."
+      },
+      "identity": {
+        "title": "Identity Misuse",
+        "copy": "Report misuse of your identity, documents, or accounts."
+      },
+      "harassment": {
+        "title": "Online Harassment",
+        "copy": "Report threats, abusive messages, stalking, or cyberbullying."
+      },
+      "commerce": {
+        "title": "E-commerce Fraud",
+        "copy": "Report suspicious shopping, delivery, or marketplace fraud."
+      },
+      "other": {
+        "title": "Other Cyber Concern",
+        "copy": "Tell us about any other cyber incident needing support."
+      }
     },
     "updates": {
-      "fakeCalls": {"title": "Beware of fake calls", "copy": "Do not share OTPs, passwords, or banking details with anyone."},
-      "advisory": {"title": "New safety advisory", "copy": "Keep social profiles private and verify before you pay."},
-      "tips": {"title": "Cyber security tips", "copy": "Simple steps to protect your digital life every day."}
+      "fakeCalls": {
+        "title": "Beware of fake calls",
+        "copy": "Do not share OTPs, passwords, or banking details with anyone."
+      },
+      "advisory": {
+        "title": "New safety advisory",
+        "copy": "Keep social profiles private and verify before you pay."
+      },
+      "tips": {
+        "title": "Cyber security tips",
+        "copy": "Simple steps to protect your digital life every day."
+      }
     }
   },
   "validation": {
@@ -99,9 +138,9 @@
     "anonymousPointTwo": "Your report remains separate from any signed-in user.",
     "anonymousAction": "Continue anonymously",
     "identifiedTitle": "Report with a profile",
-    "identifiedCopy": "Create a prototype citizen profile to save and continue your report.",
-    "identifiedPointOne": "Use only your own synthetic demo details during testing.",
-    "identifiedPointTwo": "No Aadhaar, government ID, or OTP is requested.",
+    "identifiedCopy": "Verify a synthetic demo identity to save and continue your report.",
+    "identifiedPointOne": "Only the supplied synthetic demo identities are accepted.",
+    "identifiedPointTwo": "No real Aadhaar, government ID, mobile OTP, or live verification is used.",
     "identifiedAction": "Continue with profile",
     "identifiedEyebrow": "Prototype profile",
     "profileTitle": "Create your citizen profile",
@@ -129,7 +168,45 @@
     "nextTitle": "Next reporting step",
     "nextCopy": "Start your incident details and save a draft before adding people or evidence.",
     "chooseAgain": "Choose report type again",
-    "startIncident": "Start incident details"
+    "startIncident": "Start incident details",
+    "identityEyebrow": "Step 1 - synthetic identity verification",
+    "identityTitle": "Verify your demo identity",
+    "identityIntro": "Use one of the supplied synthetic demo identity records. No government system, real identity data, or SMS delivery is used.",
+    "mockIdentityCopy": "This local prototype only checks synthetic records stored for the demo. The linked mobile is shown only in masked form and no message is sent.",
+    "identityCardTitle": "Find your demo identity",
+    "identityInputHelp": "Enter one of the supplied demo identity IDs exactly as shown.",
+    "identityId": "Mock Aadhaar / eKYC ID",
+    "sendOtp": "Send demo OTP",
+    "identityRequestError": "We could not find that synthetic identity. Use one of the demo credentials shown here.",
+    "otpCardTitle": "Confirm the demo OTP",
+    "otpIssuedTitle": "Demo OTP issued",
+    "otpIssuedCopy": "A local-only demo OTP is now active for {mobile}. No SMS or external service was used.",
+    "otpLabel": "Six-digit demo OTP",
+    "identityVerifyError": "The demo OTP could not be verified. Request a new OTP or check the supplied credentials.",
+    "verifyContinue": "Verify and continue",
+    "changeIdentity": "Change identity",
+    "demoCredentialsEyebrow": "Synthetic test data",
+    "demoCredentialsTitle": "Demo credentials",
+    "demoCredentialsCopy": "These are non-real prototype records only. They cannot access any government service, account, or mobile number.",
+    "demoOne": "Demo identity 1",
+    "demoTwo": "Demo identity 2",
+    "profileLoadingTitle": "Preparing your verified profile",
+    "profileLoadingCopy": "Please wait while the local profile details are loaded.",
+    "profileEyebrow": "Step 2 - profile details",
+    "profileReviewTitle": "Review your autofilled profile",
+    "profileReviewCopy": "Your name and registered mobile came from the synthetic demo identity and remain locked. You can update the other profile details before continuing.",
+    "profileVerifiedTitle": "Synthetic identity verified",
+    "profileVerifiedCopy": "This profile is sourced from local demonstration data. It has no connection to Aadhaar, UIDAI, mobile carriers, or government systems.",
+    "profileDetailsTitle": "Profile details",
+    "registeredMobile": "Registered mobile number",
+    "dateOfBirth": "Date of birth",
+    "age": "Age",
+    "gender": "Gender",
+    "alternateMobile": "Alternate mobile number (optional)",
+    "address": "Address",
+    "postalCode": "Postal code",
+    "goDashboard": "Go to dashboard",
+    "saveProfile": "Save profile and continue"
   },
   "complaintDraft": {
     "incidentEyebrow": "Complaint draft",
@@ -193,7 +270,8 @@
       "category": "Choose an incident category.",
       "title": "Enter a title with at least 3 characters.",
       "description": "Describe the incident in at least 10 characters.",
-      "amount": "Enter a valid non-negative amount."
+      "amount": "Enter a valid non-negative amount.",
+      "futureIncident": "The incident date and time cannot be in the future."
     },
     "evidenceUploaded": "{fileName} ({fileSize} bytes)",
     "continueReview": "Continue to review and submit"

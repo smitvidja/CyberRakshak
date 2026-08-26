@@ -1,8 +1,9 @@
-import type {ApiRecord} from "@/lib/api/auth";
+import type {ApiRecord, MockIdentityProfile} from "@/lib/api/auth";
 
 const reportModeKey = "cyberrakshak.report-mode";
 const reportCategoryHintKey = "cyberrakshak.report-category-hint";
 const accessTokenKey = "cyberrakshak.access-token";
+const mockIdentityProfileKey = "cyberrakshak.mock-identity-profile";
 const complaintDraftKey = "cyberrakshak.complaint-draft";
 const complaintEvidenceKey = "cyberrakshak.complaint-evidence";
 
@@ -16,6 +17,8 @@ export function getReportCategoryHint() { return sessionStorage.getItem(reportCa
 export function clearReportCategoryHint() { sessionStorage.removeItem(reportCategoryHintKey); }
 export function setAccessToken(accessToken: string) { sessionStorage.setItem(accessTokenKey, accessToken); }
 export function getAccessToken() { return sessionStorage.getItem(accessTokenKey); }
+export function setMockIdentityProfile(profile: MockIdentityProfile) { sessionStorage.setItem(mockIdentityProfileKey, JSON.stringify(profile)); }
+export function getMockIdentityProfile() { const value = sessionStorage.getItem(mockIdentityProfileKey); if (!value) return null; try { const profile = JSON.parse(value) as MockIdentityProfile; return typeof profile.full_name === "string" && typeof profile.registered_mobile === "string" ? profile : null; } catch { return null; } }
 export function setComplaintDraft(draft: CitizenComplaintDraft) { sessionStorage.setItem(complaintDraftKey, JSON.stringify(draft)); }
 export function getComplaintDraft() { const value = sessionStorage.getItem(complaintDraftKey); if (!value) return null; try { const draft = JSON.parse(value) as CitizenComplaintDraft; return typeof draft.id === "string" && draft.data && typeof draft.data === "object" ? draft : null; } catch { return null; } }
 function readEvidence() { const value = sessionStorage.getItem(complaintEvidenceKey); if (!value) return {} as Record<string, CitizenEvidence[]>; try { const parsed = JSON.parse(value) as Record<string, CitizenEvidence[]>; return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {}; } catch { return {}; } }

@@ -13,6 +13,9 @@ from app.services.audit_service import AuditService
 from app.services.notification_service import NotificationService
 
 
+ANONYMOUS_CATEGORY_CODES = {"WOMEN_AND_CHILD_SAFETY"}
+
+
 class ComplaintService:
     @staticmethod
     def list_categories(session: Session):
@@ -30,6 +33,12 @@ class ComplaintService:
                 status_code=404,
                 code="CATEGORY_NOT_FOUND",
                 message="The selected complaint category is unavailable.",
+            )
+        if payload.is_anonymous and category.code not in ANONYMOUS_CATEGORY_CODES:
+            raise APIError(
+                status_code=403,
+                code="ANONYMOUS_REPORTING_NOT_AVAILABLE",
+                message="Anonymous reporting is available only for Women and Child Safety.",
             )
         if not payload.is_anonymous and current_user is None:
             raise APIError(
@@ -79,6 +88,12 @@ class ComplaintService:
                     status_code=404,
                     code="CATEGORY_NOT_FOUND",
                     message="The selected complaint category is unavailable.",
+                )
+            if complaint.is_anonymous and category.code not in ANONYMOUS_CATEGORY_CODES:
+                raise APIError(
+                    status_code=403,
+                    code="ANONYMOUS_REPORTING_NOT_AVAILABLE",
+                    message="Anonymous reporting is available only for Women and Child Safety.",
                 )
 
         for field, value in updates.items():

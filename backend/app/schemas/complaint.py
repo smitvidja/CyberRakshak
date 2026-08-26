@@ -1,10 +1,19 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.models.enums import ComplaintPriority, ComplaintStatus
+
+
+def validate_incident_at(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    normalized = value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value
+    if normalized > datetime.now(timezone.utc):
+        raise ValueError("The incident date and time cannot be in the future.")
+    return normalized
 
 
 class ComplaintLocationInput(BaseModel):
@@ -35,6 +44,11 @@ class ComplaintDraftCreate(BaseModel):
     location: ComplaintLocationInput | None = None
     suspects: list[ComplaintSuspectInput] = Field(default_factory=list)
 
+    @field_validator("incident_at")
+    @classmethod
+    def reject_future_incident(cls, value: datetime | None) -> datetime | None:
+        return validate_incident_at(value)
+
 
 class ComplaintDraftUpdate(BaseModel):
     category_id: UUID | None = None
@@ -45,6 +59,11 @@ class ComplaintDraftUpdate(BaseModel):
     priority: ComplaintPriority | None = None
     location: ComplaintLocationInput | None = None
     suspects: list[ComplaintSuspectInput] | None = None
+
+    @field_validator("incident_at")
+    @classmethod
+    def reject_future_incident(cls, value: datetime | None) -> datetime | None:
+        return validate_incident_at(value)
 
 
 class ComplaintCategoryResponse(BaseModel):

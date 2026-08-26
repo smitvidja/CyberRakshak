@@ -32,6 +32,7 @@ APPROVED_TABLES = {
     "complaints",
     "cyber_warrior_profiles",
     "evidence",
+    "mock_identity_profiles",
     "notifications",
     "reported_suspects",
     "resume_parsing_results",

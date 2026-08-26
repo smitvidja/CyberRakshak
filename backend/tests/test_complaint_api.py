@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
@@ -54,6 +55,16 @@ def complaint_payload(category_id: str, *, is_anonymous: bool) -> dict[str, obje
     }
 
 
+def anonymous_category_id(session: Session) -> str:
+    category = session.scalar(
+        select(ComplaintCategory).where(
+            ComplaintCategory.code == "WOMEN_AND_CHILD_SAFETY",
+            ComplaintCategory.is_active.is_(True),
+        )
+    )
+    assert category is not None
+    return str(category.id)
+
 def active_category_id(session: Session) -> str:
     category = session.scalar(
         select(ComplaintCategory)
@@ -91,7 +102,7 @@ def test_anonymous_complaint_submission_tracks_without_identity(
     client, session = api_client
     draft = client.post(
         "/api/v1/complaints/drafts",
-        json=complaint_payload(active_category_id(session), is_anonymous=True),
+        json=complaint_payload(anonymous_category_id(session), is_anonymous=True),
     )
 
     assert draft.status_code == 201
@@ -172,6 +183,31 @@ def test_identified_complaints_require_authentication_and_enforce_ownership(
     ):
         assert response.status_code == 403
 
+
+def test_future_incident_dates_are_rejected_server_side(
+    api_client: tuple[TestClient, Session],
+) -> None:
+    client, session = api_client
+    payload = complaint_payload(anonymous_category_id(session), is_anonymous=True)
+    payload["incident_at"] = (datetime.now(timezone.utc) + timedelta(days=1)).isoformat()
+
+    response = client.post("/api/v1/complaints/drafts", json=payload)
+
+    assert response.status_code == 422
+    assert "future" in str(response.json()).lower()
+
+
+def test_anonymous_reporting_is_rejected_for_other_categories(
+    api_client: tuple[TestClient, Session],
+) -> None:
+    client, session = api_client
+    response = client.post(
+        "/api/v1/complaints/drafts",
+        json=complaint_payload(active_category_id(session), is_anonymous=True),
+    )
+
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "ANONYMOUS_REPORTING_NOT_AVAILABLE"
 
 def test_reported_suspects_are_owned_and_use_nonjudgmental_contracts(
     api_client: tuple[TestClient, Session],

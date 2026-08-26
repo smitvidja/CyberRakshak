@@ -142,3 +142,17 @@ flowchart TD
 ```
 
 Frontend route guards never replace backend authorization.
+
+## Synthetic Identity Prototype
+
+The local-only mock eKYC flow is intentionally separate from real identity providers:
+
+- `POST /api/v1/auth/mock-identity/request-otp` accepts a supplied `demo_identity_id`, checks the synthetic database record, and returns only a masked linked demo mobile and expiry. It does not send an SMS or return an OTP.
+- `POST /api/v1/auth/mock-identity/verify-otp` accepts that ID plus a six-digit demonstration OTP. It consumes the requested OTP once, creates or reuses the linked local citizen account, returns an access token, and returns synthetic autofill data.
+- `PUT /api/v1/users/me/profile` saves editable profile fields. For a mock-verified user, the server rejects a changed `full_name`; the primary mobile is not an input and remains immutable.
+
+These endpoints accept only the supplied non-real demo identities. They must never call Aadhaar, UIDAI, mobile carriers, or any government service.
+
+## Complaint Date and Anonymous Category Rules
+
+`incident_at` on create and update must not be later than the server's current UTC time. Anonymous complaint drafts are allowed only for the `WOMEN_AND_CHILD_SAFETY` category; all other categories require an authenticated identified user.

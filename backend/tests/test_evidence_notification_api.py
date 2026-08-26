@@ -39,11 +39,14 @@ def create_complaint(
     is_anonymous: bool,
     headers: dict[str, str] | None = None,
 ) -> str:
-    category = session.scalar(
-        select(ComplaintCategory)
-        .where(ComplaintCategory.is_active.is_(True))
-        .order_by(ComplaintCategory.name)
+    category_query = select(ComplaintCategory).where(
+        ComplaintCategory.is_active.is_(True)
     )
+    if is_anonymous:
+        category_query = category_query.where(
+            ComplaintCategory.code == "WOMEN_AND_CHILD_SAFETY"
+        )
+    category = session.scalar(category_query.order_by(ComplaintCategory.name))
     assert category is not None
     response = client.post(
         "/api/v1/complaints/drafts",

@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
@@ -43,3 +44,37 @@ class AccessToken(BaseModel):
     access_token: str
     token_type: str = "bearer"
     expires_in: int
+
+
+class MockIdentityOtpRequest(BaseModel):
+    demo_identity_id: str = Field(min_length=8, max_length=64)
+
+    @field_validator("demo_identity_id")
+    @classmethod
+    def normalize_demo_identity_id(cls, value: str) -> str:
+        return value.strip().upper()
+
+
+class MockIdentityOtpRequestResponse(BaseModel):
+    masked_mobile: str
+    expires_at: datetime
+
+
+class MockIdentityOtpVerificationRequest(MockIdentityOtpRequest):
+    otp: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+
+
+class MockIdentityProfileResponse(BaseModel):
+    full_name: str
+    date_of_birth: date
+    age: int
+    gender: str
+    address: str
+    city: str
+    state: str
+    postal_code: str
+    registered_mobile: str
+
+
+class MockIdentityVerificationResponse(AccessToken):
+    profile: MockIdentityProfileResponse

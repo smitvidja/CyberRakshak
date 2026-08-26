@@ -4,7 +4,7 @@ PostgreSQL is the database source of truth. Use UUID primary keys, `TIMESTAMPTZ`
 
 ## Core Tables
 
-The MVP schema contains 20 tables:
+The MVP schema contains 21 tables:
 
 1. `users`
 2. `citizen_profiles`
@@ -26,6 +26,7 @@ The MVP schema contains 20 tables:
 18. `warrior_reports`
 19. `notifications`
 20. `audit_logs`
+21. `mock_identity_profiles`
 
 ## Key Enums
 
@@ -141,3 +142,9 @@ Minimum indexes:
 ## Do Not Add Yet
 
 Do not add police stations, investigators, FIRs, jurisdiction hierarchy, payment tables, blockchain ledgers, complex case workflows, or warehouse/reporting schemas.
+
+## Synthetic Identity Demonstration Data
+
+`mock_identity_profiles` stores two local-only synthetic eKYC records used by the prototype. It is never populated from Aadhaar, UIDAI, SMS providers, government systems, or real personal data. Each record has a hashed demonstration OTP, a short-lived requested/expiry/consumed lifecycle, an attempt count, and at most one linked local citizen user.
+
+`citizen_profiles` also stores optional `date_of_birth`, `gender`, and `alternate_phone`. The primary mobile remains on `users`; a profile linked to a mock identity cannot change its verified name or primary mobile. Age is calculated from date of birth at response time and is not stored separately.

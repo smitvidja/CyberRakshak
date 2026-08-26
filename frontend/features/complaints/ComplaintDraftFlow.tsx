@@ -45,6 +45,12 @@ function asString(value: unknown) {
   return typeof value === "string" ? value : "";
 }
 
+function toLocalDateTimeInput(value: string | Date = new Date()) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  const localTime = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return localTime.toISOString().slice(0, 16);
+}
+
 function categoryMatchesHint(name: string, hint: string) {
   const normalized = name.toLowerCase();
   const keywords: Record<string, string[]> = {
@@ -65,7 +71,7 @@ function incidentFromDraft(draft: ApiRecord): IncidentForm {
     city: asString(location.city),
     description: asString(draft.description),
     district: asString(location.district),
-    incidentAt: asString(draft.incident_at).slice(0, 16),
+    incidentAt: asString(draft.incident_at) ? toLocalDateTimeInput(asString(draft.incident_at)) : "",
     lossAmount: draft.financial_loss_amount === null || draft.financial_loss_amount === undefined ? "" : String(draft.financial_loss_amount),
     state: asString(location.state),
     title: asString(draft.title)
@@ -202,6 +208,9 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
     if (form.lossAmount && (!/^\d+(\.\d{1,2})?$/.test(form.lossAmount) || Number(form.lossAmount) < 0)) {
       nextErrors.lossAmount = t("validation.amount");
     }
+    if (form.incidentAt && new Date(form.incidentAt).getTime() > Date.now()) {
+      nextErrors.incidentAt = t("validation.futureIncident");
+    }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   }
@@ -221,7 +230,7 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
       category_id: form.categoryId,
       description: form.description.trim(),
       financial_loss_amount: form.lossAmount || null,
-      incident_at: form.incidentAt || null,
+      incident_at: form.incidentAt ? new Date(form.incidentAt).toISOString() : null,
       location: hasLocation ? location : null,
       title: form.title.trim()
     };
@@ -273,7 +282,7 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
           <SurfaceCard className="citizen-detail-panel" heading={t("detailsTitle")}>
             <div className="grid gap-4 sm:grid-cols-2">
               <TextInput error={errors.title} id="incident-title" label={t("titleLabel")} onChange={(event) => updateField("title", event.target.value)} required value={form.title} />
-              <TextInput id="incident-date" label={t("incidentAtLabel")} onChange={(event) => updateField("incidentAt", event.target.value)} type="datetime-local" value={form.incidentAt} />
+              <TextInput error={errors.incidentAt} id="incident-date" label={t("incidentAtLabel")} max={toLocalDateTimeInput()} onChange={(event) => updateField("incidentAt", event.target.value)} type="datetime-local" value={form.incidentAt} />
               <TextInput error={errors.lossAmount} id="loss-amount" label={t("lossAmountLabel")} min="0" onChange={(event) => updateField("lossAmount", event.target.value)} step="0.01" type="number" value={form.lossAmount} />
               <div className="hidden sm:block" aria-hidden="true" />
             </div>
