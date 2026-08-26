@@ -29,13 +29,15 @@ export function StatusChip({label, tone = "neutral"}: {label: string; tone?: Sta
   return <span className={["inline-flex min-h-7 items-center rounded-full border px-3 py-1 text-xs font-bold leading-4", statusToneClasses[tone]].join(" ")}>{label}</span>;
 }
 
-type StateTone = "loading" | "error" | "empty" | "success";
+type StateTone = "loading" | "error" | "empty" | "success" | "info" | "warning";
 
 const stateToneClasses: Record<StateTone, string> = {
   loading: "border-[#abd2f5] bg-[#f7fbff] text-[#07529d]",
   error: "border-[#efb5b1] bg-[#fef7f6] text-[#9f211a]",
   empty: "border-[var(--border)] bg-[#f9fbfd] text-[var(--muted)]",
-  success: "border-[#97d8bd] bg-[#f5fcf8] text-[#0d6248]"
+  success: "border-[#97d8bd] bg-[#f5fcf8] text-[#0d6248]",
+  info: "border-[#abd2f5] bg-[#f7fbff] text-[#07529d]",
+  warning: "border-[#f0ce86] bg-[#fffaf0] text-[#8a4a00]"
 };
 
 export function StatePanel({action, children, title, tone}: {action?: ReactNode; children: ReactNode; title: string; tone: StateTone}) {

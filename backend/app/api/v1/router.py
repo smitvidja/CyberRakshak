@@ -9,11 +9,13 @@ from app.api.v1.evidence import router as evidence_router
 from app.api.v1.notifications import router as notifications_router
 from app.api.v1.resume import router as resume_router
 from app.api.v1.suspects import router as suspects_router
+from app.api.v1.users import router as users_router
 from app.api.v1.warrior_applications import router as warrior_applications_router
 from app.api.v1.warrior_reports import router as warrior_reports_router
 
 api_router = APIRouter()
 api_router.include_router(auth_router)
+api_router.include_router(users_router)
 api_router.include_router(complaint_categories_router)
 api_router.include_router(complaints_router)
 api_router.include_router(evidence_router)
