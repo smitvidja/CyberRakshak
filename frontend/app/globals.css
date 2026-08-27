@@ -34,6 +34,10 @@ button, input, select, textarea { font: inherit; }
 .utility-content, .brand-content, .footer-content, .support-band > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .utility-content { min-height: 28px; }
 .utility-actions { display: flex; align-items: center; gap: 11px; }
+.text-size-control { display: inline-flex; gap: 6px; }
+.text-size-control button { border: 1px solid rgb(255 255 255 / .35); border-radius: 4px; background: transparent; padding: 1px 7px; color: inherit; font-family: inherit; font-size: 12px; font-weight: 700; line-height: 1.6; cursor: pointer; }
+.text-size-control button:hover:not(:disabled), .text-size-control button:focus-visible { border-color: rgb(255 255 255 / .7); background: rgb(255 255 255 / .12); }
+.text-size-control button:disabled { opacity: .4; cursor: not-allowed; }
 .language-current { font-weight: 700; text-decoration: underline; }
 .brand-header { border-bottom: 1px solid var(--border); background: #fff; }
 .brand-content { min-height: 72px; }
@@ -42,9 +46,28 @@ button, input, select, textarea { font: inherit; }
 .brand-lockup strong, .brand-lockup small { display: block; }
 .brand-lockup strong { font-size: 19px; }
 .brand-lockup small { margin-top: 3px; color: var(--muted); font-size: 12px; }
-.brand-support { text-align: right; color: var(--muted); font-size: 13px; }
+/* The helpline number is a tel: link, not decoration - it must be tappable on a
+   phone and readable at a glance, so it is larger than the label above it. */
+.brand-support { text-align: right; color: var(--muted); font-size: 13px; text-decoration: none; }
 .brand-support strong, .brand-support span { display: block; }
-.brand-support span { color: var(--navy); font-size: 18px; font-weight: 700; }
+.brand-support span { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 2px; color: var(--navy); font-size: 22px; font-weight: 800; letter-spacing: .01em; }
+.brand-support:hover span, .brand-support:focus-visible span { color: var(--blue); }
+.brand-mark { border-radius: 50%; object-fit: contain; }
+
+/* Shown only on reporting/registration routes - deliberately light (soft blue, no
+   alarm red) so it reads as helpful guidance rather than an error state. */
+.helpline-callout { border-bottom: 1px solid #c5dff8; background: linear-gradient(90deg, #eaf3fd, #f6faff); }
+.helpline-callout > div { display: flex; align-items: center; gap: 14px; padding: 14px 0; }
+.helpline-callout-icon { display: grid; height: 40px; width: 40px; flex-shrink: 0; place-items: center; border-radius: 50%; background: var(--blue); color: #fff; }
+.helpline-callout p { flex: 1; min-width: 0; }
+.helpline-callout strong { display: block; color: var(--navy); font-size: 16px; font-weight: 800; }
+.helpline-callout p > span { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; }
+.helpline-callout a { flex-shrink: 0; border-radius: 7px; background: var(--blue); padding: 11px 20px; color: #fff; font-size: 15px; font-weight: 800; text-decoration: none; }
+.helpline-callout a:hover, .helpline-callout a:focus-visible { background: var(--navy); }
+@media (max-width: 700px) {
+  .helpline-callout > div { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .helpline-callout a { width: 100%; text-align: center; }
+}
 .primary-nav { background: #075fb9; color: #fff; }
 .nav-list { display: flex; overflow-x: auto; }
 .nav-list a { border-bottom: 3px solid transparent; padding: 11px 16px 9px; font-size: 13px; font-weight: 700; transition: background-color 150ms ease, border-color 150ms ease; white-space: nowrap; }
@@ -705,6 +728,40 @@ button, input, select, textarea { font: inherit; }
    must push to a second line, never overflow its cell into the next column. */
 .warrior-leaderboard-row.warrior-leaderboard-head { border-top: 0; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; white-space: normal; align-items: end; line-height: 1.25; }
 .warrior-leaderboard-row.is-you { background: var(--blue-soft); font-weight: 800; }
+/* Awareness posters. The art is a mix of portrait and landscape, so each card gets a
+   fixed aspect frame and the image is contained (never cropped) - a poster's headline
+   and its helpline footer are the whole point, so cropping them would defeat it. */
+.warrior-awareness-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.warrior-awareness-download { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; border-radius: 7px; background: var(--blue); padding: 10px 16px; color: #fff; font-size: 13px; font-weight: 800; text-decoration: none; }
+.warrior-awareness-download:hover, .warrior-awareness-download:focus-visible { background: var(--navy); }
+.warrior-awareness-grid { display: grid; margin-top: 16px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+.warrior-awareness-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 10px; background: #fff; padding: 0; text-align: left; cursor: pointer; transition: box-shadow .15s, transform .15s; }
+.warrior-awareness-card:hover, .warrior-awareness-card:focus-visible { box-shadow: 0 8px 20px rgb(15 42 74 / .16); transform: translateY(-2px); }
+.warrior-awareness-image { display: block; width: 100%; height: 230px; object-fit: contain; background: #0f2a4a; }
+.warrior-awareness-card.is-wide .warrior-awareness-image { height: 150px; }
+.warrior-awareness-caption { display: block; padding: 12px 13px 14px; }
+.warrior-awareness-caption strong { display: block; color: var(--navy); font-size: 13px; font-weight: 800; line-height: 1.35; }
+.warrior-awareness-caption small { display: -webkit-box; margin-top: 5px; overflow: hidden; color: var(--muted); font-size: 11.5px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.warrior-awareness-helpline { display: flex; align-items: center; gap: 8px; margin-top: 16px; border-radius: 7px; background: var(--blue-soft); padding: 11px 14px; color: var(--navy); font-size: 13px; font-weight: 700; }
+
+.warrior-poster-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgb(6 20 38 / .72); padding: 20px; }
+.warrior-poster-modal { position: relative; display: grid; max-height: 90vh; width: min(880px, 100%); overflow-y: auto; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; border-radius: 12px; background: #fff; }
+.warrior-poster-close { position: absolute; right: 10px; top: 10px; z-index: 2; display: grid; height: 32px; width: 32px; place-items: center; border-radius: 50%; border: 0; background: rgb(255 255 255 / .92); color: var(--navy); cursor: pointer; box-shadow: 0 2px 8px rgb(15 42 74 / .2); }
+.warrior-poster-full { display: block; width: 100%; height: 100%; max-height: 90vh; object-fit: contain; border-radius: 12px 0 0 12px; background: #0f2a4a; }
+.warrior-poster-body { display: flex; flex-direction: column; gap: 10px; padding: 24px; }
+/* padding-right keeps a long title clear of the floating close button. */
+.warrior-poster-body h3 { padding-right: 34px; color: var(--navy); font-size: 19px; font-weight: 800; line-height: 1.3; }
+.warrior-poster-body p { color: #33465c; font-size: 14px; line-height: 1.6; }
+.warrior-poster-advice { display: flex; align-items: flex-start; gap: 8px; border-radius: 7px; background: #eaf6ee; padding: 12px; color: #15603c !important; font-weight: 600; }
+.warrior-poster-advice svg { flex-shrink: 0; margin-top: 2px; }
+.warrior-poster-call { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto; border-radius: 7px; background: var(--blue); padding: 12px 18px; color: #fff; font-size: 15px; font-weight: 800; text-decoration: none; }
+.warrior-poster-call:hover, .warrior-poster-call:focus-visible { background: var(--navy); }
+@media (max-width: 760px) {
+  .warrior-poster-modal { grid-template-columns: 1fr; }
+  .warrior-poster-full { max-height: 46vh; border-radius: 12px 12px 0 0; }
+  .warrior-poster-body { padding: 18px; }
+}
+
 .warrior-badge-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
 .warrior-badge-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 8px; padding: 18px 12px; text-align: center; }
 .warrior-badge-tile.is-earned { background: #fff; }

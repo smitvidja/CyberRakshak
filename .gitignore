@@ -36,3 +36,9 @@ backend/storage/
 *.log
 .DS_Store
 Thumbs.db
+
+# Raw awareness-poster source art (~21MB of PNGs + a duplicate PDF) - not needed at
+# runtime. The optimized WebP outputs and the real PDF live in frontend/public/ and
+# ARE committed; these are only the source backend/scripts/prepare_awareness_assets.py
+# reads from. Re-run that script after replacing anything in here.
+demo-assets/Resources/

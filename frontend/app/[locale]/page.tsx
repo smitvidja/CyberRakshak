@@ -28,6 +28,10 @@ export default async function LocaleHomePage({params}: Props) {
   const t = await getTranslations({locale, namespace: "home"});
   const reportHref = `/${locale}/report-crime`;
   const trackHref = `/${locale}/complaints/track`;
+  // Every "Learning Corner" entry point on this page used to point at #learning, a
+  // same-page anchor that was never defined - clicking any of them did nothing. This
+  // is the one real Resources/awareness page in the app.
+  const learningHref = `/${locale}/cyber-warrior/resources`;
   const categoryEntryHref = (category: string) => `${reportHref}?category=${category}`;
   const reportingHref = (mode: "anonymous" | "identified", category: string) => `${reportHref}?mode=${mode}&category=${category}`;
   const categories: CategoryKey[] = ["women", "financial", "identity", "harassment", "commerce", "other"];
@@ -38,8 +42,8 @@ export default async function LocaleHomePage({params}: Props) {
   ] as const;
   const quickLinks = [
     {key: "warrior", href: `/${locale}/cyber-warrior`, icon: UserRoundPlus},
-    {key: "learn", href: "#learning", icon: BellRing},
-    {key: "secure", href: "#learning", icon: ShieldCheck},
+    {key: "learn", href: learningHref, icon: BellRing},
+    {key: "secure", href: learningHref, icon: ShieldCheck},
     {key: "track", href: trackHref, icon: ClipboardCheck}
   ] as const;
 
@@ -80,7 +84,7 @@ export default async function LocaleHomePage({params}: Props) {
             <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70"><Siren size={21} strokeWidth={1.8} /></span>
             <span><span className="block text-xl font-bold">1930</span><span className="text-sm text-blue-100">{t("helplinePrimary")}</span></span>
           </a>
-          <Link className="support-action flex min-h-[64px] items-center gap-3 border-t border-white/20 px-5 py-3 sm:border-l sm:border-t-0 sm:px-8" href="#learning">
+          <Link className="support-action flex min-h-[64px] items-center gap-3 border-t border-white/20 px-5 py-3 sm:border-l sm:border-t-0 sm:px-8" href={learningHref}>
             <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70"><BookOpenCheck size={21} strokeWidth={1.8} /></span>
             <span><span className="block text-base font-bold">{t("helplineSecondaryTitle")}</span><span className="text-sm text-blue-100">{t("helplineSecondary")}</span></span>
           </Link>
@@ -116,24 +120,24 @@ export default async function LocaleHomePage({params}: Props) {
         <aside className="portal-updates rounded-[8px] border border-slate-200 bg-white p-5 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]" aria-labelledby="updates-title">
           <div className="flex items-center justify-between gap-3 border-b border-slate-200 pb-3">
             <h2 id="updates-title" className="text-lg font-bold text-[#063d86]">{t("updatesTitle")}</h2>
-            <Link className="text-xs font-bold text-[#075bbf] hover:underline" href="#learning">{t("viewUpdates")}</Link>
+            <Link className="text-xs font-bold text-[#075bbf] hover:underline" href={learningHref}>{t("viewUpdates")}</Link>
           </div>
           <div className="divide-y divide-slate-200">
             {updates.map(({key, icon: Icon}) => (
               <article key={key} className="flex gap-3 py-4">
                 <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-blue-50 text-[#075bbf]"><Icon size={18} strokeWidth={1.8} /></span>
-                <div><h3 className="text-sm font-bold text-slate-900">{t(`updates.${key}.title`)}</h3><p className="mt-1 text-xs leading-5 text-slate-600">{t(`updates.${key}.copy`)}</p><Link className="mt-1 inline-block text-xs font-bold text-[#075bbf] hover:underline" href="#learning">{t("readMore")}</Link></div>
+                <div><h3 className="text-sm font-bold text-slate-900">{t(`updates.${key}.title`)}</h3><p className="mt-1 text-xs leading-5 text-slate-600">{t(`updates.${key}.copy`)}</p><Link className="mt-1 inline-block text-xs font-bold text-[#075bbf] hover:underline" href={learningHref}>{t("readMore")}</Link></div>
               </article>
             ))}
           </div>
-          <Link className="mt-2 block rounded-[6px] bg-[#075bbf] px-4 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-[#064b9d]" href="#learning">{t("viewUpdates")}</Link>
+          <Link className="mt-2 block rounded-[6px] bg-[#075bbf] px-4 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-[#064b9d]" href={learningHref}>{t("viewUpdates")}</Link>
         </aside>
       </section>
 
       <section id="learning" className="mx-auto mt-7 max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 rounded-[8px] border border-blue-100 bg-[#edf6ff] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4"><span aria-hidden="true" className="grid h-12 w-12 place-items-center rounded-[6px] bg-[#075bbf] text-white"><GraduationCap size={24} strokeWidth={1.8} /></span><div><h2 className="text-lg font-bold text-[#063d86]">{t("learningTitle")}</h2><p className="mt-1 text-sm text-slate-600">{t("learningCopy")}</p></div></div>
-          <Link className="portal-outline-link w-fit" href={`/${locale}/cyber-warrior`}>{t("learningAction")}</Link>
+          <Link className="portal-outline-link w-fit" href={learningHref}>{t("learningAction")}</Link>
         </div>
       </section>
     </main>
