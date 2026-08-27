@@ -20,19 +20,28 @@ application review & submit from scratch. Use a different one each time you want
 journey again (an identity that has already submitted a Cyber Warrior application will redirect
 straight to its dashboard on the next verification, per the returning-user routing).
 
-| Name | Identity ID | OTP | City |
-|---|---|---|---|
-| Rohan Mehta | `99000000000003` | `111222` | Pune, Maharashtra |
-| Priya Nair | `99000000000004` | `222333` | Kochi, Kerala |
-| Karan Verma | `99000000000005` | `333444` | Jaipur, Rajasthan |
-| Sneha Iyer | `99000000000006` | `444555` | Chennai, Tamil Nadu |
-| Arjun Malhotra | `99000000000007` | `555666` | Chandigarh |
+| Name | Identity ID | OTP | City | Demo resume to upload |
+|---|---|---|---|---|
+| Rohan Mehta | `99000000000003` | `111222` | Pune, Maharashtra | `demo-assets/resumes/rohan-mehta-resume.pdf` |
+| Priya Nair | `99000000000004` | `222333` | Kochi, Kerala | `demo-assets/resumes/priya-nair-resume.pdf` |
+| Karan Verma | `99000000000005` | `333444` | Jaipur, Rajasthan | `demo-assets/resumes/karan-verma-resume.pdf` |
+| Sneha Iyer | `99000000000006` | `444555` | Chennai, Tamil Nadu | `demo-assets/resumes/sneha-iyer-resume.pdf` |
+| Arjun Malhotra | `99000000000007` | `555666` | Chandigarh | `demo-assets/resumes/arjun-malhotra-resume.pdf` |
 
-Resume upload works the same for any identity - the resume parser is a **static mock** (it always
-returns the same synthetic sample data: skills, one education entry, one experience entry, one
-certification) regardless of the file's real content. There's no real text-extraction/AI parsing
-in this MVP; the review step exists to demonstrate the "confirm what was extracted before it's
-saved to your profile" flow, not real resume analysis.
+Each identity has a matching one-page demo resume PDF in `demo-assets/resumes/` - same name,
+city, and mobile as that identity's mock eKYC record, with skills drawn from the real seeded
+skill catalog (so the same skills are selectable in the review form).
+
+**Note on parsing:** the resume parser is a **static mock**
+(`backend/app/services/resume_parser_service.py`) - it always returns the same synthetic sample
+data (skills, one education entry, one experience entry, one certification) regardless of which
+file is uploaded. There's no real text-extraction/AI parsing in this MVP. The demo resumes make
+the *upload* step realistic; they do not change what gets pre-filled in the review step. That
+review step exists to demonstrate the "confirm what was extracted before it's saved to your
+profile" flow, not real resume analysis.
+
+To regenerate or edit the resumes: `pip install fpdf2` then, from `backend/`,
+`python scripts/generate_demo_resumes.py` (content lives in that script).
 
 ## Reserved for a full first-time citizen/victim journey
 
