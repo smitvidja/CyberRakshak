@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {useLocale, useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
-import {PhoneCall} from "lucide-react";
+import {Home, PhoneCall, Shield, ShieldCheck} from "lucide-react";
 import {useState, type ReactNode} from "react";
 
 import {getReportCategoryHint} from "@/lib/auth/citizen-session";
@@ -129,24 +129,45 @@ export function ProductShell({children}: ProductShellProps) {
     (segment) => pathname.includes(segment)
   );
 
-  // The category is only ever in the URL on the very first /report-crime?category=
-  // pick screen - every step after that carries it via a localStorage hint (see
-  // CitizenEntry.tsx), so both are checked, URL first since it's the freshest signal.
+  // Was document.documentElement.style.fontSize = X% - that only rescales text sized in
+  // rem/em, which the header (utility bar, brand row, nav) never was: every size in this
+  // file's CSS (see globals.css, e.g. .nav-list a, .utility-bar) is a fixed px value, so
+  // the header silently never responded to A-/A+ at all - only rem-sized Tailwind content
+  // below it did. CSS zoom rescales the *rendered* page (fonts, spacing, icons, everything)
+  // regardless of what unit each element was written in, so it actually reaches the header
+  // too. Applied to <html> so it covers the whole page, portaled dialogs included.
   const [fontScale, setFontScale] = useState(FONT_SCALE_DEFAULT);
+  function applyFontScale(value: number) {
+    document.documentElement.style.zoom = value + "%";
+  }
   useIsomorphicLayoutEffect(() => {
     if (typeof window === "undefined") return;
     const stored = Number(window.localStorage.getItem(FONT_SCALE_KEY));
     const initial = stored >= FONT_SCALE_MIN && stored <= FONT_SCALE_MAX ? stored : FONT_SCALE_DEFAULT;
     setFontScale(initial);
-    document.documentElement.style.fontSize = initial + "%";
+    applyFontScale(initial);
   }, []);
   function adjustFontScale(direction: 1 | -1) {
     setFontScale((current) => {
       const next = Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, current + direction * FONT_SCALE_STEP));
-      document.documentElement.style.fontSize = next + "%";
+      applyFontScale(next);
       window.localStorage.setItem(FONT_SCALE_KEY, String(next));
       return next;
     });
+  }
+  function resetFontScale() {
+    setFontScale(FONT_SCALE_DEFAULT);
+    applyFontScale(FONT_SCALE_DEFAULT);
+    window.localStorage.setItem(FONT_SCALE_KEY, String(FONT_SCALE_DEFAULT));
+  }
+
+  // No nav item was ever marked "current page" before - .nav-list a:hover was the only
+  // state that existed. "home" only matches the exact homepage (every other href is a
+  // prefix of it, so a naive startsWith would light up Home everywhere); every other item
+  // matches its own section, including sub-routes under it.
+  function isNavItemActive(key: string, href: string) {
+    if (key === "home") return pathname === homeHref;
+    return pathname === href || pathname.startsWith(href + "/");
   }
 
   const [helplineCategory, setHelplineCategory] = useState<HelplineCategory>("generic");
@@ -161,14 +182,18 @@ export function ProductShell({children}: ProductShellProps) {
   }, [pathname]);
 
   return <div className="app-shell">
-    <div className="utility-bar"><div className="shell-container utility-content"><span>{t("utilityNotice")}</span><div className="utility-actions">
+    <div className="utility-bar"><div className="shell-container utility-content"><span className="utility-notice"><Shield aria-hidden="true" size={13} />{t("utilityNotice")}</span><div className="utility-actions">
       <span className="text-size-control">
         <button aria-label={t("decreaseTextSize")} disabled={fontScale <= FONT_SCALE_MIN} onClick={() => adjustFontScale(-1)} type="button">A-</button>
+        <button aria-label={t("resetTextSize")} className={fontScale === FONT_SCALE_DEFAULT ? "is-active" : undefined} disabled={fontScale === FONT_SCALE_DEFAULT} onClick={resetFontScale} type="button">A</button>
         <button aria-label={t("increaseTextSize")} disabled={fontScale >= FONT_SCALE_MAX} onClick={() => adjustFontScale(1)} type="button">A+</button>
       </span>
       <span aria-hidden="true">|</span>{routing.locales.map((nextLocale) => <Link className={nextLocale === locale ? "language-current" : ""} href={localeHref(nextLocale)} key={nextLocale}>{t("languages." + nextLocale)}</Link>)}</div></div></div>
-    <header className="brand-header"><div className="shell-container brand-content"><Link className="brand-lockup" href={"/" + locale}><Image alt="" aria-hidden="true" className="brand-mark" height={44} priority src="/images/awareness/logo-v2.webp" width={44} /><span><strong>{t("brandHindi")}</strong><small>{t("brandEnglish")}</small></span></Link><a className="brand-support" href={"tel:" + t("supportNumber")}><strong>{t("supportLabel")}</strong><span><PhoneCall aria-hidden="true" size={17} />{t("supportNumber")}</span></a></div></header>
-    <nav className="primary-nav" aria-label={t("primaryNavigation")}><div className="shell-container nav-list">{navItems.map(([key, href]) => <Link href={href} key={key}>{t("nav." + key)}</Link>)}</div></nav>
+    <header className="brand-header"><div className="shell-container brand-content"><Link className="brand-lockup" href={"/" + locale}><Image alt="" aria-hidden="true" className="brand-mark" height={44} priority src="/images/awareness/logo-v2.webp" width={44} /><span><strong>{t("brandHindi")}</strong><small>{t("brandEnglish")}</small></span></Link><p className="brand-reassurance"><ShieldCheck aria-hidden="true" size={17} />{t("reassuranceLine")}</p><a className="brand-support" href={"tel:" + t("supportNumber")}><strong>{t("supportLabel")}</strong><span><PhoneCall aria-hidden="true" size={17} />{t("supportNumber")}</span></a></div></header>
+    <nav className="primary-nav" aria-label={t("primaryNavigation")}><div className="shell-container nav-list">{navItems.map(([key, href]) => {
+      const active = isNavItemActive(key, href);
+      return <Link className={active ? "is-active" : undefined} href={href} key={key}>{active && key === "home" ? <Home aria-hidden="true" size={15} /> : null}{t("nav." + key)}</Link>;
+    })}</div></nav>
     <nav aria-label={t("breadcrumbs.label")} className="breadcrumbs"><ol className="shell-container">{breadcrumbItems.map((item, index) => <li className="flex items-center gap-2" key={item.label + index}>{index > 0 ? <span aria-hidden="true">/</span> : null}{item.href && index < breadcrumbItems.length - 1 ? <Link href={item.href}>{item.label}</Link> : <span aria-current={index === breadcrumbItems.length - 1 ? "page" : undefined}>{item.label}</span>}</li>)}</ol></nav>
     {isReportingRoute ? (
       <aside className="helpline-callout" aria-label={t("helplineCalloutLabel")}>

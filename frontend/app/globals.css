@@ -7,13 +7,33 @@
   --ink: #13243c;
   --muted: #5a6c81;
   --surface: #ffffff;
-  --canvas: #f4f8fc;
+  /* Page background, softened from a flat blue-gray (#f4f8fc) into a light wash derived
+     from the mint/sky palette (#b8f2ff, #e0fbfc) - blended way down toward white ("halka")
+     since those two are too saturated to sit behind an entire page; this is the same idea
+     at a background-appropriate strength. Used almost everywhere via html/body and the
+     header (.primary-nav, .utility-bar already read this token), so retuning it here is
+     one change that reaches the whole site consistently, not a piecemeal per-page tweak. */
+  --canvas: #f1fafc;
+  --canvas-top: #f5fdff;
   --border: #d6e1ed;
   --success: #14785b;
   --warning: #9d5900;
   --danger: #b42318;
+  /* Secondary accent, paired with --blue for warmth/variety on a few deliberately chosen
+     spots (see page.tsx "Stay Alert") - not a wholesale recolor. */
+  --teal: #1f9a86;
+  --teal-soft: #e6f6f2;
   --radius: 7px;
   --shadow: 0 2px 10px rgb(15 42 74 / 0.08);
+  /* Retro-future/circuit decorative watermark: a 6-fold-symmetric hexagon with PCB-trace
+     lines to via-pads at each edge (technical-pen line art, no fills), tiled at 140px.
+     Base64 so the raw SVG's own quote characters never collide with the CSS url("...")
+     wrapper - a plain URL-encoded version of this exact markup silently failed (the
+     browser rejected the whole background-image as invalid, no error, old value just
+     stayed) when tested unencoded. One shared token, applied only to the shell chrome
+     (.utility-bar/.primary-nav/.breadcrumbs - identical on every page via ProductShell),
+     not to individual pages' own content backgrounds. */
+  --bg-pattern: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDAiIGhlaWdodD0iMTQwIiB2aWV3Qm94PSIwIDAgMTQwIDE0MCI+CiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDgsNDYsMTAyLDAuMTApIiBzdHJva2Utd2lkdGg9IjEuMyI+CiAgICA8cG9seWdvbiBwb2ludHM9IjcwLDMyIDEwMi45LDUxIDEwMi45LDg5IDcwLDEwOCAzNy4xLDg5IDM3LjEsNTEiLz4KICAgIDxsaW5lIHgxPSI3MCIgeTE9IjMyIiB4Mj0iNzAiIHkyPSI2Ii8+CiAgICA8bGluZSB4MT0iMTAyLjkiIHkxPSI1MSIgeDI9IjEyNCIgeTI9IjM5Ii8+CiAgICA8bGluZSB4MT0iMTAyLjkiIHkxPSI4OSIgeDI9IjEyNCIgeTI9IjEwMSIvPgogICAgPGxpbmUgeDE9IjcwIiB5MT0iMTA4IiB4Mj0iNzAiIHkyPSIxMzQiLz4KICAgIDxsaW5lIHgxPSIzNy4xIiB5MT0iODkiIHgyPSIxNiIgeTI9IjEwMSIvPgogICAgPGxpbmUgeDE9IjM3LjEiIHkxPSI1MSIgeDI9IjE2IiB5Mj0iMzkiLz4KICAgIDxjaXJjbGUgY3g9IjcwIiBjeT0iNiIgcj0iMi42Ii8+CiAgICA8Y2lyY2xlIGN4PSIxMjQiIGN5PSIzOSIgcj0iMi42Ii8+CiAgICA8Y2lyY2xlIGN4PSIxMjQiIGN5PSIxMDEiIHI9IjIuNiIvPgogICAgPGNpcmNsZSBjeD0iNzAiIGN5PSIxMzQiIHI9IjIuNiIvPgogICAgPGNpcmNsZSBjeD0iMTYiIGN5PSIxMDEiIHI9IjIuNiIvPgogICAgPGNpcmNsZSBjeD0iMTYiIGN5PSIzOSIgcj0iMi42Ii8+CiAgICA8Y2lyY2xlIGN4PSI3MCIgY3k9IjcwIiByPSI1Ii8+CiAgICA8bGluZSB4MT0iNjQiIHkxPSI3MCIgeDI9Ijc2IiB5Mj0iNzAiLz4KICAgIDxsaW5lIHgxPSI3MCIgeTE9IjY0IiB4Mj0iNzAiIHkyPSI3NiIvPgogIDwvZz4KPC9zdmc+Cg==");
 }
 
 @theme inline {
@@ -24,13 +44,20 @@
 }
 
 * { box-sizing: border-box; }
-html, body { min-height: 100%; margin: 0; background: var(--canvas); color: var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+html, body { min-height: 100%; margin: 0; background: linear-gradient(180deg, var(--canvas-top) 0%, var(--canvas) 100%) fixed; color: var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
 :focus-visible { outline: 3px solid #f3b413; outline-offset: 3px; }
 
 .shell-container { width: min(1180px, calc(100% - 32px)); margin: auto; }
-.utility-bar { background: #06295b; color: #eaf4ff; font-size: 13px; }
+/* Utility bar redesign: was a solid dark-navy band (#06295b) - now a quiet strip on the
+   page canvas, matching the calm/soothing direction approved from the reference mockup.
+   Only the color/tone changed here; the A-/A+ text-size control's actual functionality is
+   untouched, just restyled as a light pill (plus a real "A" reset-to-default button, not a
+   decorative middle segment - it's disabled exactly when already at 100%). */
+.utility-bar { background-color: var(--canvas); background-image: var(--bg-pattern); background-repeat: repeat; background-size: 140px 140px; color: var(--muted); font-size: 12px; }
+.utility-notice { display: inline-flex; align-items: center; gap: 6px; }
+.utility-bar a:hover, .utility-bar a:focus-visible { color: var(--navy); }
 .utility-content, .brand-content, .footer-content, .support-band > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .utility-content { min-height: 28px; }
 .utility-actions { display: flex; align-items: center; gap: 11px; }
@@ -112,13 +139,19 @@ button, input, select, textarea { font: inherit; }
   .contact-helpline a { width: 100%; text-align: center; }
 }
 
-.text-size-control { display: inline-flex; gap: 6px; }
-.text-size-control button { border: 1px solid rgb(255 255 255 / .35); border-radius: 4px; background: transparent; padding: 1px 7px; color: inherit; font-family: inherit; font-size: 12px; font-weight: 700; line-height: 1.6; cursor: pointer; }
-.text-size-control button:hover:not(:disabled), .text-size-control button:focus-visible { border-color: rgb(255 255 255 / .7); background: rgb(255 255 255 / .12); }
-.text-size-control button:disabled { opacity: .4; cursor: not-allowed; }
-.language-current { font-weight: 700; text-decoration: underline; }
+.text-size-control { display: inline-flex; align-items: center; gap: 2px; border: 1px solid #dbe7f3; border-radius: 999px; background: #fff; padding: 3px; }
+.text-size-control button { border: 0; border-radius: 999px; background: transparent; padding: 3px 9px; color: var(--muted); font-family: inherit; font-size: 11px; font-weight: 700; line-height: 1.5; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; }
+.text-size-control button:hover:not(:disabled), .text-size-control button:focus-visible { background: var(--blue-soft); color: var(--blue); }
+.text-size-control button:disabled { opacity: .45; cursor: not-allowed; }
+.text-size-control button.is-active:disabled { opacity: 1; cursor: default; background: var(--blue); color: #fff; }
+.language-current { font-weight: 800; color: var(--blue); }
 .brand-header { border-bottom: 1px solid var(--border); background: #fff; }
 .brand-content { min-height: 72px; }
+/* Higher specificity than the shared .brand-content flex rule above (kept for
+   .utility-content/.footer-content/.support-band > div, which still need it) - the brand
+   row becomes a real 3-column layout: logo, centered reassurance line, helpline. */
+.brand-header .brand-content { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; }
+.brand-reassurance { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; color: var(--blue); font-size: 14px; font-weight: 700; text-align: center; }
 .brand-lockup { display: flex; align-items: center; gap: 12px; }
 .brand-mark { display: grid; height: 44px; width: 44px; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 800; }
 .brand-lockup strong, .brand-lockup small { display: block; }
@@ -146,11 +179,15 @@ button, input, select, textarea { font: inherit; }
   .helpline-callout > div { align-items: flex-start; flex-direction: column; gap: 10px; }
   .helpline-callout a { width: 100%; text-align: center; }
 }
-.primary-nav { background: #075fb9; color: #fff; }
-.nav-list { display: flex; overflow-x: auto; }
-.nav-list a { border-bottom: 3px solid transparent; padding: 11px 16px 9px; font-size: 13px; font-weight: 700; transition: background-color 150ms ease, border-color 150ms ease; white-space: nowrap; }
-.nav-list a:hover { border-bottom-color: #c9e5ff; background: #064f9f; }
-.breadcrumbs { border-bottom: 1px solid var(--border); background: #fff; color: var(--muted); font-size: 13px; }
+/* Was a flat, full-bleed solid-blue bar with no "current page" state at all (only a hover
+   effect existed). Now a floating white rounded card on the page canvas, with a real active-
+   item highlight (isNavItemActive in ProductShell.tsx) instead of none. */
+.primary-nav { background-color: var(--canvas); background-image: var(--bg-pattern); background-repeat: repeat; background-size: 140px 140px; padding: 10px 0; }
+.nav-list { display: flex; align-items: center; gap: 2px; overflow-x: auto; border: 1px solid #e3ecf6; border-radius: 14px; background: #fff; padding: 6px 10px; box-shadow: 0 6px 20px -6px rgb(11 74 158 / .14); }
+.nav-list a { display: inline-flex; align-items: center; gap: 6px; border-radius: 10px; padding: 9px 14px; color: #41577a; font-size: 13px; font-weight: 700; transition: background-color 150ms ease, color 150ms ease; white-space: nowrap; }
+.nav-list a:hover { background: #f2f6fb; color: var(--navy); }
+.nav-list a.is-active { background: var(--blue-soft); color: var(--blue); font-weight: 800; }
+.breadcrumbs { border-bottom: 1px solid var(--border); background-color: #fff; background-image: var(--bg-pattern); background-repeat: repeat; background-size: 140px 140px; color: var(--muted); font-size: 13px; }
 .breadcrumbs > ol { display: flex; flex-wrap: wrap; gap: 8px; padding: 9px 0; }
 .breadcrumbs a { color: var(--blue); font-weight: 700; }
 .support-band { border-top: 1px solid #c5dff8; background: var(--blue-soft); }
@@ -243,8 +280,11 @@ button, input, select, textarea { font: inherit; }
 @media (max-width: 700px) {
   .utility-content, .brand-content, .support-band > div, .footer-content { align-items: flex-start; flex-direction: column; padding: 10px 0; }
   .brand-content { min-height: unset; }
+  .brand-header .brand-content { grid-template-columns: 1fr; justify-items: start; gap: 10px; }
+  .brand-reassurance { display: none; }
   .brand-support { text-align: left; }
-  .nav-list a { padding: 12px 14px 10px; }
+  .nav-list { border-radius: 12px; padding: 5px 8px; }
+  .nav-list a { padding: 10px 12px; }
   .support-band > div { gap: 8px; }
   .footer-content { gap: 10px; }
   .footer-content nav { flex-wrap: wrap; }
