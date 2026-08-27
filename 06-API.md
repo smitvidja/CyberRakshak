@@ -87,6 +87,8 @@ Anonymous create/submit must allow no user identity. Identified create/submit mu
 
 - `POST /evidence`
 - `GET /evidence/{id}`
+- `GET /evidence/{id}/file` returns the raw stored file bytes for an owned piece of evidence.
+- `GET /evidence/by-warrior-report/{report_id}` lists evidence attached to an owned Cyber Warrior report.
 - `DELETE /evidence/{id}` only if allowed by ownership and retention rules.
 
 Uploads must validate size, type, ownership, and target entity.
@@ -104,6 +106,7 @@ Language must distinguish reported suspects from legally confirmed criminals.
 - `POST /cyber-warriors/profile`
 - `GET /cyber-warriors/me`
 - `PATCH /cyber-warriors/me`
+- `GET /cyber-warriors/skills` lists the skill catalog for profile/resume skill selection.
 - `POST /resume/upload`
 - `GET /resume/parsing-results/{id}`
 - `POST /resume/parsing-results/{id}/confirm`
@@ -115,6 +118,7 @@ Language must distinguish reported suspects from legally confirmed criminals.
 - `POST /warrior-reports/{id}/submit`
 - `GET /warrior-reports/my`
 - `GET /warrior-reports/{id}`
+- `DELETE /warrior-reports/{id}` only while the report is still a `DRAFT`; also deletes its attached evidence.
 
 ## Admin APIs
 

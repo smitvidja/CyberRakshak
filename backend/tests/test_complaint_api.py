@@ -5,7 +5,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.security import hash_password
 from app.models import Complaint, ComplaintCategory, ComplaintStatusHistory, User
+from app.models.enums import UserRole
 
 
 def authenticated_headers(client: TestClient) -> dict[str, str]:
@@ -253,6 +255,120 @@ def test_reported_suspects_are_owned_and_use_nonjudgmental_contracts(
     assert forbidden.status_code == 403
 
 
+def admin_headers(client: TestClient, session: Session) -> dict[str, str]:
+    suffix = uuid4().hex
+    email = f"admin-{suffix}@example.com"
+    password = "not-a-real-password"
+    session.add(User(email=email, password_hash=hash_password(password), role=UserRole.ADMIN))
+    session.commit()
+    login = client.post("/api/v1/auth/login", json={"email": email, "password": password})
+    assert login.status_code == 200
+    return {"Authorization": f"Bearer {login.json()['data']['access_token']}"}
+
+
+def test_admin_can_review_complaints_and_suspect_reports_and_non_admins_are_rejected(
+    api_client: tuple[TestClient, Session],
+) -> None:
+    client, session = api_client
+    citizen_headers = authenticated_headers(client)
+
+    draft = client.post(
+        "/api/v1/complaints/drafts",
+        json=complaint_payload(active_category_id(session), is_anonymous=False),
+        headers=citizen_headers,
+    )
+    assert draft.status_code == 201
+    complaint_id = draft.json()["data"]["id"]
+    submitted = client.post(f"/api/v1/complaints/{complaint_id}/submit", headers=citizen_headers)
+    assert submitted.status_code == 200
+
+    suspect_report = client.post(
+        "/api/v1/suspects/reports",
+        headers=citizen_headers,
+        json={
+            "identifier_type": "UPI",
+            "identifier_value": "admin-review-check@upi",
+            "description": "Reported for admin-review contract testing.",
+        },
+    )
+    assert suspect_report.status_code == 201
+    report_id = suspect_report.json()["data"]["id"]
+
+    # A regular citizen must be rejected by every admin-review endpoint, not just one.
+    assert client.get("/api/v1/admin/complaints", headers=citizen_headers).status_code == 403
+    assert (
+        client.patch(
+            f"/api/v1/admin/complaints/{complaint_id}/status",
+            headers=citizen_headers,
+            json={"status": "UNDER_REVIEW"},
+        ).status_code
+        == 403
+    )
+    assert client.get("/api/v1/admin/suspect-reports", headers=citizen_headers).status_code == 403
+    assert (
+        client.patch(
+            f"/api/v1/admin/suspect-reports/{report_id}/status",
+            headers=citizen_headers,
+            json={"status": "VERIFIED"},
+        ).status_code
+        == 403
+    )
+
+    admin = admin_headers(client, session)
+
+    complaint_list = client.get("/api/v1/admin/complaints", headers=admin)
+    assert complaint_list.status_code == 200
+    assert complaint_id in {item["id"] for item in complaint_list.json()["data"]}
+
+    rejected_draft_transition = client.patch(
+        f"/api/v1/admin/complaints/{complaint_id}/status",
+        headers=admin,
+        json={"status": "DRAFT"},
+    )
+    assert rejected_draft_transition.status_code == 422
+
+    reviewed = client.patch(
+        f"/api/v1/admin/complaints/{complaint_id}/status",
+        headers=admin,
+        json={"status": "UNDER_REVIEW", "note": "Assigned for review."},
+    )
+    assert reviewed.status_code == 200
+    assert reviewed.json()["data"]["status"] == "UNDER_REVIEW"
+
+    history = list(
+        session.scalars(
+            select(ComplaintStatusHistory).where(ComplaintStatusHistory.complaint_id == complaint_id)
+        )
+    )
+    assert [entry.status.value for entry in history] == ["SUBMITTED", "UNDER_REVIEW"]
+
+    missing_complaint = client.patch(
+        f"/api/v1/admin/complaints/{uuid4()}/status",
+        headers=admin,
+        json={"status": "UNDER_REVIEW"},
+    )
+    assert missing_complaint.status_code == 404
+
+    suspect_list = client.get("/api/v1/admin/suspect-reports", headers=admin)
+    assert suspect_list.status_code == 200
+    assert report_id in {item["id"] for item in suspect_list.json()["data"]}
+
+    suspect_reviewed = client.patch(
+        f"/api/v1/admin/suspect-reports/{report_id}/status",
+        headers=admin,
+        json={"status": "VERIFIED"},
+    )
+    assert suspect_reviewed.status_code == 200
+    assert suspect_reviewed.json()["data"]["status"] == "VERIFIED"
+
+    missing_suspect_report = client.patch(
+        f"/api/v1/admin/suspect-reports/{uuid4()}/status",
+        headers=admin,
+        json={"status": "VERIFIED"},
+    )
+    assert missing_suspect_report.status_code == 404
+
+
 def test_complaint_contracts_are_registered_in_openapi(
     api_client: tuple[TestClient, Session],
 ) -> None:
@@ -269,5 +385,9 @@ def test_complaint_contracts_are_registered_in_openapi(
         "/api/v1/suspects/reports",
         "/api/v1/suspects/reports/my",
         "/api/v1/suspects/reports/{report_id}",
+        "/api/v1/admin/complaints",
+        "/api/v1/admin/complaints/{complaint_id}/status",
+        "/api/v1/admin/suspect-reports",
+        "/api/v1/admin/suspect-reports/{report_id}/status",
     ):
         assert path in paths
