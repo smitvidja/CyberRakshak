@@ -74,10 +74,17 @@ backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt
 Set-Location backend
 .venv/Scripts/python.exe -m alembic upgrade head
 .venv/Scripts/python.exe ../database/seeds/seed_reference_data.py
-.venv/Scripts/python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+.venv/Scripts/python.exe -m uvicorn app.main:app --reload --reload-dir app --host 127.0.0.1 --port 8000
 ```
 
 The seed step is required — without it, complaint categories will be empty.
+
+`--reload-dir app` matters, not just style: without it, uvicorn watches the whole `backend/`
+working directory by default - including `.venv/` (every installed package) and `storage/`
+(every file a user uploads at runtime, e.g. a resume or evidence file). Watching that many/that
+volatile a set of files is what made `--reload` unreliable (silently missing real source edits,
+or restarting mid-request when someone uploaded a file). Scoping it to `app/` - the only
+directory with actual source code - fixes both.
 
 Backend runs at http://127.0.0.1:8000 (`/health`, and API docs at `/docs`).
 

@@ -5,19 +5,11 @@ import Link from "next/link";
 import {useLocale, useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import {PhoneCall} from "lucide-react";
-import {useEffect, useLayoutEffect, useState, type ReactNode} from "react";
+import {useState, type ReactNode} from "react";
 
 import {getReportCategoryHint} from "@/lib/auth/citizen-session";
 import {routing} from "@/lib/i18n/routing";
-
-// A plain useEffect runs *after* the browser paints, so the "generic" fallback text
-// is visibly rendered for one frame before the real category swaps in - exactly the
-// wrong-text flash reported against this callout. useLayoutEffect runs synchronously
-// before paint, which eliminates that. It cannot run during SSR (no DOM), so it must
-// be swapped for a plain effect there - Next.js only executes effects in the browser
-// anyway, but calling the real useLayoutEffect during the server-render pass still
-// logs a warning, hence the guard.
-const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+import {useIsomorphicLayoutEffect} from "@/lib/hooks/useIsomorphicLayoutEffect";
 
 // "A- A+" was rendered as a single plain <span> of static text - not a button, no
 // click handler, nothing happened when someone tapped it. This makes it a real,
@@ -30,7 +22,7 @@ const FONT_SCALE_STEP = 10;
 const FONT_SCALE_DEFAULT = 100;
 
 // The 6 category keys used by the landing page's report cards (app/[locale]/page.tsx)
-// and carried through the flow via ?category= then a sessionStorage hint. Any other
+// and carried through the flow via ?category= then a localStorage hint. Any other
 // value (or none - warrior reports, suspect reports, identity verification) falls
 // back to "generic".
 const HELPLINE_CATEGORIES = ["women", "financial", "identity", "harassment", "commerce", "other"] as const;
@@ -138,7 +130,7 @@ export function ProductShell({children}: ProductShellProps) {
   );
 
   // The category is only ever in the URL on the very first /report-crime?category=
-  // pick screen - every step after that carries it via a sessionStorage hint (see
+  // pick screen - every step after that carries it via a localStorage hint (see
   // CitizenEntry.tsx), so both are checked, URL first since it's the freshest signal.
   const [fontScale, setFontScale] = useState(FONT_SCALE_DEFAULT);
   useIsomorphicLayoutEffect(() => {

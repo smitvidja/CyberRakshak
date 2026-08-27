@@ -14,7 +14,12 @@ class Settings(BaseSettings):
     database_url: str = Field(..., min_length=1)
     secret_key: str = Field(..., min_length=32)
     jwt_algorithm: str = "HS256"
-    access_token_expire_minutes: int = Field(default=60, ge=5, le=1440)
+    # 30 days by default: there is no refresh-token flow in this MVP, so the access token IS
+    # the whole session. A short (60 min) expiry was silently killing "stay logged in until you
+    # explicitly log out" - the token would go stale while localStorage still held it, so API
+    # calls started failing with no login screen and no visible cause. Overridable via env for
+    # a stricter deployment.
+    access_token_expire_minutes: int = Field(default=43200, ge=5, le=129600)
     # NoDecode is required, not cosmetic: without it pydantic-settings runs json.loads()
     # on this value before any validator sees it, so a plain
     # "https://app.example.com,https://www.example.com" - the format hosting platforms

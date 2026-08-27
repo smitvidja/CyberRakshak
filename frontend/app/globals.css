@@ -840,6 +840,15 @@ button, input, select, textarea { font: inherit; }
   .warrior-poster-body { padding: 18px; }
 }
 
+.session-conflict-backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: rgb(6 20 38 / .72); padding: 20px; }
+.session-conflict-modal { position: relative; width: min(440px, 100%); border-radius: 12px; background: #fff; padding: 28px 26px 24px; box-shadow: 0 20px 50px rgb(6 20 38 / .35); text-align: center; }
+.session-conflict-close { position: absolute; right: 10px; top: 10px; display: grid; height: 32px; width: 32px; place-items: center; border-radius: 50%; border: 0; background: #f1f5f9; color: var(--navy); cursor: pointer; }
+.session-conflict-icon { display: grid; margin: 0 auto 12px; height: 52px; width: 52px; place-items: center; border-radius: 50%; background: #fdecd2; color: #b45309; }
+.session-conflict-modal h2 { color: var(--navy); font-size: 19px; font-weight: 800; }
+.session-conflict-modal p { margin-top: 10px; color: #33465c; font-size: 14px; line-height: 1.6; }
+.session-conflict-actions { display: flex; margin-top: 20px; flex-direction: column; align-items: center; gap: 12px; }
+.session-conflict-actions .portal-primary-link { width: 100%; gap: 8px; }
+
 .warrior-badge-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
 .warrior-badge-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 8px; padding: 18px 12px; text-align: center; }
 .warrior-badge-tile.is-earned { background: #fff; }
