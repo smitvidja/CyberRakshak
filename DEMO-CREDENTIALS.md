@@ -54,5 +54,15 @@ from a clean slate:
   (`DEMO_IDENTITIES`) and are auto-seeded into the database on first use - no migration or manual
   DB setup is needed to use any of them.
 - `backend/scripts/reset_demo_warrior_data.py` clears Cyber Warrior demo data (profile,
-  application, resume results, reports) for *all* identities above if you need to re-demo the
-  full first-time journey with the same identity again. It never touches citizen data.
+  application, resume results, reports) so you can redo the full first-time journey with the
+  same identity again. No special app permission ("admin role", etc.) is needed - it's a plain
+  local script, run from the `backend/` directory with the project virtualenv:
+  ```
+  python scripts/reset_demo_warrior_data.py                          # resets every identity above
+  python scripts/reset_demo_warrior_data.py 99000000000003           # resets just Rohan Mehta
+  python scripts/reset_demo_warrior_data.py 99000000000001 99000000000002   # resets Rahul + Ananya
+  ```
+  It never touches citizen profiles/complaints, and never touches an identity's separate citizen
+  account (only its Cyber Warrior side). The app's own `ADMIN` user role is unrelated to this -
+  that role is only for reviewing complaints/suspect reports/warrior applications inside the
+  product itself, not for resetting demo data.
