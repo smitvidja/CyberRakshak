@@ -1,5 +1,5 @@
-import {WarriorNewReportPlaceholder} from "@/features/cyber-warriors/WarriorPlaceholderPages";
+import {WarriorReportWizard} from "@/features/cyber-warriors/WarriorReportWizard";
 
 export default function CyberWarriorNewReportPage() {
-  return <WarriorNewReportPlaceholder />;
+  return <WarriorReportWizard />;
 }

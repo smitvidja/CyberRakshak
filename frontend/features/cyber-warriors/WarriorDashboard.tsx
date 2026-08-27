@@ -28,6 +28,7 @@ import {cyberWarriorsApi, warriorApplicationsApi, warriorReportsApi, type Warrio
 import {notificationsApi, type NotificationRecord} from "@/lib/api/notifications";
 import {getWarriorIdentity, getWarriorToken} from "@/lib/auth/warrior-session";
 import {WarriorShellPage, WarriorTopBar} from "./WarriorAppShell";
+import {computeWarriorPoints} from "./warriorReportMeta";
 
 type WarriorReportSummary = {status: string};
 
@@ -149,7 +150,7 @@ export function WarriorDashboard() {
     {icon: FileText, label: t("statSubmitted"), note: t("statSubmittedNote"), tone: "blue", value: submittedCount},
     {icon: AlarmClock, label: t("statUnderReview"), note: t("statUnderReviewNote"), tone: "amber", value: underReviewCount},
     {icon: CheckCircle2, label: t("statResolved"), note: t("statResolvedNote"), tone: "green", value: resolvedCount},
-    {icon: Star, label: t("statRewards"), note: t("statRewardsNote"), tone: "purple", value: 0}
+    {icon: Star, label: t("statRewards"), note: t("statRewardsNote"), tone: "purple", value: computeWarriorPoints(reports)}
   ];
 
   const quickActions = [

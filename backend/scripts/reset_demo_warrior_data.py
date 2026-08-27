@@ -29,7 +29,6 @@ from app.core.database import SessionLocal
 from app.services.mock_identity_service import DEMO_IDENTITIES
 
 WARRIOR_CHILD_TABLES = (
-    "warrior_reports",
     "warrior_skills",
     "warrior_education",
     "warrior_experience",
@@ -65,6 +64,26 @@ def reset_demo_warrior_data() -> None:
             ).scalar()
 
             if profile_id is not None:
+                report_ids = [
+                    row[0]
+                    for row in session.execute(
+                        text("select id from warrior_reports where warrior_id = :w"),
+                        {"w": profile_id},
+                    ).fetchall()
+                ]
+                if report_ids:
+                    result = session.execute(
+                        text("delete from evidence where warrior_report_id = any(:ids)"),
+                        {"ids": report_ids},
+                    )
+                    if result.rowcount:
+                        print(f"  deleted {result.rowcount} row(s) from evidence")
+                result = session.execute(
+                    text("delete from warrior_reports where warrior_id = :w"),
+                    {"w": profile_id},
+                )
+                if result.rowcount:
+                    print(f"  deleted {result.rowcount} row(s) from warrior_reports")
                 for table in WARRIOR_CHILD_TABLES:
                     result = session.execute(
                         text(f"delete from {table} where warrior_id = :w"),

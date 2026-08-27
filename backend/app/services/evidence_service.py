@@ -121,6 +121,22 @@ class EvidenceService:
         return evidence
 
     @staticmethod
+    def list_for_warrior_report(
+        session: Session,
+        warrior_report_id: UUID,
+        current_user: User,
+    ) -> list[Evidence]:
+        report = EvidenceRepository.get_warrior_report_with_owner(session, warrior_report_id)
+        if report is None:
+            raise APIError(
+                status_code=404,
+                code="NOT_FOUND",
+                message="Warrior report not found.",
+            )
+        EvidenceService._require_owner(report.warrior.user_id, current_user)
+        return EvidenceRepository.list_by_warrior_report(session, warrior_report_id)
+
+    @staticmethod
     def delete(
         session: Session,
         evidence_id: UUID,

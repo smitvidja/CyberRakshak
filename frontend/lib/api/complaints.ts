@@ -17,6 +17,7 @@ export const complaintsApi = {
 
 export const evidenceApi = {
   getById: (id: string, options?: ApiRequestOptions) => apiClient.get<ApiRecord>("/evidence/" + id, options),
+  listByWarriorReport: (reportId: string, options?: ApiRequestOptions) => apiClient.get<ApiRecord[]>("/evidence/by-warrior-report/" + reportId, options),
   remove: (id: string, options?: ApiRequestOptions) => apiClient.delete<ApiRecord>("/evidence/" + id, options),
   upload: (payload: FormData, options?: ApiRequestOptions) => apiClient.upload<ApiRecord>("/evidence", payload, options)
 };

@@ -9,6 +9,7 @@ import {ArrowRight, Award, BookOpen, CheckCircle2, Pencil, ShieldCheck, Trophy, 
 import {cyberWarriorsApi, warriorApplicationsApi, warriorReportsApi, type WarriorApplication, type SkillCatalogItem} from "@/lib/api/cyber-warriors";
 import {getWarriorIdentity, getWarriorProfileSetup, getWarriorToken} from "@/lib/auth/warrior-session";
 import {WarriorShellPage} from "./WarriorAppShell";
+import {computeWarriorPoints} from "./warriorReportMeta";
 
 type ProfileApiRecord = {
   bio: string | null;
@@ -154,7 +155,7 @@ export function WarriorProfile() {
             <div><dt>{t("statSubmitted")}</dt><dd>{submittedCount}</dd></div>
             <div><dt>{t("statUnderReview")}</dt><dd>{underReviewCount}</dd></div>
             <div><dt>{t("statResolved")}</dt><dd>{resolvedCount}</dd></div>
-            <div><dt>{t("statPoints")}</dt><dd>0</dd></div>
+            <div><dt>{t("statPoints")}</dt><dd>{computeWarriorPoints(reports)}</dd></div>
           </dl>
         </div>
         <div className="warrior-quick-actions">

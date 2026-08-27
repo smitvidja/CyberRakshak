@@ -1,5 +1,5 @@
-import {WarriorResourcesPlaceholder} from "@/features/cyber-warriors/WarriorPlaceholderPages";
+import {WarriorResources} from "@/features/cyber-warriors/WarriorResources";
 
 export default function CyberWarriorResourcesPage() {
-  return <WarriorResourcesPlaceholder />;
+  return <WarriorResources />;
 }

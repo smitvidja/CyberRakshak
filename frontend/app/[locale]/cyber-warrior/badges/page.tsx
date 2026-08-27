@@ -1,5 +1,5 @@
-import {WarriorBadgesPlaceholder} from "@/features/cyber-warriors/WarriorPlaceholderPages";
+import {WarriorBadges} from "@/features/cyber-warriors/WarriorBadges";
 
 export default function CyberWarriorBadgesPage() {
-  return <WarriorBadgesPlaceholder />;
+  return <WarriorBadges />;
 }

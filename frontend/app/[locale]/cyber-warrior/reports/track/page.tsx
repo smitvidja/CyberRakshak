@@ -1,5 +1,5 @@
-import {WarriorTrackReportsPlaceholder} from "@/features/cyber-warriors/WarriorPlaceholderPages";
+import {WarriorTrackReport} from "@/features/cyber-warriors/WarriorTrackReport";
 
-export default function CyberWarriorTrackReportsPage() {
-  return <WarriorTrackReportsPlaceholder />;
+export default function CyberWarriorTrackReportPage() {
+  return <WarriorTrackReport />;
 }

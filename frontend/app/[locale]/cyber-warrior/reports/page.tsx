@@ -1,5 +1,5 @@
-import {WarriorMyReportsPlaceholder} from "@/features/cyber-warriors/WarriorPlaceholderPages";
+import {WarriorMyReports} from "@/features/cyber-warriors/WarriorMyReports";
 
 export default function CyberWarriorReportsPage() {
-  return <WarriorMyReportsPlaceholder />;
+  return <WarriorMyReports />;
 }

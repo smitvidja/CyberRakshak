@@ -29,5 +29,14 @@ class EvidenceRepository:
         return session.scalar(statement)
 
     @staticmethod
+    def list_by_warrior_report(session: Session, warrior_report_id: UUID) -> list[Evidence]:
+        statement = (
+            select(Evidence)
+            .where(Evidence.warrior_report_id == warrior_report_id)
+            .order_by(Evidence.created_at)
+        )
+        return list(session.scalars(statement))
+
+    @staticmethod
     def delete(session: Session, evidence: Evidence) -> None:
         session.delete(evidence)

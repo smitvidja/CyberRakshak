@@ -1,5 +1,5 @@
-import {WarriorLeaderboardPlaceholder} from "@/features/cyber-warriors/WarriorPlaceholderPages";
+import {WarriorLeaderboard} from "@/features/cyber-warriors/WarriorLeaderboard";
 
 export default function CyberWarriorLeaderboardPage() {
-  return <WarriorLeaderboardPlaceholder />;
+  return <WarriorLeaderboard />;
 }

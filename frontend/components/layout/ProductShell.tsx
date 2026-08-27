@@ -68,8 +68,22 @@ export function ProductShell({children}: ProductShellProps) {
       if (pathname.endsWith("/resume")) breadcrumbItems.push({label: t("breadcrumbs.warriorResume")});
       else if (pathname.endsWith("/review")) breadcrumbItems.push({label: t("breadcrumbs.warriorReview")});
       else if (pathname.endsWith("/submitted")) breadcrumbItems.push({label: t("breadcrumbs.warriorSubmitted")});
-    } else if (pathname.startsWith(warriorDashboardHref) || pathname.startsWith(warriorHref + "/reports") || pathname.startsWith(warriorHref + "/leaderboard") || pathname.startsWith(warriorHref + "/badges") || pathname.startsWith(warriorHref + "/resources")) {
-      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbCurrent")});
+    } else if (pathname === warriorHref + "/reports") {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorMyReports")});
+    } else if (pathname === warriorHref + "/reports/track") {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorTrackReport")});
+    } else if (pathname === warriorHref + "/reports/new") {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorReportCybercrime")});
+    } else if (pathname.endsWith("/submitted") && pathname.startsWith(warriorHref + "/reports/")) {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {href: warriorHref + "/reports/new", label: t("breadcrumbs.warriorReportCybercrime")}, {label: t("breadcrumbs.warriorReportSubmitted")});
+    } else if (pathname.startsWith(warriorHref + "/reports/")) {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {href: warriorHref + "/reports", label: t("breadcrumbs.warriorMyReports")}, {label: t("breadcrumbs.warriorReportDetails")});
+    } else if (pathname === warriorHref + "/leaderboard") {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorLeaderboard")});
+    } else if (pathname === warriorHref + "/badges") {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorBadges")});
+    } else if (pathname === warriorHref + "/resources") {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorResources")});
     } else if (pathname.startsWith(warriorHref)) {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbCurrent")});
     } else {

@@ -61,10 +61,24 @@ export const warriorApplicationsApi = {
   submit: (id: string, options: ApiRequestOptions) => apiClient.post<WarriorApplication>("/warrior-applications/" + id + "/submit", undefined, options)
 };
 
+export type WarriorReportType = "THREAT" | "VULNERABILITY" | "SCAM" | "PHISHING" | "MALWARE" | "OSINT" | "OTHER";
+export type WarriorReportStatus = "DRAFT" | "SUBMITTED" | "UNDER_REVIEW" | "ACCEPTED" | "REJECTED";
+
+export type WarriorReport = {
+  created_at: string;
+  description: string;
+  id: string;
+  report_type: WarriorReportType;
+  status: WarriorReportStatus;
+  submitted_at: string | null;
+  title: string;
+  updated_at: string;
+};
+
 export const warriorReportsApi = {
-  create: (payload: ApiRecord, options: ApiRequestOptions) => apiClient.post<ApiRecord>("/warrior-reports", payload, options),
-  getById: (id: string, options: ApiRequestOptions) => apiClient.get<ApiRecord>("/warrior-reports/" + id, options),
-  listMine: (options: ApiRequestOptions) => apiClient.get<ApiRecord[]>("/warrior-reports/my", options),
-  submit: (id: string, options: ApiRequestOptions) => apiClient.post<ApiRecord>("/warrior-reports/" + id + "/submit", undefined, options),
-  update: (id: string, payload: ApiRecord, options: ApiRequestOptions) => apiClient.patch<ApiRecord>("/warrior-reports/" + id, payload, options)
+  create: (payload: {description: string; report_type: WarriorReportType; title: string}, options: ApiRequestOptions) => apiClient.post<WarriorReport>("/warrior-reports", payload, options),
+  getById: (id: string, options: ApiRequestOptions) => apiClient.get<WarriorReport>("/warrior-reports/" + id, options),
+  listMine: (options: ApiRequestOptions) => apiClient.get<WarriorReport[]>("/warrior-reports/my", options),
+  submit: (id: string, options: ApiRequestOptions) => apiClient.post<WarriorReport>("/warrior-reports/" + id + "/submit", undefined, options),
+  update: (id: string, payload: {description?: string; report_type?: WarriorReportType; title?: string}, options: ApiRequestOptions) => apiClient.patch<WarriorReport>("/warrior-reports/" + id, payload, options)
 };

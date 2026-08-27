@@ -124,6 +124,15 @@ def test_application_and_warrior_report_submit_with_owned_evidence(api_client: t
     assert submitted_report.status_code == 200
     assert submitted_report.json()['data']["status"] == "SUBMITTED"
 
+    listed_evidence = client.get(f"/api/v1/evidence/by-warrior-report/{report_id}", headers=headers)
+    assert listed_evidence.status_code == 200
+    assert [item["id"] for item in listed_evidence.json()["data"]] == [evidence.json()["data"]["id"]]
+
+    other_headers = warrior_headers(client)
+    create_profile(client, other_headers)
+    forbidden = client.get(f"/api/v1/evidence/by-warrior-report/{report_id}", headers=other_headers)
+    assert forbidden.status_code == 403
+
 
 def admin_headers(client: TestClient, session: Session) -> dict[str, str]:
     suffix = uuid4().hex
