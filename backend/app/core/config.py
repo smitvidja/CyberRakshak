@@ -1,7 +1,9 @@
+import json
 from functools import lru_cache
+from typing import Annotated
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -13,7 +15,13 @@ class Settings(BaseSettings):
     secret_key: str = Field(..., min_length=32)
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = Field(default=60, ge=5, le=1440)
-    cors_origins: list[str] = Field(
+    # NoDecode is required, not cosmetic: without it pydantic-settings runs json.loads()
+    # on this value before any validator sees it, so a plain
+    # "https://app.example.com,https://www.example.com" - the format hosting platforms
+    # (Railway/Render/Fly/Heroku) actually use - raised SettingsError and the backend
+    # refused to start. Even a single bare URL failed; only JSON array syntax worked.
+    # NoDecode hands the raw string to parse_cors_origins below, which accepts both.
+    cors_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: [
             "http://localhost:3000",
             "http://127.0.0.1:3000",
@@ -31,9 +39,26 @@ class Settings(BaseSettings):
     @field_validator("cors_origins", mode="before")
     @classmethod
     def parse_cors_origins(cls, value: str | list[str]) -> list[str]:
-        if isinstance(value, str):
-            return [origin.strip() for origin in value.split(",") if origin.strip()]
-        return value
+        """Accept a JSON array, a comma-separated list, or a single origin.
+
+        All three are used in practice: .env.example ships the JSON form, while
+        hosting dashboards generally only let you paste a plain string.
+        """
+        if not isinstance(value, str):
+            return value
+        candidate = value.strip()
+        if candidate.startswith("["):
+            try:
+                parsed = json.loads(candidate)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    "CORS_ORIGINS looks like a JSON array but is not valid JSON. "
+                    'Use ["https://a.com","https://b.com"] or a comma-separated list.'
+                ) from exc
+            if not isinstance(parsed, list) or not all(isinstance(item, str) for item in parsed):
+                raise ValueError("CORS_ORIGINS JSON must be an array of strings.")
+            return [origin.strip() for origin in parsed if origin.strip()]
+        return [origin.strip() for origin in candidate.split(",") if origin.strip()]
 
 
 @lru_cache

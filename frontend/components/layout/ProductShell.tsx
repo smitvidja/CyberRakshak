@@ -115,6 +115,8 @@ export function ProductShell({children}: ProductShellProps) {
       breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorBadges")});
     } else if (pathname === warriorHref + "/resources") {
       breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorResources")});
+    } else if (pathname === homeHref + "/contact") {
+      breadcrumbItems.push({label: t("nav.contact")});
     } else if (pathname.startsWith(warriorHref)) {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbCurrent")});
     } else {

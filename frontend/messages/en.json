@@ -1150,5 +1150,34 @@
     "tipPrivacyTitle": "Protecting your privacy",
     "tipPrivacySummary": "Understand how your report and evidence are handled.",
     "tipPrivacyBody": "Reports and evidence are only visible to you and authorized reviewers. Never include another person's private data in a report unless it's directly relevant to the incident."
+  },
+  "contact": {
+    "eyebrow": "Support",
+    "title": "Contact and support",
+    "copy": "CyberRakshak is a prototype and does not operate a support desk. For a real cyber incident, use the national helpline below - it is answered by the official service, not by this prototype.",
+    "helplineTitle": "National Cyber Crime Helpline - 1930",
+    "helplineCopy": "Free, and available across India. If money has been lost, call immediately: the first hour gives the best chance of recovery.",
+    "helplineAction": "Call 1930",
+    "routesTitle": "What you can do here",
+    "routes": {
+      "report": {
+        "title": "Report an incident",
+        "copy": "File a complaint anonymously or with a verified identity."
+      },
+      "track": {
+        "title": "Track a complaint",
+        "copy": "Check the status of a complaint using its reference number."
+      },
+      "suspect": {
+        "title": "Report a suspect",
+        "copy": "Report a suspicious number, UPI ID, website, or account."
+      },
+      "warrior": {
+        "title": "Become a Cyber Warrior",
+        "copy": "Volunteer to help identify and report cyber threats."
+      }
+    },
+    "disclosureTitle": "About this prototype",
+    "disclosureCopy": "CyberRakshak is a demonstration project. It is not affiliated with or endorsed by any government body, does not perform real identity verification, and does not send real OTPs. Reports submitted here are stored in this prototype only and do not reach any authority."
   }
 }

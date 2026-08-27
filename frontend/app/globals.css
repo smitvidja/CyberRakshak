@@ -34,6 +34,32 @@ button, input, select, textarea { font: inherit; }
 .utility-content, .brand-content, .footer-content, .support-band > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .utility-content { min-height: 28px; }
 .utility-actions { display: flex; align-items: center; gap: 11px; }
+/* Contact / support page */
+.contact-page { padding: 28px 0 44px; display: grid; gap: 26px; }
+.contact-intro h1 { margin-top: 6px; color: var(--navy); font-size: 28px; font-weight: 800; }
+.contact-intro p { max-width: 68ch; margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.contact-helpline { display: flex; align-items: center; gap: 16px; border: 1px solid #c5dff8; border-radius: 10px; background: linear-gradient(90deg, #eaf3fd, #f6faff); padding: 20px; }
+.contact-helpline-icon { display: grid; height: 52px; width: 52px; flex-shrink: 0; place-items: center; border-radius: 50%; background: var(--blue); color: #fff; }
+.contact-helpline > div { flex: 1; min-width: 0; }
+.contact-helpline h2 { color: var(--navy); font-size: 17px; font-weight: 800; }
+.contact-helpline p { margin-top: 3px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.contact-helpline a { flex-shrink: 0; border-radius: 7px; background: var(--blue); padding: 12px 22px; color: #fff; font-size: 15px; font-weight: 800; text-decoration: none; }
+.contact-helpline a:hover, .contact-helpline a:focus-visible { background: var(--navy); }
+.contact-section-title { color: var(--navy); font-size: 17px; font-weight: 800; }
+.contact-route-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.contact-route-card { display: block; border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 16px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.contact-route-card:hover, .contact-route-card:focus-visible { box-shadow: 0 6px 16px rgb(15 42 74 / .12); transform: translateY(-2px); }
+.contact-route-card > span { display: grid; height: 40px; width: 40px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+.contact-route-card strong { display: block; margin-top: 10px; color: var(--navy); font-size: 14px; }
+.contact-route-card small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.contact-disclosure { border-left: 3px solid var(--blue); border-radius: 0 8px 8px 0; background: #f7fafd; padding: 16px 18px; }
+.contact-disclosure h2 { color: var(--navy); font-size: 15px; font-weight: 800; }
+.contact-disclosure p { max-width: 78ch; margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+@media (max-width: 700px) {
+  .contact-helpline { align-items: flex-start; flex-direction: column; }
+  .contact-helpline a { width: 100%; text-align: center; }
+}
+
 .text-size-control { display: inline-flex; gap: 6px; }
 .text-size-control button { border: 1px solid rgb(255 255 255 / .35); border-radius: 4px; background: transparent; padding: 1px 7px; color: inherit; font-family: inherit; font-size: 12px; font-weight: 700; line-height: 1.6; cursor: pointer; }
 .text-size-control button:hover:not(:disabled), .text-size-control button:focus-visible { border-color: rgb(255 255 255 / .7); background: rgb(255 255 255 / .12); }
