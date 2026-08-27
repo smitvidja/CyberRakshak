@@ -9,7 +9,7 @@ assume a "fresh" identity (e.g. a 201-on-first-profile-creation test getting a
 backend test suite's assumptions hold again, without touching any other data.
 
 Safe to run at any time: it is idempotent and only ever removes rows tied to
-the two synthetic identities in DEMO_IDENTITIES. It never touches citizen
+the synthetic identities in DEMO_IDENTITIES. It never touches citizen
 profiles/complaints or any non-demo user.
 
 Usage (from the backend/ directory, with the project virtualenv active):
