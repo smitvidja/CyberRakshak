@@ -58,8 +58,11 @@ export function ProductShell({children}: ProductShellProps) {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbs.warriorRegistration")});
     } else if (pathname === warriorHref + "/profile") {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbs.warriorProfileSetup")});
-    } else if (pathname === warriorHref + "/apply") {
-      breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbs.warriorApplication")});
+    } else if (pathname.startsWith(warriorHref + "/apply")) {
+      breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {href: warriorHref + "/apply/resume", label: t("breadcrumbs.warriorApplication")});
+      if (pathname.endsWith("/resume")) breadcrumbItems.push({label: t("breadcrumbs.warriorResume")});
+      else if (pathname.endsWith("/review")) breadcrumbItems.push({label: t("breadcrumbs.warriorReview")});
+      else if (pathname.endsWith("/submitted")) breadcrumbItems.push({label: t("breadcrumbs.warriorSubmitted")});
     } else if (pathname.startsWith(warriorHref)) {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbCurrent")});
     } else {

@@ -104,6 +104,11 @@ class ResumeService:
         for skill in payload.skills:
             if WarriorRepository.get_skill(session, skill.skill_id) is None:
                 raise APIError(status_code=404, code="SKILL_NOT_FOUND", message="A selected skill was not found.")
+        profile.skills.clear()
+        profile.education.clear()
+        profile.experience.clear()
+        profile.certifications.clear()
+        session.flush()
         profile.skills = [WarriorSkill(**item.model_dump()) for item in payload.skills]
         profile.education = [WarriorEducation(**item.model_dump()) for item in payload.education]
         profile.experience = [WarriorExperience(**item.model_dump()) for item in payload.experience]

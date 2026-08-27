@@ -74,6 +74,15 @@ class SkillResponse(SkillInput):
     id: UUID
 
 
+class SkillCatalogResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    name: str
+    category: str | None
+    description: str | None
+
+
 class EducationResponse(EducationInput):
     model_config = ConfigDict(from_attributes=True)
 

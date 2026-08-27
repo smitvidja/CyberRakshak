@@ -9,11 +9,16 @@ from app.core.security import require_roles
 from app.models import User
 from app.models.enums import UserRole
 from app.schemas.common import ErrorResponse, SuccessResponse
-from app.schemas.cyber_warrior import CyberWarriorProfileResponse, ProfileCreate, ProfileUpdate
+from app.schemas.cyber_warrior import CyberWarriorProfileResponse, ProfileCreate, ProfileUpdate, SkillCatalogResponse
 from app.services.warrior_service import CyberWarriorService
 
 router = APIRouter(prefix="/cyber-warriors", tags=["cyber-warriors"])
 WarriorUser = Annotated[User, Depends(require_roles(UserRole.CYBER_WARRIOR))]
+
+
+@router.get("/skills", response_model=SuccessResponse[list[SkillCatalogResponse]], responses={403: {"model": ErrorResponse}})
+def list_skills(session: Annotated[Session, Depends(get_db_session)], current_user: WarriorUser) -> dict[str, object]:
+    return success_response([SkillCatalogResponse.model_validate(item) for item in CyberWarriorService.list_skills(session, current_user)])
 
 
 @router.post("/profile", status_code=status.HTTP_201_CREATED, response_model=SuccessResponse[CyberWarriorProfileResponse], responses={403: {"model": ErrorResponse}, 409: {"model": ErrorResponse}})

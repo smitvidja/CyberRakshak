@@ -1,8 +1,11 @@
 import type {MockIdentityProfile} from "@/lib/api/auth";
+import type {WarriorApplication} from "@/lib/api/cyber-warriors";
 
 const warriorAccessTokenKey = "cyberrakshak.warrior-access-token";
 const warriorIdentityKey = "cyberrakshak.warrior-identity";
 const warriorProfileSetupKey = "cyberrakshak.warrior-profile-setup";
+const warriorResumeKey = "cyberrakshak.warrior-resume";
+const warriorApplicationKey = "cyberrakshak.warrior-application";
 
 export type WarriorIdentitySession = {
   accountEmail: string;
@@ -56,6 +59,40 @@ export function getWarriorProfileSetup(): WarriorProfileSetup | null {
     return typeof profile.city === "string" && typeof profile.state === "string"
       ? profile
       : null;
+  } catch {
+    return null;
+  }
+}
+export type WarriorResumeSession = {
+  fileName: string;
+  resultId: string;
+};
+
+export function setWarriorResume(resume: WarriorResumeSession) {
+  sessionStorage.setItem(warriorResumeKey, JSON.stringify(resume));
+}
+
+export function getWarriorResume(): WarriorResumeSession | null {
+  const value = sessionStorage.getItem(warriorResumeKey);
+  if (!value) return null;
+  try {
+    const resume = JSON.parse(value) as WarriorResumeSession;
+    return typeof resume.fileName === "string" && typeof resume.resultId === "string" ? resume : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setWarriorApplication(application: WarriorApplication) {
+  sessionStorage.setItem(warriorApplicationKey, JSON.stringify(application));
+}
+
+export function getWarriorApplication(): WarriorApplication | null {
+  const value = sessionStorage.getItem(warriorApplicationKey);
+  if (!value) return null;
+  try {
+    const application = JSON.parse(value) as WarriorApplication;
+    return typeof application.id === "string" && typeof application.application_number === "string" ? application : null;
   } catch {
     return null;
   }

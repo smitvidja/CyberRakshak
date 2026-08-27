@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.errors import APIError
 from app.models import (
     CyberWarriorProfile,
+    Skill,
     User,
     WarriorApplication,
     WarriorCertification,
@@ -31,6 +32,11 @@ from app.services.notification_service import NotificationService
 
 
 class CyberWarriorService:
+    @staticmethod
+    def list_skills(session: Session, current_user: User) -> list[Skill]:
+        CyberWarriorService.require_warrior(current_user)
+        return WarriorRepository.list_skills(session)
+
     @staticmethod
     def create_profile(
         session: Session,
@@ -104,6 +110,14 @@ class WarriorApplicationService:
         current_user: User,
     ) -> WarriorApplication:
         profile = WarriorApplicationService._profile(session, current_user)
+        active_statuses = {
+            WarriorApplicationStatus.DRAFT,
+            WarriorApplicationStatus.SUBMITTED,
+            WarriorApplicationStatus.UNDER_REVIEW,
+            WarriorApplicationStatus.APPROVED,
+        }
+        if any(item.status in active_statuses for item in WarriorRepository.list_applications(session, profile.id)):
+            raise APIError(status_code=409, code="CONFLICT", message="An active Cyber Warrior application already exists.")
         application = WarriorApplication(
             warrior_id=profile.id,
             application_number=WarriorApplicationService._number(),
@@ -129,7 +143,7 @@ class WarriorApplicationService:
                 code="CONFLICT",
                 message="Only draft applications can be submitted.",
             )
-        application.status = WarriorApplicationStatus.SUBMITTED
+        application.status = WarriorApplicationStatus.UNDER_REVIEW
         application.submitted_at = datetime.now(timezone.utc)
         AuditService.record(
             session,

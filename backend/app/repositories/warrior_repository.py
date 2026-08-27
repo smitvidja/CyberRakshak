@@ -35,6 +35,10 @@ class WarriorRepository:
         return session.get(Skill, skill_id)
 
     @staticmethod
+    def list_skills(session: Session) -> list[Skill]:
+        return list(session.scalars(select(Skill).order_by(Skill.name)))
+
+    @staticmethod
     def add(session: Session, entity: object) -> object:
         session.add(entity)
         return entity

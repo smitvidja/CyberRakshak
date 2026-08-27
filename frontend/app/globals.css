@@ -309,3 +309,110 @@ button, input, select, textarea { font: inherit; }
   .warrior-profile-actions { align-items: stretch; flex-direction: column-reverse; }
   .warrior-profile-actions button { width: 100%; }
 }
+/* Cyber Warrior application - Session 6.2 */
+.warrior-application-page { padding: 26px 0 42px; }
+.warrior-application-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 18px; align-items: start; }
+.warrior-application-rail, .warrior-application-workspace { border: 1px solid #c8dcec; border-radius: 8px; background: #fff; box-shadow: 0 5px 16px rgb(15 42 74 / .07); }
+.warrior-application-rail { position: sticky; top: 14px; padding: 24px 18px; }
+.warrior-application-rail h1 { margin-top: 10px; font-size: 21px; font-weight: 800; }
+.warrior-application-rail ol { display: grid; margin-top: 22px; gap: 4px; }
+.warrior-application-rail li { display: grid; min-height: 76px; grid-template-columns: 36px 1fr; align-items: center; gap: 10px; border-left: 3px solid transparent; padding: 10px; color: #52647b; }
+.warrior-application-rail li > span { display: grid; height: 34px; width: 34px; place-items: center; border: 1px solid #c8dcec; border-radius: 50%; background: #fff; color: #46617f; }
+.warrior-application-rail li strong, .warrior-application-rail li small { display: block; }
+.warrior-application-rail li strong { color: var(--navy); font-size: 13px; }
+.warrior-application-rail li small { margin-top: 3px; font-size: 11px; line-height: 1.45; }
+.warrior-application-rail li.is-active { border-left-color: var(--blue); background: #edf6ff; }
+.warrior-application-rail li.is-active > span { border-color: var(--blue); background: var(--blue); color: #fff; }
+.warrior-application-rail li.is-complete > span { border-color: #2ca56e; background: #e5f7ed; color: #16835d; }
+.warrior-application-rail-note { display: flex; margin-top: 20px; gap: 9px; border: 1px solid #b8d7f1; border-radius: 7px; background: #f0f7fd; padding: 13px; color: #174a83; font-size: 11px; line-height: 1.55; }
+.warrior-application-rail-note svg { flex: 0 0 auto; }
+.warrior-application-workspace { min-width: 0; padding: 26px; }
+.warrior-application-heading > span { color: var(--blue); font-size: 12px; font-weight: 850; text-transform: uppercase; }
+.warrior-application-heading h2 { margin-top: 7px; font-size: clamp(24px, 2.5vw, 32px); font-weight: 800; }
+.warrior-application-heading p { margin-top: 7px; max-width: 72ch; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.warrior-upload-grid { display: grid; margin-top: 24px; grid-template-columns: minmax(0, 1fr) 260px; gap: 18px; }
+.warrior-resume-dropzone { display: flex; min-height: 250px; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #9fc7e9; border-radius: 8px; background: #f8fbfe; padding: 24px; color: var(--blue); text-align: center; }
+.warrior-resume-dropzone.has-file { border-color: #5fac86; background: #f6fcf8; }
+.warrior-resume-dropzone strong { margin-top: 10px; color: var(--navy); font-size: 17px; }
+.warrior-resume-dropzone > span { margin: 5px 0 10px; color: var(--muted); font-size: 13px; }
+.warrior-resume-dropzone small { margin-top: 10px; color: var(--muted); }
+.warrior-uploaded-file { display: grid; margin-top: 12px; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 7px; padding: 11px 13px; }
+.warrior-uploaded-file > span { display: grid; height: 38px; width: 38px; place-items: center; border-radius: 6px; background: #eaf4ff; color: var(--blue); }
+.warrior-uploaded-file strong, .warrior-uploaded-file small { display: block; }
+.warrior-uploaded-file small { margin-top: 2px; color: var(--muted); }
+.warrior-processing { margin-top: 12px; border: 1px solid #b8d7f1; border-radius: 7px; background: #f0f7fd; padding: 13px; }
+.warrior-processing div { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
+.warrior-processing div span { color: var(--muted); }
+.warrior-processing-track { display: block; height: 6px; margin-top: 10px; overflow: hidden; border-radius: 3px; background: #d8e7f5; }
+.warrior-processing-track i { display: block; height: 100%; width: 72%; background: var(--blue); animation: warrior-progress 1.1s ease-in-out infinite alternate; }
+@keyframes warrior-progress { from { width: 34%; } to { width: 88%; } }
+.warrior-extraction-summary { border: 1px solid var(--border); border-radius: 8px; background: #f8fbfe; padding: 18px; }
+.warrior-extraction-summary h3 { font-size: 16px; font-weight: 800; }
+.warrior-extraction-summary p { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.warrior-extraction-summary ul { display: grid; margin-top: 15px; gap: 10px; }
+.warrior-extraction-summary li { position: relative; padding-left: 18px; color: #274664; font-size: 13px; }
+.warrior-extraction-summary li::before { position: absolute; top: 7px; left: 2px; height: 6px; width: 6px; border-radius: 50%; background: var(--blue); content: ""; }
+.warrior-application-actions { display: flex; margin-top: 24px; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--border); padding-top: 18px; }
+.warrior-application-error { margin-top: 14px; border-left: 4px solid var(--danger); background: #fff2f0; padding: 11px 13px; color: var(--danger); font-size: 13px; font-weight: 750; }
+.warrior-session-notice, .warrior-help-strip { display: flex; margin-top: 16px; min-height: 58px; align-items: center; gap: 10px; border: 1px solid #b8d7f1; border-radius: 7px; background: #edf6ff; padding: 13px 17px; color: #174a83; font-size: 12px; }
+.warrior-session-notice span { color: #415a76; }
+.warrior-ai-review-note { display: flex; margin: 20px 0; gap: 11px; border: 1px solid #f0bd66; border-radius: 7px; background: #fff9ed; padding: 13px; color: #785012; }
+.warrior-ai-review-note svg { flex: 0 0 auto; }
+.warrior-ai-review-note strong { font-size: 13px; }
+.warrior-ai-review-note p { margin-top: 3px; font-size: 12px; line-height: 1.5; }
+.warrior-application-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.warrior-application-workspace form > label { margin-top: 15px; }
+.warrior-application-fieldset { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+.warrior-application-fieldset legend { display: flex; align-items: center; gap: 7px; padding-right: 10px; color: var(--navy); font-size: 15px; font-weight: 800; }
+.warrior-application-fieldset > label { margin-top: 14px; }
+.warrior-review-toolbar { display: flex; margin-top: 18px; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #b8dfc9; border-radius: 7px; background: #f1fbf5; padding: 10px 13px; }
+.warrior-review-toolbar span { display: flex; align-items: center; gap: 7px; color: #117148; font-size: 12px; font-weight: 800; }
+.warrior-review-sections { display: grid; margin-top: 14px; gap: 12px; }
+.warrior-review-sections section { border: 1px solid var(--border); border-radius: 7px; padding: 15px; }
+.warrior-review-sections h3 { color: var(--navy); font-size: 15px; font-weight: 800; }
+.warrior-review-sections dl { display: grid; margin-top: 11px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.warrior-review-sections dt { color: var(--muted); font-size: 11px; }
+.warrior-review-sections dd { margin-top: 3px; overflow-wrap: anywhere; font-size: 13px; font-weight: 700; }
+.warrior-review-sections .wide { grid-column: span 2; }
+.warrior-declaration { margin-top: 17px; border: 1px solid #b8d7f1; border-radius: 7px; background: #f3f8fd; padding: 13px; }
+.warrior-application-loading { display: grid; min-height: 380px; place-items: center; color: var(--muted); font-weight: 750; }
+.warrior-submitted-page { padding: 26px 0 42px; }
+.warrior-submitted-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr); gap: 18px; border: 1px solid #c8dcec; border-radius: 8px; background: #fff; padding: 26px; box-shadow: 0 5px 16px rgb(15 42 74 / .07); }
+.warrior-submitted-hero { display: flex; min-height: 490px; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid var(--border); padding: 24px 36px; text-align: center; }
+.warrior-success-icon { display: grid; height: 112px; width: 112px; place-items: center; border-radius: 50%; background: #dff7e9; color: #15915d; }
+.warrior-submitted-hero h1 { margin-top: 20px; font-size: clamp(28px, 3vw, 40px); font-weight: 800; }
+.warrior-submitted-hero > p { margin-top: 9px; max-width: 56ch; color: var(--muted); line-height: 1.65; }
+.warrior-confirmation-mail { display: flex; margin-top: 24px; max-width: 560px; align-items: center; gap: 12px; border: 1px solid #b8dfc9; border-radius: 7px; background: #f1fbf5; padding: 14px 17px; color: #176a49; text-align: left; font-size: 13px; line-height: 1.5; }
+.warrior-submitted-actions { display: flex; margin-top: 26px; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.warrior-status-card { align-self: center; border: 1px solid var(--border); border-radius: 8px; padding: 22px; }
+.warrior-status-card h2 { font-size: 21px; font-weight: 800; }
+.warrior-status-pill { display: inline-flex; margin-top: 14px; align-items: center; gap: 7px; border-radius: 16px; background: #dcf6e8; padding: 7px 11px; color: #0b754b; font-size: 13px; font-weight: 800; }
+.warrior-status-card > p { margin-top: 13px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.warrior-status-card dl { margin-top: 17px; }
+.warrior-status-card dl > div { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border); padding: 12px 0; }
+.warrior-status-card dt { display: flex; align-items: center; gap: 7px; color: #3e5875; font-size: 12px; }
+.warrior-status-card dd { text-align: right; font-size: 12px; font-weight: 750; }
+.warrior-status-note { margin-top: 12px; border-radius: 7px; background: #edf6ff; padding: 12px; color: #174a83; font-size: 11px; line-height: 1.5; }
+.warrior-help-strip a { margin-left: auto; color: var(--blue); font-weight: 800; }
+@media (max-width: 960px) {
+  .warrior-application-layout, .warrior-submitted-layout { grid-template-columns: 1fr; }
+  .warrior-application-rail { position: static; }
+  .warrior-application-rail ol { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .warrior-application-rail li { border-top: 3px solid transparent; border-left: 0; }
+  .warrior-application-rail li.is-active { border-top-color: var(--blue); }
+  .warrior-submitted-hero { min-height: 0; border-right: 0; border-bottom: 1px solid var(--border); }
+}
+@media (max-width: 700px) {
+  .warrior-application-page, .warrior-submitted-page { padding-top: 16px; }
+  .warrior-application-workspace, .warrior-submitted-layout { padding: 18px; }
+  .warrior-application-rail ol, .warrior-upload-grid, .warrior-application-form-grid, .warrior-review-sections dl { grid-template-columns: 1fr; }
+  .warrior-application-rail li { min-height: 62px; }
+  .warrior-application-rail li small { display: none; }
+  .warrior-application-actions, .warrior-review-toolbar, .warrior-session-notice, .warrior-help-strip { align-items: stretch; flex-direction: column; }
+  .warrior-application-actions button { width: 100%; }
+  .warrior-review-sections .wide { grid-column: auto; }
+  .warrior-submitted-hero { padding: 18px 4px; }
+  .warrior-status-card dl > div { grid-template-columns: 1fr; }
+  .warrior-status-card dd { text-align: left; }
+  .warrior-help-strip a { margin-left: 0; }
+}

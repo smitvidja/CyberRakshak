@@ -37,6 +37,14 @@ def test_resume_data_stays_untrusted_until_explicit_confirmation(api_client: tup
     result = uploaded.json()['data']
     assert result["status"] == "COMPLETED"
     assert result["extracted_data"]["review_required"] is True
+    assert result["extracted_data"]["education"]
+    assert result["extracted_data"]["experience"]
+    assert result["extracted_data"]["skills"]
+    assert result["extracted_data"]["certifications"]
+
+    catalog = client.get("/api/v1/cyber-warriors/skills", headers=headers)
+    assert catalog.status_code == 200
+    assert any(item["id"] == str(skill.id) for item in catalog.json()["data"])
 
     persisted_profile = session.get(CyberWarriorProfile, profile['id'])
     assert persisted_profile is not None
@@ -58,6 +66,19 @@ def test_resume_data_stays_untrusted_until_explicit_confirmation(api_client: tup
     parsing_row = session.get(ResumeParsingResult, result['id'])
     assert parsing_row is not None
     assert parsing_row.confirmed_at is not None
+    replacement_upload = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("updated-resume.pdf", b"%PDF-1.4 replacement", "application/pdf")})
+    assert replacement_upload.status_code == 201
+    replacement = client.post(f"/api/v1/resume/parsing-results/{replacement_upload.json()['data']['id']}/confirm", headers=headers, json={
+        "display_name": "Reviewed Warrior",
+        "bio": "A second reviewed resume replaces the prior profile details.",
+        "skills": [{"skill_id": str(skill.id), "proficiency_level": "EXPERT", "years_of_experience": 4}],
+        "education": [{"institution": "Replacement Institute", "degree": "MSc"}],
+        "experience": [],
+        "certifications": [],
+    })
+    assert replacement.status_code == 200
+    assert len(replacement.json()['data']["skills"]) == 1
+    assert replacement.json()['data']["skills"][0]["proficiency_level"] == "EXPERT"
 
 
 def test_resume_parser_failure_is_persisted_without_profile_changes(api_client: tuple[TestClient, Session], monkeypatch) -> None:
@@ -90,7 +111,9 @@ def test_application_and_warrior_report_submit_with_owned_evidence(api_client: t
     assert application.status_code == 201
     submitted_application = client.post(f"/api/v1/warrior-applications/{application.json()['data']['id']}/submit", headers=headers)
     assert submitted_application.status_code == 200
-    assert submitted_application.json()['data']["status"] == "SUBMITTED"
+    assert submitted_application.json()['data']["status"] == "UNDER_REVIEW"
+    duplicate = client.post("/api/v1/warrior-applications", headers=headers, json={"statement": "Duplicate application."})
+    assert duplicate.status_code == 409
 
     report = client.post("/api/v1/warrior-reports", headers=headers, json={"title": "Suspicious phishing domain", "description": "A suspicious domain was observed during permitted research.", "report_type": "PHISHING"})
     assert report.status_code == 201
@@ -132,5 +155,5 @@ def test_admin_review_is_server_side_role_protected(api_client: tuple[TestClient
 def test_warrior_contracts_are_registered_in_openapi(api_client: tuple[TestClient, Session]) -> None:
     client, _ = api_client
     paths = client.get("/openapi.json").json()["paths"]
-    for path in ("/api/v1/cyber-warriors/profile", "/api/v1/resume/upload", "/api/v1/resume/parsing-results/{result_id}/confirm", "/api/v1/warrior-applications/{application_id}/submit", "/api/v1/warrior-reports/{report_id}/submit", "/api/v1/admin/warrior-applications/{application_id}/status"):
+    for path in ("/api/v1/cyber-warriors/profile", "/api/v1/cyber-warriors/skills", "/api/v1/resume/upload", "/api/v1/resume/parsing-results/{result_id}/confirm", "/api/v1/warrior-applications/{application_id}/submit", "/api/v1/warrior-reports/{report_id}/submit", "/api/v1/admin/warrior-applications/{application_id}/status"):
         assert path in paths
