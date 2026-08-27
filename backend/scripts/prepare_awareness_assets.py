@@ -92,7 +92,11 @@ def prepare() -> None:
         square = Image.new("RGB", (side, side), (255, 255, 255))
         square.paste(logo, ((side - logo.width) // 2, (side - logo.height) // 2))
         square = square.resize((320, 320), Image.LANCZOS)
-        logo_destination = DEST / "logo.webp"
+        # Filename carries a version suffix on purpose. Browsers (and Next.js's image
+        # optimizer) cache aggressively by URL, so replacing the art at a stable path
+        # left people staring at the previous logo until they hard-refreshed. Bump the
+        # suffix whenever the mark itself changes so the URL changes with it.
+        logo_destination = DEST / "logo-v2.webp"
         square.save(logo_destination, "WEBP", quality=90, method=6)
         print(
             f"{'logo':<24} 320x320  "
