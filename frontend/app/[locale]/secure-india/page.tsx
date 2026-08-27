@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {hasLocale} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
@@ -14,9 +15,14 @@ type Props = {params: Promise<{locale: string}>};
 // (Secure India is a crime-map feature, not the awareness posters) and wrong
 // chrome (private warrior sidebar for a public teaser).
 //
-// No crime-map artwork is embedded here yet - it was shared as a chat image,
-// which cannot be read as a file. This page is honest about being unbuilt
-// rather than shipping a placeholder graphic with invented statistics.
+// The preview graphic below is a full mockup of the planned page (a Bengaluru
+// hot-zone heatmap), converted from demo-assets/Resources/secure-india-heatmap.png
+// by backend/scripts/prepare_awareness_assets.py. It is shown as a screenshot
+// preview, not live content: the feature underneath it does not exist yet, and
+// every number visible in the image (complaint counts, resolution rate, city
+// rankings) is invented for the mockup. The mockup itself already labels its
+// numbers "Mock Data" / "Illustrative" - do not crop that labelling out, and
+// do not let a future real integration reuse this image without replacing it.
 export default async function SecureIndiaPage({params}: Props) {
   const {locale} = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
@@ -50,6 +56,23 @@ export default async function SecureIndiaPage({params}: Props) {
           ))}
         </div>
         <p className="secure-india-mock-note">{t("mockDataNote")}</p>
+      </section>
+
+      <section className="secure-india-screenshot" aria-labelledby="secure-india-screenshot-title">
+        <h2 id="secure-india-screenshot-title">{t("screenshotTitle")}</h2>
+        <p className="secure-india-screenshot-copy">{t("screenshotCopy")}</p>
+        <div className="secure-india-screenshot-frame">
+          <span className="secure-india-screenshot-chip">{t("upcomingBadge")}</span>
+          <Image
+            alt={t("screenshotAlt")}
+            className="secure-india-screenshot-image"
+            height={2093}
+            sizes="(max-width: 700px) 100vw, 900px"
+            src="/images/awareness/secure-india-preview-v1.webp"
+            width={900}
+          />
+        </div>
+        <p className="secure-india-mock-note">{t("screenshotMockNote")}</p>
       </section>
 
       <section className="secure-india-cta">

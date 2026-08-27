@@ -42,6 +42,12 @@ button, input, select, textarea { font: inherit; }
 .resources-public-page h1 { color: var(--navy); font-size: 26px; font-weight: 800; }
 .resources-public-page > p { max-width: 68ch; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
+/* Home page "Upcoming Features" panel - amber/gold highlight, deliberately a
+   different color from the blue used everywhere else on the site, so it reads
+   at a glance as "not live yet" rather than blending in with real features. */
+.upcoming-features-badge { display: inline-block; border-radius: 999px; background: #f0a94e; padding: 6px 14px; color: #4a2c00; font-size: 12px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
+.upcoming-feature-tile { text-decoration: none; transition: background-color .15s; }
+
 /* Secure India - an "upcoming feature" teaser, deliberately separate from
    /resources. Large, high-contrast "upcoming" badge per the explicit ask: make
    it unmistakable this is not live yet, not a subtle caption. */
@@ -64,6 +70,17 @@ button, input, select, textarea { font: inherit; }
 .secure-india-cta a { flex-shrink: 0; border-radius: 7px; background: var(--blue); padding: 11px 20px; color: #fff; font-size: 14px; font-weight: 800; text-decoration: none; }
 .secure-india-cta a:hover, .secure-india-cta a:focus-visible { background: var(--navy); }
 .secure-india-helpline { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+.secure-india-screenshot { border: 1px solid var(--border); border-radius: 10px; background: #fff; padding: 22px; }
+.secure-india-screenshot h2 { color: var(--navy); font-size: 17px; font-weight: 800; }
+.secure-india-screenshot-copy { max-width: 68ch; margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+/* The mockup is a full-page screenshot (tall, 900x2093) - framed like a browser
+   window rather than shown bare, so it unmistakably reads as "a preview of a
+   screen" and not as live content rendered on this page. */
+.secure-india-screenshot-frame { position: relative; margin: 16px auto 0; overflow: hidden; border: 1px solid #d7e2ee; border-radius: 10px; background: #eef3f9; max-width: 620px; }
+.secure-india-screenshot-frame::before { content: ""; position: absolute; inset: 0 0 auto 0; z-index: 1; height: 34px; border-bottom: 1px solid #d7e2ee; background: #f4f7fb; }
+.secure-india-screenshot-frame::after { content: "\25CF \25CF \25CF"; position: absolute; top: 10px; left: 14px; z-index: 2; color: #b9c6d6; font-size: 11px; letter-spacing: 3px; }
+.secure-india-screenshot-chip { position: absolute; top: 44px; right: 14px; z-index: 2; border-radius: 999px; background: #ffb020; padding: 5px 12px; color: #3a2400; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; box-shadow: 0 2px 8px rgb(0 0 0 / .15); }
+.secure-india-screenshot-image { display: block; width: 100%; height: auto; margin-top: 34px; }
 @media (max-width: 700px) {
   .secure-india-cta { flex-direction: column; align-items: flex-start; }
   .secure-india-cta a { width: 100%; text-align: center; }

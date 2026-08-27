@@ -163,6 +163,35 @@
         "title": "Cyber security tips",
         "copy": "Simple steps to protect your digital life every day."
       }
+    },
+    "upcomingBadge": "Upcoming feature",
+    "upcomingTitle": "What's coming next",
+    "upcomingCopy": "These features are planned but not built yet. Nothing below is live functionality - they are listed here so you know what to expect, not to imply they work today.",
+    "upcoming": {
+      "secureIndia": {
+        "title": "Secure India",
+        "copy": "A cyber crime map visualizer with city rankings, hot zones and hot crimes, linked directly to the matching awareness guide."
+      },
+      "speechToText": {
+        "title": "Speech-to-text for reports",
+        "copy": "Speak your incident description instead of typing it, for long descriptive fields."
+      },
+      "regionalLanguages": {
+        "title": "More regional languages",
+        "copy": "Gujarati, Assamese, Kannada, Telugu, and more - beyond today's English and Hindi."
+      },
+      "suspectSearch": {
+        "title": "Search suspect reports",
+        "copy": "Look up whether a number, UPI ID, or website has already been reported by someone else, not just report a new one."
+      },
+      "resumeAutofill": {
+        "title": "Real resume auto-fill",
+        "copy": "Uploading a resume will genuinely extract and fill your Cyber Warrior application - today's parser is a static mock."
+      },
+      "downloadableSubmission": {
+        "title": "Downloadable complaint copy",
+        "copy": "Download a printable copy of your submitted complaint to hand in at a police station."
+      }
     }
   },
   "validation": {
@@ -1208,6 +1237,10 @@
     "ctaTitle": "In the meantime",
     "ctaCopy": "Read the awareness guides already available in Learning Corner.",
     "ctaAction": "Go to Learning Corner",
-    "helplineNote": "Lost money to fraud right now? Do not wait for this feature - call 1930."
+    "helplineNote": "Lost money to fraud right now? Do not wait for this feature - call 1930.",
+    "screenshotTitle": "A preview of what is coming",
+    "screenshotCopy": "An early mockup of the planned Secure India dashboard. Every number in this image is invented for the mockup - none of it is real reported data.",
+    "screenshotAlt": "Mockup preview of the planned Secure India crime-map dashboard, showing invented sample data only",
+    "screenshotMockNote": "This is a design mockup, not a working feature. The complaint counts, city rankings, and percentages shown are illustrative placeholders, not real figures from this portal."
   }
 }

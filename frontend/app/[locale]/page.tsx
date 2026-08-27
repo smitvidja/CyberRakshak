@@ -3,7 +3,7 @@ import Link from "next/link";
 import {hasLocale} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
-import {BellRing, BookOpenCheck, ClipboardCheck, GraduationCap, Lightbulb, Megaphone, PhoneCall, ShieldCheck, Siren, UserRoundPlus} from "lucide-react";
+import {BellRing, BookOpenCheck, ClipboardCheck, FileDown, FileSearch, FileText, GraduationCap, Languages, Lightbulb, Map, Megaphone, Mic, PhoneCall, ShieldCheck, Siren, UserRoundPlus} from "lucide-react";
 
 import {routing} from "@/lib/i18n/routing";
 
@@ -46,6 +46,14 @@ export default async function LocaleHomePage({params}: Props) {
     {key: "fakeCalls", icon: PhoneCall},
     {key: "advisory", icon: Megaphone},
     {key: "tips", icon: Lightbulb}
+  ] as const;
+  const upcomingFeatures = [
+    {key: "secureIndia", href: `/${locale}/secure-india`, icon: Map},
+    {key: "speechToText", href: null, icon: Mic},
+    {key: "regionalLanguages", href: null, icon: Languages},
+    {key: "suspectSearch", href: null, icon: FileSearch},
+    {key: "resumeAutofill", href: null, icon: FileText},
+    {key: "downloadableSubmission", href: null, icon: FileDown}
   ] as const;
   const quickLinks = [
     {key: "warrior", href: `/${locale}/cyber-warrior`, icon: UserRoundPlus},
@@ -139,6 +147,35 @@ export default async function LocaleHomePage({params}: Props) {
           </div>
           <Link className="mt-2 block rounded-[6px] bg-[#075bbf] px-4 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-[#064b9d]" href={learningHref}>{t("viewUpdates")}</Link>
         </aside>
+      </section>
+
+      <section aria-labelledby="upcoming-features-title" className="mx-auto mt-7 max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="upcoming-features-panel rounded-[8px] border-2 border-[#f0a94e] bg-gradient-to-br from-[#fff6e8] to-[#fff1da] px-6 py-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="upcoming-features-badge">{t("upcomingBadge")}</span>
+            <h2 className="text-xl font-bold text-[#7a4a00]" id="upcoming-features-title">{t("upcomingTitle")}</h2>
+          </div>
+          <p className="mt-2 max-w-3xl text-sm text-[#8a5a10]">{t("upcomingCopy")}</p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {upcomingFeatures.map(({key, href, icon: Icon}) => {
+              const tile = (
+                <>
+                  <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#fdebc8] text-[#8a5a10]"><Icon size={19} strokeWidth={1.8} /></span>
+                  <span className="min-w-0">
+                    <span className="block text-[14px] font-bold leading-5 text-[#5c3900]">{t(`upcoming.${key}.title`)}</span>
+                    <span className="mt-1 block text-[12px] leading-[1.5] text-[#8a5a10]">{t(`upcoming.${key}.copy`)}</span>
+                  </span>
+                </>
+              );
+              const className = "upcoming-feature-tile flex items-start gap-3 rounded-[7px] border border-[#f0d5a0] bg-white/70 p-3.5";
+              return href ? (
+                <Link className={className + " hover:bg-white"} href={href} key={key}>{tile}</Link>
+              ) : (
+                <div className={className} key={key}>{tile}</div>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       <section id="learning" className="mx-auto mt-7 max-w-[1440px] px-4 sm:px-6 lg:px-8">

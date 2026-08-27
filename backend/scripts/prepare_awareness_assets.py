@@ -84,6 +84,22 @@ def prepare() -> None:
             f"{before / 1024 / 1024:.1f}MB -> {after / 1024:.0f}KB"
         )
 
+    preview_source = SOURCE / "secure-india-heatmap.png"
+    if preview_source.exists():
+        preview = Image.open(preview_source).convert("RGB")
+        if preview.width > MAX_WIDTH:
+            height = round(preview.height * MAX_WIDTH / preview.width)
+            preview = preview.resize((MAX_WIDTH, height), Image.LANCZOS)
+        preview_destination = DEST / "secure-india-preview-v1.webp"
+        preview.save(preview_destination, "WEBP", quality=QUALITY, method=6)
+        print(
+            f"{'secure-india-preview':<24} {preview.width}x{preview.height}  "
+            f"{preview_source.stat().st_size / 1024 / 1024:.1f}MB -> "
+            f"{preview_destination.stat().st_size / 1024:.0f}KB"
+        )
+    else:
+        print("MISSING  secure-india-heatmap.png - skipped")
+
     logo_source = SOURCE / "Logo.png"
     if logo_source.exists():
         logo = _trim_white(Image.open(logo_source).convert("RGB"))
@@ -104,7 +120,7 @@ def prepare() -> None:
             f"{logo_destination.stat().st_size / 1024:.0f}KB"
         )
     else:
-        print("MISSING  Logo 2.png - skipped")
+        print("MISSING  Logo.png - skipped")
 
     if total_before:
         print(
