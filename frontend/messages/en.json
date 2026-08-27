@@ -1016,7 +1016,9 @@
     "rankGold": "Gold Warrior",
     "rankSilver": "Silver Warrior",
     "rankBronze": "Bronze Warrior",
-    "showingEntries": "Showing {start} to {end} of {total} entries"
+    "showingEntries": "Showing {start} to {end} of {total} entries",
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
   },
   "warriorBadges": {
     "title": "Badges & Rewards",

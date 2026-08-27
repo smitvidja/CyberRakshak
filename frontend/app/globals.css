@@ -669,7 +669,10 @@ button, input, select, textarea { font: inherit; }
 .warrior-podium-tile small { color: var(--muted); font-size: 12px; }
 .warrior-podium-rank-title { margin-top: 4px; color: var(--blue); font-size: 11px; font-weight: 800; }
 .warrior-leaderboard-table { margin-top: 12px; overflow-x: auto; }
-.warrior-leaderboard-row { display: grid; grid-template-columns: 44px minmax(0, 1.2fr) 70px 90px 100px 100px; gap: 10px; align-items: center; border-top: 1px solid var(--border); padding: 10px 6px; font-size: 13px; white-space: nowrap; }
+/* min-width keeps the columns from squeezing into each other when the content area is
+   narrow (or when a longer Hindi/uppercase header needs the room) - the table scrolls
+   horizontally inside its own container instead of letting headers collide. */
+.warrior-leaderboard-row { display: grid; grid-template-columns: 44px minmax(0, 1.2fr) 72px 116px 104px 104px; gap: 10px; align-items: center; border-top: 1px solid var(--border); padding: 10px 6px; font-size: 13px; white-space: nowrap; min-width: 620px; }
 .warrior-leaderboard-badge-icons { display: flex; gap: 4px; }
 .warrior-mini-badge { display: grid; height: 22px; width: 22px; place-items: center; border-radius: 50%; }
 .warrior-mini-badge.tone-blue { background: #e1edfb; color: #1d4ed8; }
@@ -683,7 +686,9 @@ button, input, select, textarea { font: inherit; }
 .warrior-podium-tile.rank-1 .warrior-podium-ribbon { background: #f0c766; color: #7a5a00; }
 .warrior-podium-tile.rank-2 .warrior-podium-ribbon { background: #c3cbd4; color: #33404d; }
 .warrior-podium-tile.rank-3 .warrior-podium-ribbon { background: #d99a66; color: #5c3315; }
-.warrior-leaderboard-row.warrior-leaderboard-head { border-top: 0; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+/* The header wraps rather than nowrapping: a longer translated label (Hindi especially)
+   must push to a second line, never overflow its cell into the next column. */
+.warrior-leaderboard-row.warrior-leaderboard-head { border-top: 0; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; white-space: normal; align-items: end; line-height: 1.25; }
 .warrior-leaderboard-row.is-you { background: var(--blue-soft); font-weight: 800; }
 .warrior-badge-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
 .warrior-badge-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 8px; padding: 18px 12px; text-align: center; }
@@ -740,8 +745,12 @@ button, input, select, textarea { font: inherit; }
   .warrior-track-timeline { grid-template-columns: 1fr !important; border-left: 2px solid var(--border); padding-left: 16px; }
   .warrior-track-timeline > li { flex-direction: row; align-items: flex-start; text-align: left; padding: 0; }
   .warrior-track-timeline > li > span { position: absolute; left: -27px; top: -1px; }
-  .warrior-leaderboard-row { grid-template-columns: 36px minmax(0, 1fr) 60px; }
-  .warrior-leaderboard-row > span:nth-child(4), .warrior-leaderboard-row > span:nth-child(5) { display: none; }
+  /* Narrow screens show only rank / username / points. Every hidden column must be
+     listed here or the leftover cells wrap onto a broken second row. */
+  .warrior-leaderboard-row { grid-template-columns: 36px minmax(0, 1fr) 60px; min-width: 0; }
+  .warrior-leaderboard-row > span:nth-child(4),
+  .warrior-leaderboard-row > span:nth-child(5),
+  .warrior-leaderboard-row > span:nth-child(6) { display: none; }
   .warrior-resource-category-grid { grid-template-columns: 1fr; }
 }
 /* Session 6.3/6.4 follow-up fixes: drafts, review edit links, evidence view, pagination, search */

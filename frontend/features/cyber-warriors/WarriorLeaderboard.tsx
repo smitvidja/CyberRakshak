@@ -129,9 +129,9 @@ export function WarriorLeaderboard() {
           <div className="warrior-leaderboard-pagination">
             <span>{t("showingEntries", {end: Math.min(pageStart + pageSize, rows.length), start: pageStart + 1, total: rows.length})}</span>
             <div className="warrior-pagination-controls">
-              <button disabled={currentPage <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))} type="button"><ChevronLeft aria-hidden="true" size={16} /></button>
+              <button aria-label={t("previousPage")} disabled={currentPage <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))} type="button"><ChevronLeft aria-hidden="true" size={16} /></button>
               <span>{currentPage} / {totalPages}</span>
-              <button disabled={currentPage >= totalPages} onClick={() => setPage((current) => Math.min(totalPages, current + 1))} type="button"><ChevronRight aria-hidden="true" size={16} /></button>
+              <button aria-label={t("nextPage")} disabled={currentPage >= totalPages} onClick={() => setPage((current) => Math.min(totalPages, current + 1))} type="button"><ChevronRight aria-hidden="true" size={16} /></button>
             </div>
           </div>
           <p className="warrior-status-note">{t("demoDataNote")}</p>
