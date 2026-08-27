@@ -17,6 +17,8 @@
     "textSize": "A- A+",
     "decreaseTextSize": "Decrease text size",
     "increaseTextSize": "Increase text size",
+    "resetTextSize": "Reset text size to default",
+    "reassuranceLine": "You're safe here. We'll help you through this, one step at a time.",
     "languages": {
       "en": "English",
       "hi": "Hindi"

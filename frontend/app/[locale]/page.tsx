@@ -64,7 +64,7 @@ export default async function LocaleHomePage({params}: Props) {
 
   return (
     <main className="home-portal overflow-x-hidden bg-[#f5f8fc] pb-10">
-      <section className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8">
+      <section className="shell-container py-4">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.95fr)_minmax(292px,0.82fr)]">
           <section className="home-hero relative min-h-[292px] overflow-hidden rounded-[8px] bg-[#062d68]" aria-labelledby="home-title">
             <Image alt="" className="object-cover object-center" fill priority sizes="(max-width: 1024px) 100vw, 70vw" src="/images/home/cyber-safety-hero.png" />
@@ -81,16 +81,24 @@ export default async function LocaleHomePage({params}: Props) {
           </section>
 
           <aside className="grid gap-2 lg:grid-rows-4" aria-label={t("quickLinksLabel")}>
-            {quickLinks.map(({key, href, icon: Icon}) => (
-              <Link key={key} href={href} className="portal-action-card group flex min-h-[66px] items-center gap-3 rounded-[8px] border border-slate-200 bg-white px-4 py-3 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]">
-                <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#bfd9f2] bg-[#edf6ff] text-[#075bbf]"><Icon size={20} strokeWidth={1.8} /></span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] font-bold leading-5 text-[#092a58]">{t(`quick.${key}.title`)}</span>
-                  <span className="mt-0.5 block text-xs leading-5 text-slate-600">{t(`quick.${key}.copy`)}</span>
-                </span>
-                <span aria-hidden="true" className="text-lg text-[#315274] transition-transform duration-150 group-hover:translate-x-0.5">&gt;</span>
-              </Link>
-            ))}
+            {quickLinks.map(({key, href, icon: Icon}) => {
+              // "Stay Alert" gets the warm teal accent instead of the same blue as every
+              // other tile - a small, deliberate touch of variety (matching the approved
+              // reference direction), not a full recolor of the other three.
+              const iconTint = key === "learn"
+                ? "border-[#a8d9cd] bg-[#e6f6f2] text-[#1f9a86]"
+                : "border-[#bfd9f2] bg-[#edf6ff] text-[#075bbf]";
+              return (
+                <Link key={key} href={href} className="portal-action-card group flex min-h-[66px] items-center gap-3 rounded-[8px] border border-slate-200 bg-white px-4 py-3 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]">
+                  <span aria-hidden="true" className={"grid h-10 w-10 shrink-0 place-items-center rounded-full border " + iconTint}><Icon size={20} strokeWidth={1.8} /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[15px] font-bold leading-5 text-[#092a58]">{t(`quick.${key}.title`)}</span>
+                    <span className="mt-0.5 block text-xs leading-5 text-slate-600">{t(`quick.${key}.copy`)}</span>
+                  </span>
+                  <span aria-hidden="true" className="text-lg text-[#315274] transition-transform duration-150 group-hover:translate-x-0.5">&gt;</span>
+                </Link>
+              );
+            })}
           </aside>
         </div>
 
@@ -106,7 +114,7 @@ export default async function LocaleHomePage({params}: Props) {
         </section>
       </section>
 
-      <section className="mx-auto grid max-w-[1440px] gap-5 px-4 sm:px-6 xl:grid-cols-[minmax(0,1fr)_282px] xl:px-8">
+      <section className="shell-container grid gap-5 xl:grid-cols-[minmax(0,1fr)_282px]">
         <section aria-labelledby="report-categories">
           <div className="portal-section-heading mb-4">
             <span aria-hidden="true" />
@@ -149,7 +157,7 @@ export default async function LocaleHomePage({params}: Props) {
         </aside>
       </section>
 
-      <section aria-labelledby="upcoming-features-title" className="mx-auto mt-7 max-w-[1440px] px-4 sm:px-6 lg:px-8">
+      <section aria-labelledby="upcoming-features-title" className="shell-container mt-7">
         <div className="upcoming-features-panel rounded-[8px] border-2 border-[#f0a94e] bg-gradient-to-br from-[#fff6e8] to-[#fff1da] px-6 py-6">
           <div className="flex flex-wrap items-center gap-3">
             <span className="upcoming-features-badge">{t("upcomingBadge")}</span>
@@ -178,7 +186,7 @@ export default async function LocaleHomePage({params}: Props) {
         </div>
       </section>
 
-      <section id="learning" className="mx-auto mt-7 max-w-[1440px] px-4 sm:px-6 lg:px-8">
+      <section id="learning" className="shell-container mt-7">
         <div className="flex flex-col gap-4 rounded-[8px] border border-blue-100 bg-[#edf6ff] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4"><span aria-hidden="true" className="grid h-12 w-12 place-items-center rounded-[6px] bg-[#075bbf] text-white"><GraduationCap size={24} strokeWidth={1.8} /></span><div><h2 className="text-lg font-bold text-[#063d86]">{t("learningTitle")}</h2><p className="mt-1 text-sm text-slate-600">{t("learningCopy")}</p></div></div>
           <Link className="portal-outline-link w-fit" href={learningHref}>{t("learningAction")}</Link>
