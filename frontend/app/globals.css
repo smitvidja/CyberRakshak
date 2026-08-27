@@ -489,6 +489,18 @@ button, input, select, textarea { font: inherit; }
 .warrior-stat-tile.tone-amber > span { background: #fdf0dc; color: #9d5900; }
 .warrior-stat-tile.tone-green > span { background: #dcf6e8; color: #0b754b; }
 .warrior-stat-tile.tone-purple > span { background: #ede7fb; color: #5b3ec9; }
+.warrior-stat-tile.tone-gold > span { background: #fdf1cf; color: #b8860b; }
+.warrior-stat-tile-level strong { font-size: 18px; }
+.warrior-stat-tile-level .warrior-level-track { display: block; margin-top: 8px; height: 6px; width: 100%; place-items: initial; border-radius: 999px; background: #eef2f6; overflow: hidden; }
+.warrior-level-track i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #f0c766, #b8860b); }
+.warrior-reward-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.warrior-reward-tile { border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+.warrior-reward-tile > span { display: grid; margin: 0 auto; height: 44px; width: 44px; place-items: center; border-radius: 50%; }
+.warrior-reward-tile > span.tone-blue { background: var(--blue-soft); color: var(--blue); }
+.warrior-reward-tile > span.tone-green { background: #dcf6e8; color: #0b754b; }
+.warrior-reward-tile > span.tone-purple { background: #ede7fb; color: #5b3ec9; }
+.warrior-reward-tile strong { display: block; margin-top: 10px; font-size: 14px; }
+.warrior-reward-tile p { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.4; }
 .warrior-cta-banner { display: grid; grid-template-columns: minmax(0, 1fr) 220px; align-items: center; gap: 20px; border: 1px solid #c8dcec; border-radius: 8px; background: linear-gradient(135deg, #eef6ff, #f8fbff); padding: 22px 26px; }
 .warrior-cta-banner .eyebrow { display: block; }
 .warrior-cta-banner h2 { margin-top: 5px; font-size: 24px; font-weight: 800; }
@@ -650,19 +662,50 @@ button, input, select, textarea { font: inherit; }
 .warrior-podium-tile.is-you { box-shadow: 0 0 0 2px rgb(7 95 185 / .25); }
 .warrior-podium-rank { display: grid; height: 24px; width: 24px; place-items: center; border-radius: 50%; background: #eef2f6; color: var(--navy); font-size: 12px; font-weight: 800; }
 .warrior-podium-badge { display: grid; height: 52px; width: 52px; margin-top: 6px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+.warrior-podium-tile.rank-1 .warrior-podium-badge { background: #fdf1cf; color: #b8860b; }
+.warrior-podium-tile.rank-2 .warrior-podium-badge { background: #e9edf2; color: #64748b; }
+.warrior-podium-tile.rank-3 .warrior-podium-badge { background: #fbe3d2; color: #a0522d; }
 .warrior-podium-tile strong { margin-top: 8px; font-size: 13px; }
 .warrior-podium-tile small { color: var(--muted); font-size: 12px; }
 .warrior-podium-rank-title { margin-top: 4px; color: var(--blue); font-size: 11px; font-weight: 800; }
 .warrior-leaderboard-table { margin-top: 12px; overflow-x: auto; }
-.warrior-leaderboard-row { display: grid; grid-template-columns: 50px minmax(0, 1.4fr) 90px 90px 110px; gap: 10px; align-items: center; border-top: 1px solid var(--border); padding: 10px 6px; font-size: 13px; white-space: nowrap; }
+.warrior-leaderboard-row { display: grid; grid-template-columns: 44px minmax(0, 1.2fr) 70px 90px 100px 100px; gap: 10px; align-items: center; border-top: 1px solid var(--border); padding: 10px 6px; font-size: 13px; white-space: nowrap; }
+.warrior-leaderboard-badge-icons { display: flex; gap: 4px; }
+.warrior-mini-badge { display: grid; height: 22px; width: 22px; place-items: center; border-radius: 50%; }
+.warrior-mini-badge.tone-blue { background: #e1edfb; color: #1d4ed8; }
+.warrior-mini-badge.tone-green { background: #dcf3e6; color: #15803d; }
+.warrior-mini-badge.tone-amber { background: #fdecd2; color: #b45309; }
+.warrior-mini-badge.tone-purple { background: #ece3fb; color: #7c3aed; }
+.warrior-mini-badge.tone-gold { background: #fdf1cf; color: #b8860b; }
+.warrior-status-note-inline { color: var(--muted); }
+.warrior-podium-ribbon { position: relative; }
+.warrior-podium-ribbon::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 12px; height: 10px; background: inherit; transform: translateX(-50%); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.warrior-podium-tile.rank-1 .warrior-podium-ribbon { background: #f0c766; color: #7a5a00; }
+.warrior-podium-tile.rank-2 .warrior-podium-ribbon { background: #c3cbd4; color: #33404d; }
+.warrior-podium-tile.rank-3 .warrior-podium-ribbon { background: #d99a66; color: #5c3315; }
 .warrior-leaderboard-row.warrior-leaderboard-head { border-top: 0; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
 .warrior-leaderboard-row.is-you { background: var(--blue-soft); font-weight: 800; }
 .warrior-badge-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
 .warrior-badge-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 8px; padding: 18px 12px; text-align: center; }
 .warrior-badge-tile.is-earned { background: #fff; }
-.warrior-badge-tile.is-earned > span { display: grid; height: 52px; width: 52px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+.warrior-badge-icon-wrap { position: relative; display: grid; height: 52px; width: 52px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+.warrior-badge-tile.tone-blue .warrior-badge-icon-wrap { background: #e1edfb; color: #1d4ed8; }
+.warrior-badge-tile.tone-green .warrior-badge-icon-wrap { background: #dcf3e6; color: #15803d; }
+.warrior-badge-tile.tone-amber .warrior-badge-icon-wrap { background: #fdecd2; color: #b45309; }
+.warrior-badge-tile.tone-purple .warrior-badge-icon-wrap { background: #ece3fb; color: #7c3aed; }
+.warrior-badge-tile.tone-gold .warrior-badge-icon-wrap { background: #fdf1cf; color: #b8860b; }
 .warrior-badge-tile.is-locked { background: #f7f9fb; opacity: .75; }
-.warrior-badge-tile.is-locked > span { display: grid; height: 52px; width: 52px; place-items: center; border-radius: 50%; background: #eef2f6; color: var(--muted); }
+.warrior-badge-tile.is-locked .warrior-badge-icon-wrap { background: #eef2f6; color: var(--muted); }
+.warrior-badge-lock { position: absolute; right: -2px; bottom: -2px; display: grid; height: 20px; width: 20px; place-items: center; border-radius: 50%; border: 2px solid #f7f9fb; background: #d7dde3; color: #57626e; font-size: 11px; }
+
+/* Real colorful emoji glyphs used in place of monochrome line icons for badges/medals/rewards -
+   font-size sized per container since emoji don't take a numeric "size" prop like an SVG icon. */
+.warrior-emoji-badge { font-style: normal; line-height: 1; }
+.warrior-badge-tile.is-locked .warrior-badge-icon-wrap.warrior-emoji-badge { filter: grayscale(1); opacity: .55; }
+.warrior-badge-icon-wrap.warrior-emoji-badge, .warrior-podium-badge.warrior-emoji-badge { font-size: 26px; }
+.warrior-mini-badge.warrior-emoji-badge { font-size: 13px; }
+.warrior-stat-tile > span.warrior-emoji-badge { font-size: 20px; }
+.warrior-reward-tile > span.warrior-emoji-badge { font-size: 22px; }
 .warrior-badge-tile strong { margin-top: 4px; font-size: 13px; }
 .warrior-badge-tile small { color: var(--muted); font-size: 11px; line-height: 1.4; }
 .warrior-badge-locked-note { margin-top: 2px; color: var(--muted); font-size: 10px; font-style: italic; }
