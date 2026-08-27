@@ -1,0 +1,59 @@
+# Render Blueprint for CyberRakshak.
+#
+# Deploy order is handled for you except for the two cross-references that cannot
+# exist until both services do (see docs/DEPLOYMENT.md section 8):
+#   1. Apply this Blueprint. Postgres and both services are created.
+#   2. Set NEXT_PUBLIC_API_URL on cyberrakshak-web to the API's URL, then deploy it.
+#      This value is baked into the browser bundle at BUILD time, so changing it later
+#      requires a rebuild, not a restart.
+#   3. Set CORS_ORIGINS on cyberrakshak-api to the web service's URL (no trailing
+#      slash) and redeploy the API.
+#
+# Migrations and reference-data seeding run automatically from the backend container
+# entrypoint, so there is no manual release step.
+
+databases:
+  - name: cyberrakshak-db
+    databaseName: cyberrakshak
+    user: cyberrakshak
+    plan: free
+
+services:
+  - type: web
+    name: cyberrakshak-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    # Must be the repo root: the seed script lives outside backend/ and resolves it
+    # through parents[2].
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cyberrakshak-db
+          property: connectionString
+      - key: SECRET_KEY
+        # Must be at least 32 characters or the app refuses to start. Verify the
+        # generated value's length; replace it if Render produces a shorter one.
+        generateValue: true
+      - key: APP_ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        # Set to the deployed frontend origin after step 3 above. A wildcard is not
+        # usable here because the API sends credentials.
+        sync: false
+
+  - type: web
+    name: cyberrakshak-web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    # There is no /health route on the frontend, and / only 307s to /en via proxy.ts.
+    healthCheckPath: /en
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        # Set to the API's public URL, with no trailing slash and no /api/v1 suffix.
+        # Consumed as a Docker build arg; must be set before the first build.
+        sync: false

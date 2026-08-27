@@ -1,0 +1,17 @@
+# Build context for frontend/Dockerfile is this directory.
+# NOTE: public/ is deliberately NOT excluded - every asset in it is referenced at
+# runtime (awareness posters are loaded by slug, and the PDF is a download link).
+
+node_modules
+.next
+out
+coverage
+
+.env
+.env.*
+!.env.example
+
+Dockerfile
+.dockerignore
+npm-debug.log*
+.DS_Store

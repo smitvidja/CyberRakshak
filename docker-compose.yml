@@ -1,3 +1,11 @@
+# Local full-stack parity with the Render deployment: the same two Dockerfiles build
+# the same two images, against a local Postgres.
+#
+#   docker compose up --build
+#   frontend http://localhost:3000/en   backend http://localhost:8000/health
+#
+# Only the database is needed for native development (docker compose up -d postgres).
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -7,7 +15,8 @@ services:
       POSTGRES_USER: cyberrakshak
       POSTGRES_PASSWORD: cyberrakshak_local_only
     ports:
-      - "5432:5432"
+      # Override with POSTGRES_PORT if a native Postgres already owns 5432 locally.
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -16,5 +25,42 @@ services:
       timeout: 5s
       retries: 5
 
+  backend:
+    build:
+      # Repository root, not backend/ - the seed script resolves the backend via parents[2].
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: cyberrakshak-backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://cyberrakshak:cyberrakshak_local_only@postgres:5432/cyberrakshak
+      SECRET_KEY: local-development-secret-key-not-for-any-deployed-environment
+      # Comma-separated on purpose: this is the format hosting dashboards produce, and
+      # exercises the same parsing path production uses.
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      APP_ENVIRONMENT: development
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Keeps uploaded evidence across container restarts locally. Render has no
+      # equivalent by default - see docs/DEPLOYMENT.md section 5.
+      - backend_storage:/app/backend/storage
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Inlined into the browser bundle at build time, so it must be the URL the
+        # browser will use - not an internal service hostname.
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    container_name: cyberrakshak-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
 volumes:
   postgres_data:
+  backend_storage:

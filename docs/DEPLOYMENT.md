@@ -7,6 +7,10 @@ verified locally, and anything that is *not* verified is called out as such.
 The frontend (Next.js) and backend (FastAPI) deploy separately and only need to
 know each other's public URL.
 
+> **Deploying with Docker on Render?** Both services are containerised and there is a
+> `render.yaml` Blueprint at the repository root. Jump to **§11** — it replaces the
+> manual steps in §4 and §7, while §§1-3, 5, 6 and 9 still apply as written.
+
 ---
 
 ## 1. Environment variable checklist
@@ -83,6 +87,10 @@ postgresql://user:pass@host:5432/db      ->  won't load the right driver
 postgresql+psycopg://user:pass@host:5432/db   <- use this
 ```
 
+> **In Docker this is automatic.** The backend container's entrypoint rewrites the URL
+> scheme and runs both the migration and the seed on every start (both are idempotent),
+> so the two manual steps below are only needed for a non-container deploy. See §11.
+
 **Run migrations** against the deployed database before first use, from `backend/`:
 
 ```bash
@@ -155,6 +163,9 @@ origin receives `access-control-allow-origin`; an unknown origin is rejected.
 
 ## 7. Build and start commands
 
+These are the commands for a **non-container** deploy. For Docker, the images already
+encode all of this — see §11.
+
 ### Backend
 
 ```bash
@@ -190,6 +201,7 @@ order to avoid a chicken-and-egg problem:
 2. **Deploy the backend** with `DATABASE_URL` + `SECRET_KEY`. Set `CORS_ORIGINS` to a
    placeholder for now. Note its public URL.
 3. **Run migrations and the seed script** against the deployed database.
+   *(Skip this on a Docker deploy — the container entrypoint does it. See §11.)*
 4. **Deploy the frontend** with `NEXT_PUBLIC_API_URL` = the backend URL from step 2.
    Note its public URL.
 5. **Update `CORS_ORIGINS`** on the backend to the frontend URL from step 4 and
@@ -218,3 +230,76 @@ order to avoid a chicken-and-egg problem:
 - Verified: no `.env` file has ever been committed in this repository's history.
 - The example files contain placeholders only — no real credentials.
 - Set real secrets through your host's environment/secret manager, never in source.
+
+---
+
+## 11. Deploy with Docker on Render
+
+Both services ship as Docker images. `render.yaml` at the repository root is a
+Blueprint that provisions the database and both web services in one apply.
+
+Everything in this section was executed and verified locally with
+`docker compose up --build` before being written down; the Render-side steps are
+marked where they have not been.
+
+### What is in the repository
+
+| File | Purpose |
+|---|---|
+| `backend/Dockerfile` | FastAPI image. **Build context is the repository root**, not `backend/` — `database/seeds/seed_reference_data.py` locates the backend through `parents[2]`, so the image must keep the `<root>/backend` + `<root>/database` layout. |
+| `backend/docker-entrypoint.sh` | Normalises the `DATABASE_URL` scheme, runs `alembic upgrade head` (retrying while the database wakes up), runs the seed, then `exec`s uvicorn on `$PORT`. |
+| `frontend/Dockerfile` | Multi-stage Next.js build. Context is `frontend/`. Requires the `NEXT_PUBLIC_API_URL` build arg. |
+| `.dockerignore`, `frontend/.dockerignore` | Keep tests, docs, design sources, demo assets, and `.env` files out of the images. `frontend/public` is deliberately kept — every asset in it is referenced at runtime. |
+| `render.yaml` | Blueprint: one Postgres, two Docker web services, env wiring. |
+| `docker-compose.yml` | The same two images plus Postgres, for local parity. |
+
+### Two things the containers do for you
+
+- **Driver scheme.** Render's `fromDatabase` wiring injects a `postgresql://` (or
+  `postgres://`) URL, which will not load the psycopg driver. The entrypoint rewrites
+  it. Verified: a container started with a bare `postgres://` URL boots cleanly.
+- **Migrations and seeding.** Both run on every container start and are idempotent.
+  Verified: a cold database applies all four migrations and seeds 6 categories +
+  8 skills; the next start reports `0 categories, 0 skills added` and runs no
+  migrations. Step 3 of §8 therefore no longer applies.
+
+### Deploy steps
+
+1. Push the repository to GitHub, then in Render choose **New → Blueprint** and point
+   it at the repo. It reads `render.yaml` and creates `cyberrakshak-db`,
+   `cyberrakshak-api`, and `cyberrakshak-web`.
+2. Check the generated `SECRET_KEY` on `cyberrakshak-api` is **at least 32 characters**
+   — the app refuses to start otherwise. If it is shorter, replace it with the output of
+   the command in §2.
+3. Set `NEXT_PUBLIC_API_URL` on `cyberrakshak-web` to the API's public URL (no trailing
+   slash, no `/api/v1`) and deploy it. This is consumed as a **build arg**, so it must
+   be set before the build runs, and changing it later needs a rebuild, not a restart.
+   The frontend build fails loudly with a clear message if the value is missing, rather
+   than producing a bundle that breaks in the browser.
+4. Set `CORS_ORIGINS` on `cyberrakshak-api` to the web service's origin and redeploy it.
+
+Health checks are already wired: `/health` for the API, and `/en` for the frontend
+(there is no `/health` route on the frontend, and `/` only 307s to `/en`).
+
+> Not yet verified on Render: whether Render forwards a service's environment variables
+> into the Docker build as build arguments. If the frontend build stops at the
+> `NEXT_PUBLIC_API_URL` guard, set the value in the dashboard before triggering the
+> build, or pass it explicitly as a build argument.
+
+### Running the whole stack locally
+
+```bash
+docker compose up --build
+# frontend  http://localhost:3000/en
+# backend   http://localhost:8000/health
+```
+
+If a native PostgreSQL already owns port 5432, publish the container's on another
+port instead — the app containers talk to it over the compose network either way:
+
+```bash
+POSTGRES_PORT=5433 docker compose up --build
+```
+
+Uploads survive local restarts via the `backend_storage` volume. Render has no
+equivalent by default — §5 still applies there.

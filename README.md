@@ -49,9 +49,26 @@ Every user-facing string exists in both English and Hindi.
 
 ## Local setup
 
+### Option A — everything in Docker
+
+Prerequisites: Docker.
+
+```bash
+docker compose up --build
+```
+
+Frontend at http://localhost:3000/en, backend at http://localhost:8000/health. The
+backend container applies migrations and seeds reference data on start, so there is
+nothing else to run. If a native PostgreSQL already owns port 5432, use
+`POSTGRES_PORT=5433 docker compose up --build` instead.
+
+These are the same images that deploy to Render — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) §11.
+
+### Option B — native, with PostgreSQL in Docker
+
 Prerequisites: Node.js, Python 3.11+, Docker (for PostgreSQL).
 
-### 1. Environment files
+#### 1. Environment files
 
 ```powershell
 Copy-Item frontend/.env.example frontend/.env.local
@@ -60,13 +77,13 @@ Copy-Item backend/.env.example backend/.env
 
 The defaults work for local development as-is. Never commit a real `.env`.
 
-### 2. Database
+#### 2. Database
 
 ```powershell
 docker compose up -d postgres
 ```
 
-### 3. Backend
+#### 3. Backend
 
 ```powershell
 python -m venv backend/.venv
@@ -88,7 +105,7 @@ directory with actual source code - fixes both.
 
 Backend runs at http://127.0.0.1:8000 (`/health`, and API docs at `/docs`).
 
-### 4. Frontend
+#### 4. Frontend
 
 ```powershell
 Set-Location frontend
@@ -98,7 +115,7 @@ npm run dev
 
 Open http://localhost:3000/en (or `/hi` for Hindi).
 
-### Checks
+#### Checks
 
 ```powershell
 # backend, from backend/
