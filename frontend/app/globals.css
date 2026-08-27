@@ -416,3 +416,134 @@ button, input, select, textarea { font: inherit; }
   .warrior-status-card dd { text-align: left; }
   .warrior-help-strip a { margin-left: 0; }
 }
+/* Cyber Warrior dashboard and profile - Session 6.3 */
+.warrior-dashboard-page { padding: 22px 0 42px; }
+.warrior-dashboard-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); align-items: start; gap: 18px; }
+.warrior-sidebar { position: sticky; top: 14px; display: grid; gap: 14px; border: 1px solid #c8dcec; border-radius: 8px; background: #fff; padding: 18px 14px; box-shadow: 0 5px 16px rgb(15 42 74 / .07); }
+.warrior-sidebar-identity { display: flex; align-items: flex-start; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+.warrior-sidebar-identity > span { display: grid; height: 38px; width: 38px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+.warrior-sidebar-identity strong { display: block; font-size: 13px; }
+.warrior-sidebar-identity small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+.warrior-verified-pill { display: inline-flex; margin-top: 4px; align-items: center; gap: 4px; border-radius: 12px; background: #dcf6e8; padding: 2px 8px; color: #0b754b; font-size: 11px; font-weight: 800; }
+.warrior-sidebar ol { display: grid; gap: 2px; border-top: 1px solid var(--border); padding-top: 10px; }
+.warrior-sidebar ol:first-of-type { border-top: 0; padding-top: 0; }
+.warrior-sidebar li a, .warrior-sidebar li button { display: flex; width: 100%; align-items: center; gap: 10px; border-radius: 6px; padding: 9px 10px; color: #3e5875; font-size: 13px; font-weight: 700; text-align: left; transition: background-color 140ms ease, color 140ms ease; }
+.warrior-sidebar li a:hover, .warrior-sidebar li button:hover { background: var(--blue-soft); color: var(--blue); }
+.warrior-sidebar li.is-active a { background: var(--blue-soft); color: var(--blue); }
+.warrior-nav-logout button { color: var(--danger); }
+.warrior-nav-logout button:hover { background: #fff2f0; color: var(--danger); }
+.warrior-dashboard-main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; align-items: start; gap: 18px; }
+.warrior-dashboard-content { display: grid; gap: 20px; min-width: 0; }
+.warrior-dashboard-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.warrior-dashboard-header-row h1 { font-size: clamp(22px, 2.4vw, 28px); font-weight: 800; }
+.warrior-dashboard-header-row > div:first-child > p { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.warrior-dashboard-header-right { display: grid; justify-items: end; gap: 10px; }
+.warrior-dashboard-meta { display: grid; justify-items: end; gap: 2px; color: var(--muted); font-size: 12px; }
+.warrior-topbar { display: flex; align-items: center; gap: 12px; }
+.warrior-topbar-bell { position: relative; display: grid; height: 38px; width: 38px; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: #fff; color: var(--navy); }
+.warrior-topbar-badge { position: absolute; top: -4px; right: -4px; display: grid; height: 18px; min-width: 18px; place-items: center; border-radius: 9px; background: var(--danger); padding: 0 4px; color: #fff; font-size: 10px; font-weight: 800; }
+.warrior-topbar-identity { display: flex; align-items: center; gap: 8px; }
+.warrior-topbar-avatar { display: grid; height: 34px; width: 34px; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; }
+.warrior-topbar-identity strong { display: block; font-size: 13px; }
+.warrior-topbar-identity small { display: block; margin-top: 2px; color: #16835d; font-size: 11px; font-weight: 700; }
+.warrior-stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.warrior-stat-tile { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 16px; box-shadow: 0 2px 8px rgb(15 42 74 / .05); }
+.warrior-stat-tile > span { display: grid; height: 36px; width: 36px; place-items: center; border-radius: 50%; }
+.warrior-stat-tile strong { display: block; margin-top: 12px; font-size: 26px; font-weight: 800; color: var(--navy); }
+.warrior-stat-tile p { margin-top: 3px; font-size: 13px; font-weight: 700; }
+.warrior-stat-tile small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+.warrior-stat-tile.tone-blue > span { background: var(--blue-soft); color: var(--blue); }
+.warrior-stat-tile.tone-amber > span { background: #fdf0dc; color: #9d5900; }
+.warrior-stat-tile.tone-green > span { background: #dcf6e8; color: #0b754b; }
+.warrior-stat-tile.tone-purple > span { background: #ede7fb; color: #5b3ec9; }
+.warrior-cta-banner { display: grid; grid-template-columns: minmax(0, 1fr) 220px; align-items: center; gap: 20px; border: 1px solid #c8dcec; border-radius: 8px; background: linear-gradient(135deg, #eef6ff, #f8fbff); padding: 22px 26px; }
+.warrior-cta-banner .eyebrow { display: block; }
+.warrior-cta-banner h2 { margin-top: 5px; font-size: 24px; font-weight: 800; }
+.warrior-cta-banner > div:first-child > p { margin: 8px 0 16px; max-width: 52ch; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.warrior-cta-visual { position: relative; display: grid; height: 150px; place-items: center; }
+.warrior-cta-figure { display: grid; height: 96px; width: 96px; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; }
+.warrior-cta-orbit { position: absolute; display: grid; height: 38px; width: 38px; place-items: center; border-radius: 50%; background: #fff; color: var(--blue); box-shadow: 0 4px 10px rgb(15 42 74 / .12); }
+.warrior-cta-orbit-1 { top: 0; left: 18%; }
+.warrior-cta-orbit-2 { top: 8%; right: 6%; }
+.warrior-cta-orbit-3 { bottom: 6%; left: 4%; }
+.warrior-cta-orbit-4 { bottom: 0; right: 16%; }
+.warrior-journey { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 20px 22px; }
+.warrior-journey h2 { font-size: 18px; font-weight: 800; }
+.warrior-journey > p { margin-top: 4px; color: var(--muted); font-size: 13px; }
+.warrior-journey-track { display: grid; margin-top: 20px; gap: 18px; border-left: 2px solid var(--border); padding-left: 18px; }
+.warrior-journey-track > li { position: relative; }
+.warrior-journey-track > li > span { position: absolute; left: -30px; top: -1px; display: grid; height: 26px; width: 26px; place-items: center; border: 2px solid var(--border); border-radius: 50%; background: #fff; color: var(--muted); }
+.warrior-journey-track strong { display: block; font-size: 13px; }
+.warrior-journey-track small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+.warrior-journey-track > li.is-complete > span { border-color: #2ca56e; background: #e5f7ed; color: #16835d; }
+.warrior-journey-track > li.is-current > span { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+.warrior-dashboard-rail { display: grid; gap: 16px; min-width: 0; }
+.warrior-status-widget, .warrior-quick-actions { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 18px; }
+.warrior-status-widget h2, .warrior-quick-actions h2 { font-size: 15px; font-weight: 800; }
+.warrior-status-badge { display: flex; margin-top: 14px; align-items: center; gap: 10px; }
+.warrior-status-badge > svg { color: var(--blue); }
+.warrior-status-badge strong { display: block; font-size: 14px; }
+.warrior-status-badge span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+.warrior-xp-track { display: block; height: 8px; margin-top: 14px; overflow: hidden; border-radius: 4px; background: #e2edf6; }
+.warrior-xp-track i { display: block; height: 100%; background: var(--blue); }
+.warrior-status-widget > p { margin-top: 8px; color: var(--muted); font-size: 12px; }
+.warrior-status-hint { color: var(--muted); font-size: 11px; }
+.warrior-status-widget .warrior-text-link { margin-top: 12px; }
+.warrior-quick-actions ul { display: grid; margin-top: 12px; gap: 4px; }
+.warrior-quick-actions li a { display: flex; align-items: center; gap: 10px; border-radius: 7px; padding: 10px; transition: background-color 140ms ease; }
+.warrior-quick-actions li a:hover { background: var(--blue-soft); }
+.warrior-quick-actions li a > span:first-child { display: grid; height: 36px; width: 36px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+.warrior-quick-actions li a > span:nth-child(2) { flex: 1; min-width: 0; }
+.warrior-quick-actions li a strong { display: block; font-size: 13px; color: var(--navy); }
+.warrior-quick-actions li a small { display: block; margin-top: 1px; color: var(--muted); font-size: 11px; }
+.warrior-mini-stats { display: grid; margin-top: 10px; gap: 8px; }
+.warrior-mini-stats > div { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px; font-size: 12px; }
+.warrior-mini-stats dt { color: var(--muted); }
+.warrior-mini-stats dd { font-weight: 800; color: var(--navy); }
+.warrior-coming-soon { display: grid; min-height: 320px; place-items: center; gap: 8px; border: 1px dashed #aacceb; border-radius: 8px; background: #fff; padding: 40px 20px; text-align: center; color: var(--muted); }
+.warrior-coming-soon > span { display: grid; height: 56px; width: 56px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+.warrior-coming-soon h2 { color: var(--navy); font-size: 19px; font-weight: 800; }
+.warrior-coming-soon-note { max-width: 46ch; font-size: 12px; }
+.warrior-profile-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.warrior-profile-header-row h1 { font-size: clamp(22px, 2.4vw, 27px); font-weight: 800; }
+.warrior-profile-header-row p { margin-top: 6px; color: var(--muted); font-size: 13px; }
+.warrior-profile-section { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 20px; }
+.warrior-profile-section h2 { font-size: 16px; font-weight: 800; }
+.warrior-profile-avatar-row { display: flex; margin-top: 14px; align-items: center; gap: 12px; }
+.warrior-profile-avatar { display: grid; height: 64px; width: 64px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+.warrior-profile-fact-grid { display: grid; margin-top: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.warrior-profile-fact-grid dt { color: var(--muted); font-size: 11px; }
+.warrior-profile-fact-grid dd { margin-top: 3px; overflow-wrap: anywhere; font-size: 13px; font-weight: 700; }
+.warrior-profile-fact-grid .wide { grid-column: span 3; }
+.warrior-inline-verified { display: inline-block; margin-left: 4px; color: #16835d; vertical-align: -1px; }
+.warrior-profile-bio { margin-top: 12px; color: #274664; font-size: 13px; line-height: 1.6; }
+.warrior-completion-widget { text-align: center; }
+.warrior-completion-ring { display: grid; height: 96px; width: 96px; margin: 14px auto 0; place-items: center; border-radius: 50%; }
+.warrior-completion-ring > span { display: grid; height: 76px; width: 76px; place-items: center; border-radius: 50%; background: #fff; color: var(--navy); font-size: 15px; font-weight: 800; }
+.warrior-completion-widget > p:last-child { margin-top: 10px; color: var(--muted); font-size: 12px; }
+.warrior-badges-placeholder { display: grid; margin-top: 12px; place-items: center; gap: 8px; border: 1px dashed #cfe0ef; border-radius: 7px; padding: 18px; text-align: center; color: var(--muted); }
+.warrior-badges-placeholder svg { color: var(--blue); }
+.warrior-badges-placeholder p { font-size: 12px; }
+
+@media (max-width: 1080px) {
+  .warrior-dashboard-main { grid-template-columns: 1fr; }
+  .warrior-cta-banner { grid-template-columns: 1fr; }
+  .warrior-cta-visual { height: 110px; }
+}
+@media (max-width: 960px) {
+  .warrior-dashboard-layout { grid-template-columns: 1fr; }
+  .warrior-sidebar { position: static; }
+  .warrior-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .warrior-profile-fact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .warrior-profile-fact-grid .wide { grid-column: span 2; }
+}
+@media (max-width: 700px) {
+  .warrior-dashboard-page { padding-top: 14px; }
+  .warrior-dashboard-header-row { flex-direction: column; }
+  .warrior-dashboard-header-right { justify-items: start; width: 100%; }
+  .warrior-dashboard-meta { justify-items: start; }
+  .warrior-stat-grid { grid-template-columns: 1fr; }
+  .warrior-profile-fact-grid { grid-template-columns: 1fr; }
+  .warrior-profile-fact-grid .wide { grid-column: auto; }
+  .warrior-profile-header-row { flex-direction: column; }
+}

@@ -39,7 +39,7 @@ import {
 
 const warriorPath = (locale: string) => `/${locale}/cyber-warrior`;
 const verifyPath = (locale: string) => `${warriorPath(locale)}/verify`;
-const profilePath = (locale: string) => `${warriorPath(locale)}/profile`;
+const profilePath = (locale: string) => `${verifyPath(locale)}/profile`;
 const applicationPath = (locale: string) => `${warriorPath(locale)}/apply`;
 
 const dutyIcons = [Binoculars, ClipboardCheck, UsersRound, Gavel, Medal] as const;

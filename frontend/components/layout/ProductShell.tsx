@@ -23,6 +23,7 @@ export function ProductShell({children}: ProductShellProps) {
   const dashboardHref = homeHref + "/report-crime/dashboard";
   const reportHref = homeHref + "/report-crime";
   const warriorHref = homeHref + "/cyber-warrior";
+  const warriorDashboardHref = warriorHref + "/dashboard";
   const breadcrumbItems: Array<{href?: string; label: string}> = [{href: homeHref, label: t("nav.home")}];
 
   if (pathname !== homeHref) {
@@ -56,13 +57,19 @@ export function ProductShell({children}: ProductShellProps) {
       breadcrumbItems.push({label: t("nav.warriors")});
     } else if (pathname === warriorHref + "/verify") {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbs.warriorRegistration")});
-    } else if (pathname === warriorHref + "/profile") {
+    } else if (pathname === warriorHref + "/verify/profile") {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbs.warriorProfileSetup")});
+    } else if (pathname === warriorDashboardHref) {
+      breadcrumbItems.push({label: t("breadcrumbs.warriorDashboard")});
+    } else if (pathname === warriorHref + "/profile") {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorProfile")});
     } else if (pathname.startsWith(warriorHref + "/apply")) {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {href: warriorHref + "/apply/resume", label: t("breadcrumbs.warriorApplication")});
       if (pathname.endsWith("/resume")) breadcrumbItems.push({label: t("breadcrumbs.warriorResume")});
       else if (pathname.endsWith("/review")) breadcrumbItems.push({label: t("breadcrumbs.warriorReview")});
       else if (pathname.endsWith("/submitted")) breadcrumbItems.push({label: t("breadcrumbs.warriorSubmitted")});
+    } else if (pathname.startsWith(warriorDashboardHref) || pathname.startsWith(warriorHref + "/reports") || pathname.startsWith(warriorHref + "/leaderboard") || pathname.startsWith(warriorHref + "/badges") || pathname.startsWith(warriorHref + "/resources")) {
+      breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbCurrent")});
     } else if (pathname.startsWith(warriorHref)) {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbCurrent")});
     } else {

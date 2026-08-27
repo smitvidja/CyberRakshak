@@ -97,3 +97,11 @@ export function getWarriorApplication(): WarriorApplication | null {
     return null;
   }
 }
+
+export function clearWarriorSession() {
+  sessionStorage.removeItem(warriorAccessTokenKey);
+  sessionStorage.removeItem(warriorIdentityKey);
+  sessionStorage.removeItem(warriorProfileSetupKey);
+  sessionStorage.removeItem(warriorResumeKey);
+  sessionStorage.removeItem(warriorApplicationKey);
+}

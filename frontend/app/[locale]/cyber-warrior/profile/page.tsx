@@ -1,5 +1,5 @@
-import {WarriorProfileSetup} from "@/features/cyber-warriors/WarriorOnboarding";
+import {WarriorProfile} from "@/features/cyber-warriors/WarriorProfile";
 
-export default function CyberWarriorProfileSetupPage() {
-  return <WarriorProfileSetup />;
+export default function CyberWarriorProfilePage() {
+  return <WarriorProfile />;
 }
