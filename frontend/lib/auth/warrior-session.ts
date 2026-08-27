@@ -21,20 +21,24 @@ export type WarriorProfileSetup = {
   state: string;
 };
 
+// Session data lives in localStorage, not sessionStorage: sessionStorage is wiped the moment
+// the tab/browser closes, which was silently logging warriors out on every restart even though
+// they never clicked Logout. localStorage persists until clearWarriorSession() runs (the
+// explicit Logout button) or the user clears site data - that's the only thing that should end it.
 export function setWarriorToken(accessToken: string) {
-  sessionStorage.setItem(warriorAccessTokenKey, accessToken);
+  localStorage.setItem(warriorAccessTokenKey, accessToken);
 }
 
 export function getWarriorToken() {
-  return sessionStorage.getItem(warriorAccessTokenKey);
+  return localStorage.getItem(warriorAccessTokenKey);
 }
 
 export function setWarriorIdentity(identity: WarriorIdentitySession) {
-  sessionStorage.setItem(warriorIdentityKey, JSON.stringify(identity));
+  localStorage.setItem(warriorIdentityKey, JSON.stringify(identity));
 }
 
 export function getWarriorIdentity(): WarriorIdentitySession | null {
-  const value = sessionStorage.getItem(warriorIdentityKey);
+  const value = localStorage.getItem(warriorIdentityKey);
   if (!value) return null;
   try {
     const identity = JSON.parse(value) as WarriorIdentitySession;
@@ -49,11 +53,11 @@ export function getWarriorIdentity(): WarriorIdentitySession | null {
 }
 
 export function setWarriorProfileSetup(profile: WarriorProfileSetup) {
-  sessionStorage.setItem(warriorProfileSetupKey, JSON.stringify(profile));
+  localStorage.setItem(warriorProfileSetupKey, JSON.stringify(profile));
 }
 
 export function getWarriorProfileSetup(): WarriorProfileSetup | null {
-  const value = sessionStorage.getItem(warriorProfileSetupKey);
+  const value = localStorage.getItem(warriorProfileSetupKey);
   if (!value) return null;
   try {
     const profile = JSON.parse(value) as WarriorProfileSetup;
@@ -70,11 +74,11 @@ export type WarriorResumeSession = {
 };
 
 export function setWarriorResume(resume: WarriorResumeSession) {
-  sessionStorage.setItem(warriorResumeKey, JSON.stringify(resume));
+  localStorage.setItem(warriorResumeKey, JSON.stringify(resume));
 }
 
 export function getWarriorResume(): WarriorResumeSession | null {
-  const value = sessionStorage.getItem(warriorResumeKey);
+  const value = localStorage.getItem(warriorResumeKey);
   if (!value) return null;
   try {
     const resume = JSON.parse(value) as WarriorResumeSession;
@@ -85,11 +89,11 @@ export function getWarriorResume(): WarriorResumeSession | null {
 }
 
 export function setWarriorApplication(application: WarriorApplication) {
-  sessionStorage.setItem(warriorApplicationKey, JSON.stringify(application));
+  localStorage.setItem(warriorApplicationKey, JSON.stringify(application));
 }
 
 export function getWarriorApplication(): WarriorApplication | null {
-  const value = sessionStorage.getItem(warriorApplicationKey);
+  const value = localStorage.getItem(warriorApplicationKey);
   if (!value) return null;
   try {
     const application = JSON.parse(value) as WarriorApplication;
@@ -115,11 +119,11 @@ export type WarriorReportDraftSession = {
 };
 
 export function setWarriorReportDraft(draft: WarriorReportDraftSession) {
-  sessionStorage.setItem(warriorReportDraftKey, JSON.stringify(draft));
+  localStorage.setItem(warriorReportDraftKey, JSON.stringify(draft));
 }
 
 export function getWarriorReportDraft(): WarriorReportDraftSession | null {
-  const value = sessionStorage.getItem(warriorReportDraftKey);
+  const value = localStorage.getItem(warriorReportDraftKey);
   if (!value) return null;
   try {
     const draft = JSON.parse(value) as WarriorReportDraftSession;
@@ -130,14 +134,14 @@ export function getWarriorReportDraft(): WarriorReportDraftSession | null {
 }
 
 export function clearWarriorReportDraft() {
-  sessionStorage.removeItem(warriorReportDraftKey);
+  localStorage.removeItem(warriorReportDraftKey);
 }
 
 export function clearWarriorSession() {
-  sessionStorage.removeItem(warriorAccessTokenKey);
-  sessionStorage.removeItem(warriorIdentityKey);
-  sessionStorage.removeItem(warriorProfileSetupKey);
-  sessionStorage.removeItem(warriorResumeKey);
-  sessionStorage.removeItem(warriorApplicationKey);
-  sessionStorage.removeItem(warriorReportDraftKey);
+  localStorage.removeItem(warriorAccessTokenKey);
+  localStorage.removeItem(warriorIdentityKey);
+  localStorage.removeItem(warriorProfileSetupKey);
+  localStorage.removeItem(warriorResumeKey);
+  localStorage.removeItem(warriorApplicationKey);
+  localStorage.removeItem(warriorReportDraftKey);
 }

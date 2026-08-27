@@ -7,10 +7,14 @@ import {FilePlus2, Files, Search, ShieldCheck, UserRound} from "lucide-react";
 
 import {authApi, type MockIdentityProfile} from "@/lib/api/auth";
 import {usersApi} from "@/lib/api/users";
-import {getAccessToken, getMockIdentityProfile, getReportMode, setAccessToken, setMockIdentityProfile, setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
+import {clearCitizenSession, getAccessToken, getMockIdentityProfile, getReportMode, setAccessToken, setMockIdentityProfile, setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
+import {clearWarriorSession} from "@/lib/auth/warrior-session";
+import {getActiveSession} from "@/lib/auth/session-guard";
 import {Button} from "@/components/ui/Button";
 import {TextInput} from "@/components/ui/FormFields";
 import {StatePanel, SurfaceCard} from "@/components/ui/Surface";
+import {SessionConflictDialog} from "@/components/ui/SessionConflictDialog";
+import {useIsomorphicLayoutEffect} from "@/lib/hooks/useIsomorphicLayoutEffect";
 
 const dashboardPath = (locale: string) => `/${locale}/report-crime/dashboard`;
 const profilePath = (locale: string) => `/${locale}/report-crime/profile`;
@@ -56,6 +60,21 @@ export function ReportTypeChoice() {
     router.replace(mode === "anonymous" ? dashboardPath(locale) : `/${locale}/report-crime/verify`);
   }, [locale, router]);
 
+  // Checked client-side only, after mount (never during initial render - see the hydration
+  // rule in codex-session-time-waste-fixes), so a returning, already-verified citizen sees a
+  // "continue as you" choice here instead of being forced back through identity verification
+  // every time they land on this page.
+  const [existingCitizen, setExistingCitizen] = useState<{name: string} | null>(null);
+
+  // useIsomorphicLayoutEffect, not useEffect: a plain effect runs after the browser paints, so
+  // the default "Continue with profile" button would flash visibly for one frame before
+  // swapping to "Continue as {name}" - easy to read as "the page appears then disappears
+  // again". Running this before paint (see the hook's own comment) eliminates that flash.
+  useIsomorphicLayoutEffect(() => {
+    const profile = getMockIdentityProfile();
+    if (getAccessToken() && profile) setExistingCitizen({name: profile.full_name});
+  }, []);
+
   function chooseAnonymous() {
     if (!permitsAnonymousReporting(category)) return;
     setReportMode("anonymous");
@@ -65,6 +84,16 @@ export function ReportTypeChoice() {
   function chooseIdentified() {
     setReportMode("identified");
     router.push(`/${locale}/report-crime/verify`);
+  }
+
+  function continueAsExisting() {
+    setReportMode("identified");
+    router.push(dashboardPath(locale));
+  }
+
+  function useDifferentIdentity() {
+    clearCitizenSession();
+    chooseIdentified();
   }
 
   const allowAnonymous = permitsAnonymousReporting(category);
@@ -80,7 +109,17 @@ export function ReportTypeChoice() {
         <div className="citizen-safety-note mt-4 border border-[#abd2f5] bg-[#f7fbff] px-5 py-4 text-[#07529d]"><strong className="block text-sm">{t("noticeTitle")}</strong><p className="mt-1 text-sm leading-6">{t("noticeCopy")}</p></div>
         <div className={allowAnonymous ? "mt-5 grid gap-4 md:grid-cols-2" : "mt-5 max-w-3xl"}>
           {allowAnonymous ? <section className="citizen-route-card border-t-4 border-t-[#075fb9] bg-white p-6 shadow-[0_3px_12px_rgb(15_42_74_/_0.08)]"><div className="flex items-start gap-4"><span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#eaf4ff] text-sm font-bold text-[#075bbf]">01</span><div><h2 className="text-xl font-bold text-[var(--navy)]">{t("anonymousTitle")}</h2><p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t("anonymousCopy")}</p></div></div><ul className="mt-5 space-y-2 border-t border-[var(--border)] pt-4 text-sm leading-6 text-[var(--ink)]"><li>{t("anonymousPointOne")}</li><li>{t("anonymousPointTwo")}</li></ul><Button className="mt-6 w-full sm:w-auto" onClick={chooseAnonymous}>{t("anonymousAction")}</Button></section> : null}
-          <section className="citizen-route-card border-t-4 border-t-[#8dbde9] bg-white p-6 shadow-[0_3px_12px_rgb(15_42_74_/_0.08)]"><div className="flex items-start gap-4"><span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#edf6ff] text-sm font-bold text-[#075bbf]">{allowAnonymous ? "02" : "01"}</span><div><h2 className="text-xl font-bold text-[var(--navy)]">{t("identifiedTitle")}</h2><p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t("identifiedCopy")}</p></div></div><ul className="mt-5 space-y-2 border-t border-[var(--border)] pt-4 text-sm leading-6 text-[var(--ink)]"><li>{t("identifiedPointOne")}</li><li>{t("identifiedPointTwo")}</li></ul><Button className="mt-6 w-full sm:w-auto" onClick={chooseIdentified} variant="outline">{t("identifiedAction")}</Button></section>
+          <section className="citizen-route-card border-t-4 border-t-[#8dbde9] bg-white p-6 shadow-[0_3px_12px_rgb(15_42_74_/_0.08)]"><div className="flex items-start gap-4"><span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#edf6ff] text-sm font-bold text-[#075bbf]">{allowAnonymous ? "02" : "01"}</span><div><h2 className="text-xl font-bold text-[var(--navy)]">{t("identifiedTitle")}</h2><p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t("identifiedCopy")}</p></div></div><ul className="mt-5 space-y-2 border-t border-[var(--border)] pt-4 text-sm leading-6 text-[var(--ink)]"><li>{t("identifiedPointOne")}</li><li>{t("identifiedPointTwo")}</li></ul>
+            {existingCitizen ? (
+              <>
+                <p className="mt-5 rounded-[6px] border border-[#abd2f5] bg-[#f7fbff] px-4 py-3 text-sm font-semibold text-[#07529d]">{t("welcomeBackNotice", {name: existingCitizen.name})}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-4">
+                  <Button className="w-full sm:w-auto" onClick={continueAsExisting}>{t("continueAsAction", {name: existingCitizen.name})}</Button>
+                  <button className="text-sm font-bold text-[#075fb9] hover:underline" onClick={useDifferentIdentity} type="button">{t("differentAccountAction")}</button>
+                </div>
+              </>
+            ) : <Button className="mt-6 w-full sm:w-auto" onClick={chooseIdentified} variant="outline">{t("identifiedAction")}</Button>}
+          </section>
         </div>
       </div>
     </main>
@@ -97,6 +136,21 @@ export function MockIdentityForm() {
   const [step, setStep] = useState<"identity" | "otp">("identity");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Only one login at a time, warrior or citizen - reachable directly by URL even when the
+  // report-type-choice page's own "Continue as X" was bypassed. Checked before paint (see the
+  // isomorphic-layout-effect hook) so the blocked form never flashes visibly usable first.
+  const [sessionConflict, setSessionConflict] = useState<{name: string; role: "citizen" | "warrior"} | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setSessionConflict(getActiveSession());
+  }, []);
+
+  function resolveConflictByLoggingOut() {
+    if (!sessionConflict) return;
+    if (sessionConflict.role === "warrior") clearWarriorSession();
+    else clearCitizenSession();
+    setSessionConflict(null);
+  }
 
   async function requestOtp(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -129,7 +183,16 @@ export function MockIdentityForm() {
     router.push(profilePath(locale));
   }
 
-  return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-3xl">
+  return <main className="citizen-page shell-container py-8 sm:py-12">
+    {sessionConflict ? (
+      <SessionConflictDialog
+        activeName={sessionConflict.name}
+        activeRole={sessionConflict.role}
+        onCancel={() => router.push(`/${locale}/report-crime`)}
+        onLogoutAndContinue={resolveConflictByLoggingOut}
+      />
+    ) : null}
+    <div className="mx-auto max-w-3xl">
     <section className="space-y-5"><p className="eyebrow">{t("identityEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("identityTitle")}</h1><p className="max-w-xl text-base leading-7 text-[var(--muted)]">{t("identityIntro")}</p><StatePanel title={t("mockTitle")} tone="warning">{t("mockIdentityCopy")}</StatePanel>
       <SurfaceCard heading={step === "identity" ? t("identityCardTitle") : t("otpCardTitle")}>
         {step === "identity" ? <form className="space-y-5" onSubmit={requestOtp}><TextInput description={t("identityInputHelp")} id="demo-identity-id" label={t("identityId")} inputMode="numeric" maxLength={14} onChange={(event) => setDemoIdentityId(event.target.value.replace(/\D/g, ""))} pattern="[0-9]{14}" required value={demoIdentityId} />{error ? <p className="text-sm font-bold text-[var(--danger)]" role="alert">{error}</p> : null}<Button className="w-full sm:w-auto" isLoading={loading} type="submit">{t("sendOtp")}</Button></form> : <form className="space-y-5" onSubmit={verifyOtp}><StatePanel title={t("otpIssuedTitle")} tone="info">{t("otpIssuedCopy", {mobile: maskedMobile})}</StatePanel><TextInput id="demo-otp" inputMode="numeric" label={t("otpLabel")} maxLength={6} onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))} pattern="[0-9]{6}" required value={otp} />{error ? <p className="text-sm font-bold text-[var(--danger)]" role="alert">{error}</p> : null}<div className="flex flex-wrap gap-3"><Button isLoading={loading} type="submit">{t("verifyContinue")}</Button><Button onClick={() => { setStep("identity"); setOtp(""); setError(""); }} variant="outline">{t("changeIdentity")}</Button></div></form>}
@@ -190,7 +253,7 @@ export function CitizenStartState() {
   const [identified, setIdentified] = useState(false);
   const [profileName, setProfileName] = useState("");
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const isIdentified = getReportMode() === "identified" && Boolean(getAccessToken());
     setIdentified(isIdentified);
     setProfileName(getMockIdentityProfile()?.full_name ?? "");

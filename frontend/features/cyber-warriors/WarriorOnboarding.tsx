@@ -27,15 +27,20 @@ import {
 import {Button} from "@/components/ui/Button";
 import {SelectField, TextInput} from "@/components/ui/FormFields";
 import {StatePanel} from "@/components/ui/Surface";
+import {SessionConflictDialog} from "@/components/ui/SessionConflictDialog";
 import {authApi, type MockIdentityProfile} from "@/lib/api/auth";
 import {cyberWarriorsApi, warriorApplicationsApi} from "@/lib/api/cyber-warriors";
+import {clearCitizenSession} from "@/lib/auth/citizen-session";
 import {
+  clearWarriorSession,
   getWarriorIdentity,
   getWarriorToken,
   setWarriorIdentity,
   setWarriorProfileSetup,
   setWarriorToken
 } from "@/lib/auth/warrior-session";
+import {getActiveSession} from "@/lib/auth/session-guard";
+import {useIsomorphicLayoutEffect} from "@/lib/hooks/useIsomorphicLayoutEffect";
 
 const warriorPath = (locale: string) => `/${locale}/cyber-warrior`;
 const verifyPath = (locale: string) => `${warriorPath(locale)}/verify`;
@@ -48,11 +53,32 @@ const dutyIcons = [Binoculars, ClipboardCheck, UsersRound, Gavel, Medal] as cons
 export function WarriorLanding() {
   const t = useTranslations("warriorOnboarding");
   const locale = useLocale();
+  const router = useRouter();
   const duties = [1, 2, 3, 4, 5].map((number, index) => ({
     copy: t(`duty${number}Copy`),
     icon: dutyIcons[index],
     title: t(`duty${number}Title`)
   }));
+
+  // Checked client-side only (never during initial render - see hydration rule in
+  // codex-session-time-waste-fixes) so a returning, already-verified warrior sees a
+  // "continue as you" choice here instead of being forced back through identity
+  // verification every time they land on this page (that was the routing bug: Home ->
+  // Cyber Warriors always re-prompted for the 14-digit demo Aadhaar even mid-session).
+  const [existingWarrior, setExistingWarrior] = useState<{name: string} | null>(null);
+
+  // useIsomorphicLayoutEffect, not useEffect: a plain effect runs after the browser paints, so
+  // the default "Apply to become a Cyber Warrior" button would flash visibly for one frame
+  // before swapping to "Continue as {name}". Running this before paint eliminates that flash.
+  useIsomorphicLayoutEffect(() => {
+    const identity = getWarriorIdentity();
+    if (getWarriorToken() && identity) setExistingWarrior({name: identity.profile.full_name});
+  }, []);
+
+  function useDifferentIdentity() {
+    clearWarriorSession();
+    router.push(verifyPath(locale));
+  }
 
   return (
     <main className="warrior-page warrior-landing-page">
@@ -62,12 +88,32 @@ export function WarriorLanding() {
           <h1>{t("landingTitle")}</h1>
           <p className="warrior-landing-subtitle">{t("landingSubtitle")}</p>
           <p className="warrior-landing-description">{t("landingCopy")}</p>
+          {existingWarrior ? (
+            <div className="warrior-important-note" role="status">
+              <ShieldCheck aria-hidden="true" size={21} />
+              <p>{t("welcomeBackNotice", {name: existingWarrior.name})}</p>
+            </div>
+          ) : null}
           <div className="warrior-landing-actions">
-            <Link className="portal-primary-link" href={verifyPath(locale)}>
-              <UsersRound aria-hidden="true" size={19} />
-              {t("applyAction")}
-              <ArrowRight aria-hidden="true" size={18} />
-            </Link>
+            {existingWarrior ? (
+              <>
+                <Link className="portal-primary-link" href={dashboardPath(locale)}>
+                  <UsersRound aria-hidden="true" size={19} />
+                  {t("continueAsAction", {name: existingWarrior.name})}
+                  <ArrowRight aria-hidden="true" size={18} />
+                </Link>
+                <button className="warrior-text-link" onClick={useDifferentIdentity} type="button">
+                  <Fingerprint aria-hidden="true" size={17} />
+                  {t("differentAccountAction")}
+                </button>
+              </>
+            ) : (
+              <Link className="portal-primary-link" href={verifyPath(locale)}>
+                <UsersRound aria-hidden="true" size={19} />
+                {t("applyAction")}
+                <ArrowRight aria-hidden="true" size={18} />
+              </Link>
+            )}
             <a className="warrior-text-link" href="#warrior-duties">
               <FileSearch aria-hidden="true" size={17} />
               {t("learnAction")}
@@ -140,6 +186,21 @@ export function WarriorIdentityVerification() {
   const [requestError, setRequestError] = useState("");
   const [verifyError, setVerifyError] = useState("");
 
+  // Only one login at a time, warrior or citizen - reachable directly by URL even when the
+  // landing page's own "Continue as X" choice was bypassed. Checked before paint (see the
+  // isomorphic-layout-effect hook) so the blocked form never flashes visibly usable first.
+  const [sessionConflict, setSessionConflict] = useState<{name: string; role: "citizen" | "warrior"} | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setSessionConflict(getActiveSession());
+  }, []);
+
+  function resolveConflictByLoggingOut() {
+    if (!sessionConflict) return;
+    if (sessionConflict.role === "warrior") clearWarriorSession();
+    else clearCitizenSession();
+    setSessionConflict(null);
+  }
+
   async function requestOtp(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const normalizedIdentity = identityId.replace(/\D/g, "");
@@ -205,6 +266,14 @@ export function WarriorIdentityVerification() {
 
   return (
     <main className="warrior-page shell-container py-7 sm:py-10">
+      {sessionConflict ? (
+        <SessionConflictDialog
+          activeName={sessionConflict.name}
+          activeRole={sessionConflict.role}
+          onCancel={() => router.push(warriorPath(locale))}
+          onLogoutAndContinue={resolveConflictByLoggingOut}
+        />
+      ) : null}
       <section className="warrior-identity-layout">
         <div className="warrior-identity-form-panel">
           <p className="warrior-step-label">{t("verifyStep")}</p>

@@ -3,6 +3,15 @@
     "projectName": "CyberRakshak",
     "foundationMessage": "A safe bilingual prototype for cybercrime reporting and community cyber support."
   },
+  "sessionGuard": {
+    "title": "You're already signed in",
+    "body": "You're signed in as {name} ({role}). Only one account can be signed in at a time - log out there first before signing in here.",
+    "logoutAndContinue": "Log out of {role} and continue",
+    "cancel": "Cancel",
+    "close": "Close",
+    "roleWarrior": "Cyber Warrior",
+    "roleCitizen": "Citizen report"
+  },
   "shell": {
     "utilityNotice": "Safe prototype - no live government verification",
     "textSize": "A- A+",
@@ -224,6 +233,9 @@
     "identifiedPointOne": "Only the supplied synthetic demo identities are accepted.",
     "identifiedPointTwo": "No real Aadhaar, government ID, mobile OTP, or live verification is used.",
     "identifiedAction": "Continue with profile",
+    "welcomeBackNotice": "You're already signed in as {name}.",
+    "continueAsAction": "Continue as {name}",
+    "differentAccountAction": "Use a different demo identity",
     "identifiedEyebrow": "Prototype profile",
     "profileTitle": "Create your citizen profile",
     "mockTitle": "Prototype identity confirmation",
@@ -566,6 +578,9 @@
     "landingCopy": "Cyber Warriors are citizen volunteers who identify and report suspicious online activity. You provide useful information; authorized teams handle review and action.",
     "applyAction": "Apply to become a Cyber Warrior",
     "learnAction": "Know more about Cyber Warriors",
+    "welcomeBackNotice": "You're already signed in as {name}. Continue to your dashboard, or switch to a different demo identity below.",
+    "continueAsAction": "Continue as {name}",
+    "differentAccountAction": "Use a different demo identity",
     "heroImageLabel": "Cyber Warriors working together",
     "heroImageAlt": "Cyber safety volunteers reviewing suspicious online activity together",
     "spotActivity": "Spot suspicious activity",
