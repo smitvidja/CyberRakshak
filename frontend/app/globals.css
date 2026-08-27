@@ -34,6 +34,41 @@ button, input, select, textarea { font: inherit; }
 .utility-content, .brand-content, .footer-content, .support-band > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .utility-content { min-height: 28px; }
 .utility-actions { display: flex; align-items: center; gap: 11px; }
+/* Public /resources page - same content component as the warrior dashboard's
+   Resources page, just without the warrior sidebar. Content elements
+   (.warrior-resource-search etc.) are self-contained and need no grid context;
+   this only adds page-level spacing so it reads as a normal public page. */
+.resources-public-page { display: grid; gap: 18px; padding: 26px 0 44px; }
+.resources-public-page h1 { color: var(--navy); font-size: 26px; font-weight: 800; }
+.resources-public-page > p { max-width: 68ch; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+/* Secure India - an "upcoming feature" teaser, deliberately separate from
+   /resources. Large, high-contrast "upcoming" badge per the explicit ask: make
+   it unmistakable this is not live yet, not a subtle caption. */
+.secure-india-page { display: grid; gap: 22px; padding: 28px 0 44px; }
+.secure-india-hero { border-radius: 10px; background: linear-gradient(135deg, #073d87, #0a58c2); padding: 32px 28px; color: #fff; }
+.secure-india-badge { display: inline-block; border-radius: 999px; background: #ffb020; padding: 7px 16px; color: #3a2400; font-size: 13px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
+.secure-india-hero h1 { margin-top: 14px; font-size: 30px; font-weight: 800; }
+.secure-india-hero p { max-width: 62ch; margin-top: 8px; color: #dbe9ff; font-size: 15px; line-height: 1.6; }
+.secure-india-preview { border: 1px solid var(--border); border-radius: 10px; background: #fff; padding: 22px; }
+.secure-india-preview h2 { color: var(--navy); font-size: 17px; font-weight: 800; }
+.secure-india-preview-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.secure-india-preview-tile { border: 1px solid var(--border); border-radius: 8px; background: #f7fafd; padding: 16px; }
+.secure-india-preview-tile > span { display: grid; height: 40px; width: 40px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+.secure-india-preview-tile strong { display: block; margin-top: 10px; color: var(--navy); font-size: 14px; }
+.secure-india-preview-tile small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.secure-india-mock-note { margin-top: 16px; border-left: 3px solid #ffb020; border-radius: 0 7px 7px 0; background: #fff8ea; padding: 12px 14px; color: #6b4a00; font-size: 12.5px; line-height: 1.55; }
+.secure-india-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-radius: 10px; background: var(--blue-soft); padding: 18px 22px; }
+.secure-india-cta strong { display: block; color: var(--navy); font-size: 15px; font-weight: 800; }
+.secure-india-cta span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
+.secure-india-cta a { flex-shrink: 0; border-radius: 7px; background: var(--blue); padding: 11px 20px; color: #fff; font-size: 14px; font-weight: 800; text-decoration: none; }
+.secure-india-cta a:hover, .secure-india-cta a:focus-visible { background: var(--navy); }
+.secure-india-helpline { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+@media (max-width: 700px) {
+  .secure-india-cta { flex-direction: column; align-items: flex-start; }
+  .secure-india-cta a { width: 100%; text-align: center; }
+}
+
 /* Contact / support page */
 .contact-page { padding: 28px 0 44px; display: grid; gap: 26px; }
 .contact-intro h1 { margin-top: 6px; color: var(--navy); font-size: 28px; font-weight: 800; }

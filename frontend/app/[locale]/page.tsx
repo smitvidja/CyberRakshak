@@ -29,9 +29,16 @@ export default async function LocaleHomePage({params}: Props) {
   const reportHref = `/${locale}/report-crime`;
   const trackHref = `/${locale}/complaints/track`;
   // Every "Learning Corner" entry point on this page used to point at #learning, a
-  // same-page anchor that was never defined - clicking any of them did nothing. This
-  // is the one real Resources/awareness page in the app.
-  const learningHref = `/${locale}/cyber-warrior/resources`;
+  // same-page anchor that was never defined - clicking any of them did nothing.
+  // Then it was pointed at the Cyber Warrior dashboard's /cyber-warrior/resources -
+  // which meant a citizen clicking it landed inside the private warrior sidebar
+  // (Dashboard / My Reports / My Application / Leaderboard / Log out). This is the
+  // real fix: a standalone public page with no warrior chrome at all.
+  const learningHref = `/${locale}/resources`;
+  // Secure India is an unrelated, not-yet-built feature (a crime-map visualizer) -
+  // it must never share a destination with Learning Corner. It previously did,
+  // by mistake.
+  const secureIndiaHref = `/${locale}/secure-india`;
   const categoryEntryHref = (category: string) => `${reportHref}?category=${category}`;
   const reportingHref = (mode: "anonymous" | "identified", category: string) => `${reportHref}?mode=${mode}&category=${category}`;
   const categories: CategoryKey[] = ["women", "financial", "identity", "harassment", "commerce", "other"];
@@ -43,7 +50,7 @@ export default async function LocaleHomePage({params}: Props) {
   const quickLinks = [
     {key: "warrior", href: `/${locale}/cyber-warrior`, icon: UserRoundPlus},
     {key: "learn", href: learningHref, icon: BellRing},
-    {key: "secure", href: learningHref, icon: ShieldCheck},
+    {key: "secure", href: secureIndiaHref, icon: ShieldCheck},
     {key: "track", href: trackHref, icon: ClipboardCheck}
   ] as const;
 

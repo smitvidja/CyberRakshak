@@ -47,9 +47,11 @@ export function ProductShell({children}: ProductShellProps) {
     parts[1] = nextLocale;
     return parts.join("/") || "/" + nextLocale;
   };
-  // "learn" pointed at /{locale}/resources, a route that has never existed (404) -
-  // the only real resources page is under /cyber-warrior/resources.
-  const navItems = [["home", "/" + locale], ["report", "/" + locale + "/report-crime"], ["track", "/" + locale + "/complaints/track"], ["suspects", "/" + locale + "/suspects/report"], ["warriors", "/" + locale + "/cyber-warrior"], ["learn", "/" + locale + "/cyber-warrior/resources"], ["contact", "/" + locale + "/contact"]] as const;
+  // "learn" pointed first at /{locale}/resources when that route didn't exist
+  // (404), then at /cyber-warrior/resources - which put a citizen inside the
+  // private warrior dashboard sidebar just to read safety tips. /resources now
+  // really exists as its own standalone public page (app/[locale]/resources).
+  const navItems = [["home", "/" + locale], ["report", "/" + locale + "/report-crime"], ["track", "/" + locale + "/complaints/track"], ["suspects", "/" + locale + "/suspects/report"], ["warriors", "/" + locale + "/cyber-warrior"], ["learn", "/" + locale + "/resources"], ["contact", "/" + locale + "/contact"]] as const;
   const homeHref = "/" + locale;
   const dashboardHref = homeHref + "/report-crime/dashboard";
   const reportHref = homeHref + "/report-crime";
@@ -117,6 +119,10 @@ export function ProductShell({children}: ProductShellProps) {
       breadcrumbItems.push({href: warriorDashboardHref, label: t("breadcrumbs.warriorDashboard")}, {label: t("breadcrumbs.warriorResources")});
     } else if (pathname === homeHref + "/contact") {
       breadcrumbItems.push({label: t("nav.contact")});
+    } else if (pathname === homeHref + "/resources") {
+      breadcrumbItems.push({label: t("nav.learn")});
+    } else if (pathname === homeHref + "/secure-india") {
+      breadcrumbItems.push({label: t("breadcrumbs.secureIndia")});
     } else if (pathname.startsWith(warriorHref)) {
       breadcrumbItems.push({href: warriorHref, label: t("nav.warriors")}, {label: t("breadcrumbCurrent")});
     } else {

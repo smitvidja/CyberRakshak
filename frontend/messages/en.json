@@ -43,6 +43,7 @@
       "warriorLeaderboard": "Leaderboard",
       "warriorBadges": "Badges & Rewards",
       "warriorResources": "Resources",
+      "secureIndia": "Secure India",
       "warriorApplication": "Application",
       "warriorResume": "Resume Upload",
       "warriorReview": "Review Application",
@@ -1179,5 +1180,34 @@
     },
     "disclosureTitle": "About this prototype",
     "disclosureCopy": "CyberRakshak is a demonstration project. It is not affiliated with or endorsed by any government body, does not perform real identity verification, and does not send real OTPs. Reports submitted here are stored in this prototype only and do not reach any authority."
+  },
+  "secureIndia": {
+    "upcomingBadge": "Upcoming feature",
+    "title": "Secure India",
+    "copy": "A live picture of where cyber crime is happening across India, and what to do about it - currently in development.",
+    "previewTitle": "What this will show",
+    "preview": {
+      "mapVisualizer": {
+        "title": "Crime map visualizer",
+        "copy": "An interactive map of reported cyber crime by state and city."
+      },
+      "cityRankings": {
+        "title": "City rankings",
+        "copy": "Which cities and regions report the most cyber crime, and how it is changing."
+      },
+      "hotZones": {
+        "title": "Hot zones and hot crimes",
+        "copy": "The specific areas and scam types seeing the sharpest rise right now."
+      },
+      "linkedResources": {
+        "title": "Linked prevention guides",
+        "copy": "Every hot crime type links straight to the matching awareness guide."
+      }
+    },
+    "mockDataNote": "This feature is not built yet. Any numbers shown here in future previews will be clearly marked as illustrative, not real reported data, until real reporting data genuinely powers this page.",
+    "ctaTitle": "In the meantime",
+    "ctaCopy": "Read the awareness guides already available in Learning Corner.",
+    "ctaAction": "Go to Learning Corner",
+    "helplineNote": "Lost money to fraud right now? Do not wait for this feature - call 1930."
   }
 }
