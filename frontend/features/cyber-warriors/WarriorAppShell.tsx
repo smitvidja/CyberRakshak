@@ -3,10 +3,12 @@
 import Link from "next/link";
 import {useLocale, useTranslations} from "next-intl";
 import {usePathname, useRouter} from "next/navigation";
-import type {ReactNode} from "react";
+import {useEffect, useRef, useState, type ReactNode} from "react";
 import {
   Award,
   Bell,
+  CheckCheck,
+  ChevronDown,
   ClipboardList,
   FileText,
   HelpCircle,
@@ -19,6 +21,7 @@ import {
   type LucideIcon
 } from "lucide-react";
 
+import type {NotificationRecord} from "@/lib/api/notifications";
 import {clearWarriorSession} from "@/lib/auth/warrior-session";
 
 export type WarriorNavKey = "dashboard" | "myReports" | "trackReports" | "profile" | "myApplication" | "leaderboard" | "badges" | "resources";
@@ -99,17 +102,83 @@ export function WarriorSidebar({active, identity}: {active: WarriorNavKey; ident
   );
 }
 
-export function WarriorTopBar({name, notificationCount, roleLabel}: {name: string; notificationCount: number; roleLabel: string}) {
+function useOutsideClick(onOutside: () => void) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) onOutside();
+    }
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [onOutside]);
+  return ref;
+}
+
+export function WarriorTopBar({
+  name,
+  notifications,
+  onMarkRead,
+  profileHref,
+  roleLabel
+}: {
+  name: string;
+  notifications: NotificationRecord[];
+  onMarkRead: (id: string) => void;
+  profileHref: string;
+  roleLabel: string;
+}) {
   const t = useTranslations("warriorDashboard");
+  const locale = useLocale();
+  const router = useRouter();
+  const [bellOpen, setBellOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const bellRef = useOutsideClick(() => setBellOpen(false));
+  const menuRef = useOutsideClick(() => setMenuOpen(false));
+  const unreadCount = notifications.filter((item) => !item.is_read).length;
+  const dateFormatter = new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"});
+
+  function logout() {
+    clearWarriorSession();
+    router.push("/" + locale + "/cyber-warrior");
+  }
+
   return (
     <div className="warrior-topbar">
-      <button aria-label={t("notificationsLabel", {count: notificationCount})} className="warrior-topbar-bell" type="button">
-        <Bell aria-hidden="true" size={19} />
-        {notificationCount > 0 ? <span className="warrior-topbar-badge">{notificationCount}</span> : null}
-      </button>
-      <div className="warrior-topbar-identity">
-        <span className="warrior-topbar-avatar" aria-hidden="true"><ShieldCheck size={18} /></span>
-        <span><strong>{name}</strong><small>{roleLabel}</small></span>
+      <div className="warrior-topbar-menu" ref={bellRef}>
+        <button aria-expanded={bellOpen} aria-label={t("notificationsLabel", {count: unreadCount})} className="warrior-topbar-bell" onClick={() => setBellOpen((open) => !open)} type="button">
+          <Bell aria-hidden="true" size={19} />
+          {unreadCount > 0 ? <span className="warrior-topbar-badge">{unreadCount}</span> : null}
+        </button>
+        {bellOpen ? (
+          <div className="warrior-dropdown-panel warrior-notification-panel">
+            <h3>{t("notificationsTitle")}</h3>
+            {notifications.length === 0 ? (
+              <p className="warrior-dropdown-empty">{t("notificationsEmpty")}</p>
+            ) : (
+              <ul>
+                {notifications.slice(0, 6).map((item) => (
+                  <li className={item.is_read ? "" : "is-unread"} key={item.id}>
+                    <div><strong>{item.title}</strong><span>{item.message}</span><small>{dateFormatter.format(new Date(item.created_at))}</small></div>
+                    {item.is_read ? null : <button aria-label={t("markReadLabel")} onClick={() => onMarkRead(item.id)} type="button"><CheckCheck aria-hidden="true" size={15} /></button>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : null}
+      </div>
+      <div className="warrior-topbar-menu" ref={menuRef}>
+        <button aria-expanded={menuOpen} className="warrior-topbar-identity" onClick={() => setMenuOpen((open) => !open)} type="button">
+          <span className="warrior-topbar-avatar" aria-hidden="true"><ShieldCheck size={18} /></span>
+          <span><strong>{name}</strong><small>{roleLabel}</small></span>
+          <ChevronDown aria-hidden="true" size={15} />
+        </button>
+        {menuOpen ? (
+          <div className="warrior-dropdown-panel warrior-account-panel">
+            <Link href={profileHref} onClick={() => setMenuOpen(false)}><User aria-hidden="true" size={16} />{t("navProfile")}</Link>
+            <button onClick={logout} type="button"><LogOut aria-hidden="true" size={16} />{t("navLogout")}</button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

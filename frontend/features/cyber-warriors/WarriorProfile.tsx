@@ -4,7 +4,7 @@ import Link from "next/link";
 import {useCallback, useEffect, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
-import {ArrowRight, Award, BookOpen, Camera, CheckCircle2, Pencil, ShieldCheck, Trophy, Users} from "lucide-react";
+import {ArrowRight, Award, BookOpen, CheckCircle2, Pencil, ShieldCheck, Trophy, Users} from "lucide-react";
 
 import {cyberWarriorsApi, warriorApplicationsApi, warriorReportsApi, type WarriorApplication, type SkillCatalogItem} from "@/lib/api/cyber-warriors";
 import {getWarriorIdentity, getWarriorProfileSetup, getWarriorToken} from "@/lib/auth/warrior-session";
@@ -108,7 +108,6 @@ export function WarriorProfile() {
           <h2>{t("personalInfoTitle")}</h2>
           <div className="warrior-profile-avatar-row">
             <span className="warrior-profile-avatar" aria-hidden="true"><ShieldCheck size={40} /></span>
-            <button className="warrior-text-link" type="button" disabled><Camera aria-hidden="true" size={15} />{t("changePhoto")}</button>
           </div>
           <dl className="warrior-profile-fact-grid">
             <div><dt>{t("username")}</dt><dd>{identity?.accountEmail ?? notProvided}</dd></div>

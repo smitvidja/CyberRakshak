@@ -15,15 +15,17 @@ import {
   Globe2,
   Lock,
   Mail,
+  RefreshCw,
   ShieldAlert,
   Star,
   Trophy,
+  TriangleAlert,
   User,
   UserRound
 } from "lucide-react";
 
 import {cyberWarriorsApi, warriorApplicationsApi, warriorReportsApi, type WarriorApplication} from "@/lib/api/cyber-warriors";
-import {notificationsApi} from "@/lib/api/notifications";
+import {notificationsApi, type NotificationRecord} from "@/lib/api/notifications";
 import {getWarriorIdentity, getWarriorToken} from "@/lib/auth/warrior-session";
 import {WarriorShellPage, WarriorTopBar} from "./WarriorAppShell";
 
@@ -32,12 +34,12 @@ type WarriorReportSummary = {status: string};
 type DashboardData = {
   application: WarriorApplication | null;
   identityName: string;
-  notificationCount: number;
+  notifications: NotificationRecord[];
   profileCreatedAt: string | null;
   reports: WarriorReportSummary[];
 };
 
-const emptyData: DashboardData = {application: null, identityName: "", notificationCount: 0, profileCreatedAt: null, reports: []};
+const emptyData: DashboardData = {application: null, identityName: "", notifications: [], profileCreatedAt: null, reports: []};
 
 export function WarriorDashboard() {
   const t = useTranslations("warriorDashboard");
@@ -45,42 +47,58 @@ export function WarriorDashboard() {
   const router = useRouter();
   const [data, setData] = useState<DashboardData>(emptyData);
   const [loading, setLoading] = useState(true);
+  const [failedSources, setFailedSources] = useState<string[]>([]);
+  const [token, setToken] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const token = getWarriorToken();
-    if (!token) {
+    const currentToken = getWarriorToken();
+    if (!currentToken) {
       router.replace("/" + locale + "/cyber-warrior/verify");
       return;
     }
+    setToken(currentToken);
+    setLoading(true);
     const identity = getWarriorIdentity();
     const [profileResult, applicationsResult, reportsResult, notificationsResult] = await Promise.all([
-      cyberWarriorsApi.getMine({accessToken: token}),
-      warriorApplicationsApi.listMine({accessToken: token}),
-      warriorReportsApi.listMine({accessToken: token}),
-      notificationsApi.listMine({accessToken: token})
+      cyberWarriorsApi.getMine({accessToken: currentToken}),
+      warriorApplicationsApi.listMine({accessToken: currentToken}),
+      warriorReportsApi.listMine({accessToken: currentToken}),
+      notificationsApi.listMine({accessToken: currentToken})
     ]);
     const latestApplication = applicationsResult.ok && applicationsResult.data.length
       ? [...applicationsResult.data].sort((a, b) => b.created_at.localeCompare(a.created_at))[0]
       : null;
+    const failed: string[] = [];
+    if (!profileResult.ok) failed.push(t("loadErrorProfile"));
+    if (!applicationsResult.ok) failed.push(t("loadErrorApplication"));
+    if (!reportsResult.ok) failed.push(t("loadErrorReports"));
+    if (!notificationsResult.ok) failed.push(t("loadErrorNotifications"));
+    setFailedSources(failed);
     setData({
       application: latestApplication,
       identityName: identity?.profile.full_name ?? "",
-      notificationCount: notificationsResult.ok ? notificationsResult.data.filter((item) => !item.is_read).length : 0,
+      notifications: notificationsResult.ok ? notificationsResult.data : [],
       profileCreatedAt: profileResult.ok ? String(profileResult.data.created_at ?? "") : null,
       reports: reportsResult.ok ? reportsResult.data.map((item) => ({status: String((item as {status?: unknown}).status ?? "")})) : []
     });
     setLoading(false);
-  }, [locale, router]);
+  }, [locale, router, t]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
+  async function markNotificationRead(id: string) {
+    if (!token) return;
+    setData((current) => ({...current, notifications: current.notifications.map((item) => (item.id === id ? {...item, is_read: true} : item))}));
+    await notificationsApi.markRead(id, {accessToken: token});
+  }
+
   if (loading) {
     return <main className="warrior-page"><div className="shell-container warrior-application-loading">{t("loadingDashboard")}</div></main>;
   }
 
-  const {application, identityName, notificationCount, profileCreatedAt, reports} = data;
+  const {application, identityName, notifications, profileCreatedAt, reports} = data;
   const dateFormatter = new Intl.DateTimeFormat(locale, {dateStyle: "medium"});
   const formatDate = (value: string | null) => (value ? dateFormatter.format(new Date(value)) : "");
 
@@ -150,13 +168,27 @@ export function WarriorDashboard() {
             <p>{t("welcomeCopy")}</p>
           </div>
           <div className="warrior-dashboard-header-right">
-            <WarriorTopBar name={identityName || t("fallbackName")} notificationCount={notificationCount} roleLabel={t("roleLabel")} />
+            <WarriorTopBar
+              name={identityName || t("fallbackName")}
+              notifications={notifications}
+              onMarkRead={markNotificationRead}
+              profileHref={"/" + locale + "/cyber-warrior/profile"}
+              roleLabel={t("roleLabel")}
+            />
             <div className="warrior-dashboard-meta">
               <span><strong>{t("warriorId")}:</strong> {application?.application_number ?? t("notAvailable")}</span>
               <span>{t("memberSince", {date: profileCreatedAt ? formatDate(profileCreatedAt) : t("notAvailable")})}</span>
             </div>
           </div>
         </div>
+
+        {failedSources.length > 0 ? (
+          <div className="warrior-load-error-banner" role="alert">
+            <TriangleAlert aria-hidden="true" size={18} />
+            <span>{t("loadErrorTitle", {sources: failedSources.join(", ")})}</span>
+            <button onClick={() => void load()} type="button"><RefreshCw aria-hidden="true" size={15} />{t("loadErrorRetry")}</button>
+          </div>
+        ) : null}
 
         <div className="warrior-stat-grid">
           {stats.map((stat) => (

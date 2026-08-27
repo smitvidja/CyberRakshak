@@ -3,7 +3,7 @@
 import {useEffect, useState, type FormEvent} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
-import {ArrowLeft, ArrowRight, CheckCircle2, Edit3, GraduationCap, ShieldCheck, Sparkles} from "lucide-react";
+import {ArrowLeft, ArrowRight, CheckCircle2, Edit3, GraduationCap, Plus, ShieldCheck, Sparkles, Trash2} from "lucide-react";
 
 import {Button} from "@/components/ui/Button";
 import {CheckboxField, SelectField, TextArea, TextInput} from "@/components/ui/FormFields";
@@ -24,6 +24,8 @@ import {
 } from "@/lib/auth/warrior-session";
 import {ApplicationError, ApplicationHeading, WarriorApplicationFrame} from "./WarriorApplicationShell";
 
+type SkillRow = {proficiencyLevel: string; skillId: string; yearsOfExperience: string};
+
 type ReviewForm = {
   bio: string;
   certificationIssuer: string;
@@ -37,15 +39,17 @@ type ReviewForm = {
   institution: string;
   linkedinUrl: string;
   location: string;
-  skillId: string;
+  skills: SkillRow[];
   statement: string;
 };
 
 const emptyForm: ReviewForm = {
   bio: "", certificationIssuer: "", certificationName: "", degree: "", displayName: "",
   experienceDescription: "", experienceOrganization: "", experienceTitle: "", fieldOfStudy: "",
-  institution: "", linkedinUrl: "", location: "", skillId: "", statement: ""
+  institution: "", linkedinUrl: "", location: "", skills: [], statement: ""
 };
+
+const emptySkillRow: SkillRow = {proficiencyLevel: "INTERMEDIATE", skillId: "", yearsOfExperience: ""};
 
 function value(record: Record<string, unknown> | undefined, key: string) {
   const candidate = record?.[key];
@@ -102,7 +106,7 @@ export function WarriorApplicationReview() {
       const identity = getWarriorIdentity();
       const skillNames = extracted.skills ?? [];
       const catalogItems = catalog.ok ? catalog.data : [];
-      const suggestedSkill = catalogItems.find((item) => skillNames.some((name) => item.name.toLowerCase() === name.toLowerCase())) ?? catalogItems[0];
+      const suggestedSkills = catalogItems.filter((item) => skillNames.some((name) => item.name.toLowerCase() === name.toLowerCase()));
       setResult(parsing.data);
       setSkills(catalogItems);
       setForm({
@@ -118,7 +122,7 @@ export function WarriorApplicationReview() {
         institution: value(education, "institution"),
         linkedinUrl: typeof profileRecord.linkedin_url === "string" ? profileRecord.linkedin_url : "",
         location: value(profileData, "location") || [setup?.city, setup?.state].filter(Boolean).join(", "),
-        skillId: suggestedSkill?.id ?? "",
+        skills: suggestedSkills.map((item) => ({...emptySkillRow, skillId: item.id})),
         statement: ""
       });
       setLoading(false);
@@ -128,6 +132,18 @@ export function WarriorApplicationReview() {
 
   function update<K extends keyof ReviewForm>(key: K, next: ReviewForm[K]) {
     setForm((current) => ({...current, [key]: next}));
+  }
+
+  function addSkillRow() {
+    setForm((current) => ({...current, skills: [...current.skills, {...emptySkillRow}]}));
+  }
+
+  function updateSkillRow(index: number, patch: Partial<SkillRow>) {
+    setForm((current) => ({...current, skills: current.skills.map((row, rowIndex) => (rowIndex === index ? {...row, ...patch} : row))}));
+  }
+
+  function removeSkillRow(index: number) {
+    setForm((current) => ({...current, skills: current.skills.filter((_, rowIndex) => rowIndex !== index)}));
   }
 
   function validateDetails(event: FormEvent) {
@@ -170,7 +186,13 @@ export function WarriorApplicationReview() {
         github_url: null,
         linkedin_url: form.linkedinUrl || null,
         location: form.location || null,
-        skills: form.skillId ? [{proficiency_level: "INTERMEDIATE", skill_id: form.skillId}] : []
+        skills: form.skills
+          .filter((row) => row.skillId)
+          .map((row) => ({
+            proficiency_level: row.proficiencyLevel || null,
+            skill_id: row.skillId,
+            years_of_experience: row.yearsOfExperience ? Number(row.yearsOfExperience) : null
+          }))
       }, {accessToken: token});
       if (!confirmed.ok) {
         setError(t("confirmError"));
@@ -211,7 +233,15 @@ export function WarriorApplicationReview() {
   }
 
   const identity = getWarriorIdentity();
-  const selectedSkill = skills.find((item) => item.id === form.skillId);
+  const chosenSkillIds = new Set(form.skills.map((row) => row.skillId));
+  const selectedSkillNames = form.skills
+    .map((row) => skills.find((item) => item.id === row.skillId)?.name)
+    .filter((name): name is string => Boolean(name));
+  const proficiencyOptions = [
+    {label: t("proficiencyBeginner"), value: "BEGINNER"},
+    {label: t("proficiencyIntermediate"), value: "INTERMEDIATE"},
+    {label: t("proficiencyAdvanced"), value: "ADVANCED"}
+  ];
 
   if (mode === "review") {
     return (
@@ -222,7 +252,7 @@ export function WarriorApplicationReview() {
           <Button onClick={() => setMode("edit")} size="sm" variant="outline"><Edit3 size={16} />{t("editAction")}</Button>
         </div>
         <div className="warrior-review-sections">
-          <section><h3>{t("personalTitle")}</h3><dl><div><dt>{t("fullName")}</dt><dd>{form.displayName}</dd></div><div><dt>{t("email")}</dt><dd>{identity?.accountEmail}</dd></div><div><dt>{t("location")}</dt><dd>{form.location || t("notProvided")}</dd></div><div><dt>{t("primarySkill")}</dt><dd>{selectedSkill?.name ?? t("notProvided")}</dd></div></dl></section>
+          <section><h3>{t("personalTitle")}</h3><dl><div><dt>{t("fullName")}</dt><dd>{form.displayName}</dd></div><div><dt>{t("email")}</dt><dd>{identity?.accountEmail}</dd></div><div><dt>{t("location")}</dt><dd>{form.location || t("notProvided")}</dd></div><div className="wide"><dt>{t("skillsLabel")}</dt><dd>{selectedSkillNames.length ? selectedSkillNames.join(", ") : t("notProvided")}</dd></div></dl></section>
           <section><h3>{t("educationTitle")}</h3><dl><div><dt>{t("institution")}</dt><dd>{form.institution}</dd></div><div><dt>{t("degree")}</dt><dd>{form.degree}</dd></div><div><dt>{t("fieldOfStudy")}</dt><dd>{form.fieldOfStudy || t("notProvided")}</dd></div></dl></section>
           <section><h3>{t("experienceTitle")}</h3><dl><div><dt>{t("organization")}</dt><dd>{form.experienceOrganization}</dd></div><div><dt>{t("role")}</dt><dd>{form.experienceTitle}</dd></div><div className="wide"><dt>{t("experienceDetails")}</dt><dd>{form.experienceDescription || t("notProvided")}</dd></div></dl></section>
           <section><h3>{t("certificationTitle")}</h3><dl><div><dt>{t("certificationName")}</dt><dd>{form.certificationName || t("notProvided")}</dd></div><div><dt>{t("issuer")}</dt><dd>{form.certificationIssuer || t("notProvided")}</dd></div></dl></section>
@@ -249,9 +279,49 @@ export function WarriorApplicationReview() {
           <TextInput id="warrior-display-name" label={t("displayName")} onChange={(event) => update("displayName", event.target.value)} required value={form.displayName} />
           <TextInput id="warrior-location" label={t("location")} onChange={(event) => update("location", event.target.value)} value={form.location} />
           <TextInput id="warrior-linkedin" label={t("linkedin")} onChange={(event) => update("linkedinUrl", event.target.value)} type="url" value={form.linkedinUrl} />
-          <SelectField id="warrior-skill" label={t("primarySkill")} onChange={(event) => update("skillId", event.target.value)} options={[{label: t("selectSkill"), value: ""}, ...skills.map((item) => ({label: item.name, value: item.id}))]} value={form.skillId} />
         </div>
         <TextArea id="warrior-bio" label={t("bio")} maxLength={5000} onChange={(event) => update("bio", event.target.value)} value={form.bio} />
+        <fieldset className="warrior-application-fieldset">
+          <legend>{t("skillsLabel")}</legend>
+          {form.skills.length === 0 ? <p className="warrior-skills-empty">{t("noSkillsAdded")}</p> : null}
+          <div className="warrior-skill-rows">
+            {form.skills.map((row, index) => (
+              <div className="warrior-skill-row" key={index}>
+                <SelectField
+                  id={"warrior-skill-" + index}
+                  label={t("skillLabel")}
+                  onChange={(event) => updateSkillRow(index, {skillId: event.target.value})}
+                  options={[
+                    {label: t("selectSkill"), value: ""},
+                    ...skills
+                      .filter((item) => item.id === row.skillId || !chosenSkillIds.has(item.id))
+                      .map((item) => ({label: item.name, value: item.id}))
+                  ]}
+                  value={row.skillId}
+                />
+                <SelectField
+                  id={"warrior-skill-level-" + index}
+                  label={t("proficiencyLabel")}
+                  onChange={(event) => updateSkillRow(index, {proficiencyLevel: event.target.value})}
+                  options={proficiencyOptions}
+                  value={row.proficiencyLevel}
+                />
+                <TextInput
+                  id={"warrior-skill-years-" + index}
+                  inputMode="numeric"
+                  label={t("yearsOfExperienceLabel")}
+                  max={80}
+                  min={0}
+                  onChange={(event) => updateSkillRow(index, {yearsOfExperience: event.target.value.replace(/\D/g, "")})}
+                  type="number"
+                  value={row.yearsOfExperience}
+                />
+                <button aria-label={t("removeSkillAction")} className="warrior-remove-skill" onClick={() => removeSkillRow(index)} type="button"><Trash2 aria-hidden="true" size={16} /></button>
+              </div>
+            ))}
+          </div>
+          <Button onClick={addSkillRow} size="sm" type="button" variant="outline"><Plus aria-hidden="true" size={16} />{t("addSkillAction")}</Button>
+        </fieldset>
         <fieldset className="warrior-application-fieldset"><legend><GraduationCap size={18} />{t("educationTitle")}</legend><div className="warrior-application-form-grid"><TextInput id="warrior-institution" label={t("institution")} onChange={(event) => update("institution", event.target.value)} required value={form.institution} /><TextInput id="warrior-degree" label={t("degree")} onChange={(event) => update("degree", event.target.value)} required value={form.degree} /><TextInput id="warrior-field" label={t("fieldOfStudy")} onChange={(event) => update("fieldOfStudy", event.target.value)} value={form.fieldOfStudy} /></div></fieldset>
         <fieldset className="warrior-application-fieldset"><legend>{t("experienceTitle")}</legend><div className="warrior-application-form-grid"><TextInput id="warrior-organization" label={t("organization")} onChange={(event) => update("experienceOrganization", event.target.value)} required value={form.experienceOrganization} /><TextInput id="warrior-role" label={t("role")} onChange={(event) => update("experienceTitle", event.target.value)} required value={form.experienceTitle} /></div><TextArea id="warrior-experience" label={t("experienceDetails")} onChange={(event) => update("experienceDescription", event.target.value)} value={form.experienceDescription} /></fieldset>
         <fieldset className="warrior-application-fieldset"><legend>{t("certificationTitle")}</legend><div className="warrior-application-form-grid"><TextInput id="warrior-certificate" label={t("certificationName")} onChange={(event) => update("certificationName", event.target.value)} value={form.certificationName} /><TextInput id="warrior-issuer" label={t("issuer")} onChange={(event) => update("certificationIssuer", event.target.value)} value={form.certificationIssuer} /></div></fieldset>

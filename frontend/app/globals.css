@@ -365,6 +365,12 @@ button, input, select, textarea { font: inherit; }
 .warrior-application-fieldset { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
 .warrior-application-fieldset legend { display: flex; align-items: center; gap: 7px; padding-right: 10px; color: var(--navy); font-size: 15px; font-weight: 800; }
 .warrior-application-fieldset > label { margin-top: 14px; }
+.warrior-skills-empty { margin-top: 10px; color: var(--muted); font-size: 12px; }
+.warrior-skill-rows { display: grid; margin-top: 14px; gap: 12px; }
+.warrior-skill-row { display: grid; grid-template-columns: minmax(0, 1fr) 160px 140px 42px; align-items: end; gap: 10px; }
+.warrior-remove-skill { display: grid; height: 42px; width: 42px; place-items: center; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--danger); }
+.warrior-remove-skill:hover { background: #fff2f0; }
+.warrior-application-fieldset > .warrior-skill-rows + button { margin-top: 14px; }
 .warrior-review-toolbar { display: flex; margin-top: 18px; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #b8dfc9; border-radius: 7px; background: #f1fbf5; padding: 10px 13px; }
 .warrior-review-toolbar span { display: flex; align-items: center; gap: 7px; color: #117148; font-size: 12px; font-weight: 800; }
 .warrior-review-sections { display: grid; margin-top: 14px; gap: 12px; }
@@ -406,6 +412,8 @@ button, input, select, textarea { font: inherit; }
   .warrior-application-page, .warrior-submitted-page { padding-top: 16px; }
   .warrior-application-workspace, .warrior-submitted-layout { padding: 18px; }
   .warrior-application-rail ol, .warrior-upload-grid, .warrior-application-form-grid, .warrior-review-sections dl { grid-template-columns: 1fr; }
+  .warrior-skill-row { grid-template-columns: 1fr; }
+  .warrior-remove-skill { width: 100%; }
   .warrior-application-rail li { min-height: 62px; }
   .warrior-application-rail li small { display: none; }
   .warrior-application-actions, .warrior-review-toolbar, .warrior-session-notice, .warrior-help-strip { align-items: stretch; flex-direction: column; }
@@ -440,12 +448,37 @@ button, input, select, textarea { font: inherit; }
 .warrior-dashboard-header-right { display: grid; justify-items: end; gap: 10px; }
 .warrior-dashboard-meta { display: grid; justify-items: end; gap: 2px; color: var(--muted); font-size: 12px; }
 .warrior-topbar { display: flex; align-items: center; gap: 12px; }
+.warrior-topbar-menu { position: relative; }
 .warrior-topbar-bell { position: relative; display: grid; height: 38px; width: 38px; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: #fff; color: var(--navy); }
 .warrior-topbar-badge { position: absolute; top: -4px; right: -4px; display: grid; height: 18px; min-width: 18px; place-items: center; border-radius: 9px; background: var(--danger); padding: 0 4px; color: #fff; font-size: 10px; font-weight: 800; }
-.warrior-topbar-identity { display: flex; align-items: center; gap: 8px; }
-.warrior-topbar-avatar { display: grid; height: 34px; width: 34px; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; }
-.warrior-topbar-identity strong { display: block; font-size: 13px; }
+.warrior-topbar-identity { display: flex; align-items: center; gap: 8px; border: 0; background: none; padding: 4px; border-radius: 20px; font: inherit; color: inherit; cursor: pointer; }
+.warrior-topbar-identity:hover { background: var(--blue-soft); }
+.warrior-topbar-avatar { display: grid; height: 34px; width: 34px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; }
+.warrior-topbar-identity strong { display: block; text-align: left; font-size: 13px; }
 .warrior-topbar-identity small { display: block; margin-top: 2px; color: #16835d; font-size: 11px; font-weight: 700; }
+.warrior-topbar-identity > svg { color: var(--muted); }
+.warrior-dropdown-panel { position: absolute; top: calc(100% + 8px); right: 0; z-index: 20; width: max(280px, 100%); border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 14px; box-shadow: 0 10px 24px rgb(15 42 74 / .14); }
+.warrior-dropdown-panel h3 { font-size: 13px; font-weight: 800; color: var(--navy); }
+.warrior-dropdown-empty { margin-top: 8px; color: var(--muted); font-size: 12px; }
+.warrior-notification-panel ul { display: grid; margin-top: 10px; gap: 2px; max-height: 320px; overflow-y: auto; }
+.warrior-notification-panel li { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; border-radius: 6px; padding: 9px 8px; }
+.warrior-notification-panel li.is-unread { background: var(--blue-soft); }
+.warrior-notification-panel li div { min-width: 0; }
+.warrior-notification-panel li strong { display: block; font-size: 12px; color: var(--navy); }
+.warrior-notification-panel li span { display: block; margin-top: 2px; color: #415a76; font-size: 12px; line-height: 1.4; }
+.warrior-notification-panel li small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+.warrior-notification-panel li button { display: grid; height: 26px; width: 26px; flex: 0 0 auto; place-items: center; border-radius: 50%; border: 1px solid var(--border); background: #fff; color: var(--blue); }
+.warrior-notification-panel li button:hover { background: var(--blue-soft); }
+.warrior-account-panel { display: grid; width: 200px; gap: 2px; padding: 8px; }
+.warrior-account-panel a, .warrior-account-panel button { display: flex; align-items: center; gap: 9px; border-radius: 6px; padding: 9px 10px; color: #3e5875; font-size: 13px; font-weight: 700; text-align: left; }
+.warrior-account-panel a:hover, .warrior-account-panel button:hover { background: var(--blue-soft); color: var(--blue); }
+.warrior-account-panel button { color: var(--danger); }
+.warrior-account-panel button:hover { background: #fff2f0; color: var(--danger); }
+.warrior-load-error-banner { display: flex; align-items: center; gap: 10px; border: 1px solid #f0bd66; border-radius: 7px; background: #fff9ed; padding: 12px 14px; color: #785012; font-size: 12px; }
+.warrior-load-error-banner > svg { flex: 0 0 auto; }
+.warrior-load-error-banner span { flex: 1; }
+.warrior-load-error-banner button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #785012; border-radius: 6px; padding: 6px 10px; color: #785012; font-weight: 800; }
+.warrior-load-error-banner button:hover { background: rgb(120 80 18 / .08); }
 .warrior-stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .warrior-stat-tile { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 16px; box-shadow: 0 2px 8px rgb(15 42 74 / .05); }
 .warrior-stat-tile > span { display: grid; height: 36px; width: 36px; place-items: center; border-radius: 50%; }
@@ -546,4 +579,6 @@ button, input, select, textarea { font: inherit; }
   .warrior-profile-fact-grid { grid-template-columns: 1fr; }
   .warrior-profile-fact-grid .wide { grid-column: auto; }
   .warrior-profile-header-row { flex-direction: column; }
+  .warrior-dropdown-panel { width: min(300px, calc(100vw - 32px)); right: -8px; }
+  .warrior-load-error-banner { flex-wrap: wrap; }
 }
