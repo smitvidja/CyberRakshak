@@ -121,6 +121,24 @@ class EvidenceService:
         return evidence
 
     @staticmethod
+    def read_file(
+        session: Session,
+        evidence_id: UUID,
+        current_user: User,
+    ) -> tuple[bytes, str, str]:
+        evidence = EvidenceService.get_accessible(session, evidence_id, current_user)
+        storage_adapter = get_storage_adapter()
+        try:
+            content = storage_adapter.read(evidence.storage_key)
+        except StorageError:
+            raise APIError(
+                status_code=503,
+                code="STORAGE_UNAVAILABLE",
+                message="Evidence storage is currently unavailable.",
+            ) from None
+        return content, evidence.mime_type, evidence.file_name
+
+    @staticmethod
     def list_for_warrior_report(
         session: Session,
         warrior_report_id: UUID,

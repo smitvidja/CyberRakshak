@@ -6,6 +6,7 @@ const warriorIdentityKey = "cyberrakshak.warrior-identity";
 const warriorProfileSetupKey = "cyberrakshak.warrior-profile-setup";
 const warriorResumeKey = "cyberrakshak.warrior-resume";
 const warriorApplicationKey = "cyberrakshak.warrior-application";
+const warriorReportDraftKey = "cyberrakshak.warrior-report-draft";
 
 export type WarriorIdentitySession = {
   accountEmail: string;
@@ -98,10 +99,45 @@ export function getWarriorApplication(): WarriorApplication | null {
   }
 }
 
+export type WarriorReportDraftSession = {
+  accountRef: string;
+  category: string;
+  description: string;
+  evidenceDetails: string;
+  evidenceItems: Array<{fileName: string; fileSize: number; id: string}>;
+  incidentDate: string;
+  incidentTime: string;
+  otherInfo: string;
+  platform: string;
+  reportId: string | null;
+  step: number;
+  websiteUrl: string;
+};
+
+export function setWarriorReportDraft(draft: WarriorReportDraftSession) {
+  sessionStorage.setItem(warriorReportDraftKey, JSON.stringify(draft));
+}
+
+export function getWarriorReportDraft(): WarriorReportDraftSession | null {
+  const value = sessionStorage.getItem(warriorReportDraftKey);
+  if (!value) return null;
+  try {
+    const draft = JSON.parse(value) as WarriorReportDraftSession;
+    return typeof draft.step === "number" ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearWarriorReportDraft() {
+  sessionStorage.removeItem(warriorReportDraftKey);
+}
+
 export function clearWarriorSession() {
   sessionStorage.removeItem(warriorAccessTokenKey);
   sessionStorage.removeItem(warriorIdentityKey);
   sessionStorage.removeItem(warriorProfileSetupKey);
   sessionStorage.removeItem(warriorResumeKey);
   sessionStorage.removeItem(warriorApplicationKey);
+  sessionStorage.removeItem(warriorReportDraftKey);
 }

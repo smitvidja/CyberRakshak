@@ -79,3 +79,7 @@ class WarriorRepository:
             .order_by(WarriorReport.created_at.desc())
         )
         return list(session.scalars(statement))
+
+    @staticmethod
+    def delete_report(session: Session, report: WarriorReport) -> None:
+        session.delete(report)

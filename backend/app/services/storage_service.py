@@ -37,6 +37,8 @@ class StorageAdapter(Protocol):
 
     def delete(self, storage_key: str) -> None: ...
 
+    def read(self, storage_key: str) -> bytes: ...
+
 
 _ALLOWED_MIME_TYPES = {
     ".doc": {"application/msword"},
@@ -95,6 +97,12 @@ class LocalStorageAdapter:
     def delete(self, storage_key: str) -> None:
         try:
             self._path_for_key(storage_key).unlink(missing_ok=True)
+        except OSError as exc:
+            raise StorageError("Local evidence storage failed.") from exc
+
+    def read(self, storage_key: str) -> bytes:
+        try:
+            return self._path_for_key(storage_key).read_bytes()
         except OSError as exc:
             raise StorageError("Local evidence storage failed.") from exc
 

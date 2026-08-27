@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db_session
@@ -40,3 +40,9 @@ def list_my_reports(session: Annotated[Session, Depends(get_db_session)], curren
 @router.get("/{report_id}", response_model=SuccessResponse[WarriorReportResponse], responses={403: {"model": ErrorResponse}, 404: {"model": ErrorResponse}})
 def get_report(report_id: UUID, session: Annotated[Session, Depends(get_db_session)], current_user: WarriorUser) -> dict[str, object]:
     return success_response(WarriorReportResponse.model_validate(WarriorReportService.get_owned(session, report_id, current_user)))
+
+
+@router.delete("/{report_id}", status_code=status.HTTP_204_NO_CONTENT, responses={403: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}})
+def delete_report(report_id: UUID, session: Annotated[Session, Depends(get_db_session)], current_user: WarriorUser) -> Response:
+    WarriorReportService.delete(session, report_id, current_user)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

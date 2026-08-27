@@ -20,6 +20,7 @@ from app.models.enums import (
     WarriorApplicationStatus,
     WarriorReportStatus,
 )
+from app.repositories.evidence_repository import EvidenceRepository
 from app.repositories.warrior_repository import WarriorRepository
 from app.schemas.cyber_warrior import ProfileCreate, ProfileUpdate
 from app.schemas.warrior import (
@@ -28,6 +29,7 @@ from app.schemas.warrior import (
     WarriorReportUpdate,
 )
 from app.services.audit_service import AuditService
+from app.services.evidence_service import EvidenceService
 from app.services.notification_service import NotificationService
 
 
@@ -254,6 +256,20 @@ class WarriorReportService:
         session.commit()
         session.refresh(report)
         return report
+
+    @staticmethod
+    def delete(
+        session: Session,
+        report_id: UUID,
+        current_user: User,
+    ) -> None:
+        report = WarriorReportService._owned_report(session, report_id, current_user)
+        if report.status is not WarriorReportStatus.DRAFT:
+            raise APIError(status_code=409, code="CONFLICT", message="Only draft reports can be deleted.")
+        for evidence in EvidenceRepository.list_by_warrior_report(session, report.id):
+            EvidenceService.delete(session, evidence.id, current_user)
+        WarriorRepository.delete_report(session, report)
+        session.commit()
 
     @staticmethod
     def list_mine(session: Session, current_user: User) -> list[WarriorReport]:

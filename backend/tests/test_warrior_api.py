@@ -134,6 +134,51 @@ def test_application_and_warrior_report_submit_with_owned_evidence(api_client: t
     assert forbidden.status_code == 403
 
 
+def test_warrior_report_evidence_file_can_be_read_and_draft_can_be_deleted(api_client: tuple[TestClient, Session]) -> None:
+    client, _ = api_client
+    headers = warrior_headers(client)
+    create_profile(client, headers)
+
+    report = client.post("/api/v1/warrior-reports", headers=headers, json={"title": "Suspicious link", "description": "A suspicious link was shared in a group chat.", "report_type": "PHISHING"})
+    assert report.status_code == 201
+    report_id = report.json()["data"]["id"]
+
+    file_bytes = b"synthetic-evidence-bytes"
+    evidence = client.post("/api/v1/evidence", headers=headers, data={"warrior_report_id": report_id}, files={"file": ("note.txt", file_bytes, "text/plain")})
+    assert evidence.status_code == 201
+    evidence_id = evidence.json()["data"]["id"]
+
+    file_response = client.get(f"/api/v1/evidence/{evidence_id}/file", headers=headers)
+    assert file_response.status_code == 200
+    assert file_response.content == file_bytes
+    assert file_response.headers["content-type"].startswith("text/plain")
+
+    other_headers = warrior_headers(client)
+    create_profile(client, other_headers)
+    forbidden_file = client.get(f"/api/v1/evidence/{evidence_id}/file", headers=other_headers)
+    assert forbidden_file.status_code == 403
+
+    # A draft report (with evidence attached) can be deleted by its owner - evidence rows and
+    # the underlying stored file must be cleaned up too, not just the report row.
+    forbidden_delete = client.delete(f"/api/v1/warrior-reports/{report_id}", headers=other_headers)
+    assert forbidden_delete.status_code == 403
+
+    deleted = client.delete(f"/api/v1/warrior-reports/{report_id}", headers=headers)
+    assert deleted.status_code == 204
+
+    missing_after_delete = client.get(f"/api/v1/warrior-reports/{report_id}", headers=headers)
+    assert missing_after_delete.status_code == 404
+    evidence_gone = client.get(f"/api/v1/evidence/{evidence_id}/file", headers=headers)
+    assert evidence_gone.status_code == 404
+
+    # Deleting a submitted (non-draft) report is rejected.
+    second_report = client.post("/api/v1/warrior-reports", headers=headers, json={"title": "Second report", "description": "Another synthetic report for delete-guard testing.", "report_type": "OTHER"})
+    second_report_id = second_report.json()["data"]["id"]
+    client.post(f"/api/v1/warrior-reports/{second_report_id}/submit", headers=headers)
+    delete_submitted = client.delete(f"/api/v1/warrior-reports/{second_report_id}", headers=headers)
+    assert delete_submitted.status_code == 409
+
+
 def admin_headers(client: TestClient, session: Session) -> dict[str, str]:
     suffix = uuid4().hex
     email = f"admin-{suffix}@example.com"

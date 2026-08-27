@@ -3,7 +3,7 @@
 import {useCallback, useEffect, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
-import {Award, Medal, Shield, Trophy} from "lucide-react";
+import {Award, ChevronLeft, ChevronRight, Medal, Shield, Trophy} from "lucide-react";
 
 import {warriorReportsApi} from "@/lib/api/cyber-warriors";
 import {getWarriorIdentity, getWarriorToken} from "@/lib/auth/warrior-session";
@@ -37,6 +37,8 @@ export function WarriorLeaderboard() {
   const [points, setPoints] = useState(0);
   const [reportsSubmitted, setReportsSubmitted] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
 
   const load = useCallback(async () => {
     const token = getWarriorToken();
@@ -68,6 +70,10 @@ export function WarriorLeaderboard() {
   ].sort((a, b) => b.points - a.points);
   const yourRank = rows.findIndex((row) => row.you) + 1;
   const podium = rows.slice(0, 3);
+  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * pageSize;
+  const pageRows = rows.slice(pageStart, pageStart + pageSize);
 
   return (
     <WarriorShellPage active="leaderboard">
@@ -93,15 +99,23 @@ export function WarriorLeaderboard() {
             <div className="warrior-leaderboard-row warrior-leaderboard-head">
               <span>{t("colRank")}</span><span>{t("colName")}</span><span>{t("colPoints")}</span><span>{t("colReports")}</span><span>{t("colRankTitle")}</span>
             </div>
-            {rows.map((row, index) => (
+            {pageRows.map((row, index) => (
               <div className={"warrior-leaderboard-row " + (row.you ? "is-you" : "")} key={row.warriorId}>
-                <span>{index + 1}</span>
+                <span>{pageStart + index + 1}</span>
                 <span>{row.you ? t("you") : row.name}</span>
                 <span>{row.points}</span>
                 <span>{row.reportsSubmitted}</span>
                 <span>{rankTitle(row.points, t)}</span>
               </div>
             ))}
+          </div>
+          <div className="warrior-leaderboard-pagination">
+            <span>{t("showingEntries", {end: Math.min(pageStart + pageSize, rows.length), start: pageStart + 1, total: rows.length})}</span>
+            <div className="warrior-pagination-controls">
+              <button disabled={currentPage <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))} type="button"><ChevronLeft aria-hidden="true" size={16} /></button>
+              <span>{currentPage} / {totalPages}</span>
+              <button disabled={currentPage >= totalPages} onClick={() => setPage((current) => Math.min(totalPages, current + 1))} type="button"><ChevronRight aria-hidden="true" size={16} /></button>
+            </div>
           </div>
           <p className="warrior-status-note">{t("demoDataNote")}</p>
         </section>

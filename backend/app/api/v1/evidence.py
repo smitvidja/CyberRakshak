@@ -82,6 +82,28 @@ def list_warrior_report_evidence(
 
 
 @router.get(
+    "/{evidence_id}/file",
+    responses={
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        503: {"model": ErrorResponse},
+    },
+)
+def read_evidence_file(
+    evidence_id: UUID,
+    session: Annotated[Session, Depends(get_db_session)],
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> Response:
+    content, mime_type, file_name = EvidenceService.read_file(session, evidence_id, current_user)
+    return Response(
+        content=content,
+        media_type=mime_type,
+        headers={"Content-Disposition": f'inline; filename="{file_name}"'},
+    )
+
+
+@router.get(
     "/{evidence_id}",
     response_model=SuccessResponse[EvidenceResponse],
     responses={

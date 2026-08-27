@@ -65,6 +65,13 @@ function parseEnvelope<T>(payload: unknown, status: number): ApiResult<T> {
     return {data: envelope.data as T, message: envelope.message, ok: true};
   }
 
+  // A 2xx response with no body (e.g. 204 No Content from a DELETE) has no envelope to parse -
+  // that is still a success, not a failure. Without this, every no-body-response endpoint (evidence
+  // and warrior-report deletion included) would be reported as failed even though it worked.
+  if (status >= 200 && status < 300 && envelope === null) {
+    return {data: undefined as T, ok: true};
+  }
+
   const fallbackCode = status === 401 ? "UNAUTHORIZED" : status === 403 ? "FORBIDDEN" : status === 404 ? "NOT_FOUND" : status >= 500 ? "SERVER_ERROR" : "UNKNOWN_ERROR";
 
   return {

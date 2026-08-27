@@ -3,11 +3,13 @@
 import {useEffect, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
-import {CheckCircle2, Clock3, FileSearch, FileText, ShieldCheck} from "lucide-react";
+import {CheckCircle2, Clock3, Download, Eye, FileSearch, FileText, ShieldCheck} from "lucide-react";
 
+import {Button} from "@/components/ui/Button";
 import type {ApiRecord} from "@/lib/api/auth";
 import {evidenceApi} from "@/lib/api/complaints";
 import {warriorReportsApi, type WarriorReport} from "@/lib/api/cyber-warriors";
+import {openEvidenceFile} from "@/lib/api/evidence-file";
 import {getWarriorToken} from "@/lib/auth/warrior-session";
 import {WarriorShellPage} from "./WarriorAppShell";
 import {computeReportTimeline, reportCategoryLabelKey, reportStatusToneClass} from "./warriorReportMeta";
@@ -22,17 +24,20 @@ export function WarriorReportDetails({reportId}: {reportId: string}) {
   const [evidence, setEvidence] = useState<EvidenceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [viewError, setViewError] = useState("");
 
   useEffect(() => {
-    const token = getWarriorToken();
-    if (!token) {
+    const currentToken = getWarriorToken();
+    if (!currentToken) {
       router.replace("/" + locale + "/cyber-warrior/verify");
       return;
     }
+    setToken(currentToken);
     let active = true;
     Promise.all([
-      warriorReportsApi.getById(reportId, {accessToken: token}),
-      evidenceApi.listByWarriorReport(reportId, {accessToken: token})
+      warriorReportsApi.getById(reportId, {accessToken: currentToken}),
+      evidenceApi.listByWarriorReport(reportId, {accessToken: currentToken})
     ]).then(([reportResult, evidenceResult]) => {
       if (!active) return;
       if (!reportResult.ok) {
@@ -52,6 +57,39 @@ export function WarriorReportDetails({reportId}: {reportId: string}) {
     });
     return () => { active = false; };
   }, [locale, reportId, router, t]);
+
+  async function viewEvidence(id: string) {
+    if (!token) return;
+    const opened = await openEvidenceFile(id, token);
+    if (!opened) setViewError(t("evidenceViewError"));
+  }
+
+  function downloadSummary() {
+    if (!report) return;
+    const dateFormatter = new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"});
+    const lines = [
+      t("detailsTitle") + " - " + report.id.slice(0, 8).toUpperCase(),
+      "",
+      t("incidentTypeTitle") + ": " + t(reportCategoryLabelKey(report.report_type)),
+      t("currentStatus") + ": " + t("status." + report.status),
+      t("summarySubmittedOn") + ": " + (report.submitted_at ? dateFormatter.format(new Date(report.submitted_at)) : t("notAvailable")),
+      "",
+      t("incidentDetailsTitle") + ":",
+      report.description,
+      "",
+      t("evidenceUploadedTitle", {count: evidence.length}) + ":",
+      ...(evidence.length ? evidence.map((item) => "- " + item.fileName) : [t("notProvided")])
+    ];
+    const blob = new Blob([lines.join("\n")], {type: "text/plain"});
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "cyberrakshak-report-" + report.id.slice(0, 8).toUpperCase() + ".txt";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  }
 
   if (loading) {
     return <main className="warrior-page"><div className="shell-container warrior-application-loading">{t("loadingReport")}</div></main>;
@@ -84,6 +122,7 @@ export function WarriorReportDetails({reportId}: {reportId: string}) {
             <h1>{t("detailsTitle")}</h1>
             <p>{t("detailsCopy")}</p>
           </div>
+          <Button onClick={downloadSummary} variant="outline"><Download aria-hidden="true" size={16} />{t("downloadSummaryAction")}</Button>
         </div>
 
         <section className="warrior-profile-section">
@@ -103,10 +142,17 @@ export function WarriorReportDetails({reportId}: {reportId: string}) {
         <section className="warrior-profile-section">
           <h2>{t("evidenceUploadedTitle", {count: evidence.length})}</h2>
           {evidence.length ? (
-            <ul className="warrior-review-evidence-list">
-              {evidence.map((item) => <li key={item.id}><FileText aria-hidden="true" size={15} />{item.fileName}</li>)}
+            <ul className="warrior-review-evidence-list warrior-evidence-list-viewable">
+              {evidence.map((item) => (
+                <li key={item.id}>
+                  <FileText aria-hidden="true" size={15} />
+                  <span>{item.fileName}</span>
+                  <button aria-label={t("viewEvidenceAction")} onClick={() => void viewEvidence(item.id)} type="button"><Eye aria-hidden="true" size={14} /></button>
+                </li>
+              ))}
             </ul>
           ) : <p className="warrior-report-field-label">{t("notProvided")}</p>}
+          {viewError ? <p className="warrior-form-error">{viewError}</p> : null}
         </section>
       </div>
 

@@ -2,15 +2,16 @@
 
 import {useEffect, useRef, useState, type FormEvent} from "react";
 import {useLocale, useTranslations} from "next-intl";
-import {useRouter} from "next/navigation";
-import {ArrowLeft, ArrowRight, CheckCircle2, FileText, Info, Send, ShieldCheck, Trash2} from "lucide-react";
+import {useRouter, useSearchParams} from "next/navigation";
+import {ArrowLeft, ArrowRight, CheckCircle2, Eye, FileText, Info, Pencil, Send, ShieldCheck, Trash2} from "lucide-react";
 
 import {Button} from "@/components/ui/Button";
 import {UploadDropzone} from "@/components/evidence/UploadDropzone";
 import {CheckboxField, SelectField, TextArea, TextInput} from "@/components/ui/FormFields";
 import {evidenceApi} from "@/lib/api/complaints";
 import {warriorReportsApi, type WarriorReportType} from "@/lib/api/cyber-warriors";
-import {getWarriorToken} from "@/lib/auth/warrior-session";
+import {openEvidenceFile} from "@/lib/api/evidence-file";
+import {clearWarriorReportDraft, getWarriorReportDraft, getWarriorToken, setWarriorReportDraft} from "@/lib/auth/warrior-session";
 import {ReportError, ReportHeading, WarriorReportFrame, type ReportStep} from "./WarriorReportFrame";
 import {reportCategories} from "./warriorReportMeta";
 
@@ -29,6 +30,7 @@ export function WarriorReportWizard() {
   const t = useTranslations("warriorReport");
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<ReportStep>(1);
   const [category, setCategory] = useState<WarriorReportType | "">("");
   const [incidentDate, setIncidentDate] = useState("");
@@ -47,6 +49,7 @@ export function WarriorReportWizard() {
   const [savingStep, setSavingStep] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const tokenRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -56,7 +59,71 @@ export function WarriorReportWizard() {
       return;
     }
     tokenRef.current = token;
+
+    async function hydrate() {
+      const draftIdParam = searchParams.get("draftId");
+      const stored = getWarriorReportDraft();
+
+      if (stored && (!draftIdParam || stored.reportId === draftIdParam)) {
+        setStep(stored.step as ReportStep);
+        setCategory(stored.category as WarriorReportType | "");
+        setIncidentDate(stored.incidentDate);
+        setIncidentTime(stored.incidentTime);
+        setPlatform(stored.platform);
+        setDescription(stored.description);
+        setWebsiteUrl(stored.websiteUrl);
+        setAccountRef(stored.accountRef);
+        setOtherInfo(stored.otherInfo);
+        setEvidenceDetails(stored.evidenceDetails);
+        setEvidenceItems(stored.evidenceItems);
+        setReportId(stored.reportId);
+        setHydrated(true);
+        return;
+      }
+
+      if (draftIdParam && token) {
+        const [reportResult, evidenceResult] = await Promise.all([
+          warriorReportsApi.getById(draftIdParam, {accessToken: token}),
+          evidenceApi.listByWarriorReport(draftIdParam, {accessToken: token})
+        ]);
+        if (reportResult.ok && reportResult.data.status === "DRAFT") {
+          setCategory(reportResult.data.report_type);
+          setDescription(reportResult.data.description);
+          setReportId(draftIdParam);
+          if (evidenceResult.ok) {
+            setEvidenceItems(evidenceResult.data.map((item) => ({
+              fileName: typeof item.file_name === "string" ? item.file_name : "",
+              fileSize: typeof item.file_size === "number" ? item.file_size : 0,
+              id: String(item.id)
+            })));
+          }
+          setStep(2);
+        }
+      }
+      setHydrated(true);
+    }
+
+    void hydrate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale, router]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    setWarriorReportDraft({
+      accountRef,
+      category,
+      description,
+      evidenceDetails,
+      evidenceItems,
+      incidentDate,
+      incidentTime,
+      otherInfo,
+      platform,
+      reportId,
+      step,
+      websiteUrl
+    });
+  }, [hydrated, step, category, incidentDate, incidentTime, platform, description, websiteUrl, accountRef, otherInfo, evidenceDetails, evidenceItems, reportId]);
 
   const platformOptions = [
     {label: t("platformSelect"), value: ""},
@@ -164,6 +231,13 @@ export function WarriorReportWizard() {
     setEvidenceItems((current) => current.filter((item) => item.id !== id));
   }
 
+  async function viewEvidence(id: string) {
+    const token = tokenRef.current;
+    if (!token) return;
+    const opened = await openEvidenceFile(id, token);
+    if (!opened) setEvidenceError(t("evidenceViewError"));
+  }
+
   async function submitReport() {
     const token = tokenRef.current;
     if (!token || !reportId || !declared) return;
@@ -175,6 +249,7 @@ export function WarriorReportWizard() {
       setError(t("submitError"));
       return;
     }
+    clearWarriorReportDraft();
     router.push("/" + locale + "/cyber-warrior/reports/" + reportId + "/submitted");
   }
 
@@ -269,6 +344,7 @@ export function WarriorReportWizard() {
               <div className="warrior-evidence-row" key={item.id}>
                 <span aria-hidden="true"><FileText size={20} /></span>
                 <div><strong>{item.fileName}</strong><small>{(item.fileSize / 1024 / 1024).toFixed(2)} MB</small></div>
+                <button aria-label={t("viewEvidenceAction")} onClick={() => void viewEvidence(item.id)} type="button"><Eye aria-hidden="true" size={16} /></button>
                 <button aria-label={t("removeEvidenceAction")} onClick={() => void removeEvidence(item.id)} type="button"><Trash2 aria-hidden="true" size={16} /></button>
               </div>
             ))}
@@ -293,11 +369,11 @@ export function WarriorReportWizard() {
       <ReportHeading copy={t("reviewCopy")} eyebrow={t("stepOfFour", {step: 4})} title={t("reviewTitle")} />
       <div className="warrior-review-sections">
         <section>
-          <h3>{t("incidentTypeTitle")}</h3>
+          <div className="warrior-review-section-head"><h3>{t("incidentTypeTitle")}</h3><button onClick={() => setStep(1)} type="button"><Pencil aria-hidden="true" size={13} />{t("editAction")}</button></div>
           <dl><div className="wide"><dt>{selectedCategory ? t(selectedCategory.labelKey) : ""}</dt><dd>{selectedCategory ? t(selectedCategory.noteKey) : ""}</dd></div></dl>
         </section>
         <section>
-          <h3>{t("incidentDetailsTitle")}</h3>
+          <div className="warrior-review-section-head"><h3>{t("incidentDetailsTitle")}</h3><button onClick={() => setStep(2)} type="button"><Pencil aria-hidden="true" size={13} />{t("editAction")}</button></div>
           <dl>
             <div><dt>{t("summaryDate")}</dt><dd>{incidentDate || t("notProvided")} {incidentTime}</dd></div>
             <div><dt>{t("summaryPlatform")}</dt><dd>{platform || t("notProvided")}</dd></div>
@@ -305,7 +381,7 @@ export function WarriorReportWizard() {
           </dl>
         </section>
         <section>
-          <h3>{t("evidenceUploadedTitle", {count: evidenceItems.length})}</h3>
+          <div className="warrior-review-section-head"><h3>{t("evidenceUploadedTitle", {count: evidenceItems.length})}</h3><button onClick={() => setStep(3)} type="button"><Pencil aria-hidden="true" size={13} />{t("editAction")}</button></div>
           {evidenceItems.length ? (
             <ul className="warrior-review-evidence-list">
               {evidenceItems.map((item) => <li key={item.id}><FileText aria-hidden="true" size={15} />{item.fileName}</li>)}
@@ -313,7 +389,7 @@ export function WarriorReportWizard() {
           ) : <p className="warrior-report-field-label">{t("notProvided")}</p>}
         </section>
         <section>
-          <h3>{t("additionalDetailsTitle")}</h3>
+          <div className="warrior-review-section-head"><h3>{t("additionalDetailsTitle")}</h3><button onClick={() => setStep(2)} type="button"><Pencil aria-hidden="true" size={13} />{t("editAction")}</button></div>
           <dl>
             <div><dt>{t("websiteUrlLabel")}</dt><dd>{websiteUrl || t("notProvided")}</dd></div>
             <div><dt>{t("accountRefLabel")}</dt><dd>{accountRef || t("notProvided")}</dd></div>

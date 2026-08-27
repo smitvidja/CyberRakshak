@@ -899,6 +899,13 @@
     "evidenceDetailsLabel": "Additional Evidence Details (Optional)",
     "previousDescribe": "Previous: Describe Incident",
     "previousEvidence": "Previous: Add Evidence",
+    "evidenceViewError": "Could not open this file. Try again.",
+    "viewEvidenceAction": "View file",
+    "editAction": "Edit",
+    "draftSavedNote": "Draft saved - continue whenever you're ready.",
+    "continueDraftAction": "Continue",
+    "deleteDraftAction": "Delete",
+    "downloadSummaryAction": "Download Report Summary",
     "nextReview": "Next: Review & Submit",
     "reviewReady": "Information reviewed by you",
     "editAllAction": "Edit All",
@@ -1004,7 +1011,8 @@
     "pointsResolved": "Report Resolved",
     "rankGold": "Gold Warrior",
     "rankSilver": "Silver Warrior",
-    "rankBronze": "Bronze Warrior"
+    "rankBronze": "Bronze Warrior",
+    "showingEntries": "Showing {start} to {end} of {total} entries"
   },
   "warriorBadges": {
     "title": "Badges & Rewards",
@@ -1036,6 +1044,8 @@
   "warriorResources": {
     "title": "Resources",
     "copy": "Access helpful guides, tools and learning materials to stay informed and secure.",
+    "searchPlaceholder": "Search resources, guides, topics...",
+    "noSearchResults": "No resources match your search.",
     "category": {
       "safety": "Cyber Safety Guides",
       "reporting": "Reporting Guides",

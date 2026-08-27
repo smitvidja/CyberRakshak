@@ -701,4 +701,33 @@ button, input, select, textarea { font: inherit; }
   .warrior-leaderboard-row > span:nth-child(4), .warrior-leaderboard-row > span:nth-child(5) { display: none; }
   .warrior-resource-category-grid { grid-template-columns: 1fr; }
 }
+/* Session 6.3/6.4 follow-up fixes: drafts, review edit links, evidence view, pagination, search */
+.warrior-report-list-row.is-draft { cursor: default; }
+.warrior-report-row-actions { display: flex; grid-column: 4; gap: 8px; }
+.warrior-report-row-actions button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 12px; font-weight: 700; color: var(--blue); background: #fff; }
+.warrior-report-row-actions button:hover { background: var(--blue-soft); }
+.warrior-report-row-actions button:last-child { color: var(--danger); }
+.warrior-report-row-actions button:last-child:hover { background: #fff2f0; }
+.warrior-review-section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.warrior-review-section-head button { display: inline-flex; align-items: center; gap: 5px; color: var(--blue); font-size: 12px; font-weight: 700; }
+.warrior-review-section-head button:hover { text-decoration: underline; }
+.warrior-evidence-list-viewable li { display: flex; align-items: center; gap: 8px; }
+.warrior-evidence-list-viewable li span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.warrior-evidence-list-viewable li button { display: grid; height: 26px; width: 26px; flex: 0 0 auto; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: #fff; color: var(--blue); }
+.warrior-evidence-list-viewable li button:hover { background: var(--blue-soft); }
+.warrior-leaderboard-pagination { display: flex; margin-top: 12px; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--muted); }
+.warrior-pagination-controls { display: flex; align-items: center; gap: 10px; }
+.warrior-pagination-controls button { display: grid; height: 30px; width: 30px; place-items: center; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--navy); }
+.warrior-pagination-controls button:disabled { cursor: not-allowed; opacity: .5; }
+.warrior-pagination-controls button:not(:disabled):hover { background: var(--blue-soft); }
+.warrior-resource-search { display: flex; margin-top: 14px; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 7px; background: #fff; padding: 10px 14px; color: var(--muted); }
+.warrior-resource-search input { flex: 1; border: 0; background: transparent; font-size: 14px; color: var(--ink); }
+.warrior-resource-search input:focus { outline: none; }
+.warrior-resource-search input::-webkit-search-cancel-button { cursor: pointer; }
+
+@media (max-width: 700px) {
+  .warrior-report-list-row.is-draft { grid-template-columns: 32px 1fr; grid-template-areas: "icon title" "icon status" "actions actions"; row-gap: 6px; }
+  .warrior-report-row-actions { grid-column: 1 / -1; grid-area: actions; flex-wrap: wrap; }
+  .warrior-leaderboard-pagination { flex-direction: column; align-items: flex-start; }
+}
 

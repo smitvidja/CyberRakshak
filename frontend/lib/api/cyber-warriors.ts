@@ -79,6 +79,7 @@ export const warriorReportsApi = {
   create: (payload: {description: string; report_type: WarriorReportType; title: string}, options: ApiRequestOptions) => apiClient.post<WarriorReport>("/warrior-reports", payload, options),
   getById: (id: string, options: ApiRequestOptions) => apiClient.get<WarriorReport>("/warrior-reports/" + id, options),
   listMine: (options: ApiRequestOptions) => apiClient.get<WarriorReport[]>("/warrior-reports/my", options),
+  remove: (id: string, options: ApiRequestOptions) => apiClient.delete<undefined>("/warrior-reports/" + id, options),
   submit: (id: string, options: ApiRequestOptions) => apiClient.post<WarriorReport>("/warrior-reports/" + id + "/submit", undefined, options),
   update: (id: string, payload: {description?: string; report_type?: WarriorReportType; title?: string}, options: ApiRequestOptions) => apiClient.patch<WarriorReport>("/warrior-reports/" + id, payload, options)
 };
