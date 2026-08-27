@@ -123,6 +123,31 @@ def test_mock_identity_entry_point_issues_a_session_and_autofill_for_both_roles(
     assert rejected.status_code == 422
 
 
+def test_new_warrior_lists_are_empty_not_missing_before_a_profile_exists(
+    api_client: tuple[TestClient, Session],
+) -> None:
+    """The frontend calls these right after identity verification - before the
+    profile step - to decide whether this is a returning applicant. Returning 404
+    there made a normal first-time signup emit a spurious console error."""
+    client, _ = api_client
+    headers = _warrior_headers(client)
+
+    for path in ("/api/v1/warrior-applications/my", "/api/v1/warrior-reports/my"):
+        response = client.get(path, headers=headers)
+        assert response.status_code == 200, f"{path} should be an empty list, not {response.status_code}"
+        assert response.json()["data"] == []
+
+    # Authorization must be unchanged: still no anonymous access, and a citizen
+    # account is still refused outright.
+    citizen = _citizen_headers(client)
+    for path in ("/api/v1/warrior-applications/my", "/api/v1/warrior-reports/my"):
+        assert client.get(path).status_code == 401
+        assert client.get(path, headers=citizen).status_code == 403
+
+    # Endpoints that genuinely need a profile must still say so.
+    assert client.get("/api/v1/cyber-warriors/me", headers=headers).status_code == 404
+
+
 def test_identified_citizen_journey_persists_through_submit_track_and_my_reports(
     api_client: tuple[TestClient, Session],
 ) -> None:

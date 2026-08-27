@@ -552,7 +552,11 @@ button, input, select, textarea { font: inherit; }
 .warrior-profile-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .warrior-profile-header-row h1 { font-size: clamp(22px, 2.4vw, 27px); font-weight: 800; }
 .warrior-profile-header-row p { margin-top: 6px; color: var(--muted); font-size: 13px; }
-.warrior-profile-section { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 20px; }
+/* min-width:0 is required: as a grid item this defaults to min-width:auto, so a
+   wide child (the leaderboard table's fixed columns) would stretch the section past
+   its track and slide underneath the right-hand rail. With it, the section stays in
+   its column and the table scrolls inside its own overflow-x container instead. */
+.warrior-profile-section { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 20px; min-width: 0; }
 .warrior-profile-section h2 { font-size: 16px; font-weight: 800; }
 .warrior-profile-avatar-row { display: flex; margin-top: 14px; align-items: center; gap: 12px; }
 .warrior-profile-avatar { display: grid; height: 64px; width: 64px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
@@ -672,7 +676,18 @@ button, input, select, textarea { font: inherit; }
 /* min-width keeps the columns from squeezing into each other when the content area is
    narrow (or when a longer Hindi/uppercase header needs the room) - the table scrolls
    horizontally inside its own container instead of letting headers collide. */
-.warrior-leaderboard-row { display: grid; grid-template-columns: 44px minmax(0, 1.2fr) 72px 116px 104px 104px; gap: 10px; align-items: center; border-top: 1px solid var(--border); padding: 10px 6px; font-size: 13px; white-space: nowrap; min-width: 620px; }
+/* Column widths are deliberately tight so the username - the point of a leaderboard -
+   keeps a real minimum instead of collapsing to "CW...". The header wraps to two
+   lines, so the "Reports submitted" column doesn't need to fit that label on one
+   line. Badges is 126px: five 22px badges plus four 4px gaps. Below ~1100px the row
+   no longer fits and the table scrolls inside its own overflow-x container. */
+.warrior-leaderboard-row { display: grid; grid-template-columns: 40px minmax(92px, 1.3fr) 58px 78px 126px 98px; gap: 8px; align-items: center; border-top: 1px solid var(--border); padding: 10px 6px; font-size: 13px; white-space: nowrap; }
+/* Each cell clips its own overflow so a long value (a username, or a longer
+   translated rank title) can never bleed sideways into the next column - which is
+   what produced the overlapping "REPORTS SUBMITTED"/"BADGES" headers. Do NOT give
+   the row a min-width to solve that: min-width propagates up through the auto-sized
+   grid ancestors and pushes the whole table out from under the right-hand rail. */
+.warrior-leaderboard-row > span { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .warrior-leaderboard-badge-icons { display: flex; gap: 4px; }
 .warrior-mini-badge { display: grid; height: 22px; width: 22px; place-items: center; border-radius: 50%; }
 .warrior-mini-badge.tone-blue { background: #e1edfb; color: #1d4ed8; }

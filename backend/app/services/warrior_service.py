@@ -169,7 +169,15 @@ class WarriorApplicationService:
 
     @staticmethod
     def list_mine(session: Session, current_user: User) -> list[WarriorApplication]:
-        profile = WarriorApplicationService._profile(session, current_user)
+        # Listing a collection for a warrior who has not created a profile yet is an
+        # empty result, not a missing resource. The frontend calls this immediately
+        # after identity verification to decide "returning applicant or new signup?",
+        # which is *before* the profile step - so 404 here made a normal first-time
+        # signup emit a spurious error. The role check above still applies (403).
+        CyberWarriorService.require_warrior(current_user)
+        profile = WarriorRepository.get_profile_with_details(session, current_user.id)
+        if profile is None:
+            return []
         return WarriorRepository.list_applications(session, profile.id)
 
     @staticmethod
@@ -273,7 +281,12 @@ class WarriorReportService:
 
     @staticmethod
     def list_mine(session: Session, current_user: User) -> list[WarriorReport]:
-        profile = WarriorReportService._profile(session, current_user)
+        # Same reasoning as WarriorApplicationService.list_mine: an empty collection,
+        # not a 404. Role authorization is unchanged.
+        CyberWarriorService.require_warrior(current_user)
+        profile = WarriorRepository.get_profile_with_details(session, current_user.id)
+        if profile is None:
+            return []
         return WarriorRepository.list_reports(session, profile.id)
 
     @staticmethod
