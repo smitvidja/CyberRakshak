@@ -17,12 +17,16 @@ databases:
     databaseName: cyberrakshak
     user: cyberrakshak
     plan: free
+    region: singapore
 
 services:
   - type: web
     name: cyberrakshak-api
     runtime: docker
     plan: free
+    # All three must share a region to talk over Render's internal network, and a
+    # region cannot be changed after a service is created.
+    region: singapore
     dockerfilePath: ./backend/Dockerfile
     # Must be the repo root: the seed script lives outside backend/ and resolves it
     # through parents[2].
@@ -48,6 +52,7 @@ services:
     name: cyberrakshak-web
     runtime: docker
     plan: free
+    region: singapore
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
     # There is no /health route on the frontend, and / only 307s to /en via proxy.ts.
