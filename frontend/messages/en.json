@@ -687,6 +687,7 @@
     "submittedCopy": "Thank you for volunteering. Your application is now under review.",
     "confirmationCopy": "A prototype confirmation is associated with {email}. No real SMS is sent.",
     "backWarrior": "Cyber Warrior home",
+    "goToDashboard": "Go to Dashboard",
     "refreshStatus": "Refresh status",
     "statusTitle": "Application status",
     "underReview": "Under review",

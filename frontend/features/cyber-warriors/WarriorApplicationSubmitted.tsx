@@ -3,7 +3,7 @@
 import {useCallback, useEffect, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
-import {ArrowLeft, CheckCircle2, Clock3, FileCheck2, Mail, RefreshCw, ShieldCheck} from "lucide-react";
+import {ArrowLeft, ArrowRight, CheckCircle2, Clock3, FileCheck2, LayoutDashboard, Mail, RefreshCw, ShieldCheck} from "lucide-react";
 
 import {Button} from "@/components/ui/Button";
 import {warriorApplicationsApi, type WarriorApplication} from "@/lib/api/cyber-warriors";
@@ -59,7 +59,8 @@ export function WarriorApplicationSubmitted() {
           <div className="warrior-confirmation-mail"><Mail aria-hidden="true" size={24} /><span>{t("confirmationCopy", {email: identityEmail || t("registeredEmail")})}</span></div>
           <div className="warrior-submitted-actions">
             <Button onClick={() => router.push("/" + locale + "/cyber-warrior")} variant="outline"><ArrowLeft size={17} />{t("backWarrior")}</Button>
-            <Button onClick={refresh} isLoading={loading}><RefreshCw size={17} />{t("refreshStatus")}</Button>
+            <Button onClick={refresh} isLoading={loading} variant="outline"><RefreshCw size={17} />{t("refreshStatus")}</Button>
+            <Button onClick={() => router.push("/" + locale + "/cyber-warrior/dashboard")}><LayoutDashboard size={17} />{t("goToDashboard")}<ArrowRight size={17} /></Button>
           </div>
         </section>
         <aside className="warrior-status-card">

@@ -28,7 +28,7 @@ import {Button} from "@/components/ui/Button";
 import {SelectField, TextInput} from "@/components/ui/FormFields";
 import {StatePanel} from "@/components/ui/Surface";
 import {authApi, type MockIdentityProfile} from "@/lib/api/auth";
-import {cyberWarriorsApi} from "@/lib/api/cyber-warriors";
+import {cyberWarriorsApi, warriorApplicationsApi} from "@/lib/api/cyber-warriors";
 import {
   getWarriorIdentity,
   getWarriorToken,
@@ -41,6 +41,7 @@ const warriorPath = (locale: string) => `/${locale}/cyber-warrior`;
 const verifyPath = (locale: string) => `${warriorPath(locale)}/verify`;
 const profilePath = (locale: string) => `${verifyPath(locale)}/profile`;
 const applicationPath = (locale: string) => `${warriorPath(locale)}/apply`;
+const dashboardPath = (locale: string) => `${warriorPath(locale)}/dashboard`;
 
 const dutyIcons = [Binoculars, ClipboardCheck, UsersRound, Gavel, Medal] as const;
 
@@ -189,6 +190,16 @@ export function WarriorIdentityVerification() {
       demoIdentityId: identityId,
       profile: verified.data.profile
     });
+
+    // A returning warrior (one who already has at least one application on file) is signing
+    // back in, not registering for the first time - send them straight to their dashboard
+    // instead of re-running the profile-setup/apply wizard on every verification.
+    const existingApplications = await warriorApplicationsApi.listMine({accessToken: verified.data.access_token});
+    if (existingApplications.ok && existingApplications.data.length > 0) {
+      router.push(dashboardPath(locale));
+      return;
+    }
+
     router.push(profilePath(locale));
   }
 
