@@ -44,14 +44,14 @@
 
 CyberRakshak gives people who have experienced online fraud, harassment, or identity
 misuse a clear path to report the incident, attach evidence, and follow it to a
-resolution — and gives volunteers a structured way to report suspicious activity they
+resolution - and gives volunteers a structured way to report suspicious activity they
 find. Two audiences, two journeys, one codebase.
 
 | Role | What they do |
 |---|---|
 | **Citizen** | Reports a cyber incident anonymously or with a verified identity, attaches evidence, submits, and tracks progress against a reference number. |
 | **Cyber Warrior** | A citizen volunteer who applies with a résumé, is reviewed, then submits reports on suspicious activity from a dedicated dashboard. |
-| **Admin** | Reviews applications and reports and moves their status. API-only in this build — see [limitations](#known-limitations). |
+| **Admin** | Reviews applications and reports and moves their status. API-only in this build - see [limitations](#known-limitations). |
 
 Every user-facing string ships in both English and Hindi. Locale is a route segment:
 `/en/…` and `/hi/…`.
@@ -59,7 +59,7 @@ Every user-facing string ships in both English and Hindi. Locale is a route segm
 <div align="center">
   <img src="design/home/Home%20page.png" alt="CyberRakshak home page" width="720">
   <br>
-  <sub><i>Home page — design reference from <code>design/home/</code>, the visual source of truth for the build.</i></sub>
+  <sub><i>Home page - design reference from <code>design/home/</code>, the visual source of truth for the build.</i></sub>
 </div>
 
 ---
@@ -69,9 +69,9 @@ Every user-facing string ships in both English and Hindi. Locale is a route segm
 ### Citizen reporting
 
 - Public service overview with six report categories.
-- **Anonymous reporting** — no identity is collected or attached at any point
+- **Anonymous reporting** - no identity is collected or attached at any point
   (`user_id` stays `null`, enforced server-side and covered by tests).
-- **Identified reporting** — through the mock identity + OTP flow.
+- **Identified reporting** - through the mock identity + OTP flow.
 - Guided draft flow: incident details → people involved → evidence upload → review and
   declaration → submit.
 - Reference number on submission, public status tracking, and a "My reports" list.
@@ -80,7 +80,7 @@ Every user-facing string ships in both English and Hindi. Locale is a route segm
 ### Cyber Warrior programme
 
 - Onboarding, mock identity eligibility check, and profile setup.
-- Résumé upload with a reviewed-before-save parsing step — nothing is written to the
+- Résumé upload with a reviewed-before-save parsing step - nothing is written to the
   profile until the user confirms it.
 - Application submission and review status.
 - Warrior dashboard: submit reports, track them, profile, leaderboard, badges.
@@ -111,7 +111,7 @@ flowchart LR
   Services --> Parser["Résumé parser<br/>(mock adapter)"]
 ```
 
-Dependencies flow one way — UI → API → services → data/storage. Backend code never
+Dependencies flow one way - UI → API → services → data/storage. Backend code never
 depends on frontend code.
 
 | Layer | Technology |
@@ -126,7 +126,7 @@ depends on frontend code.
 
 ## Getting started
 
-### Option A — everything in Docker
+### Option A - everything in Docker
 
 **Prerequisites:** Docker.
 
@@ -147,10 +147,10 @@ nothing else to run. If a native PostgreSQL already owns port 5432:
 POSTGRES_PORT=5433 docker compose up --build
 ```
 
-These are the same images that deploy to Render — see
+These are the same images that deploy to Render - see
 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) §11.
 
-### Option B — native, with PostgreSQL in Docker
+### Option B - native, with PostgreSQL in Docker
 
 **Prerequisites:** Node.js, Python 3.11+, Docker (for PostgreSQL only).
 
@@ -180,15 +180,15 @@ Set-Location backend
 .venv/Scripts/python.exe -m uvicorn app.main:app --reload --reload-dir app --host 127.0.0.1 --port 8000
 ```
 
-The seed step is **required** — without it, complaint categories are empty.
+The seed step is **required** - without it, complaint categories are empty.
 
 > `--reload-dir app` is not stylistic. Without it, uvicorn watches the whole `backend/`
-> working directory — including `.venv/` (every installed package) and `storage/` (every
+> working directory - including `.venv/` (every installed package) and `storage/` (every
 > file uploaded at runtime). Watching a set that large and that volatile is what made
 > `--reload` unreliable: it silently missed real source edits and restarted mid-request
 > when someone uploaded a file. Scoping the watch to `app/` fixes both.
 
-Backend runs at http://127.0.0.1:8000 — `/health` for a liveness check, `/docs` for the
+Backend runs at http://127.0.0.1:8000 - `/health` for a liveness check, `/docs` for the
 interactive API reference.
 
 **4. Frontend**
@@ -210,13 +210,13 @@ Every variable the application reads is documented in `backend/.env.example` and
 
 | Variable | Where | Notes |
 |---|---|---|
-| `DATABASE_URL` | backend | **Required.** PostgreSQL only — the app uses PostgreSQL-specific types. Needs the `postgresql+psycopg://` scheme. |
+| `DATABASE_URL` | backend | **Required.** PostgreSQL only - the app uses PostgreSQL-specific types. Needs the `postgresql+psycopg://` scheme. |
 | `SECRET_KEY` | backend | **Required.** Minimum 32 characters, or the app refuses to start. Generate per environment. |
 | `CORS_ORIGINS` | backend | Explicit origins; a wildcard is rejected because the API sends credentials. Accepts a JSON array or a comma-separated list. |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | backend | There is no refresh-token flow, so this *is* the session length. Defaults to 30 days. |
 | `LOCAL_STORAGE_PATH` | backend | Where evidence and résumé files are written. |
 | `EVIDENCE_MAX_FILE_SIZE` | backend | Upload ceiling in bytes. Defaults to 10 MiB. |
-| `NEXT_PUBLIC_API_URL` | frontend | **Required.** Base URL of the API, no trailing slash and no `/api/v1` suffix. Inlined at **build** time — changing it requires a rebuild, not a restart. |
+| `NEXT_PUBLIC_API_URL` | frontend | **Required.** Base URL of the API, no trailing slash and no `/api/v1` suffix. Inlined at **build** time - changing it requires a rebuild, not a restart. |
 
 ---
 
@@ -277,10 +277,10 @@ Plus `/health` and `/` for liveness, outside the versioned prefix.
 ## Tests and checks
 
 ```powershell
-# Backend — from backend/
+# Backend - from backend/
 .venv/Scripts/python.exe -m pytest
 
-# Frontend — from frontend/
+# Frontend - from frontend/
 npm run lint
 npm run build
 ```
@@ -294,8 +294,8 @@ cross-role access), and end-to-end citizen and warrior journeys.
 
 ## Demo walkthrough
 
-Synthetic demo identities for the mock verification flow — including which are unused
-and reserved for a clean first-time journey — are in
+Synthetic demo identities for the mock verification flow - including which are unused
+and reserved for a clean first-time journey - are in
 [`DEMO-CREDENTIALS.md`](DEMO-CREDENTIALS.md), each paired with a matching demo résumé in
 `demo-assets/resumes/`.
 
@@ -315,7 +315,7 @@ Simulated, and labelled as such in the UI:
 | OTP delivery | **Mocked** | No SMS is sent. OTPs are fixed per demo identity and listed in `DEMO-CREDENTIALS.md`. The API never returns the OTP or the full mobile number. |
 | Résumé parsing | **Static mock** | Returns the same synthetic sample data regardless of the uploaded file. No text extraction, no AI. The human review step that follows is real. |
 | Authority / police status updates | **Not implemented** | No real authority receives reports. Status changes only via the in-app admin role. |
-| Admin review decisions | **Real, but in-app only** | Genuinely enforced server-side — but decided inside this prototype, not by any external body. |
+| Admin review decisions | **Real, but in-app only** | Genuinely enforced server-side - but decided inside this prototype, not by any external body. |
 | Leaderboard peers | **Demo data** | Other warriors are synthetic sample rows; your own row is computed from real activity. Disclosed on the page. |
 | Payments | **Not present** | No payment handling of any kind. |
 
@@ -326,7 +326,7 @@ Simulated, and labelled as such in the UI:
 - **Uploaded files are stored on the local filesystem.** On hosts with ephemeral storage
   they are lost on restart or redeploy while their metadata rows remain. See
   [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) §5.
-- **Résumé parsing is not real** — see the table above.
+- **Résumé parsing is not real** - see the table above.
 - **No admin UI.** The admin review endpoints are implemented, tested, and
   authorization-enforced, but there is no admin front-end, so a warrior report stays
   "Under Review" for the duration of a demo.
@@ -341,7 +341,7 @@ Simulated, and labelled as such in the UI:
 The repository ships a [Render Blueprint](render.yaml) that provisions PostgreSQL and
 both Docker services. Two cross-references cannot exist until both services do:
 
-1. Apply the Blueprint — the database and both services are created.
+1. Apply the Blueprint - the database and both services are created.
 2. Set `NEXT_PUBLIC_API_URL` on the web service to the API's URL, then **rebuild** it.
 3. Set `CORS_ORIGINS` on the API to the web service's URL (no trailing slash) and
    redeploy.
@@ -377,5 +377,5 @@ Use only synthetic data. Do not add real government credentials, real identity d
 payment data, or secrets to this repository.
 
 Cyber Warriors report suspicious activity. They do not investigate, determine guilt,
-take legal action, or represent any authority — and the product's language reflects that
+take legal action, or represent any authority - and the product's language reflects that
 throughout.
