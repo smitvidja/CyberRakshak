@@ -43,7 +43,7 @@ export function ProductShell({children}: ProductShellProps) {
   // (404), then at /cyber-warrior/resources - which put a citizen inside the
   // private warrior dashboard sidebar just to read safety tips. /resources now
   // really exists as its own standalone public page (app/[locale]/resources).
-  const navItems = [["home", "/" + locale], ["report", "/" + locale + "/report-crime"], ["track", "/" + locale + "/complaints/track"], ["suspects", "/" + locale + "/suspects/report"], ["warriors", "/" + locale + "/cyber-warrior"], ["learn", "/" + locale + "/resources"], ["contact", "/" + locale + "/contact"]] as const;
+  const navItems = [["home", "/" + locale], ["saathi", "/" + locale + "/cyber-saathi"], ["report", "/" + locale + "/report-crime"], ["track", "/" + locale + "/complaints/track"], ["suspects", "/" + locale + "/suspects/report"], ["warriors", "/" + locale + "/cyber-warrior"], ["learn", "/" + locale + "/resources"], ["contact", "/" + locale + "/contact"]] as const;
   const homeHref = "/" + locale;
   const dashboardHref = homeHref + "/report-crime/dashboard";
   const reportHref = homeHref + "/report-crime";
@@ -52,7 +52,9 @@ export function ProductShell({children}: ProductShellProps) {
   const breadcrumbItems: Array<{href?: string; label: string}> = [{href: homeHref, label: t("nav.home")}];
 
   if (pathname !== homeHref) {
-    if (pathname === dashboardHref) {
+    if (pathname === homeHref + "/cyber-saathi") {
+      breadcrumbItems.push({label: t("nav.saathi")});
+    } else if (pathname === dashboardHref) {
       breadcrumbItems.push({label: t("breadcrumbs.dashboard")});
     } else if (pathname === reportHref) {
       breadcrumbItems.push({label: t("nav.report")});

@@ -3,7 +3,7 @@ import Link from "next/link";
 import {hasLocale} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
-import {BellRing, BookOpenCheck, ClipboardCheck, FileDown, FileSearch, FileText, GraduationCap, Languages, Lightbulb, Map, Megaphone, Mic, PhoneCall, ShieldCheck, Siren, UserRoundPlus} from "lucide-react";
+import {BellRing, Bot, BookOpenCheck, ClipboardCheck, FileDown, FileSearch, FileText, GraduationCap, Languages, Lightbulb, Map, Megaphone, Mic, PhoneCall, ShieldCheck, Siren, UserRoundPlus} from "lucide-react";
 
 import {routing} from "@/lib/i18n/routing";
 
@@ -56,6 +56,7 @@ export default async function LocaleHomePage({params}: Props) {
     {key: "downloadableSubmission", href: null, icon: FileDown}
   ] as const;
   const quickLinks = [
+    {key: "saathi", href: `/${locale}/cyber-saathi`, icon: Bot},
     {key: "warrior", href: `/${locale}/cyber-warrior`, icon: UserRoundPlus},
     {key: "learn", href: learningHref, icon: BellRing},
     {key: "secure", href: secureIndiaHref, icon: ShieldCheck},
@@ -80,7 +81,7 @@ export default async function LocaleHomePage({params}: Props) {
             </div>
           </section>
 
-          <aside className="grid gap-2 lg:grid-rows-4" aria-label={t("quickLinksLabel")}>
+          <aside className="grid gap-2" aria-label={t("quickLinksLabel")}>
             {quickLinks.map(({key, href, icon: Icon}) => {
               // "Stay Alert" gets the warm teal accent instead of the same blue as every
               // other tile - a small, deliberate touch of variety (matching the approved
