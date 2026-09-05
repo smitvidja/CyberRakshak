@@ -70,6 +70,7 @@ class Sentiment(str, Enum):
     DISTRESSED = "distressed"
     FEARFUL = "fearful"
     ANGRY = "angry"
+    CONFUSED = "confused"
 
 
 class EntityType(str, Enum):
@@ -83,6 +84,11 @@ class EntityType(str, Enum):
     EMAIL = "email"
     ACCOUNT_ID = "account_id"
     USERNAME = "username"
+    DATE = "date"
+    TIME = "time"
+    SOCIAL_PLATFORM = "social_platform"
+    LOCATION = "location"
+    ACCOUNT_SERVICE = "account_service"
 
 
 class ConfidenceBand(str, Enum):
@@ -143,6 +149,8 @@ class IncidentState(BaseModel):
     entities: list[Entity] = Field(default_factory=list, max_length=30)
     summary: str | None = Field(default=None, max_length=2000)
     occurred_recently: bool | None = None
+    needs_clarification: bool = True
+    response_language: LanguageCode = LanguageCode.EN
 
     @property
     def confidence_band(self) -> ConfidenceBand:
@@ -206,6 +214,25 @@ class ConversationMessageRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
     state: ConversationState
     reporting_mode: ReportingMode | None = None
+
+
+class UnderstandingRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=4000)
+    preferred_language: LanguageCode | None = None
+
+
+class UnderstandingResult(BaseModel):
+    language: LanguageCode
+    response_language: LanguageCode
+    intent: Intent
+    crime_domain: CrimeDomain
+    entities: list[Entity] = Field(default_factory=list, max_length=30)
+    urgency: Urgency
+    sentiment: Sentiment
+    confidence: ConfidenceScore
+    confidence_band: ConfidenceBand
+    needs_clarification: bool
+    clarification_prompt: str | None = Field(default=None, max_length=500)
 
 
 class LatencyBudget(BaseModel):

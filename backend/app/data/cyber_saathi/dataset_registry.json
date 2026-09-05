@@ -1,0 +1,109 @@
+{
+  "version": "1.0.0",
+  "datasets": [
+    {
+      "name": "Cyber Saathi curated citizen fixtures",
+      "location": "backend/app/data/cyber_saathi/source_examples.json",
+      "availability": "present",
+      "purpose": ["understanding_support", "language_variants", "evaluation"],
+      "schema": "cyber_saathi_source_example_v1",
+      "domain": "citizen_cybercrime",
+      "allowed_usage": "Only support-split rows may aid deterministic understanding; evaluation rows remain held out.",
+      "rag_allowed": false,
+      "evaluation_allowed": true,
+      "training_allowed": true,
+      "known_limitations": ["Small curated baseline", "Not an authoritative guidance corpus", "Training permission applies only to support-split rows"]
+    },
+    {
+      "name": "Generic chatbot dataset",
+      "location": "external/not-imported/generic-chatbot",
+      "availability": "not_present",
+      "purpose": ["supplementary_conversation_patterns"],
+      "schema": "unknown_until_ingestion",
+      "domain": "generic_conversation",
+      "allowed_usage": "Supplementary intent and conversation experiments only.",
+      "rag_allowed": false,
+      "evaluation_allowed": true,
+      "training_allowed": true,
+      "known_limitations": ["Not cyber authority", "May contain irrelevant support language"]
+    },
+    {
+      "name": "Sentiment dataset",
+      "location": "external/not-imported/sentiment",
+      "availability": "not_present",
+      "purpose": ["supplementary_sentiment", "evaluation"],
+      "schema": "unknown_until_ingestion",
+      "domain": "general_sentiment",
+      "allowed_usage": "Sentiment experiments; never truth or criminality decisions.",
+      "rag_allowed": false,
+      "evaluation_allowed": true,
+      "training_allowed": true,
+      "known_limitations": ["Not cyber-specific", "Sentiment labels can encode bias"]
+    },
+    {
+      "name": "Cybersecurity corpus and 32K instructions",
+      "location": "external/not-imported/cybersecurity-corpora",
+      "availability": "not_present",
+      "purpose": ["supplementary_terminology", "classification_experiments"],
+      "schema": "unknown_until_ingestion",
+      "domain": "technical_cybersecurity",
+      "allowed_usage": "Supplementary terminology and classification/evaluation only.",
+      "rag_allowed": false,
+      "evaluation_allowed": true,
+      "training_allowed": true,
+      "known_limitations": ["Enterprise and technical focus", "Not citizen-facing guidance"]
+    },
+    {
+      "name": "cybermetric 10K train",
+      "location": "external/not-imported/cybermetric-10k-train",
+      "availability": "not_present",
+      "purpose": ["supplementary_expertise", "technical_evaluation"],
+      "schema": "unknown_until_ingestion",
+      "domain": "technical_cybersecurity_qa",
+      "allowed_usage": "Technical benchmarking only; never citizen RAG authority.",
+      "rag_allowed": false,
+      "evaluation_allowed": true,
+      "training_allowed": true,
+      "known_limitations": ["Not citizen incident language", "Not authoritative guidance"]
+    },
+    {
+      "name": "cybermetric 10K validation",
+      "location": "external/not-imported/cybermetric-10k-validation",
+      "availability": "not_present",
+      "purpose": ["held_out_validation", "regression"],
+      "schema": "unknown_until_ingestion",
+      "domain": "technical_cybersecurity_qa",
+      "allowed_usage": "Strictly held-out validation and regression.",
+      "rag_allowed": false,
+      "evaluation_allowed": true,
+      "training_allowed": false,
+      "known_limitations": ["Must never leak into support/training split", "Not citizen guidance"]
+    },
+    {
+      "name": "Bitext 27K customer-support dataset",
+      "location": "external/excluded/bitext-27k",
+      "availability": "excluded",
+      "purpose": ["none"],
+      "schema": "excluded",
+      "domain": "ecommerce_customer_support",
+      "allowed_usage": "Excluded from Cyber Saathi.",
+      "rag_allowed": false,
+      "evaluation_allowed": false,
+      "training_allowed": false,
+      "known_limitations": ["Wrong domain", "Adds customer-support noise"]
+    },
+    {
+      "name": "Authoritative citizen knowledge corpus",
+      "location": "backend/app/data/cyber_saathi/authoritative_knowledge",
+      "availability": "separate_slot_empty",
+      "purpose": ["future_rag_authority"],
+      "schema": "authoritative_knowledge_document_v1",
+      "domain": "indian_citizen_cyber_guidance",
+      "allowed_usage": "Only reviewed official/public guidance approved in Session 9.3.",
+      "rag_allowed": true,
+      "evaluation_allowed": true,
+      "training_allowed": false,
+      "known_limitations": ["No documents approved yet", "Must remain separate from generic datasets"]
+    }
+  ]
+}
