@@ -1,5 +1,5 @@
 import {apiClient} from "@/lib/api/client";
-import type {ConversationResponse, ConversationState, ReportingMode, SaathiLanguage} from "@/types/cyber-saathi";
+import type {ConversationResponse, ConversationState, ReportingMode, SaathiLanguage, UnderstandingResult} from "@/types/cyber-saathi";
 
 export const cyberSaathiApi = {
   start: (language: SaathiLanguage, reportingMode: ReportingMode = "undecided") =>
@@ -12,5 +12,10 @@ export const cyberSaathiApi = {
       message,
       state,
       reporting_mode: reportingMode
+    }),
+  understand: (message: string, preferredLanguage?: SaathiLanguage) =>
+    apiClient.post<UnderstandingResult>("/cyber-saathi/understand", {
+      message,
+      preferred_language: preferredLanguage
     })
 };

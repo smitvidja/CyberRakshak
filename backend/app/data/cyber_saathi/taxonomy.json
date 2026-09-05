@@ -4,19 +4,19 @@
     "report_incident": ["report", "complaint", "शिकायत", "रिपोर्ट", "report karna"],
     "seek_guidance": ["what should i do", "help me", "kya karu", "क्या करूं", "मदद"],
     "check_identifier": ["check number", "check upi", "verify link", "is this safe", "जांच"],
-    "track_report": ["track complaint", "complaint status", "track report", "शिकायत स्थिति", "report status"],
-    "cyber_warrior": ["cyber warrior", "volunteer", "warrior application"],
+    "track_report": ["track complaint", "complaint status", "track report", "track", "शिकायत स्थिति", "ट्रैक", "report status"],
+    "cyber_warrior": ["cyber warrior", "volunteer", "warrior application", "साइबर वॉरियर", "स्वयंसेवक"],
     "general_awareness": ["safety tips", "learn cyber", "awareness", "कैसे सुरक्षित"]
   },
   "crime_domains": {
     "financial_fraud": ["bank", "upi", "payment", "transaction", "debited", "deducted", "money", "rupees", "paise", "paisa", "wallet", "refund scam", "कट गए", "पैसे", "बैंक"],
-    "identity_theft": ["identity theft", "stole my identity", "impersonation", "account hacked", "account hack", "profile hacked", "fake profile", "otp shared", "पहचान चोरी", "अकाउंट हैक"],
+    "identity_theft": ["identity theft", "stole my identity", "impersonation", "impersonating", "account was hacked", "account hacked", "account hack", "profile hacked", "fake profile", "otp shared", "पहचान चोरी", "अकाउंट हैक"],
     "online_harassment": ["harassment", "abuse", "bullying", "stalking", "threat", "blackmail", "dhamki", "परेशान", "धमकी", "ब्लैकमेल"],
     "phishing_scam": ["phishing", "suspicious link", "fake link", "scam message", "lottery", "job scam", "लिंक", "फिशिंग"],
     "malware": ["malware", "virus", "ransomware", "infected", "malicious app", "वायरस"],
     "misinformation": ["fake news", "misinformation", "rumour", "deepfake", "फर्जी खबर", "अफवाह"],
     "child_safety": ["child abuse", "minor", "grooming", "child exploitation", "बच्चे", "नाबालिग"],
-    "cyber_terrorism": ["cyber terrorism", "terror threat", "extremist", "national security", "आतंकवाद"]
+    "cyber_terrorism": ["cyber terrorism", "terror threat", "extremist", "national security", "साइबर आतंकवाद", "आतंकवाद"]
   },
   "missing_domain_source_slots": [
     {

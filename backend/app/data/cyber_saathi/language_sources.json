@@ -1,0 +1,178 @@
+[
+  {
+    "source_example_id": "support-financial-001",
+    "original_text": "My bank account was debited by Rs 10000 today through UPI.",
+    "source_dataset": "cyber_saathi_manual_safety",
+    "split": "support",
+    "intent": "report_incident",
+    "crime_domain": "financial_fraud",
+    "urgency": "high",
+    "sentiment": "distressed",
+    "selected_for": ["critical_safety", "amount", "indian_payment_vocabulary"],
+    "variants": [
+      {"variant_text": "My bank account was debited by Rs 10000 today through UPI.", "language": "EN", "script": "LATIN", "transformation_method": "original_manual", "quality_status": "reviewed"},
+      {"variant_text": "मेरे बैंक से आज UPI के जरिए 10000 रुपये कट गए।", "language": "HI", "script": "DEVANAGARI_MIXED", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Mere bank se aaj UPI ke through 10000 rupaye cut gaye.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "support-harassment-001",
+    "original_text": "Someone is threatening and blackmailing me on Instagram.",
+    "source_dataset": "cyber_saathi_manual_safety",
+    "split": "support",
+    "intent": "seek_guidance",
+    "crime_domain": "online_harassment",
+    "urgency": "high",
+    "sentiment": "fearful",
+    "selected_for": ["online_harassment_source_slot", "social_platform", "urgent_language"],
+    "variants": [
+      {"variant_text": "Someone is threatening and blackmailing me on Instagram. Please help me.", "language": "EN", "script": "LATIN", "transformation_method": "controlled_english_variant", "quality_status": "reviewed"},
+      {"variant_text": "Instagram पर कोई मुझे धमकी देकर ब्लैकमेल कर रहा है, मदद चाहिए।", "language": "HI", "script": "DEVANAGARI_MIXED", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Instagram par koi mujhe dhamki dekar blackmail kar raha hai, help chahiye.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "support-tracking-001",
+    "original_text": "Track my complaint status.",
+    "source_dataset": "cyber_saathi_manual_workflow",
+    "split": "support",
+    "intent": "track_report",
+    "crime_domain": "unknown",
+    "urgency": "low",
+    "sentiment": "neutral",
+    "selected_for": ["workflow_intent", "complaint_vocabulary"],
+    "variants": [
+      {"variant_text": "Track my complaint status.", "language": "EN", "script": "LATIN", "transformation_method": "original_manual", "quality_status": "reviewed"},
+      {"variant_text": "मेरी शिकायत की स्थिति ट्रैक करें।", "language": "HI", "script": "DEVANAGARI", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Meri complaint ka status track karo.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "eval-financial-001",
+    "original_text": "I lost Rs 25000 through UPI today and need to report it.",
+    "source_dataset": "cyber_saathi_manual_safety",
+    "split": "evaluation",
+    "intent": "report_incident",
+    "crime_domain": "financial_fraud",
+    "urgency": "high",
+    "sentiment": "distressed",
+    "selected_for": ["critical_safety", "amount", "cross_language_equivalence"],
+    "variants": [
+      {"variant_text": "I lost Rs 25000 through UPI today and need to report it.", "language": "EN", "script": "LATIN", "transformation_method": "controlled_english_variant", "quality_status": "reviewed"},
+      {"variant_text": "आज UPI से 25000 रुपये चले गए, शिकायत करनी है।", "language": "HI", "script": "DEVANAGARI_MIXED", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Aaj UPI se 25000 rupaye chale gaye, report karna hai.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "eval-phishing-001",
+    "original_text": "I received a suspicious bank link asking for my UPI PIN.",
+    "source_dataset": "cyber_saathi_manual_safety",
+    "split": "evaluation",
+    "intent": "seek_guidance",
+    "crime_domain": "phishing_scam",
+    "urgency": "medium",
+    "sentiment": "concerned",
+    "selected_for": ["suspicious_link", "cross_language_equivalence"],
+    "variants": [
+      {"variant_text": "I received a suspicious bank link asking for my UPI PIN. What should I do?", "language": "EN", "script": "LATIN", "transformation_method": "controlled_english_variant", "quality_status": "reviewed"},
+      {"variant_text": "मुझे संदिग्ध बैंक लिंक मिला है जो UPI PIN मांग रहा है, क्या करूं?", "language": "HI", "script": "DEVANAGARI_MIXED", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Mujhe suspicious bank link aaya hai aur UPI PIN maang raha hai, kya karu?", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "eval-identity-001",
+    "original_text": "My social media account was hacked and someone is impersonating me.",
+    "source_dataset": "cyber_saathi_manual_safety",
+    "split": "evaluation",
+    "intent": "report_incident",
+    "crime_domain": "identity_theft",
+    "urgency": "medium",
+    "sentiment": "distressed",
+    "selected_for": ["identity_theft", "account_service", "cross_language_equivalence"],
+    "variants": [
+      {"variant_text": "My social media account was hacked and someone is impersonating me. I want to report it.", "language": "EN", "script": "LATIN", "transformation_method": "controlled_english_variant", "quality_status": "reviewed"},
+      {"variant_text": "मेरा सोशल मीडिया अकाउंट हैक हुआ और कोई मेरी नकली प्रोफाइल चला रहा है, रिपोर्ट करनी है।", "language": "HI", "script": "DEVANAGARI", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Mera social media account hack hua aur koi meri fake profile chala raha hai, report karna hai.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "eval-harassment-001",
+    "original_text": "A person keeps threatening me online.",
+    "source_dataset": "cyber_saathi_manual_safety",
+    "split": "evaluation",
+    "intent": "seek_guidance",
+    "crime_domain": "online_harassment",
+    "urgency": "high",
+    "sentiment": "fearful",
+    "selected_for": ["online_harassment_source_slot", "urgent_language", "cross_language_equivalence"],
+    "variants": [
+      {"variant_text": "Someone keeps threatening and blackmailing me online. Please help me.", "language": "EN", "script": "LATIN", "transformation_method": "controlled_english_variant", "quality_status": "reviewed"},
+      {"variant_text": "कोई मुझे ऑनलाइन धमकी देकर ब्लैकमेल कर रहा है, मदद चाहिए।", "language": "HI", "script": "DEVANAGARI", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Koi mujhe online dhamki dekar blackmail kar raha hai, help chahiye.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "eval-malware-001",
+    "original_text": "A malicious app infected my phone.",
+    "source_dataset": "cyber_saathi_manual_safety",
+    "split": "evaluation",
+    "intent": "seek_guidance",
+    "crime_domain": "malware",
+    "urgency": "medium",
+    "sentiment": "concerned",
+    "selected_for": ["malware", "cross_language_equivalence"],
+    "variants": [
+      {"variant_text": "A malicious app infected my phone and I need help.", "language": "EN", "script": "LATIN", "transformation_method": "controlled_english_variant", "quality_status": "reviewed"},
+      {"variant_text": "एक खतरनाक ऐप से मेरे फोन में वायरस आ गया है, मदद चाहिए।", "language": "HI", "script": "DEVANAGARI", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Malicious app se mere phone mein virus aa gaya hai, help chahiye.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "eval-misinformation-001",
+    "original_text": "I want to report a deepfake and fake news post.",
+    "source_dataset": "cyber_saathi_manual_safety",
+    "split": "evaluation",
+    "intent": "report_incident",
+    "crime_domain": "misinformation",
+    "urgency": "low",
+    "sentiment": "neutral",
+    "selected_for": ["misinformation", "cross_language_equivalence"],
+    "variants": [
+      {"variant_text": "I want to report a deepfake and fake news post.", "language": "EN", "script": "LATIN", "transformation_method": "original_manual", "quality_status": "reviewed"},
+      {"variant_text": "मैं एक डीपफेक और फर्जी खबर वाली पोस्ट रिपोर्ट करना चाहता हूं।", "language": "HI", "script": "DEVANAGARI", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Main deepfake aur fake news post report karna chahta hu.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "eval-child-safety-001",
+    "original_text": "A minor is being groomed online and needs urgent help.",
+    "source_dataset": "cyber_saathi_manual_safety",
+    "split": "evaluation",
+    "intent": "seek_guidance",
+    "crime_domain": "child_safety",
+    "urgency": "critical",
+    "sentiment": "concerned",
+    "selected_for": ["women_child_source_slot", "critical_safety", "cross_language_equivalence"],
+    "variants": [
+      {"variant_text": "A minor is being groomed online and needs urgent help.", "language": "EN", "script": "LATIN", "transformation_method": "original_manual", "quality_status": "reviewed"},
+      {"variant_text": "एक नाबालिग को ऑनलाइन ग्रूमिंग संदेश मिल रहे हैं, तुरंत मदद चाहिए।", "language": "HI", "script": "DEVANAGARI", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "Ek minor ko online grooming messages aa rahe hain, urgent help chahiye.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  },
+  {
+    "source_example_id": "eval-tracking-001",
+    "original_text": "Track my complaint status using CW-12345.",
+    "source_dataset": "cyber_saathi_manual_workflow",
+    "split": "evaluation",
+    "intent": "track_report",
+    "crime_domain": "unknown",
+    "urgency": "low",
+    "sentiment": "neutral",
+    "selected_for": ["workflow_intent", "reference_identifier", "cross_language_equivalence"],
+    "variants": [
+      {"variant_text": "Track my complaint status using CW-12345.", "language": "EN", "script": "LATIN", "transformation_method": "original_manual", "quality_status": "reviewed"},
+      {"variant_text": "CW-12345 से मेरी शिकायत की स्थिति ट्रैक करें।", "language": "HI", "script": "DEVANAGARI_MIXED", "transformation_method": "controlled_hindi_adaptation", "quality_status": "reviewed"},
+      {"variant_text": "CW-12345 se meri complaint ka status track karo.", "language": "HINGLISH", "script": "LATIN", "transformation_method": "controlled_hinglish_adaptation", "quality_status": "reviewed"}
+    ]
+  }
+]

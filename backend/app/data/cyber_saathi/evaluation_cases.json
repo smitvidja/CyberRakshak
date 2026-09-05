@@ -1,0 +1,55 @@
+{
+  "classification_cases": [
+    {"text": "Please verify link https://example.com before I open it.", "language": "EN", "intent": "check_identifier", "crime_domain": "unknown", "urgency": "low", "sentiment": "neutral"},
+    {"text": "इस UPI ID की जांच करें।", "language": "HI", "intent": "check_identifier", "crime_domain": "financial_fraud", "urgency": "medium", "sentiment": "neutral"},
+    {"text": "Mujhe check UPI ID fraudster@ybl karna hai.", "language": "HINGLISH", "intent": "check_identifier", "crime_domain": "financial_fraud", "urgency": "medium", "sentiment": "neutral"},
+    {"text": "How can I become a cyber warrior volunteer?", "language": "EN", "intent": "cyber_warrior", "crime_domain": "unknown", "urgency": "low", "sentiment": "neutral"},
+    {"text": "मैं साइबर वॉरियर स्वयंसेवक कैसे बन सकता हूं?", "language": "HI", "intent": "cyber_warrior", "crime_domain": "unknown", "urgency": "low", "sentiment": "neutral"},
+    {"text": "Mujhe cyber warrior volunteer banna hai.", "language": "HINGLISH", "intent": "cyber_warrior", "crime_domain": "unknown", "urgency": "low", "sentiment": "neutral"},
+    {"text": "Share online safety tips with me.", "language": "EN", "intent": "general_awareness", "crime_domain": "unknown", "urgency": "low", "sentiment": "neutral"},
+    {"text": "ऑनलाइन कैसे सुरक्षित रहें?", "language": "HI", "intent": "general_awareness", "crime_domain": "unknown", "urgency": "low", "sentiment": "neutral"},
+    {"text": "Mujhe online safety tips chahiye.", "language": "HINGLISH", "intent": "general_awareness", "crime_domain": "unknown", "urgency": "low", "sentiment": "neutral"},
+    {"text": "I received a cyber terrorism threat and need help.", "language": "EN", "intent": "seek_guidance", "crime_domain": "cyber_terrorism", "urgency": "high", "sentiment": "fearful"},
+    {"text": "मुझे साइबर आतंकवाद की धमकी मिली है, मदद चाहिए।", "language": "HI", "intent": "seek_guidance", "crime_domain": "cyber_terrorism", "urgency": "high", "sentiment": "fearful"},
+    {"text": "Mujhe cyber terrorism ki dhamki mili hai, help chahiye.", "language": "HINGLISH", "intent": "seek_guidance", "crime_domain": "cyber_terrorism", "urgency": "high", "sentiment": "fearful"},
+    {"text": "I am furious because someone is blackmailing me online.", "language": "EN", "intent": "seek_guidance", "crime_domain": "online_harassment", "urgency": "high", "sentiment": "angry"},
+    {"text": "I am confused about a bank payment scam.", "language": "EN", "intent": "seek_guidance", "crime_domain": "financial_fraud", "urgency": "medium", "sentiment": "confused"},
+    {"text": "A phishing link was sent to my email account.", "language": "EN", "intent": "seek_guidance", "crime_domain": "phishing_scam", "urgency": "medium", "sentiment": "neutral"}
+  ],
+  "entity_cases": [
+    {"text": "Rs 12,500 went to fraudster@ybl, UTR ID 123456789012 on 18/05/2024 at 14:30.", "entities": [{"type": "amount", "normalized_value": "12500"}, {"type": "upi_id", "normalized_value": "fraudster@ybl"}, {"type": "transaction_id", "normalized_value": "123456789012"}, {"type": "date", "normalized_value": "18/05/2024"}, {"type": "time", "normalized_value": "14:30"}]},
+    {"text": "Contact +91 98765 43210 or victim@example.com and check https://example.com/a.", "entities": [{"type": "phone_number", "normalized_value": "9876543210"}, {"type": "email", "normalized_value": "victim@example.com"}, {"type": "url", "normalized_value": "https://example.com/a"}]},
+    {"text": "My HDFC bank account and Instagram profile were affected in Mumbai.", "entities": [{"type": "provider", "normalized_value": "HDFC Bank"}, {"type": "social_platform", "normalized_value": "Instagram"}, {"type": "account_service", "normalized_value": "bank account"}, {"type": "location", "normalized_value": "Mumbai"}]},
+    {"text": "The username @victim_user is being impersonated.", "entities": [{"type": "username", "normalized_value": "@victim_user"}]},
+    {"text": "₹2 lakh was debited.", "entities": [{"type": "amount", "normalized_value": "200000"}]},
+    {"text": "मेरे 5000 रुपये कट गए।", "entities": [{"type": "amount", "normalized_value": "5000"}]},
+    {"text": "My Paytm wallet was accessed.", "entities": [{"type": "provider", "normalized_value": "Paytm"}, {"type": "account_service", "normalized_value": "wallet"}]},
+    {"text": "Facebook user @fake.profile copied my photo.", "entities": [{"type": "username", "normalized_value": "@fake.profile"}, {"type": "social_platform", "normalized_value": "Facebook"}]},
+    {"text": "Transaction ID ABCDEF123456 failed.", "entities": [{"type": "transaction_id", "normalized_value": "ABCDEF123456"}]},
+    {"text": "The incident happened on 05-09-2026 at 9:45 pm.", "entities": [{"type": "date", "normalized_value": "05-09-2026"}, {"type": "time", "normalized_value": "9:45 pm"}]}
+  ],
+  "false_positive_cases": [
+    "Hello, how are you?",
+    "Tell me something interesting.",
+    "What is the weather today?",
+    "Please share a dinner recipe.",
+    "Thank you for your help.",
+    "Good morning everyone.",
+    "My phone battery is low.",
+    "I read a book yesterday.",
+    "What is the TLS protocol?",
+    "Explain how a firewall works.",
+    "I use Instagram to share travel photos.",
+    "The office meeting starts at noon."
+  ],
+  "ambiguous_cases": [
+    "Something odd happened online.",
+    "I got a strange message.",
+    "Mere saath online kuch hua hai.",
+    "ऑनलाइन कुछ अजीब हुआ है।",
+    "Please help me.",
+    "Mujhe help chahiye.",
+    "I am worried but cannot explain it yet.",
+    "मुझे समझ नहीं आ रहा।"
+  ]
+}

@@ -4,14 +4,23 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.schemas.cyber_saathi import (
     ConfidenceBand,
+    ConversationCreate,
+    ConversationMessageRequest,
     CrimeDomain,
     EntityType,
     Intent,
     LanguageCode,
     Urgency,
 )
-from app.services.cyber_saathi_dataset import prepare_examples, validate_registry
+from app.services.cyber_saathi_dataset import (
+    generate_controlled_variants,
+    load_inspection,
+    load_sources,
+    prepare_examples,
+    validate_registry,
+)
 from app.services.cyber_saathi_evaluation import evaluate
+from app.services.cyber_saathi_service import CyberSaathiService
 from app.services.cyber_saathi_understanding import UnderstandingEngine
 
 
@@ -95,13 +104,62 @@ def test_sentiment_changes_strategy_label_not_domain_truth() -> None:
     assert angry.crime_domain == neutral.crime_domain == CrimeDomain.PHISHING_SCAM
 
 
+@pytest.mark.parametrize(
+    ("message", "expected_prefix"),
+    [
+        ("I am furious about this suspicious link", "I understand this is frustrating."),
+        ("I am confused about this suspicious link", "I will keep this simple."),
+        ("I am scared because someone is threatening me online", "You are not alone."),
+    ],
+)
+def test_sentiment_changes_conversation_response_strategy(
+    message: str, expected_prefix: str
+) -> None:
+    state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.EN)).state
+    response = CyberSaathiService.reply(
+        state.id,
+        ConversationMessageRequest(message=message, state=state),
+    )
+
+    assert response.state.turns[-1].content.startswith(expected_prefix)
+
+
+def test_medium_and_low_confidence_use_distinct_clarification_strategies() -> None:
+    medium_state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.EN)).state
+    medium = CyberSaathiService.reply(
+        medium_state.id,
+        ConversationMessageRequest(message="Please help me", state=medium_state),
+    )
+    low_state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.EN)).state
+    low = CyberSaathiService.reply(
+        low_state.id,
+        ConversationMessageRequest(message="Something odd happened online", state=low_state),
+    )
+
+    medium_copy = medium.state.turns[-1].content
+    low_copy = low.state.turns[-1].content
+    assert "Was this about money" in medium_copy
+    assert "not fully certain" in low_copy
+    assert medium_copy != low_copy
+
+
 def test_dataset_registry_and_split_are_controlled() -> None:
     validate_registry()
+    inspection = load_inspection()
+    sources = load_sources()
+    generated = generate_controlled_variants(sources)
     prepared = prepare_examples()
     support_ids = {row.source_example_id for row in prepared["support"]}
     evaluation_ids = {row.source_example_id for row in prepared["evaluation"]}
 
     assert support_ids.isdisjoint(evaluation_ids)
+    assert len(inspection["datasets"]) == 9
+    assert all(row["rows"] > 0 and row["schema"] for row in inspection["datasets"])
+    assert len(generated) == len(sources) * 3
+    assert all(row.original_text and row.source_dataset for row in generated)
+    assert {
+        row.language for row in generated
+    } == {LanguageCode.EN, LanguageCode.HI, LanguageCode.HINGLISH}
     assert {row.language for row in prepared["evaluation"]} >= {
         LanguageCode.EN,
         LanguageCode.HI,
@@ -114,13 +172,18 @@ def test_repeatable_evaluation_meets_session_thresholds() -> None:
 
     assert result["status"] == "passed"
     metrics = result["metrics"]
-    assert metrics["intent_accuracy"] >= 0.8
-    assert metrics["crime_domain_accuracy"] >= 0.8
-    assert metrics["entity_fixture_accuracy"] == 1
-    assert metrics["urgent_precision"] >= 0.8
-    assert metrics["urgent_recall"] >= 0.8
+    assert metrics["total_fixture_count"] >= 69
+    assert metrics["classification_fixture_count"] >= 39
+    assert metrics["entity_fixture_count"] >= 10
+    assert metrics["false_positive_fixture_count"] >= 12
+    assert metrics["ambiguous_fixture_count"] >= 8
+    assert metrics["intent_accuracy"] >= 0.85
+    assert metrics["crime_domain_accuracy"] >= 0.85
+    assert metrics["entity_exact_match"] == 1
+    assert metrics["urgent_precision"] >= 0.85
+    assert metrics["urgent_recall"] >= 0.85
     assert metrics["false_positive_pass_rate"] == 1
-    assert metrics["ambiguous_input_requests_clarification"] is True
+    assert metrics["ambiguous_clarification_rate"] == 1
 
 
 def test_child_safety_urgent_language_is_explicit_without_fabricated_coverage() -> None:

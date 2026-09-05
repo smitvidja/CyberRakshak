@@ -30,17 +30,80 @@ class NormalizedExample(BaseModel):
     sentiment: Sentiment
 
 
+class ControlledVariant(BaseModel):
+    variant_text: str = Field(min_length=1)
+    language: LanguageCode
+    script: Literal["LATIN", "DEVANAGARI", "DEVANAGARI_MIXED"]
+    transformation_method: Literal[
+        "original_manual",
+        "controlled_english_variant",
+        "controlled_hindi_adaptation",
+        "controlled_hinglish_adaptation",
+    ]
+    quality_status: Literal["reviewed", "rejected"]
+
+
+class LanguageSource(BaseModel):
+    source_example_id: str = Field(min_length=1)
+    original_text: str = Field(min_length=1)
+    source_dataset: str = Field(min_length=1)
+    split: Literal["support", "evaluation"]
+    intent: Intent
+    crime_domain: CrimeDomain
+    urgency: Urgency
+    sentiment: Sentiment
+    selected_for: list[str] = Field(min_length=1)
+    variants: list[ControlledVariant] = Field(min_length=1)
+
+
 def load_registry() -> dict[str, object]:
     return json.loads((DATA_DIR / "dataset_registry.json").read_text(encoding="utf-8"))
 
 
-def load_examples() -> list[NormalizedExample]:
-    rows = json.loads((DATA_DIR / "source_examples.json").read_text(encoding="utf-8"))
-    return [NormalizedExample.model_validate(row) for row in rows]
+def load_inspection() -> dict[str, object]:
+    return json.loads((DATA_DIR / "dataset_inspection.json").read_text(encoding="utf-8"))
+
+
+def load_sources() -> list[LanguageSource]:
+    rows = json.loads((DATA_DIR / "language_sources.json").read_text(encoding="utf-8"))
+    return [LanguageSource.model_validate(row) for row in rows]
+
+
+def generate_controlled_variants(
+    sources: list[LanguageSource] | None = None,
+) -> list[NormalizedExample]:
+    generated: list[NormalizedExample] = []
+    for source in sources or load_sources():
+        languages = {variant.language for variant in source.variants if variant.quality_status == "reviewed"}
+        if languages != {LanguageCode.EN, LanguageCode.HI, LanguageCode.HINGLISH}:
+            raise ValueError(
+                f"Source {source.source_example_id} must have reviewed EN, HI, and HINGLISH variants"
+            )
+        for variant in source.variants:
+            if variant.quality_status != "reviewed":
+                continue
+            generated.append(
+                NormalizedExample(
+                    source_example_id=source.source_example_id,
+                    original_text=source.original_text,
+                    variant_text=" ".join(variant.variant_text.split()),
+                    language=variant.language,
+                    script=variant.script,
+                    transformation_method=variant.transformation_method,
+                    source_dataset=source.source_dataset,
+                    quality_status=variant.quality_status,
+                    split=source.split,
+                    intent=source.intent,
+                    crime_domain=source.crime_domain,
+                    urgency=source.urgency,
+                    sentiment=source.sentiment,
+                )
+            )
+    return generated
 
 
 def prepare_examples() -> dict[str, list[NormalizedExample]]:
-    examples = load_examples()
+    examples = generate_controlled_variants()
     deduplicated: dict[str, NormalizedExample] = {}
     source_splits: dict[str, str] = {}
     for example in examples:
@@ -59,6 +122,7 @@ def prepare_examples() -> dict[str, list[NormalizedExample]]:
 
 def validate_registry() -> None:
     registry = load_registry()
+    inspection = load_inspection()
     datasets = registry.get("datasets", [])
     required = {
         "name", "location", "purpose", "schema", "domain", "allowed_usage",
@@ -69,12 +133,20 @@ def validate_registry() -> None:
         if missing:
             raise ValueError(f"Dataset registry entry is missing {sorted(missing)}")
     by_name = {dataset["name"]: dataset for dataset in datasets}
-    if by_name["Bitext 27K customer-support dataset"]["availability"] != "excluded":
+    if not by_name["Bitext 27K customer-support dataset"]["availability"].endswith("excluded"):
         raise ValueError("Bitext 27K must remain excluded")
     if by_name["cybermetric 10K validation"]["training_allowed"]:
         raise ValueError("cybermetric validation must remain held out")
     if not by_name["Authoritative citizen knowledge corpus"]["rag_allowed"]:
         raise ValueError("The separate authoritative corpus must own future RAG usage")
+    inspected = inspection.get("datasets", [])
+    if len(inspected) != 9:
+        raise ValueError("All nine discovered external datasets must remain inspected")
+    for dataset in inspected:
+        if dataset.get("rows", 0) <= 0 or len(dataset.get("sha256", "")) != 64:
+            raise ValueError(f"Incomplete inspection evidence for {dataset.get('id', 'unknown')}")
+        if not dataset.get("schema") or not dataset.get("decision"):
+            raise ValueError(f"Missing schema or decision for {dataset.get('id', 'unknown')}")
 
 
 def main() -> None:

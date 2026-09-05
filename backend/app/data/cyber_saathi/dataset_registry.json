@@ -1,96 +1,110 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "inspection_manifest": "backend/app/data/cyber_saathi/dataset_inspection.json",
   "datasets": [
     {
-      "name": "Cyber Saathi curated citizen fixtures",
-      "location": "backend/app/data/cyber_saathi/source_examples.json",
+      "name": "Cyber Saathi controlled language sources",
+      "location": "backend/app/data/cyber_saathi/language_sources.json",
       "availability": "present",
-      "purpose": ["understanding_support", "language_variants", "evaluation"],
-      "schema": "cyber_saathi_source_example_v1",
+      "purpose": ["understanding_support", "controlled_language_generation", "evaluation"],
+      "schema": "cyber_saathi_language_source_v1",
       "domain": "citizen_cybercrime",
       "allowed_usage": "Only support-split rows may aid deterministic understanding; evaluation rows remain held out.",
       "rag_allowed": false,
       "evaluation_allowed": true,
       "training_allowed": true,
-      "known_limitations": ["Small curated baseline", "Not an authoritative guidance corpus", "Training permission applies only to support-split rows"]
+      "known_limitations": ["Small manually reviewed baseline", "Not an authoritative guidance corpus", "Training permission applies only to support-split rows"]
     },
     {
-      "name": "Generic chatbot dataset",
-      "location": "external/not-imported/generic-chatbot",
-      "availability": "not_present",
-      "purpose": ["supplementary_conversation_patterns"],
-      "schema": "unknown_until_ingestion",
-      "domain": "generic_conversation",
-      "allowed_usage": "Supplementary intent and conversation experiments only.",
+      "name": "Generic chatbot datasets",
+      "location": "external://user-downloads/chatbot_dataset.xlsx; Conversations Dataset for ChatBot.json; Cyber_chat_history.csv",
+      "availability": "inspected_external",
+      "purpose": ["supplementary_conversation_patterns", "generic_intent_experiments"],
+      "schema": "See dataset_inspection.json entries generic_chatbot_xlsx, generic_conversations_json, cyber_chat_history_csv",
+      "domain": "generic_conversation_and_product_support",
+      "allowed_usage": "Supplementary conversation/intent experiments only; never cyber facts or citizen guidance.",
       "rag_allowed": false,
       "evaluation_allowed": true,
       "training_allowed": true,
-      "known_limitations": ["Not cyber authority", "May contain irrelevant support language"]
+      "known_limitations": ["Mostly unrelated product/general chat", "Contains generated responses", "Not cyber authority"]
     },
     {
-      "name": "Sentiment dataset",
-      "location": "external/not-imported/sentiment",
-      "availability": "not_present",
+      "name": "Sentiment chat dataset",
+      "location": "external://user-downloads/Sentiment - chat_dataset.csv",
+      "availability": "inspected_external",
       "purpose": ["supplementary_sentiment", "evaluation"],
-      "schema": "unknown_until_ingestion",
+      "schema": "message:string, sentiment:string; see dataset_inspection.json",
       "domain": "general_sentiment",
-      "allowed_usage": "Sentiment experiments; never truth or criminality decisions.",
+      "allowed_usage": "Sentiment experiments only; never truth, urgency, or criminality decisions.",
       "rag_allowed": false,
       "evaluation_allowed": true,
       "training_allowed": true,
-      "known_limitations": ["Not cyber-specific", "Sentiment labels can encode bias"]
+      "known_limitations": ["Only positive/negative/neutral labels", "Not cyber-specific", "Cannot directly represent distressed/fearful/angry/confused strategy labels"]
     },
     {
-      "name": "Cybersecurity corpus and 32K instructions",
-      "location": "external/not-imported/cybersecurity-corpora",
-      "availability": "not_present",
-      "purpose": ["supplementary_terminology", "classification_experiments"],
-      "schema": "unknown_until_ingestion",
-      "domain": "technical_cybersecurity",
+      "name": "Cybersecurity corpus",
+      "location": "external://user-downloads/cybersecurity-corpus-dataset-unsplit.csv",
+      "availability": "inspected_external",
+      "purpose": ["supplementary_terminology", "binary_classification_experiments"],
+      "schema": "text:string, label:integer; see dataset_inspection.json",
+      "domain": "technical_cybersecurity_posts",
       "allowed_usage": "Supplementary terminology and classification/evaluation only.",
       "rag_allowed": false,
       "evaluation_allowed": true,
       "training_allowed": true,
-      "known_limitations": ["Enterprise and technical focus", "Not citizen-facing guidance"]
+      "known_limitations": ["Unsplit", "Binary label semantics are not documented in the file", "Social-post style", "Not citizen guidance"]
     },
     {
-      "name": "cybermetric 10K train",
-      "location": "external/not-imported/cybermetric-10k-train",
-      "availability": "not_present",
-      "purpose": ["supplementary_expertise", "technical_evaluation"],
-      "schema": "unknown_until_ingestion",
-      "domain": "technical_cybersecurity_qa",
-      "allowed_usage": "Technical benchmarking only; never citizen RAG authority.",
+      "name": "Cybersecurity 32K instructions",
+      "location": "external://user-downloads/cybersecurity_32k_instruction_input_output-train.parquet",
+      "availability": "inspected_external",
+      "purpose": ["supplementary_reasoning", "classification_experiments"],
+      "schema": "ds:int64, instruction:string, input:string, output:string, __index_level_0__:int64; see dataset_inspection.json",
+      "domain": "enterprise_and_technical_cybersecurity",
+      "allowed_usage": "Supplementary technical classification experiments only.",
       "rag_allowed": false,
       "evaluation_allowed": true,
       "training_allowed": true,
-      "known_limitations": ["Not citizen incident language", "Not authoritative guidance"]
+      "known_limitations": ["NIST/enterprise-heavy", "Not citizen incident language", "Not authoritative guidance"]
+    },
+    {
+      "name": "cybermetric 10K train",
+      "location": "external://user-downloads/cybermetric-10000-train.parquet",
+      "availability": "inspected_external",
+      "purpose": ["supplementary_expertise", "technical_evaluation"],
+      "schema": "system:string, instruction:string, input:string, output:string, info:string; see dataset_inspection.json",
+      "domain": "technical_cybersecurity_qa",
+      "allowed_usage": "Technical experiments only; never citizen RAG authority.",
+      "rag_allowed": false,
+      "evaluation_allowed": true,
+      "training_allowed": true,
+      "known_limitations": ["Multiple-choice technical Q&A", "Not citizen incident language", "Not authoritative guidance"]
     },
     {
       "name": "cybermetric 10K validation",
-      "location": "external/not-imported/cybermetric-10k-validation",
-      "availability": "not_present",
+      "location": "external://user-downloads/cybermetric-10000-validate.parquet",
+      "availability": "inspected_external_held_out",
       "purpose": ["held_out_validation", "regression"],
-      "schema": "unknown_until_ingestion",
+      "schema": "system:string, instruction:string, input:string, output:string, info:string; see dataset_inspection.json",
       "domain": "technical_cybersecurity_qa",
-      "allowed_usage": "Strictly held-out validation and regression.",
+      "allowed_usage": "Strictly held-out technical validation and regression.",
       "rag_allowed": false,
       "evaluation_allowed": true,
       "training_allowed": false,
-      "known_limitations": ["Must never leak into support/training split", "Not citizen guidance"]
+      "known_limitations": ["Must never leak into support/training", "Technical Q&A rather than citizen incidents"]
     },
     {
       "name": "Bitext 27K customer-support dataset",
-      "location": "external/excluded/bitext-27k",
-      "availability": "excluded",
+      "location": "external://user-downloads/Bitext_Sample_Customer_Support_Training_Dataset_27K_responses-v11.csv",
+      "availability": "inspected_external_excluded",
       "purpose": ["none"],
-      "schema": "excluded",
+      "schema": "flags:string, instruction:string, category:string, intent:string, response:string; see dataset_inspection.json",
       "domain": "ecommerce_customer_support",
-      "allowed_usage": "Excluded from Cyber Saathi.",
+      "allowed_usage": "Excluded from Cyber Saathi training, evaluation, RAG, and intent logic.",
       "rag_allowed": false,
       "evaluation_allowed": false,
       "training_allowed": false,
-      "known_limitations": ["Wrong domain", "Adds customer-support noise"]
+      "known_limitations": ["Wrong domain", "26,872 rows dominated by order/account/refund support", "Adds customer-support noise"]
     },
     {
       "name": "Authoritative citizen knowledge corpus",
@@ -103,7 +117,7 @@
       "rag_allowed": true,
       "evaluation_allowed": true,
       "training_allowed": false,
-      "known_limitations": ["No documents approved yet", "Must remain separate from generic datasets"]
+      "known_limitations": ["No documents approved yet", "Must remain separate from all supplementary datasets"]
     }
   ]
 }

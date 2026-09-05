@@ -36,8 +36,10 @@ TRANSACTION_PATTERN = re.compile(
     re.IGNORECASE,
 )
 AMOUNT_PATTERN = re.compile(
-    r"(?:₹|rs\.?|inr)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)|"
-    r"([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(hazaar|hazar|thousand|lakh|crore|हजार|लाख|करोड़|rupees?|rupaye|रुपये|रुपए)",
+    r"(?:(?:₹|rs\.?|inr)\s*(?P<currency_value>[0-9][0-9,]*(?:\.[0-9]{1,2})?)"
+    r"\s*(?P<currency_unit>hazaar|hazar|thousand|lakh|crore|हजार|लाख|करोड़)?|"
+    r"(?P<unit_value>[0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*"
+    r"(?P<unit>hazaar|hazar|thousand|lakh|crore|हजार|लाख|करोड़|rupees?|rupaye|रुपये|रुपए))",
     re.IGNORECASE,
 )
 DATE_PATTERN = re.compile(r"\b(?:[0-2]?\d|3[01])[-/]?(?:0?\d|1[0-2])[-/]?(?:20)?\d{2}\b")
@@ -100,7 +102,9 @@ class UnderstandingEngine:
             confidence=confidence,
             confidence_band=band,
             needs_clarification=needs_clarification,
-            clarification_prompt=cls.clarification_prompt(band, intent, domain),
+            clarification_prompt=cls.clarification_prompt(
+                band, intent, domain, response_language
+            ),
         )
 
     @staticmethod
@@ -238,8 +242,8 @@ class UnderstandingEngine:
 
     @staticmethod
     def _normalize_amount(match: re.Match[str]) -> str:
-        raw = match.group(1) or match.group(2)
-        unit = (match.group(3) or "").casefold()
+        raw = match.group("currency_value") or match.group("unit_value")
+        unit = (match.group("currency_unit") or match.group("unit") or "").casefold()
         multiplier = {
             "hazaar": Decimal("1000"), "hazar": Decimal("1000"), "thousand": Decimal("1000"),
             "हजार": Decimal("1000"), "lakh": Decimal("100000"), "लाख": Decimal("100000"),
@@ -269,9 +273,9 @@ class UnderstandingEngine:
     def classify_sentiment(text: str) -> Sentiment:
         if any(marker in text for marker in ("furious", "angry", "gussa", "गुस्सा")):
             return Sentiment.ANGRY
-        if any(marker in text for marker in ("scared", "afraid", "fear", "darr", "डर", "threatening", "dhamki")):
+        if any(marker in text for marker in ("scared", "afraid", "fear", "darr", "डर", "threat", "dhamki", "धमकी")):
             return Sentiment.FEARFUL
-        if any(marker in text for marker in ("panic", "distressed", "lost money", "cut gaye", "kat gaye", "कट गए", "hack hua")):
+        if any(marker in text for marker in ("panic", "distressed", "lost money", "i lost", "cut gaye", "kat gaye", "कट गए", "chale gaye", "चले गए", "hack hua", "हैक हुआ", "was hacked", "impersonating")):
             return Sentiment.DISTRESSED
         if any(marker in text for marker in ("confused", "samajh nahi", "समझ नहीं")):
             return Sentiment.CONFUSED
@@ -307,14 +311,43 @@ class UnderstandingEngine:
 
     @staticmethod
     def clarification_prompt(
-        band: ConfidenceBand, intent: Intent, domain: CrimeDomain
+        band: ConfidenceBand,
+        intent: Intent,
+        domain: CrimeDomain,
+        language: LanguageCode,
     ) -> str | None:
         if band == ConfidenceBand.HIGH:
             return None
         if band == ConfidenceBand.MEDIUM:
             if intent == Intent.UNKNOWN:
-                return "Do you want to report this incident, check an identifier, or get safety guidance?"
-            if domain == CrimeDomain.UNKNOWN:
-                return "Was this about money, account access, harassment, a suspicious link, or harmful content?"
-            return "Please confirm the main incident type before continuing."
-        return "I am not fully certain what happened. Please briefly describe the event and what you need help with."
+                key = "intent"
+            elif domain == CrimeDomain.UNKNOWN:
+                key = "domain"
+            else:
+                key = "confirm"
+        else:
+            key = "uncertain"
+        prompts = {
+            "intent": {
+                LanguageCode.EN: "Do you want to report this incident, check an identifier, or get safety guidance?",
+                LanguageCode.HI: "क्या आप घटना रिपोर्ट करना, किसी पहचानकर्ता की जांच करना, या सुरक्षा मार्गदर्शन लेना चाहते हैं?",
+                LanguageCode.HINGLISH: "Aap incident report karna, identifier check karna, ya safety guidance lena chahte hain?",
+            },
+            "domain": {
+                LanguageCode.EN: "Was this about money, account access, harassment, a suspicious link, or harmful content?",
+                LanguageCode.HI: "क्या यह पैसे, अकाउंट एक्सेस, उत्पीड़न, संदिग्ध लिंक या हानिकारक सामग्री से जुड़ा है?",
+                LanguageCode.HINGLISH: "Kya ye money, account access, harassment, suspicious link, ya harmful content se related hai?",
+            },
+            "confirm": {
+                LanguageCode.EN: "Please confirm the main incident type before continuing.",
+                LanguageCode.HI: "आगे बढ़ने से पहले मुख्य घटना प्रकार की पुष्टि करें।",
+                LanguageCode.HINGLISH: "Continue karne se pehle main incident type confirm karein.",
+            },
+            "uncertain": {
+                LanguageCode.EN: "I am not fully certain what happened. Please briefly describe the event and what you need help with.",
+                LanguageCode.HI: "मुझे अभी पूरी तरह स्पष्ट नहीं है कि क्या हुआ। कृपया घटना और अपनी जरूरत संक्षेप में बताएं।",
+                LanguageCode.HINGLISH: "Mujhe abhi fully clear nahi hai ki kya hua. Please event aur required help short mein batayein.",
+            },
+        }
+        localized = prompts[key]
+        return localized.get(language, localized[LanguageCode.EN])

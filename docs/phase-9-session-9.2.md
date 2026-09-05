@@ -4,14 +4,15 @@
 
 | Requirement | Implementation | Verification |
 | --- | --- | --- |
-| Dataset registry and purpose controls | `backend/app/data/cyber_saathi/dataset_registry.json` | Registry policy test and dataset CLI |
-| Normalized multilingual schema | `NormalizedExample` plus `source_examples.json` and generated `normalized_examples.jsonl` | Schema validation, deduplication, split-leak test |
+| Dataset registry and purpose controls | `dataset_registry.json` plus immutable observations in `dataset_inspection.json` | Registry policy test, row/schema/hash evidence, and dataset CLI |
+| Controlled multilingual generation | `language_sources.json` to generated `normalized_examples.jsonl` through `generate_controlled_variants` | Required EN/HI/Hinglish variants, schema validation, deduplication, and split-leak test |
 | Cyber taxonomy | `backend/app/data/cyber_saathi/taxonomy.json` | Engine and evaluation fixtures |
 | Structured understanding | `UnderstandingEngine` | English, Hindi, Hinglish and ambiguity tests |
 | Understanding API | `POST /api/v1/cyber-saathi/understand` | FastAPI contract test |
 | Conversation integration | Existing conversation service consumes structured understanding | Session 9.1 regression suite |
 | Critical entity confirmation | Amount, phone, email, UPI ID, transaction ID, URL, provider, date and time | Entity and conversation confirmation tests |
-| Repeatable evaluation | `python -m app.services.cyber_saathi_evaluation` | Threshold-enforced command |
+| Sentiment and confidence behavior | Conversation response strategy and focused confidence-band clarification | Response-level service tests |
+| Repeatable evaluation | `python -m app.services.cyber_saathi_evaluation` | 69-case threshold-enforced command with exact entity matching |
 
 ## Dataset policy
 
@@ -19,7 +20,7 @@
 - cybermetric 10K validation is held out and cannot be used for training.
 - Generic chatbot, sentiment, cybersecurity corpus, 32K instructions, and cybermetric train are supplementary only.
 - The authoritative citizen knowledge corpus is a separate empty slot for Session 9.3. No generic dataset is treated as citizen guidance.
-- No external source dataset is checked into this repository at present. Registry locations state `not_present` instead of pretending ingestion occurred.
+- Nine supplied datasets were inspected without ingesting them into runtime or RAG. `dataset_inspection.json` records file fingerprints, row counts, observed schemas, null counts where supported, and the policy decision used by the registry.
 - Women and Child Online Safety and Online Harassment have explicit `source_required` taxonomy slots. Current examples are small manually reviewed safety fixtures, not claims of broad coverage.
 
 ## Normalization and split controls
@@ -39,6 +40,22 @@ quality_status
 
 The pipeline also retains labels and an explicit `support` or `evaluation` split. It normalizes whitespace, removes duplicate variant text, and fails if variants from one source example cross the support/evaluation boundary.
 
+Each selected source group must provide reviewed English, Hindi, and Hinglish variants. The generator currently produces 9 support and 24 held-out evaluation examples from 11 source groups; it does not blindly translate source datasets.
+
+## Inspected source inventory
+
+| Source | Rows | Observed fields | Decision |
+| --- | ---: | --- | --- |
+| Bitext 27K | 26,872 | flags, instruction, category, intent, response | Excluded |
+| Generic chatbot workbook | 1,358 | session/message/response/category/intent fields | Supplementary conversation only |
+| Generic intent JSON | 278 patterns across 29 intents | tag, context, patterns, responses | Supplementary intent only |
+| Chat history CSV | 29 | id, session_id, role, message | Supplementary conversation only |
+| Sentiment chat CSV | 584 | message, sentiment | Supplementary sentiment only |
+| Cybersecurity corpus | 1,000 | text, label | Supplementary technical only |
+| cybermetric train | 9,189 | system, instruction, input, output, info | Supplementary technical only |
+| cybermetric validation | 1,022 | same as train | Held out validation only |
+| Cybersecurity 32K | 32,569 | ds, instruction, input, output, index | Supplementary technical only |
+
 Commands:
 
 ```powershell
@@ -50,7 +67,7 @@ cd backend
 
 ## Evaluation result
 
-Evaluation uses 10 held-out citizen fixtures plus dedicated entity and false-positive fixtures.
+Evaluation uses 39 multilingual classification fixtures, 10 exact entity fixtures, 12 false-positive fixtures, and 8 ambiguous-input fixtures: 69 cases total.
 
 | Metric | Result |
 | --- | ---: |
@@ -58,19 +75,23 @@ Evaluation uses 10 held-out citizen fixtures plus dedicated entity and false-pos
 | Crime-domain accuracy / macro F1 | 1.000 / 1.000 |
 | Language accuracy | 1.000 |
 | Sentiment accuracy | 1.000 |
-| Entity fixture accuracy | 1.000 |
+| Entity exact match | 1.000 |
 | Urgent precision / recall | 1.000 / 1.000 |
 | False-positive pass rate | 1.000 |
-| Ambiguous input clarification | Passed |
+| Ambiguous clarification rate | 1.000 |
 
-These numbers describe the small controlled fixture set only; they are not production-model accuracy claims.
+Extra incorrect entities fail exact-match evaluation. These numbers still describe a controlled fixture set only; they are not production-model accuracy claims.
 
 ## Verification
 
-- Focused Cyber Saathi suite: `21 passed`.
-- Full backend suite: `90 passed`.
+- Focused Cyber Saathi suite: `25 passed`.
+- Dataset preparation: `9` support and `24` evaluation variants.
+- Evaluation: `69` cases, all enforced metrics passed.
+- Full backend suite: `94 passed`.
+- Frontend TypeScript (`tsc --noEmit`): passed.
+- Frontend ESLint: passed.
+- Frontend production build: passed, including 56 generated routes/pages.
 - Known warning: Starlette reports the existing `httpx` TestClient deprecation warning.
-- No frontend files changed, so frontend lint/build/browser gates were not repeated for this backend-only session.
 
 ## Known weak domains
 

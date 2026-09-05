@@ -1,26 +1,13 @@
 import json
 from collections import Counter
 
-from app.schemas.cyber_saathi import EntityType, Urgency
-from app.services.cyber_saathi_dataset import prepare_examples, validate_registry
+from app.schemas.cyber_saathi import Urgency
+from app.services.cyber_saathi_dataset import (
+    DATA_DIR,
+    prepare_examples,
+    validate_registry,
+)
 from app.services.cyber_saathi_understanding import UnderstandingEngine
-
-
-ENTITY_FIXTURES = [
-    (
-        "Rs 12,500 went to fraudster@ybl, UTR ID 123456789012 on 18/05/2024 at 14:30.",
-        {EntityType.AMOUNT, EntityType.UPI_ID, EntityType.TRANSACTION_ID, EntityType.DATE, EntityType.TIME},
-    ),
-    (
-        "Contact +91 98765 43210 or victim@example.com and check https://example.com/a.",
-        {EntityType.PHONE_NUMBER, EntityType.EMAIL, EntityType.URL},
-    ),
-    (
-        "My HDFC bank account and Instagram profile were affected in Mumbai.",
-        {EntityType.PROVIDER, EntityType.ACCOUNT_SERVICE, EntityType.SOCIAL_PLATFORM, EntityType.LOCATION},
-    ),
-]
-FALSE_POSITIVE_FIXTURES = ["Hello, how are you?", "Tell me something interesting."]
 
 
 def macro_f1(expected: list[str], predicted: list[str]) -> float:
@@ -36,63 +23,116 @@ def macro_f1(expected: list[str], predicted: list[str]) -> float:
     return round(sum(scores) / len(scores), 3) if scores else 0
 
 
+def _load_cases() -> dict[str, list[object]]:
+    return json.loads((DATA_DIR / "evaluation_cases.json").read_text(encoding="utf-8"))
+
+
+def _classification_cases() -> list[dict[str, str]]:
+    generated = [
+        {
+            "text": row.variant_text,
+            "language": row.language.value,
+            "intent": row.intent.value,
+            "crime_domain": row.crime_domain.value,
+            "urgency": row.urgency.value,
+            "sentiment": row.sentiment.value,
+        }
+        for row in prepare_examples()["evaluation"]
+    ]
+    return generated + _load_cases()["classification_cases"]
+
+
+def _entity_signature(result: object) -> list[tuple[str, str]]:
+    return sorted(
+        (entity.type.value, entity.normalized_value or entity.value)
+        for entity in result.entities
+    )
+
+
 def evaluate() -> dict[str, object]:
     validate_registry()
-    fixtures = prepare_examples()["evaluation"]
-    results = [UnderstandingEngine.analyze(row.variant_text) for row in fixtures]
+    cases = _load_cases()
+    fixtures = _classification_cases()
+    results = [UnderstandingEngine.analyze(row["text"]) for row in fixtures]
 
-    expected_intents = [row.intent.value for row in fixtures]
+    expected_intents = [row["intent"] for row in fixtures]
     predicted_intents = [result.intent.value for result in results]
-    expected_domains = [row.crime_domain.value for row in fixtures]
+    expected_domains = [row["crime_domain"] for row in fixtures]
     predicted_domains = [result.crime_domain.value for result in results]
-    expected_languages = [row.language.value for row in fixtures]
+    expected_languages = [row["language"] for row in fixtures]
     predicted_languages = [result.language.value for result in results]
-    expected_sentiments = [row.sentiment.value for row in fixtures]
+    expected_sentiments = [row["sentiment"] for row in fixtures]
     predicted_sentiments = [result.sentiment.value for result in results]
+    expected_urgency = [row["urgency"] for row in fixtures]
+    predicted_urgency = [result.urgency.value for result in results]
 
-    expected_urgent = [row.urgency in {Urgency.HIGH, Urgency.CRITICAL} for row in fixtures]
-    predicted_urgent = [result.urgency in {Urgency.HIGH, Urgency.CRITICAL} for result in results]
+    expected_urgent = [value in {Urgency.HIGH.value, Urgency.CRITICAL.value} for value in expected_urgency]
+    predicted_urgent = [value in {Urgency.HIGH.value, Urgency.CRITICAL.value} for value in predicted_urgency]
     urgent_tp = sum(expected and predicted for expected, predicted in zip(expected_urgent, predicted_urgent))
     urgent_fp = sum(not expected and predicted for expected, predicted in zip(expected_urgent, predicted_urgent))
     urgent_fn = sum(expected and not predicted for expected, predicted in zip(expected_urgent, predicted_urgent))
 
     entity_passes = 0
-    for message, expected_types in ENTITY_FIXTURES:
-        extracted = {entity.type for entity in UnderstandingEngine.analyze(message).entities}
-        entity_passes += expected_types.issubset(extracted)
+    entity_failures: list[dict[str, object]] = []
+    for fixture in cases["entity_cases"]:
+        result = UnderstandingEngine.analyze(fixture["text"])
+        actual = _entity_signature(result)
+        expected = sorted(
+            (entity["type"], entity["normalized_value"])
+            for entity in fixture["entities"]
+        )
+        if actual == expected:
+            entity_passes += 1
+        else:
+            entity_failures.append({"text": fixture["text"], "expected": expected, "actual": actual})
 
     false_positive_passes = 0
-    for message in FALSE_POSITIVE_FIXTURES:
+    for message in cases["false_positive_cases"]:
         result = UnderstandingEngine.analyze(message)
-        false_positive_passes += result.crime_domain.value == "unknown" and not result.entities
+        false_positive_passes += (
+            result.intent.value == "unknown"
+            and result.crime_domain.value == "unknown"
+            and result.urgency == Urgency.LOW
+        )
 
-    ambiguous = UnderstandingEngine.analyze("Something odd happened online.")
+    ambiguous_passes = 0
+    for message in cases["ambiguous_cases"]:
+        result = UnderstandingEngine.analyze(message)
+        ambiguous_passes += result.needs_clarification and result.clarification_prompt is not None
+
     metrics = {
-        "fixture_count": len(fixtures),
+        "classification_fixture_count": len(fixtures),
+        "entity_fixture_count": len(cases["entity_cases"]),
+        "false_positive_fixture_count": len(cases["false_positive_cases"]),
+        "ambiguous_fixture_count": len(cases["ambiguous_cases"]),
+        "total_fixture_count": len(fixtures) + len(cases["entity_cases"]) + len(cases["false_positive_cases"]) + len(cases["ambiguous_cases"]),
         "intent_accuracy": round(sum(e == p for e, p in zip(expected_intents, predicted_intents)) / len(fixtures), 3),
         "intent_macro_f1": macro_f1(expected_intents, predicted_intents),
         "crime_domain_accuracy": round(sum(e == p for e, p in zip(expected_domains, predicted_domains)) / len(fixtures), 3),
         "crime_domain_macro_f1": macro_f1(expected_domains, predicted_domains),
         "language_accuracy": round(sum(e == p for e, p in zip(expected_languages, predicted_languages)) / len(fixtures), 3),
         "sentiment_accuracy": round(sum(e == p for e, p in zip(expected_sentiments, predicted_sentiments)) / len(fixtures), 3),
-        "entity_fixture_accuracy": round(entity_passes / len(ENTITY_FIXTURES), 3),
+        "urgency_accuracy": round(sum(e == p for e, p in zip(expected_urgency, predicted_urgency)) / len(fixtures), 3),
+        "entity_exact_match": round(entity_passes / len(cases["entity_cases"]), 3),
         "urgent_precision": round(urgent_tp / (urgent_tp + urgent_fp), 3) if urgent_tp + urgent_fp else 0,
         "urgent_recall": round(urgent_tp / (urgent_tp + urgent_fn), 3) if urgent_tp + urgent_fn else 0,
-        "false_positive_pass_rate": round(false_positive_passes / len(FALSE_POSITIVE_FIXTURES), 3),
-        "ambiguous_input_requests_clarification": ambiguous.needs_clarification,
+        "false_positive_pass_rate": round(false_positive_passes / len(cases["false_positive_cases"]), 3),
+        "ambiguous_clarification_rate": round(ambiguous_passes / len(cases["ambiguous_cases"]), 3),
         "intent_confusion": dict(Counter(f"{e}->{p}" for e, p in zip(expected_intents, predicted_intents) if e != p)),
         "domain_confusion": dict(Counter(f"{e}->{p}" for e, p in zip(expected_domains, predicted_domains) if e != p)),
+        "entity_failures": entity_failures,
     }
     thresholds_pass = (
-        metrics["intent_accuracy"] >= 0.8
-        and metrics["crime_domain_accuracy"] >= 0.8
-        and metrics["language_accuracy"] >= 0.8
-        and metrics["sentiment_accuracy"] >= 0.8
-        and metrics["entity_fixture_accuracy"] == 1
-        and metrics["urgent_precision"] >= 0.8
-        and metrics["urgent_recall"] >= 0.8
-        and metrics["false_positive_pass_rate"] == 1
-        and metrics["ambiguous_input_requests_clarification"] is True
+        metrics["intent_accuracy"] >= 0.85
+        and metrics["crime_domain_accuracy"] >= 0.85
+        and metrics["language_accuracy"] >= 0.85
+        and metrics["sentiment_accuracy"] >= 0.85
+        and metrics["urgency_accuracy"] >= 0.85
+        and metrics["entity_exact_match"] == 1
+        and metrics["urgent_precision"] >= 0.85
+        and metrics["urgent_recall"] >= 0.85
+        and metrics["false_positive_pass_rate"] >= 0.9
+        and metrics["ambiguous_clarification_rate"] == 1
     )
     return {"status": "passed" if thresholds_pass else "failed", "metrics": metrics}
 

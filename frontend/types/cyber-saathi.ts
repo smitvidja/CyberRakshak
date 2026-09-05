@@ -8,7 +8,7 @@ export type IncidentStatus =
 
 export type SaathiEntity = {
   id: string;
-  type: "amount" | "phone_number" | "upi_id" | "transaction_id" | "provider" | "date_time" | "url" | "email" | "account_id" | "username";
+  type: "amount" | "phone_number" | "upi_id" | "transaction_id" | "provider" | "date_time" | "url" | "email" | "account_id" | "username" | "date" | "time" | "social_platform" | "location" | "account_service";
   value: string;
   normalized_value: string | null;
   confidence: number;
@@ -36,6 +36,24 @@ export type SaathiIncident = {
   entities: SaathiEntity[];
   summary: string | null;
   occurred_recently: boolean | null;
+  needs_clarification: boolean;
+  response_language: SaathiLanguage;
+};
+
+export type ConfidenceBand = "low" | "medium" | "high";
+
+export type UnderstandingResult = {
+  language: SaathiLanguage;
+  response_language: SaathiLanguage;
+  intent: string;
+  crime_domain: string;
+  entities: SaathiEntity[];
+  urgency: "low" | "medium" | "high" | "critical";
+  sentiment: string;
+  confidence: number;
+  confidence_band: ConfidenceBand;
+  needs_clarification: boolean;
+  clarification_prompt: string | null;
 };
 
 export type SaathiHandoff = {

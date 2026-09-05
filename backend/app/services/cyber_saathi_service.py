@@ -19,6 +19,7 @@ from app.schemas.cyber_saathi import (
     Intent,
     LanguageCode,
     ReportingMode,
+    Sentiment,
     TurnKind,
     Urgency,
     UnderstandingResult,
@@ -169,7 +170,11 @@ class CyberSaathiService:
                 needs_clarification=understanding.needs_clarification,
             )
             state.handoff = CyberSaathiService._report_handoff(state)
-            safety = CyberSaathiService._copy(language, "financial_safety")
+            safety = CyberSaathiService._with_sentiment_strategy(
+                language,
+                understanding.sentiment,
+                CyberSaathiService._copy(language, "financial_safety"),
+            )
             if pending_entities:
                 safety += " " + CyberSaathiService._confirmation_copy(
                     language, pending_entities
@@ -189,10 +194,51 @@ class CyberSaathiService:
 
         if understanding.confidence_band.value == "high" and crime_domain != CrimeDomain.UNKNOWN:
             state.incident.status = IncidentStatus.GUIDANCE_GIVEN
-            return CyberSaathiService._copy(language, "guidance"), TurnKind.MESSAGE
+            return CyberSaathiService._with_sentiment_strategy(
+                language,
+                understanding.sentiment,
+                CyberSaathiService._copy(language, "guidance"),
+            ), TurnKind.MESSAGE
 
         state.incident.status = IncidentStatus.AWAITING_USER_INPUT
-        return CyberSaathiService._copy(language, "clarify"), TurnKind.MESSAGE
+        clarification = understanding.clarification_prompt or CyberSaathiService._copy(
+            language, "clarify"
+        )
+        return CyberSaathiService._with_sentiment_strategy(
+            language, understanding.sentiment, clarification
+        ), TurnKind.MESSAGE
+
+    @staticmethod
+    def _with_sentiment_strategy(
+        language: LanguageCode, sentiment: Sentiment, response: str
+    ) -> str:
+        strategies = {
+            Sentiment.DISTRESSED: {
+                LanguageCode.EN: "I know this is stressful. Let us take the safest next step now.",
+                LanguageCode.HI: "मैं समझता हूं कि यह तनावपूर्ण है। आइए अभी सबसे सुरक्षित अगला कदम उठाएं।",
+                LanguageCode.HINGLISH: "Main samajhta hoon ye stressful hai. Chaliye abhi safest next step lete hain.",
+            },
+            Sentiment.ANGRY: {
+                LanguageCode.EN: "I understand this is frustrating. Here is the direct next action.",
+                LanguageCode.HI: "मैं समझता हूं कि यह निराशाजनक है। यह सीधा अगला कदम है।",
+                LanguageCode.HINGLISH: "Main samajhta hoon ye frustrating hai. Ye direct next action hai.",
+            },
+            Sentiment.CONFUSED: {
+                LanguageCode.EN: "I will keep this simple.",
+                LanguageCode.HI: "मैं इसे सरल तरीके से समझाता हूं।",
+                LanguageCode.HINGLISH: "Main ise simple rakhta hoon.",
+            },
+            Sentiment.FEARFUL: {
+                LanguageCode.EN: "You are not alone. Focus first on your immediate safety.",
+                LanguageCode.HI: "आप अकेले नहीं हैं। पहले अपनी तत्काल सुरक्षा पर ध्यान दें।",
+                LanguageCode.HINGLISH: "Aap akele nahi hain. Pehle immediate safety par focus karein.",
+            },
+        }
+        localized = strategies.get(sentiment)
+        if localized is None:
+            return response
+        prefix = localized.get(language, localized[LanguageCode.EN])
+        return f"{prefix} {response}"
 
     @staticmethod
     def _confirmation_copy(language: LanguageCode, entities: list[Entity]) -> str:
