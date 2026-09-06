@@ -62,6 +62,7 @@
     },
     "nav": {
       "home": "Home",
+      "saathi": "Cyber Saathi",
       "report": "Register Complaint",
       "track": "Track Complaint",
       "suspects": "Report / Check Suspect",
@@ -114,6 +115,10 @@
     "learningCopy": "Awareness is the first step towards a safer cyber world.",
     "learningAction": "Explore now",
     "quick": {
+      "saathi": {
+        "title": "Talk to Cyber Saathi",
+        "copy": "Describe what happened and find a safe next step."
+      },
       "warrior": {
         "title": "Be a Cyber Warrior",
         "copy": "Join hands in building a safer cyber world."
@@ -1226,6 +1231,49 @@
     },
     "disclosureTitle": "About this prototype",
     "disclosureCopy": "CyberRakshak is a demonstration project. It is not affiliated with or endorsed by any government body, does not perform real identity verification, and does not send real OTPs. Reports submitted here are stored in this prototype only and do not reach any authority."
+  },
+  "cyberSaathi": {
+    "title": "Cyber Saathi",
+    "available": "Available",
+    "subtitle": "A calm first step when something goes wrong online",
+    "languageLabel": "Conversation language",
+    "newConversation": "Start a new conversation",
+    "loading": "Starting a secure conversation...",
+    "thinking": "Cyber Saathi is preparing the safest next step...",
+    "urgentTitle": "Immediate safety guidance",
+    "confirmationTitle": "Please confirm this critical detail",
+    "confirm": "Yes, correct",
+    "changeValue": "Change value",
+    "inputLabel": "Describe what happened",
+    "placeholder": "Tell me what happened, in your own words...",
+    "voiceButton": "Speak to Cyber Saathi",
+    "voiceUnavailable": "Voice is temporarily unavailable. Please type your message so I can still help now.",
+    "send": "Send message",
+    "privacyNote": "Do not share OTP, PIN, password or unnecessary personal data.",
+    "safeNextStepTitle": "Your safe next step",
+    "safeNextStepCopy": "Cyber Saathi helps you understand options and enter the right portal workflow. It does not investigate or make legal decisions.",
+    "describePrompt": "Describe the incident to receive a focused next step.",
+    "confirmBeforeHandoff": "Confirm the critical detail before continuing to the reporting flow.",
+    "chooseModeBeforeHandoff": "Choose an available reporting mode to continue.",
+    "reportingModeTitle": "How would you like to report?",
+    "anonymous": "Anonymous",
+    "anonymousUnavailable": "Anonymous reporting is available only for Women and Child Safety incidents.",
+    "identified": "With identity",
+    "modeAnonymousMessage": "I want to report anonymously",
+    "modeIdentifiedMessage": "I want to report with my identity",
+    "reportAction": "Continue to report",
+    "trackAction": "Track complaint",
+    "boundariesTitle": "What Cyber Saathi protects",
+    "boundaryOne": "Anonymous and identified reporting remain separate.",
+    "boundaryTwo": "Critical amounts and identifiers are confirmed before use.",
+    "boundaryThree": "No claim of live police, bank or government access.",
+    "helplineAction": "Urgent financial fraud? Call 1930",
+    "retry": "Retry",
+    "retryMessage": "Please continue",
+    "errors": {
+      "start": "The conversation could not start. Check the API connection and retry.",
+      "send": "Your message was not delivered. Nothing was submitted; please retry."
+    }
   },
   "secureIndia": {
     "upcomingBadge": "Upcoming feature",
