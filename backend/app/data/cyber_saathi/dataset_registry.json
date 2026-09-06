@@ -1,5 +1,5 @@
 {
-  "version": "1.1.1",
+  "version": "1.1.2",
   "inspection_manifest": "backend/app/data/cyber_saathi/dataset_inspection.json",
   "datasets": [
     {
@@ -111,13 +111,13 @@
       "location": "backend/app/data/cyber_saathi/authoritative_knowledge",
       "availability": "present_indexed",
       "purpose": ["authoritative_knowledge", "lightweight_retrieval", "evaluation"],
-      "schema": "knowledge_source_pack_v1 -> knowledge_index_v1",
+      "schema": "knowledge_source_pack_v1.1 with per-section domains -> guarded knowledge_index_v1.1",
       "domain": "indian_citizen_cyber_guidance",
-      "allowed_usage": "Only reviewed official/public guidance approved in Session 9.3. Runtime reads the generated index only; re-ingestion is explicit.",
+      "allowed_usage": "Only reviewed official/public guidance approved in Session 9.3. Runtime reads the generated index only; re-ingestion is explicit. Conversation answers may expose a bounded source card for the exact retrieved chunk.",
       "rag_allowed": true,
       "evaluation_allowed": true,
       "training_allowed": false,
-      "known_limitations": ["Reviewed 13-source, 30-chunk corpus; source coverage is intentionally bounded", "Must remain separate from all supplementary datasets", "No live portal lookup or claim of government-system access", "Local source PDFs are staging material and are not loaded at application startup", "Regulatory guidance retains date/version and never promises a specific bank outcome"]
+      "known_limitations": ["Reviewed 13-source, 30-chunk corpus; source coverage is intentionally bounded", "Twelve knowledge-domain tags are retrieval metadata and do not replace the broader understanding taxonomy", "Must remain separate from all supplementary datasets", "No live portal lookup or claim of government-system access", "Local source PDFs are staging material and are not loaded at application startup", "Regulatory guidance retains date/version and never promises a specific bank outcome"]
     }
   ]
 }

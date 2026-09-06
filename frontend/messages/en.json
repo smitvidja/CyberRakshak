@@ -1241,6 +1241,8 @@
     "loading": "Starting a secure conversation...",
     "thinking": "Cyber Saathi is preparing the safest next step...",
     "urgentTitle": "Immediate safety guidance",
+    "sourcesLabel": "Official source",
+    "learnMore": "Learn more",
     "confirmationTitle": "Please confirm this critical detail",
     "confirm": "Yes, correct",
     "changeValue": "Change value",

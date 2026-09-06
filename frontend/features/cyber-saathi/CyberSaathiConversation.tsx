@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {useLocale, useTranslations} from "next-intl";
-import {AlertTriangle, ArrowRight, Bot, Check, Languages, LoaderCircle, LockKeyhole, Mic, RefreshCw, Send, ShieldCheck, UserRound} from "lucide-react";
+import {AlertTriangle, ArrowRight, Bot, Check, ExternalLink, Languages, LoaderCircle, LockKeyhole, Mic, RefreshCw, Send, ShieldCheck, UserRound} from "lucide-react";
 import {useEffect, useRef, useState, type FormEvent} from "react";
 
 import {cyberSaathiApi} from "@/lib/api/cyber-saathi";
@@ -141,6 +141,20 @@ export function CyberSaathiConversation() {
                 <div className={`max-w-[86%] rounded-[8px] px-4 py-3 text-sm leading-6 sm:max-w-[76%] ${turn.role === "user" ? "bg-[#0b4fb3] text-white" : turn.kind === "safety" ? "border border-[#f2c46d] bg-[#fff8e8] text-[#563b05]" : "border border-[#dce6f1] bg-white text-slate-700"}`}>
                   {turn.kind === "safety" ? <strong className="mb-1 flex items-center gap-2 text-[#8a5400]"><AlertTriangle size={16} />{t("urgentTitle")}</strong> : null}
                   <p className="whitespace-pre-wrap break-words">{turn.content}</p>
+                  {turn.sources?.length ? (
+                    <div className={`mt-3 border-t pt-3 ${turn.kind === "safety" ? "border-[#ead49e]" : "border-[#dce6f1]"}`}>
+                      <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-[#315274]">{t("sourcesLabel")}</p>
+                      <ul className="space-y-2">
+                        {(turn.sources ?? []).map((source) => (
+                          <li className="rounded-[6px] border border-[#c9d8e8] bg-[#f8fbff] px-3 py-2" key={source.chunk_id}>
+                            <p className="text-xs font-bold leading-5 text-[#08245c]">{source.source_title}</p>
+                            <p className="text-[11px] leading-4 text-slate-600">{source.section_title} · {source.version}</p>
+                            <a aria-label={`${t("learnMore")}: ${source.source_title}`} className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-[#0b58c7] underline-offset-2 hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b58c7]" href={source.source_url} rel="noreferrer noopener" target="_blank">{t("learnMore")}<ExternalLink aria-hidden="true" size={12} /></a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
                 </div>
                 {turn.role === "user" ? <span aria-hidden="true" className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#dfe9f7] text-[#173c71]"><UserRound size={16} /></span> : null}
               </article>

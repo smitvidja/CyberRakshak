@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -7,16 +8,22 @@ from app.schemas.cyber_saathi import (
     ConversationCreate,
     ConversationMessageRequest,
     ConversationResponse,
+    ConversationSource,
     ConversationState,
     ConversationStatus,
     ConversationTurn,
     CrimeDomain,
     Entity,
     EntityType,
+    GroundingStatus,
     HandoffTarget,
     IncidentState,
     IncidentStatus,
     Intent,
+    KnowledgeDomain,
+    KnowledgeMatch,
+    KnowledgeSearchRequest,
+    KnowledgeSearchResponse,
     LanguageCode,
     ReportingMode,
     Sentiment,
@@ -25,10 +32,20 @@ from app.schemas.cyber_saathi import (
     UnderstandingResult,
     WorkflowHandoff,
 )
+from app.services.cyber_saathi_knowledge import KnowledgeService
 from app.services.cyber_saathi_understanding import UnderstandingEngine
 
 
 YES_MARKERS = {"yes", "correct", "confirm", "haan", "ha", "हाँ", "सही"}
+
+
+@dataclass
+class RoutedReply:
+    content: str
+    kind: TurnKind
+    grounding_status: GroundingStatus = GroundingStatus.NOT_USED
+    sources: list[ConversationSource] = field(default_factory=list)
+    retrieval_latency_ms: float | None = None
 
 
 class CyberSaathiService:
@@ -85,15 +102,25 @@ class CyberSaathiService:
 
         if state.pending_confirmation_entity_ids and CyberSaathiService._is_confirmation(payload.message):
             CyberSaathiService._confirm_pending_entities(state)
-            answer = CyberSaathiService._copy(language, "confirmed")
-            kind = TurnKind.HANDOFF
+            routed = RoutedReply(
+                content=CyberSaathiService._copy(language, "confirmed"),
+                kind=TurnKind.HANDOFF,
+            )
         else:
-            answer, kind = CyberSaathiService._route_mock_message(
+            routed = CyberSaathiService._route_mock_message(
                 state, payload.message, understanding
             )
 
         state.turns.append(
-            ConversationTurn(role="assistant", content=answer, language=language, kind=kind)
+            ConversationTurn(
+                role="assistant",
+                content=routed.content,
+                language=language,
+                kind=routed.kind,
+                grounding_status=routed.grounding_status,
+                sources=routed.sources,
+                retrieval_latency_ms=routed.retrieval_latency_ms,
+            )
         )
         state.updated_at = datetime.now(timezone.utc)
         return ConversationResponse(state=state)
@@ -101,7 +128,7 @@ class CyberSaathiService:
     @staticmethod
     def _route_mock_message(
         state: ConversationState, message: str, understanding: UnderstandingResult
-    ) -> tuple[str, TurnKind]:
+    ) -> RoutedReply:
         language = state.language
 
         if understanding.intent == Intent.TRACK_REPORT:
@@ -116,7 +143,7 @@ class CyberSaathiService:
                 reporting_mode=state.reporting_mode,
                 route="/complaints/track",
             )
-            return CyberSaathiService._copy(language, "track"), TurnKind.HANDOFF
+            return RoutedReply(CyberSaathiService._copy(language, "track"), TurnKind.HANDOFF)
 
         crime_domain = (
             understanding.crime_domain
@@ -179,7 +206,18 @@ class CyberSaathiService:
                 safety += " " + CyberSaathiService._confirmation_copy(
                     language, pending_entities
                 )
-            return safety, TurnKind.SAFETY
+            retrieval = CyberSaathiService._retrieve_knowledge(message, understanding)
+            return RoutedReply(
+                safety,
+                TurnKind.SAFETY,
+                (
+                    GroundingStatus.GROUNDED
+                    if retrieval.matches
+                    else GroundingStatus.DETERMINISTIC_PLAYBOOK
+                ),
+                CyberSaathiService._conversation_sources(retrieval.matches[:1]),
+                retrieval.retrieval_latency_ms,
+            )
 
         if intent == Intent.REPORT_INCIDENT and not understanding.needs_clarification:
             state.incident.status = (
@@ -189,24 +227,135 @@ class CyberSaathiService:
             )
             state.handoff = CyberSaathiService._report_handoff(state)
             if pending_entities:
-                return CyberSaathiService._confirmation_copy(language, pending_entities), TurnKind.CONFIRMATION
-            return CyberSaathiService._copy(language, "report"), TurnKind.HANDOFF
+                return RoutedReply(
+                    CyberSaathiService._confirmation_copy(language, pending_entities),
+                    TurnKind.CONFIRMATION,
+                )
+            return RoutedReply(CyberSaathiService._copy(language, "report"), TurnKind.HANDOFF)
 
-        if understanding.confidence_band.value == "high" and crime_domain != CrimeDomain.UNKNOWN:
-            state.incident.status = IncidentStatus.GUIDANCE_GIVEN
-            return CyberSaathiService._with_sentiment_strategy(
-                language,
-                understanding.sentiment,
-                CyberSaathiService._copy(language, "guidance"),
-            ), TurnKind.MESSAGE
+        if not understanding.needs_clarification and (
+            understanding.intent in {Intent.SEEK_GUIDANCE, Intent.GENERAL_AWARENESS}
+            or (
+                understanding.confidence_band.value == "high"
+                and crime_domain != CrimeDomain.UNKNOWN
+            )
+        ):
+            retrieval = CyberSaathiService._retrieve_knowledge(message, understanding)
+            if retrieval.matches:
+                state.incident.status = IncidentStatus.GUIDANCE_GIVEN
+                answer = (
+                    CyberSaathiService._copy(language, "grounded_intro")
+                    + " "
+                    + retrieval.matches[0].text
+                )
+                return RoutedReply(
+                    CyberSaathiService._with_sentiment_strategy(
+                        language, understanding.sentiment, answer
+                    ),
+                    TurnKind.MESSAGE,
+                    GroundingStatus.GROUNDED,
+                    CyberSaathiService._conversation_sources(retrieval.matches[:1]),
+                    retrieval.retrieval_latency_ms,
+                )
+            state.incident.status = IncidentStatus.AWAITING_USER_INPUT
+            return RoutedReply(
+                CyberSaathiService._with_sentiment_strategy(
+                    language,
+                    understanding.sentiment,
+                    CyberSaathiService._copy(language, "knowledge_no_result"),
+                ),
+                TurnKind.MESSAGE,
+                GroundingStatus.NO_RESULT,
+                retrieval_latency_ms=retrieval.retrieval_latency_ms,
+            )
 
         state.incident.status = IncidentStatus.AWAITING_USER_INPUT
         clarification = understanding.clarification_prompt or CyberSaathiService._copy(
             language, "clarify"
         )
-        return CyberSaathiService._with_sentiment_strategy(
-            language, understanding.sentiment, clarification
-        ), TurnKind.MESSAGE
+        return RoutedReply(
+            CyberSaathiService._with_sentiment_strategy(
+                language, understanding.sentiment, clarification
+            ),
+            TurnKind.MESSAGE,
+        )
+
+    @staticmethod
+    def _retrieve_knowledge(
+        message: str, understanding: UnderstandingResult
+    ) -> KnowledgeSearchResponse:
+        domain = CyberSaathiService._knowledge_domain(message, understanding)
+        try:
+            return KnowledgeService.search(
+                KnowledgeSearchRequest(
+                    query=message,
+                    domain=domain,
+                    language=understanding.response_language,
+                    top_k=2,
+                )
+            )
+        except APIError:
+            # Knowledge is an optional grounding layer. A missing, stale, or rejected
+            # index must never suppress deterministic urgent-safety instructions.
+            return KnowledgeSearchResponse(
+                query=message,
+                domain_filter=domain,
+                retrieval_latency_ms=0,
+                index_version="unavailable",
+                no_result=True,
+                matches=[],
+                bounded_context="",
+            )
+
+    @staticmethod
+    def _knowledge_domain(
+        message: str, understanding: UnderstandingResult
+    ) -> KnowledgeDomain | None:
+        lowered = message.casefold()
+        domain = understanding.crime_domain
+        if understanding.intent == Intent.CHECK_IDENTIFIER:
+            return KnowledgeDomain.SUSPICIOUS_IDENTIFIERS
+        if any(term in lowered for term in ("digital arrest", "fake police", "fake officer")):
+            return KnowledgeDomain.IMPERSONATION
+        if any(term in lowered for term in ("fake profile", "pretend", "impersonat")):
+            return KnowledgeDomain.IMPERSONATION
+        if any(term in lowered for term in ("cyberstalk", "stalk", "पीछा", "लोकेशन")):
+            return KnowledgeDomain.CYBERSTALKING
+        if understanding.intent == Intent.GENERAL_AWARENESS:
+            return KnowledgeDomain.GENERAL_CYBER_SAFETY
+        if domain == CrimeDomain.FINANCIAL_FRAUD:
+            if any(term in lowered for term in ("upi", "wallet", "payment app", "qr")):
+                return KnowledgeDomain.UPI_PAYMENT_FRAUD
+            return KnowledgeDomain.FINANCIAL_FRAUD
+        if domain == CrimeDomain.PHISHING_SCAM:
+            if any(term in lowered for term in ("hacked", "compromised", "account access")):
+                return KnowledgeDomain.ACCOUNT_COMPROMISE
+            return KnowledgeDomain.PHISHING
+        if domain == CrimeDomain.IDENTITY_THEFT:
+            return KnowledgeDomain.IDENTITY_THEFT
+        if domain == CrimeDomain.ONLINE_HARASSMENT:
+            return KnowledgeDomain.HARASSMENT_ABUSE
+        if domain == CrimeDomain.CHILD_SAFETY:
+            return KnowledgeDomain.WOMEN_CHILD_ONLINE_SAFETY
+        if domain == CrimeDomain.MALWARE:
+            return KnowledgeDomain.MALWARE_DEVICE_COMPROMISE
+        return None
+
+    @staticmethod
+    def _conversation_sources(matches: list[KnowledgeMatch]) -> list[ConversationSource]:
+        return [
+            ConversationSource(
+                chunk_id=match.chunk_id,
+                source_id=match.source_id,
+                source_title=match.source_title,
+                source_url=match.source_url,
+                source_type=match.source_type,
+                jurisdiction=match.jurisdiction,
+                version=match.version,
+                section_title=match.section_title,
+            )
+            for match in matches
+        ]
 
     @staticmethod
     def _with_sentiment_strategy(
@@ -327,6 +476,16 @@ class CyberSaathiService:
                 LanguageCode.EN: "Preserve the relevant messages and screenshots, avoid further contact or payments, and use the official reporting flow when you are ready.",
                 LanguageCode.HI: "संबंधित संदेश और स्क्रीनशॉट सुरक्षित रखें, आगे संपर्क या भुगतान न करें, और तैयार होने पर आधिकारिक रिपोर्टिंग प्रक्रिया का उपयोग करें।",
                 LanguageCode.HINGLISH: "Relevant messages aur screenshots safe rakhein, aage contact ya payment na karein, aur ready hone par official reporting flow use karein.",
+            },
+            "grounded_intro": {
+                LanguageCode.EN: "Relevant official guidance:",
+                LanguageCode.HI: "संबंधित आधिकारिक मार्गदर्शन:",
+                LanguageCode.HINGLISH: "Relevant official guidance:",
+            },
+            "knowledge_no_result": {
+                LanguageCode.EN: "I could not find sufficiently relevant official guidance for that yet. Please tell me what happened, which account or device was involved, and whether money was lost or someone threatened you.",
+                LanguageCode.HI: "मुझे अभी इसके लिए पर्याप्त रूप से संबंधित आधिकारिक मार्गदर्शन नहीं मिला। कृपया बताएं कि क्या हुआ, कौन सा अकाउंट या डिवाइस शामिल था, और क्या पैसे गए या किसी ने धमकी दी।",
+                LanguageCode.HINGLISH: "Mujhe abhi iske liye sufficiently relevant official guidance nahi mili. Batayein kya hua, kaunsa account ya device involved tha, aur kya paise gaye ya kisi ne threaten kiya.",
             },
         }
         localized = copy[key]

@@ -19,8 +19,8 @@ from pydantic import BaseModel, Field
 
 from app.core.errors import APIError
 from app.schemas.cyber_saathi import (
-    CrimeDomain,
     KnowledgeChunk,
+    KnowledgeDomain,
     KnowledgeMatch,
     KnowledgeSearchRequest,
     KnowledgeSearchResponse,
@@ -36,16 +36,19 @@ INDEX_PATH = KNOWLEDGE_DIR / "knowledge_index.json"
 EVALUATION_CASES_PATH = DATA_DIR / "knowledge_evaluation_cases.json"
 EMBEDDING_DIMENSION = 384
 EMBEDDING_VERSION = "hashed-unicode-ngrams-v1"
+INDEX_SCHEMA_VERSION = "1.1.0"
 MAX_CHUNK_CHARS = 900
 MAX_CONTEXT_CHARS = 2200
+MAX_INDEX_BYTES = 2 * 1024 * 1024
+MAX_INDEX_CHUNKS = 500
 # ``\w`` splits Devanagari vowel and virama marks. Keep a full Devanagari
 # sequence together so Hindi source/query lexical grounding is meaningful.
 WORD_PATTERN = re.compile(r"[a-zA-Z0-9]+|[\u0900-\u097F]+", re.UNICODE)
 SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?।])\s+")
 STOPWORDS = frozenset(
     {
-        "a", "an", "and", "are", "can", "for", "give", "how", "i", "in", "is",
-        "it", "me", "my", "of", "on", "or", "please", "tell", "the", "to", "what",
+        "a", "about", "an", "and", "are", "can", "do", "for", "give", "how", "i", "in", "is",
+        "it", "me", "my", "of", "on", "or", "please", "should", "tell", "the", "to", "what",
         "with", "you", "aur", "hai", "ka", "ke", "ki", "ko", "kya", "main", "mere",
         "mujhe", "par", "se", "sirf", "ye", "this", "that", "today",
     }
@@ -60,6 +63,7 @@ HIGH_SIGNAL_TERMS = frozenset(
 
 class KnowledgeSection(BaseModel):
     title: str = Field(min_length=1, max_length=300)
+    domains: list[KnowledgeDomain] = Field(min_length=1, max_length=6)
     text: str = Field(min_length=1, max_length=5000)
     retrieval_terms: list[str] = Field(default_factory=list, max_length=30)
 
@@ -176,6 +180,7 @@ def build_index(source_pack: KnowledgeSourcePack | None = None) -> dict[str, Any
                     KnowledgeChunk(
                         chunk_id=f"{source.source_id}:{suffix}",
                         source=metadata,
+                        domains=section.domains,
                         section_title=section.title,
                         text=text,
                         retrieval_terms=[_normalize_text(term) for term in section.retrieval_terms],
@@ -185,11 +190,13 @@ def build_index(source_pack: KnowledgeSourcePack | None = None) -> dict[str, Any
                 )
     if not chunks:
         raise ValueError("Authoritative knowledge source pack produced no chunks")
+    if len(chunks) > MAX_INDEX_CHUNKS:
+        raise ValueError(f"Knowledge index exceeds the {MAX_INDEX_CHUNKS}-chunk runtime limit")
     source_hash = hashlib.sha256(
         SOURCE_PACK_PATH.read_bytes() if source_pack is None else pack.model_dump_json().encode("utf-8")
     ).hexdigest()
     return {
-        "schema_version": "1.0.0",
+        "schema_version": INDEX_SCHEMA_VERSION,
         "index_version": pack.version,
         "embedding_version": EMBEDDING_VERSION,
         "embedding_dimension": EMBEDDING_DIMENSION,
@@ -206,6 +213,10 @@ def rebuild_index(output_path: Path = INDEX_PATH) -> dict[str, Any]:
     output_path.write_text(
         json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+    index_bytes = output_path.stat().st_size
+    if index_bytes > MAX_INDEX_BYTES:
+        output_path.unlink(missing_ok=True)
+        raise ValueError(f"Knowledge index exceeds the {MAX_INDEX_BYTES}-byte runtime limit")
     KnowledgeService.clear_cache()
     return {
         "status": "passed",
@@ -214,6 +225,7 @@ def rebuild_index(output_path: Path = INDEX_PATH) -> dict[str, Any]:
         "chunk_count": len(index["chunks"]),
         "embedding_dimension": EMBEDDING_DIMENSION,
         "index_version": index["index_version"],
+        "index_bytes": index_bytes,
     }
 
 
@@ -234,14 +246,43 @@ class KnowledgeService:
                 code="KNOWLEDGE_INDEX_UNAVAILABLE",
                 message="Knowledge guidance is temporarily unavailable. Please use safe general guidance or try again later.",
             )
+        if INDEX_PATH.stat().st_size > MAX_INDEX_BYTES:
+            raise APIError(
+                status_code=503,
+                code="KNOWLEDGE_INDEX_TOO_LARGE",
+                message="Knowledge guidance needs a smaller verified index before it can be used.",
+            )
         mtime_ns = INDEX_PATH.stat().st_mtime_ns
         if cls._cached_index is not None and cls._cached_mtime_ns == mtime_ns:
             return cls._cached_index
-        index = json.loads(INDEX_PATH.read_text(encoding="utf-8"))
+        try:
+            index = json.loads(INDEX_PATH.read_text(encoding="utf-8"))
+            current_source_hash = hashlib.sha256(SOURCE_PACK_PATH.read_bytes()).hexdigest()
+            chunks = [KnowledgeChunk.model_validate(raw) for raw in index.get("chunks", [])]
+        except (OSError, ValueError, TypeError, json.JSONDecodeError) as error:
+            raise APIError(
+                status_code=503,
+                code="KNOWLEDGE_INDEX_INVALID",
+                message="Knowledge guidance needs a verified re-ingestion before it can be used.",
+            ) from error
+        content_hashes_valid = all(
+            chunk.content_hash
+            == _content_hash(
+                chunk.source.source_id,
+                chunk.section_title,
+                chunk.text,
+                chunk.retrieval_terms,
+            )
+            for chunk in chunks
+        )
         if (
-            index.get("embedding_version") != EMBEDDING_VERSION
+            index.get("schema_version") != INDEX_SCHEMA_VERSION
+            or index.get("embedding_version") != EMBEDDING_VERSION
             or index.get("embedding_dimension") != EMBEDDING_DIMENSION
-            or not isinstance(index.get("chunks"), list)
+            or not chunks
+            or len(chunks) > MAX_INDEX_CHUNKS
+            or index.get("source_pack_hash") != current_source_hash
+            or not content_hashes_valid
         ):
             raise APIError(
                 status_code=503,
@@ -258,6 +299,11 @@ class KnowledgeService:
 
     @staticmethod
     def _has_lexical_grounding(query: str, chunk: KnowledgeChunk) -> bool:
+        lowered = query.casefold()
+        if any(term in lowered for term in ("invent", "fabricate", "make up")) and any(
+            term in lowered for term in ("official", "government", "guarantee")
+        ):
+            return False
         query_tokens = _meaningful_tokens(query)
         if not query_tokens:
             return False
@@ -275,7 +321,7 @@ class KnowledgeService:
         candidates: list[KnowledgeMatch] = []
         for raw_chunk in index["chunks"]:
             chunk = KnowledgeChunk.model_validate(raw_chunk)
-            if request.domain is not None and request.domain not in chunk.source.domains:
+            if request.domain is not None and request.domain not in chunk.domains:
                 continue
             if not cls._has_lexical_grounding(request.query, chunk):
                 continue
@@ -292,7 +338,7 @@ class KnowledgeService:
                     source_url=chunk.source.source_url,
                     source_type=chunk.source.source_type,
                     jurisdiction=chunk.source.jurisdiction,
-                    domains=chunk.source.domains,
+                    domains=chunk.domains,
                     language=chunk.source.language,
                     version=chunk.source.version,
                     section_title=chunk.section_title,

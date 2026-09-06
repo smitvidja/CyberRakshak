@@ -22,6 +22,18 @@ export type SaathiTurn = {
   content: string;
   language: SaathiLanguage;
   kind: "message" | "safety" | "confirmation" | "handoff" | "error";
+  grounding_status: "not_used" | "grounded" | "no_result" | "deterministic_playbook";
+  sources: Array<{
+    chunk_id: string;
+    source_id: string;
+    source_title: string;
+    source_url: string;
+    source_type: string;
+    jurisdiction: string;
+    version: string;
+    section_title: string;
+  }>;
+  retrieval_latency_ms: number | null;
   created_at: string;
 };
 

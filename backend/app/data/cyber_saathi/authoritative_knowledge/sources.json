@@ -1,5 +1,5 @@
 {
-  "version": "2026.09.3.1",
+  "version": "2026.09.3.2",
   "reviewed_at": "2026-09-06",
   "sources": [
     {
@@ -8,13 +8,14 @@
       "source_type": "official_public_guidance",
       "source_url": "https://cybercrime.gov.in/uploadmedia/instructions_citizenreportingcyberfrauds.pdf",
       "jurisdiction": "India",
-      "domains": ["financial_fraud"],
+      "domains": ["financial_fraud", "upi_payment_fraud"],
       "language": "EN",
       "version": "public guidance reviewed 2026-09-06",
       "published_at": "2023",
       "sections": [
         {
           "title": "Urgent financial fraud reporting",
+          "domains": ["financial_fraud", "upi_payment_fraud"],
           "text": "For a suspected unauthorized bank, wallet, card, or UPI transaction, act promptly. The National Cybercrime Reporting Portal guidance directs victims to call 1930 or report at cybercrime.gov.in. Preserve the transaction screenshot and keep the bank or wallet name, transaction ID, transaction date, relevant account or UPI details, and any acknowledgement available. Do not share OTP, PIN, password, or send more money.",
           "retrieval_terms": ["UPI fraud", "bank debit", "paise cut gaye", "1930", "unauthorized transaction", "wallet payment"]
         }
@@ -26,23 +27,26 @@
       "source_type": "official_public_guidance",
       "source_url": "https://cybercrime.gov.in/UploadMedia/MHA-CitizenManualReportOtherCyberCrime-v10.pdf",
       "jurisdiction": "India",
-      "domains": ["phishing_scam", "online_harassment", "identity_theft", "malware"],
+      "domains": ["phishing", "account_compromise", "impersonation", "harassment_abuse", "cyberstalking", "malware_device_compromise", "identity_theft"],
       "language": "EN",
       "version": "v10 public manual",
       "published_at": "2019",
       "sections": [
         {
           "title": "Phishing and account compromise evidence",
+          "domains": ["phishing", "account_compromise"],
           "text": "For a phishing email or suspected account compromise, preserve original evidence. Save the email as PDF or EML when possible, retain screenshots, email headers, relevant attachments, the suspicious URL, and the approximate incident date and time. Do not delete the original email, header, screenshot, or attachment before you have recorded the evidence needed for a report.",
           "retrieval_terms": ["phishing", "fake link", "email hack", "password", "header", "suspicious URL", "link click"]
         },
         {
           "title": "Harassment, abuse, and cyberstalking evidence",
+          "domains": ["harassment_abuse", "cyberstalking"],
           "text": "For cyber bullying, stalking, sexting, threatening messages, or abusive social-media content, preserve the original chat, message, profile ID, page URL, and screenshots. Platforms may offer reporting or flagging controls under their own policies. The portal manual lists Online and Social Media Related Crime categories for cyber bullying, stalking, sexting, and related reports.",
           "retrieval_terms": ["Instagram abuse", "abusive messages", "harassment", "cyberstalking", "threat", "blackmail", "social media"]
         },
         {
           "title": "Impersonation, malicious attachments, and device risk",
+          "domains": ["impersonation", "identity_theft", "malware_device_compromise"],
           "text": "A fake profile or impersonating email can be reported with the relevant profile ID, URL, screenshots, service-provider details, and approximate date and time. The portal manual also warns that malicious email attachments can install malware or capture saved credentials. Preserve evidence and avoid opening suspicious attachments or sharing one-time passwords.",
           "retrieval_terms": ["fake profile", "impersonation", "identity theft", "malware", "ransomware", "attachment", "device compromise"]
         }
@@ -54,13 +58,14 @@
       "source_type": "official_public_guidance",
       "source_url": "https://cybercrime.gov.in/Webform/FAQ.aspx",
       "jurisdiction": "India",
-      "domains": ["child_safety", "online_harassment"],
+      "domains": ["women_child_online_safety", "harassment_abuse"],
       "language": "EN",
       "version": "web FAQ reviewed 2026-09-06",
       "published_at": "2026-09-06",
       "sections": [
         {
           "title": "Women and child safety reporting boundary",
+          "domains": ["women_child_online_safety", "harassment_abuse"],
           "text": "The National Cybercrime Reporting Portal has a Women and Child reporting section and a Report Other Cybercrimes section. Its FAQ describes anonymous reporting only for specified online sexually explicit content; it must not be presented as anonymous reporting for every incident. For any report, keep the complaint details accurate and complete. If there is immediate danger, seek local emergency help as well as preserving safe evidence.",
           "retrieval_terms": ["women safety", "child safety", "minor", "online grooming", "anonymous report", "unsafe content", "harassment"]
         }
@@ -72,13 +77,14 @@
       "source_type": "official_public_guidance",
       "source_url": "https://www.cybercrime.gov.in/Hindi/FAQhn.aspx",
       "jurisdiction": "India",
-      "domains": ["child_safety", "financial_fraud", "phishing_scam", "online_harassment"],
+      "domains": ["women_child_online_safety", "financial_fraud", "upi_payment_fraud", "phishing", "harassment_abuse", "suspicious_identifiers", "general_cyber_safety"],
       "language": "HI",
       "version": "Hindi web FAQ reviewed 2026-09-06",
       "published_at": "2026-09-06",
       "sections": [
         {
           "title": "हिंदी में रिपोर्टिंग और साक्ष्य",
+          "domains": ["women_child_online_safety", "financial_fraud", "upi_payment_fraud", "harassment_abuse", "suspicious_identifiers", "general_cyber_safety"],
           "text": "राष्ट्रीय साइबर अपराध रिपोर्टिंग पोर्टल पर महिलाओं और बच्चों से जुड़े अपराध तथा अन्य साइबर अपराध की रिपोर्टिंग के अलग विकल्प हैं। उपलब्ध साक्ष्य जैसे बैंक स्टेटमेंट, ऑनलाइन धन-अंतरण की रसीद, ई-मेल की प्रति, वेबपेज URL, बातचीत की प्रतिलिपि और संदिग्ध नंबर के स्क्रीनशॉट सुरक्षित रखें। किसी पहचानकर्ता की रिपोर्ट को अपराध का प्रमाण न मानें।",
           "retrieval_terms": ["मेरे पैसे कट गए", "UPI", "फिशिंग", "साइबर स्टॉकिंग", "बच्चे की सुरक्षा", "स्क्रीनशॉट", "शिकायत"]
         }
@@ -90,13 +96,14 @@
       "source_type": "official_public_guidance",
       "source_url": "https://cybercrime.gov.in/",
       "jurisdiction": "India",
-      "domains": ["unknown"],
+      "domains": ["suspicious_identifiers"],
       "language": "EN",
       "version": "portal information reviewed 2026-09-06",
       "published_at": "2026-09-06",
       "sections": [
         {
           "title": "Suspicious identifier handling",
+          "domains": ["suspicious_identifiers"],
           "text": "The National Cybercrime Reporting Portal describes facilities to search or report suspect mobile numbers, email IDs, account numbers, URLs, messaging handles, SMS headers, and social-media URLs. A reported or matched identifier is not proof that a person is a criminal. Cyber Saathi must not claim live access to the portal or return a live match; it can direct a citizen to the official portal and preserve the identifier for review.",
           "retrieval_terms": ["check number", "suspicious UPI ID", "reported phone", "email check", "URL check", "identifier"]
         }
@@ -108,28 +115,32 @@
       "source_type": "official_public_guidance",
       "source_url": "https://cybercrime.gov.in/Webform/Crime_OnlineSafetyTips.aspx",
       "jurisdiction": "India",
-      "domains": ["child_safety", "online_harassment", "phishing_scam", "malware"],
+      "domains": ["women_child_online_safety", "harassment_abuse", "cyberstalking", "phishing", "malware_device_compromise", "general_cyber_safety", "impersonation"],
       "language": "EN",
       "version": "portal page last updated 2024-02-02",
       "published_at": "2024-02-02",
       "sections": [
         {
           "title": "General cyber safety",
+          "domains": ["general_cyber_safety", "phishing", "malware_device_compromise"],
           "text": "The National Cybercrime Reporting Portal publishes cyber safety tips for protecting people, data, and devices. Treat unexpected links, attachments, and requests for passwords, PINs, or one-time passwords with caution. For a suspicious but unclear event, do not invent a diagnosis: ask what happened, preserve relevant evidence, and use the official reporting route when the citizen wants to report a cybercrime.",
           "retrieval_terms": ["online safety", "suspicious message", "OTP", "password", "unknown link", "general cyber safety"]
         },
         {
           "title": "Parent guidance for grooming and risky online contact",
+          "domains": ["women_child_online_safety", "harassment_abuse", "cyberstalking"],
           "text": "The portal advises parents to discuss online threats such as grooming, bullying, and stalking with children, set clear boundaries for internet and online-game use, and pay attention when a child becomes unusually secretive or defensive about online activity. Help children choose strong privacy settings and tell a trusted adult about uncomfortable online contact.",
           "retrieval_terms": ["parent", "child online safety", "grooming", "bullying", "secretive", "online game", "privacy settings"]
         },
         {
           "title": "Young people: privacy, fake profiles, and stalking",
+          "domains": ["women_child_online_safety", "cyberstalking", "impersonation"],
           "text": "The portal recommends restricting social-media privacy settings, being selective about stranger requests, learning how to block an uncomfortable contact, and avoiding public sharing of personal details. For suspected cyberstalking, reduce location sharing, avoid sharing phone numbers, email addresses, and photographs with unknown people, and keep evidence of repeated unwanted contact.",
           "retrieval_terms": ["teen safety", "fake profile", "stalking", "location sharing", "stranger request", "block account", "social media privacy"]
         },
         {
           "title": "Safer devices and child sexual abuse material reporting",
+          "domains": ["women_child_online_safety", "malware_device_compromise"],
           "text": "The portal advises using passwords or device locks, keeping software updated, and installing apps only from trusted official sources. It says content relating to child sexual exploitative and abuse material should be reported to the relevant social-media service and can also be reported through the National Cybercrime Reporting Portal. Do not redistribute harmful content; preserve only the information needed for safe reporting.",
           "retrieval_terms": ["child abuse material", "CSEAM", "report content", "safe device", "trusted app store", "software update"]
         }
@@ -141,33 +152,38 @@
       "source_type": "official_public_guidance",
       "source_url": "https://www.cert-in.org.in/PDF/CSH_Booklet25.pdf",
       "jurisdiction": "India",
-      "domains": ["phishing_scam", "financial_fraud", "identity_theft"],
+      "domains": ["phishing", "account_compromise", "financial_fraud", "upi_payment_fraud", "impersonation", "identity_theft", "malware_device_compromise"],
       "language": "EN",
       "version": "Safer Internet Day 2025 booklet",
       "published_at": "2025-02-11",
       "sections": [
         {
           "title": "Phishing websites and links",
+          "domains": ["phishing", "account_compromise"],
           "text": "CERT-In advises treating unsolicited links and attachments cautiously. Verify shortened URLs before opening them, look for unusual spelling or grammar, use unique strong passwords, and never provide passwords or PINs by email or text. A real-looking website can still be designed to collect banking or personal information.",
           "retrieval_terms": ["phishing website", "fake login", "short URL", "email link", "password", "PIN", "fake website"]
         },
         {
           "title": "Fake authority, digital arrest, and package threats",
+          "domains": ["impersonation", "financial_fraud"],
           "text": "CERT-In describes scams that use fake official calls, legal accusations, case numbers, package-seizure claims, and urgent threats to make people panic. Stay calm, verify a claim through an official channel, do not transfer money under pressure, and do not disclose payment or sensitive personal details to an unsolicited caller or message.",
           "retrieval_terms": ["digital arrest", "fake police call", "package scam", "legal threat", "urgent call", "case number", "pay under pressure"]
         },
         {
           "title": "Fake banking apps, phone scams, and remote access",
+          "domains": ["account_compromise", "malware_device_compromise", "financial_fraud", "upi_payment_fraud"],
           "text": "CERT-In warns that a message may push an APK or fake banking app in order to steal credentials or OTPs. Do not install banking apps from social media, text messages, or other unknown sources. For a caller claiming that a bank or service has a problem, contact the organisation through its official channel; do not share login or financial details and do not grant remote device access.",
           "retrieval_terms": ["fake banking app", "APK", "remote access", "bank phone call", "OTP", "unknown app", "customer care scam"]
         },
         {
           "title": "Fake jobs, prizes, and emotional manipulation",
+          "domains": ["financial_fraud", "impersonation"],
           "text": "CERT-In lists common warning signs in fake jobs and prize offers: unexpected contact, unrealistically high income, pressure to act quickly, and requests for an upfront fee, account top-up, money transfer, or personal and banking details. Verify independently before committing money or information, and do not pay an advance fee to claim a job, reward, or prize.",
           "retrieval_terms": ["fake job", "task scam", "upfront fee", "lottery", "prize", "high income", "emotional manipulation"]
         },
         {
           "title": "Payment, loan, and fake trading app scams",
+          "domains": ["financial_fraud", "upi_payment_fraud"],
           "text": "CERT-In says a UPI PIN or OTP is not needed to receive money. Be cautious of urgent payment requests, unknown payment links, guaranteed loan offers, and trading apps promising high returns. Use an official app or website to verify a lender or registered broker, and do not transfer funds to a personal account because of an online investment promise.",
           "retrieval_terms": ["UPI PIN receive money", "payment scam", "fake loan app", "fake trading app", "investment scam", "loan fee", "broker"]
         }
@@ -179,28 +195,32 @@
       "source_type": "official_public_guidance",
       "source_url": "https://cert-in.org.in/PDF/Cyber_Smart_Kids_Suraksha_Guide.pdf",
       "jurisdiction": "India",
-      "domains": ["child_safety", "online_harassment", "phishing_scam"],
+      "domains": ["women_child_online_safety", "harassment_abuse", "cyberstalking", "phishing", "impersonation"],
       "language": "EN",
       "version": "October 2025 guide",
       "published_at": "2025-10",
       "sections": [
         {
           "title": "Children: protect personal information",
+          "domains": ["women_child_online_safety", "impersonation"],
           "text": "CERT-In advises children not to share their name, school, address, phone number, photographs, or other personal details online without a parent’s permission. Keep accounts private, accept requests only from people known offline, avoid unknown links and files, and tell a trusted adult if an online interaction feels frightening or wrong.",
           "retrieval_terms": ["child personal information", "school photo", "online stranger", "parent permission", "child safety", "trusted adult"]
         },
         {
           "title": "Children: social-media privacy and location",
+          "domains": ["women_child_online_safety", "cyberstalking", "impersonation"],
           "text": "CERT-In recommends not publicly posting a school uniform, home, location, or routine, and avoiding public location tags and check-ins. Limit social-media visibility to people the child knows and ask a parent before posting personal material, because posts can be used for impersonation, tracking, or manipulation.",
           "retrieval_terms": ["child social media", "school uniform", "location tag", "check in", "privacy", "impersonation", "tracking"]
         },
         {
           "title": "Children: phishing and unsafe websites",
+          "domains": ["women_child_online_safety", "phishing"],
           "text": "CERT-In says children should not click links from strangers, open unfamiliar files, or trust messages promising gifts, prizes, or urgent account warnings. Use trusted sites or bookmarks instead of searching for login pages, check addresses for unusual spelling, and tell a parent or teacher about a suspicious message.",
           "retrieval_terms": ["child phishing", "free gift", "account warning", "unknown link", "unsafe website", "tell teacher"]
         },
         {
           "title": "Children: grooming and cyberstalking",
+          "domains": ["women_child_online_safety", "harassment_abuse", "cyberstalking"],
           "text": "CERT-In warns that strangers may build trust through games, chats, compliments, gifts, or secret requests before asking for photos or personal information. Do not respond to someone who causes discomfort, block and report the account where available, avoid sharing location or daily routine, and tell a trusted adult immediately.",
           "retrieval_terms": ["child grooming", "cyberstalking", "online game", "secret request", "block report", "uncomfortable contact"]
         }
@@ -212,23 +232,26 @@
       "source_type": "official_public_guidance",
       "source_url": "https://www.cert-in.org.in/AwarenessBooklets.jsp",
       "jurisdiction": "India",
-      "domains": ["online_harassment", "phishing_scam", "malware", "identity_theft"],
+      "domains": ["women_child_online_safety", "harassment_abuse", "cyberstalking", "phishing", "account_compromise", "malware_device_compromise", "identity_theft"],
       "language": "EN",
       "version": "International Women’s Day 2026 booklet",
       "published_at": "2026-03-08",
       "sections": [
         {
           "title": "Digital footprint and location privacy",
+          "domains": ["women_child_online_safety", "cyberstalking", "identity_theft"],
           "text": "CERT-In recommends thinking before posting because online material can be difficult to remove. Avoid sharing personal details, travel plans, daily routine, document images, or unnecessary live location. Keep social-media accounts private so that posts are visible only to trusted people.",
           "retrieval_terms": ["women safety", "digital footprint", "travel plan", "daily routine", "location sharing", "private account"]
         },
         {
           "title": "Passwords, multi-factor authentication, and urgent-message traps",
+          "domains": ["women_child_online_safety", "phishing", "account_compromise"],
           "text": "CERT-In advises long unique passwords, multi-factor authentication where available, and never sharing a password or OTP. Do not trust urgent messages asking for money or OTPs; verify the sender before following a link, expand and verify short URLs, and do not give banking or sensitive personal information by phone or online.",
           "retrieval_terms": ["MFA", "OTP", "urgent message", "short URL", "banking information", "strong password", "women cyber safety"]
         },
         {
           "title": "Safe mobile apps and permissions",
+          "domains": ["women_child_online_safety", "malware_device_compromise", "account_compromise"],
           "text": "CERT-In recommends locking a phone, downloading apps only from official app stores, applying updates, reviewing app permissions, and removing apps that are no longer used. Do not allow unnecessary access to contacts or the camera, especially when an app came from an untrusted source.",
           "retrieval_terms": ["app permissions", "phone lock", "official app store", "camera access", "contacts access", "phone update"]
         }
@@ -240,13 +263,14 @@
       "source_type": "official_public_guidance",
       "source_url": "https://www.cert-in.org.in/AwarenessBooklets.jsp",
       "jurisdiction": "India",
-      "domains": ["online_harassment", "phishing_scam", "identity_theft"],
+      "domains": ["women_child_online_safety", "harassment_abuse", "cyberstalking", "phishing", "identity_theft"],
       "language": "HI",
       "version": "International Women’s Day 2026 Hindi booklet",
       "published_at": "2026-03-08",
       "sections": [
         {
           "title": "महिला सुरक्षा: डिजिटल निशान, OTP और संदिग्ध लिंक",
+          "domains": ["women_child_online_safety", "harassment_abuse", "cyberstalking", "phishing", "identity_theft"],
           "text": "CERT-In के हिंदी महिला रक्षा सुझाव कहते हैं कि व्यक्तिगत जानकारी, यात्रा योजना, दैनिक दिनचर्या और अनावश्यक स्थान-साझाकरण को सार्वजनिक न करें। पैसे या OTP मांगने वाले अचानक संदेश पर भरोसा न करें, अज्ञात SMS या ई-मेल लिंक पर क्लिक न करें, और बैंकिंग या संवेदनशील जानकारी फोन अथवा ऑनलाइन किसी के साथ साझा न करें।",
           "retrieval_terms": ["महिला सुरक्षा", "OTP", "संदिग्ध लिंक", "पैसे मांगने वाला संदेश", "लोकेशन शेयर", "बैंकिंग जानकारी"]
         }
@@ -258,28 +282,32 @@
       "source_type": "official_public_guidance",
       "source_url": "https://www.cert-in.org.in/PDF/CSA_Booklet.pdf",
       "jurisdiction": "India",
-      "domains": ["financial_fraud", "phishing_scam", "malware", "online_harassment", "child_safety"],
+      "domains": ["financial_fraud", "upi_payment_fraud", "phishing", "account_compromise", "impersonation", "harassment_abuse", "women_child_online_safety", "malware_device_compromise", "identity_theft"],
       "language": "EN",
       "version": "National Cyber Security Awareness Month 2023 booklet",
       "published_at": "2023-10",
       "sections": [
         {
           "title": "Vishing and fake customer-care contacts",
+          "domains": ["financial_fraud", "upi_payment_fraud", "phishing", "impersonation"],
           "text": "CERT-In warns that callers may pretend to be a bank, tax office, gas agency, or another trusted organisation and ask for card details or an OTP. Never share OTP, PIN, CVV, card details, or UPI PIN, including to receive money. Use customer-care details from an authorised website rather than numbers found randomly in search results, and review bank statements for irregularities.",
           "retrieval_terms": ["vishing", "fake customer care", "CVV", "OTP", "UPI PIN", "bank call", "customer care number"]
         },
         {
           "title": "Malicious mobile apps and malware warning signs",
+          "domains": ["malware_device_compromise", "account_compromise"],
           "text": "CERT-In advises downloading apps only from legitimate sites or authorised app stores, not from SMS, email, or social-media messages. Review requested permissions and user feedback before installing an app. Warning signs of malware can include unexpected pop-ups, redirection to suspicious sites, disabled security software, unexplained loss of storage, or messages sent from an account without permission.",
           "retrieval_terms": ["malicious mobile app", "malware signs", "pop ups", "redirect", "app permissions", "download app", "unknown APK"]
         },
         {
           "title": "Social-media fraud, fake profiles, and child cyberbullying",
+          "domains": ["impersonation", "harassment_abuse", "women_child_online_safety", "account_compromise"],
           "text": "CERT-In recommends restricting public social-media visibility, verifying friend requests, using different passwords and multi-factor authentication, and never sharing social-media credentials. For a child facing bullying, stop engaging, save chats or messages, do not respond, block the contact, and tell a trusted parent, teacher, or elder.",
           "retrieval_terms": ["social media fraud", "fake profile", "cyberbullying", "save chat", "block user", "friend request", "social media password"]
         },
         {
           "title": "Image misuse, blackmail, and support for women",
+          "domains": ["impersonation", "harassment_abuse", "women_child_online_safety", "identity_theft"],
           "text": "CERT-In describes image morphing and fake profiles as risks that can lead to harassment or blackmail. Preserve screenshots and other evidence, use privacy settings and strong multi-factor authentication, report an objectionable post or fake profile through the relevant social-media help centre, and seek support from trusted family or friends rather than suffering in silence.",
           "retrieval_terms": ["image morphing", "blackmail", "fake profile", "women harassment", "save screenshots", "objectionable post", "report profile"]
         }
@@ -291,13 +319,14 @@
       "source_type": "official_regulatory_guidance",
       "source_url": "https://rbi.org.in/Scripts/NotificationUser.aspx?Id=11917",
       "jurisdiction": "India",
-      "domains": ["financial_fraud", "phishing_scam"],
+      "domains": ["financial_fraud", "upi_payment_fraud", "phishing", "account_compromise"],
       "language": "EN",
       "version": "RBI/2019-20/256",
       "published_at": "2020-06-22",
       "sections": [
         {
           "title": "Payment-fraud awareness: credentials, SIM swaps, links, and apps",
+          "domains": ["financial_fraud", "upi_payment_fraud", "phishing", "account_compromise"],
           "text": "RBI’s payment-fraud awareness circular identifies common fraud patterns: requests for PINs, OTPs, or passwords; SIM-card swapping; links received in messages or email; and spurious apps that access information stored on a device. Treat these as warning signs, do not disclose critical payment information, and verify through the relevant bank or payment provider’s official channel.",
           "retrieval_terms": ["RBI payment fraud", "SIM swap", "OTP", "PIN", "payment password", "email link", "spurious app"]
         }
@@ -309,13 +338,14 @@
       "source_type": "official_regulatory_guidance",
       "source_url": "https://rbi.org.in/commonman/Upload/English/Notification/PDFs/NOTI1506072017.PDF",
       "jurisdiction": "India",
-      "domains": ["financial_fraud"],
+      "domains": ["financial_fraud", "upi_payment_fraud"],
       "language": "EN",
       "version": "RBI/2017-18/15",
       "published_at": "2017-07-06",
       "sections": [
         {
           "title": "Promptly notify the bank about an unauthorised transaction",
+          "domains": ["financial_fraud", "upi_payment_fraud"],
           "text": "RBI’s directions say customers should notify their bank as early as possible after an unauthorised electronic banking transaction and that banks must provide multiple 24x7 reporting channels. After receiving a report, banks must take immediate steps to prevent further unauthorised transactions. Exact liability and resolution outcomes depend on the applicable directions and the bank’s current policy, so Cyber Saathi must not promise a result.",
           "retrieval_terms": ["unauthorised bank transaction", "report bank immediately", "bank fraud reporting", "24x7 bank report", "electronic banking", "bank policy"]
         }

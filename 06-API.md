@@ -55,6 +55,8 @@ Error shape:
 
 `POST /api/v1/cyber-saathi/knowledge/search` performs bounded retrieval only from the reviewed authoritative knowledge index. It accepts a citizen query, optional `domain`, optional language preference, a capped `top_k` (1–5), and a relevance threshold.
 
+The knowledge-only domain filter is one of `financial_fraud`, `upi_payment_fraud`, `phishing`, `account_compromise`, `impersonation`, `harassment_abuse`, `women_child_online_safety`, `cyberstalking`, `malware_device_compromise`, `identity_theft`, `suspicious_identifiers`, or `general_cyber_safety`. Domain tags are attached to each chunk, so filtering does not admit an unrelated section merely because another section from the same document covers that domain.
+
 The response returns `no_result` when retrieval is weak instead of inventing a procedure. Each result includes the chunk ID, source ID, official source URL, title, jurisdiction, domain tags, version, section title, and relevance score. The generated index is rebuilt explicitly with:
 
 ```powershell
@@ -62,7 +64,9 @@ cd backend
 .\.venv\Scripts\python.exe -m app.services.cyber_saathi_knowledge
 ```
 
-The API never rebuilds embeddings at startup and does not perform live government or portal lookups.
+The API never rebuilds embeddings at startup and does not perform live government or portal lookups. A stale source-pack hash, invalid chunk hash, unsupported index schema, more than 500 chunks, or an index larger than 2 MiB causes retrieval to fail closed until explicit re-ingestion.
+
+Normal conversation replies expose `grounding_status`, `retrieval_latency_ms`, and a bounded `sources` list on each assistant turn. A grounded source contains its exact `chunk_id`, source title/type/URL, jurisdiction, version, and section title. Weak retrieval returns a clarification with `grounding_status=no_result`; an unavailable index cannot suppress the deterministic urgent-financial playbook, which is marked `deterministic_playbook` when no source can be attached.
 
 ## FE -> API -> BE Flow
 

@@ -57,6 +57,21 @@ class CrimeDomain(str, Enum):
     UNKNOWN = "unknown"
 
 
+class KnowledgeDomain(str, Enum):
+    FINANCIAL_FRAUD = "financial_fraud"
+    UPI_PAYMENT_FRAUD = "upi_payment_fraud"
+    PHISHING = "phishing"
+    ACCOUNT_COMPROMISE = "account_compromise"
+    IMPERSONATION = "impersonation"
+    HARASSMENT_ABUSE = "harassment_abuse"
+    WOMEN_CHILD_ONLINE_SAFETY = "women_child_online_safety"
+    CYBERSTALKING = "cyberstalking"
+    MALWARE_DEVICE_COMPROMISE = "malware_device_compromise"
+    IDENTITY_THEFT = "identity_theft"
+    SUSPICIOUS_IDENTIFIERS = "suspicious_identifiers"
+    GENERAL_CYBER_SAFETY = "general_cyber_safety"
+
+
 class Urgency(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
@@ -117,6 +132,13 @@ class TurnKind(str, Enum):
     ERROR = "error"
 
 
+class GroundingStatus(str, Enum):
+    NOT_USED = "not_used"
+    GROUNDED = "grounded"
+    NO_RESULT = "no_result"
+    DETERMINISTIC_PLAYBOOK = "deterministic_playbook"
+
+
 ConfidenceScore = Annotated[float, Field(ge=0, le=1)]
 
 
@@ -157,12 +179,26 @@ class IncidentState(BaseModel):
         return confidence_band(self.confidence)
 
 
+class ConversationSource(BaseModel):
+    chunk_id: str = Field(pattern=r"^[a-z0-9_:-]+$", max_length=150)
+    source_id: str = Field(pattern=r"^[a-z0-9_]+$", max_length=100)
+    source_title: str = Field(min_length=1, max_length=300)
+    source_url: str = Field(min_length=1, max_length=1000)
+    source_type: str = Field(min_length=1, max_length=100)
+    jurisdiction: str = Field(min_length=1, max_length=100)
+    version: str = Field(min_length=1, max_length=100)
+    section_title: str = Field(min_length=1, max_length=300)
+
+
 class ConversationTurn(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     role: Literal["assistant", "user"]
     content: str = Field(min_length=1, max_length=8000)
     language: LanguageCode
     kind: TurnKind = TurnKind.MESSAGE
+    grounding_status: GroundingStatus = GroundingStatus.NOT_USED
+    sources: list[ConversationSource] = Field(default_factory=list, max_length=3)
+    retrieval_latency_ms: float | None = Field(default=None, ge=0)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -250,7 +286,7 @@ class KnowledgeSourceMetadata(BaseModel):
     source_type: str = Field(min_length=1, max_length=100)
     source_url: str = Field(min_length=1, max_length=1000)
     jurisdiction: str = Field(min_length=1, max_length=100)
-    domains: list[CrimeDomain] = Field(min_length=1, max_length=6)
+    domains: list[KnowledgeDomain] = Field(min_length=1, max_length=12)
     language: LanguageCode
     version: str = Field(min_length=1, max_length=100)
     published_at: str = Field(min_length=1, max_length=50)
@@ -259,6 +295,7 @@ class KnowledgeSourceMetadata(BaseModel):
 class KnowledgeChunk(BaseModel):
     chunk_id: str = Field(pattern=r"^[a-z0-9_:-]+$", max_length=150)
     source: KnowledgeSourceMetadata
+    domains: list[KnowledgeDomain] = Field(min_length=1, max_length=6)
     section_title: str = Field(min_length=1, max_length=300)
     text: str = Field(min_length=1, max_length=1200)
     retrieval_terms: list[str] = Field(default_factory=list, max_length=30)
@@ -268,7 +305,7 @@ class KnowledgeChunk(BaseModel):
 
 class KnowledgeSearchRequest(BaseModel):
     query: str = Field(min_length=3, max_length=1000)
-    domain: CrimeDomain | None = None
+    domain: KnowledgeDomain | None = None
     language: LanguageCode | None = None
     top_k: int = Field(default=3, ge=1, le=5)
     minimum_relevance: float = Field(default=0.16, ge=0, le=1)
@@ -281,7 +318,7 @@ class KnowledgeMatch(BaseModel):
     source_url: str
     source_type: str
     jurisdiction: str
-    domains: list[CrimeDomain]
+    domains: list[KnowledgeDomain]
     language: LanguageCode
     version: str
     section_title: str
@@ -291,7 +328,7 @@ class KnowledgeMatch(BaseModel):
 
 class KnowledgeSearchResponse(BaseModel):
     query: str
-    domain_filter: CrimeDomain | None = None
+    domain_filter: KnowledgeDomain | None = None
     retrieval_latency_ms: float = Field(ge=0)
     index_version: str
     no_result: bool

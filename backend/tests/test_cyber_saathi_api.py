@@ -3,15 +3,19 @@ from uuid import uuid4
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.core.errors import APIError
 from app.schemas.cyber_saathi import (
     ConversationCreate,
     ConversationMessageRequest,
     CrimeDomain,
+    GroundingStatus,
     IncidentStatus,
     LanguageCode,
+    KnowledgeSearchResponse,
     ReportingMode,
 )
 from app.services.cyber_saathi_service import CyberSaathiService
+from app.services.cyber_saathi_knowledge import KnowledgeService
 
 
 def test_conversation_state_survives_multiple_validated_turns() -> None:
@@ -61,6 +65,10 @@ def test_urgent_financial_route_is_deterministic_and_confirms_amount() -> None:
     assert state["incident"]["urgency"] == "high"
     assert state["incident"]["status"] == "awaiting_confirmation"
     assert state["turns"][-1]["kind"] == "safety"
+    assert state["turns"][-1]["grounding_status"] in {
+        "grounded",
+        "deterministic_playbook",
+    }
     assert "OTP/PIN/password" in state["turns"][-1]["content"]
     amount = state["incident"]["entities"][0]
     assert amount["normalized_value"] == "10000"
@@ -153,3 +161,66 @@ def test_conversation_state_is_serializable_and_mismatch_is_rejected() -> None:
     )
     assert mismatch.status_code == 409
     assert mismatch.json()["error"]["code"] == "CONVERSATION_STATE_MISMATCH"
+
+
+def test_guidance_turn_is_grounded_and_exposes_traceable_source_metadata() -> None:
+    state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.EN)).state
+    response = CyberSaathiService.reply(
+        state.id,
+        ConversationMessageRequest(
+            message="How can I stay safe from phishing websites and fake links?",
+            state=state,
+        ),
+    )
+
+    turn = response.state.turns[-1]
+    assert turn.grounding_status == GroundingStatus.GROUNDED
+    assert turn.sources
+    assert turn.sources[0].chunk_id
+    assert turn.sources[0].source_url.startswith("https://")
+    assert turn.retrieval_latency_ms is not None
+
+
+def test_weak_retrieval_produces_uncertainty_instead_of_invented_guidance(monkeypatch) -> None:
+    monkeypatch.setattr(
+        KnowledgeService,
+        "search",
+        lambda _request: KnowledgeSearchResponse(
+            query="Please explain phishing safety",
+            retrieval_latency_ms=1,
+            index_version="test",
+            no_result=True,
+            matches=[],
+            bounded_context="",
+        ),
+    )
+    state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.EN)).state
+    response = CyberSaathiService.reply(
+        state.id,
+        ConversationMessageRequest(message="Please explain phishing safety", state=state),
+    )
+
+    turn = response.state.turns[-1]
+    assert turn.grounding_status == GroundingStatus.NO_RESULT
+    assert turn.sources == []
+    assert "not find sufficiently relevant official guidance" in turn.content
+
+
+def test_unavailable_index_never_blocks_deterministic_urgent_safety(monkeypatch) -> None:
+    def unavailable(_request):
+        raise APIError(status_code=503, code="KNOWLEDGE_INDEX_UNAVAILABLE", message="test")
+
+    monkeypatch.setattr(KnowledgeService, "search", unavailable)
+    state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.EN)).state
+    response = CyberSaathiService.reply(
+        state.id,
+        ConversationMessageRequest(
+            message="My bank was debited right now and I lost 5000 rupees",
+            state=state,
+        ),
+    )
+
+    turn = response.state.turns[-1]
+    assert turn.kind.value == "safety"
+    assert turn.grounding_status == GroundingStatus.DETERMINISTIC_PLAYBOOK
+    assert "OTP/PIN/password" in turn.content
