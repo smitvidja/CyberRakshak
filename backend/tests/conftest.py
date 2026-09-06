@@ -13,6 +13,9 @@ os.environ.setdefault(
     "SECRET_KEY",
     "test-only-secret-key-that-is-long-enough-for-session-three",
 )
+# Test runs must never call paid/live LLM providers even when a developer has
+# configured real keys in backend/.env. Provider behavior is covered with mocks.
+os.environ.setdefault("LLM_ENABLED", "false")
 
 from app.core.database import SessionLocal, engine, get_db_session
 from app.main import app

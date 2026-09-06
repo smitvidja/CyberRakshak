@@ -3,21 +3,21 @@
 ## Implemented
 
 - Separate reviewed authoritative source pack at `backend/app/data/cyber_saathi/authoritative_knowledge/sources.json`.
-- Thirteen reviewed official-public and regulatory sources with 30 semantically meaningful guidance chunks. Coverage now includes financial/UPI fraud, phishing/account compromise, digital-arrest and package threats, fake banking apps and remote access, job/loan/trading scams, harassment/cyberstalking, Women and Child Safety, image misuse/blackmail, suspicious identifiers, and general cyber safety.
-- Exact per-chunk coverage tags for all 12 priority knowledge domains: financial fraud, UPI/payment fraud, phishing, account compromise, impersonation, harassment/abuse, Women and Child Online Safety, cyberstalking, malware/device compromise, identity theft, suspicious identifiers, and general cyber safety. Filtering is chunk-level rather than document-level.
+- Fourteen reviewed official-public and regulatory sources with 32 semantically meaningful guidance chunks. Coverage includes financial/UPI fraud, phishing/account compromise, digital-arrest and package threats, fake banking apps and remote access, job/loan/trading scams, harassment/cyberstalking, Women and Child Safety, image misuse/blackmail, suspicious identifiers, general cyber safety, and e-commerce non-delivery/refund grievances.
+- Exact per-chunk coverage tags for all 12 original priority knowledge domains plus the e-commerce consumer-grievance domain. Filtering is chunk-level rather than document-level.
 - Deterministic 384-dimension Unicode-aware hashed embedding, with English, Devanagari Hindi, and Hinglish retrieval terms. This avoids a local model download, provider dependency, or translation hop.
 - Explicit ingestion command that validates, cleans, chunks, embeds, hashes, and persists `knowledge_index.json`. Startup only reads the persisted small index when retrieval is requested.
 - Bounded `POST /api/v1/cyber-saathi/knowledge/search` retrieval API with domain filtering, top-k cap of five, relevance threshold, latency measurement, and source-traceable metadata.
 - Lexical-grounding guard in addition to vector similarity. Unrelated requests return `no_result` rather than receiving a collision-driven or invented answer.
 - Real conversation routing now uses the authoritative retriever for eligible guidance turns. Each assistant turn records `grounded`, `no_result`, `deterministic_playbook`, or `not_used`; urgent financial safety remains deterministic even if the index is unavailable.
 - The web conversation renders a compact official-source card with the exact chunk's title, section, version, and Learn More URL. Existing locally stored conversations without the new field remain render-safe.
-- Thirty-case gold evaluation with all 12 domains, English, Hindi, Hinglish, urgent fraud, phishing, harassment, Women/Child Safety, cross-domain filtering, exact chunk assertions, ambiguous/no-result, unrelated, and adversarial-invention cases.
+- Thirty-two-case gold evaluation with all priority domains, English, Hindi, Hinglish, urgent fraud, phishing, harassment, Women/Child Safety, e-commerce, cross-domain filtering, exact chunk assertions, ambiguous/no-result, unrelated, and adversarial-invention cases.
 
 ## Source and index contract
 
 Every persisted chunk contains a chunk ID, source ID/title/type/URL, jurisdiction, per-chunk domain tags, language, version/date, section title, normalized text, content hash, curated retrieval terms, and the 384-value embedding. The index retains source-pack hash, index schema, and embedding version for traceability. Runtime rejects stale source packs, corrupted content hashes, incompatible schemas, indexes over 500 chunks, and files over 2 MiB.
 
-The corpus is intentionally separate from the Session 9.2 supplementary datasets. It uses reviewed guidance from the National Cybercrime Reporting Portal, CERT-In, and RBI. The source documents used for this expansion are staged locally under `knowledge-sources/cyber-saathi/authoritative/` and are intentionally Git-ignored; runtime uses only the committed reviewed JSON source pack and generated index. It does not query source sites at runtime and must not claim live access to them.
+The corpus is intentionally separate from the Session 9.2 supplementary datasets. It uses reviewed guidance from the National Cybercrime Reporting Portal, CERT-In, RBI, and the Department of Consumer Affairs National Consumer Helpline. The source documents used for this expansion are staged locally under `knowledge-sources/cyber-saathi/authoritative/` and are intentionally Git-ignored; runtime uses only the committed reviewed JSON source pack and generated index. It does not query source sites at runtime and must not claim live access to them.
 
 ## Commands
 
@@ -39,8 +39,8 @@ The evaluation command persists `backend/app/data/cyber_saathi/knowledge_evaluat
 
 ## Verification
 
-- Ingestion command: passed; 13 sources, 30 chunks, and a 384-dimension persisted index.
-- Gold evaluation: 30 cases passed; retrieval relevance, source correctness, exact-chunk correctness, domain-filter correctness, and no-result correctness all `1.0`; false positives `0`; false negatives `0`; mean retrieval latency `6.336 ms`; real p95 `8.737 ms`.
+- Ingestion command: passed; 14 sources, 32 chunks, and a 384-dimension persisted index (`297,988` bytes).
+- Gold evaluation: 32 cases passed; retrieval relevance, source correctness, exact-chunk correctness, domain-filter correctness, and no-result correctness all `1.0`; false positives `0`; false negatives `0`; mean retrieval latency `2.904 ms`; real p95 `6.694 ms`.
 - Focused knowledge/conversation/API and clarification tests: `17 passed`.
 - Full backend suite: `104 passed`.
 - TypeScript: passed.

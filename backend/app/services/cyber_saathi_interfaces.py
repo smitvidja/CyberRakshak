@@ -1,13 +1,20 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Iterator
 from typing import Protocol
 
-from app.schemas.cyber_saathi import ConversationState, LanguageCode
+from app.schemas.cyber_saathi import (
+    ConversationState,
+    LanguageCode,
+    LLMGenerationResult,
+    LLMProviderHealth,
+)
 
 
 class LLMGateway(Protocol):
-    async def stream_response(
-        self, *, state: ConversationState, system_prompt: str
-    ) -> AsyncIterator[str]: ...
+    def generate(self, **kwargs: object) -> LLMGenerationResult: ...
+
+    def stream(self, **kwargs: object) -> Iterator[str]: ...
+
+    def healthCheck(self) -> list[LLMProviderHealth]: ...  # noqa: N802
 
 
 class VoiceAdapter(Protocol):

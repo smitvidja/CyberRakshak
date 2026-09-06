@@ -40,9 +40,17 @@ know each other's public URL.
 |---|---|---|
 | `NEXT_PUBLIC_API_URL` | **Yes** | Backend base URL, no trailing slash, no `/api/v1` suffix. **Baked in at build time — see §3.** |
 
-There are no other variables. Earlier `.env.example` files listed
-`OBJECT_STORAGE_*` and `AI_API_KEY`; those were never read by any code and have
-been removed so nobody wastes time provisioning services the app does not use.
+### Backend — optional Cyber Saathi LLM gateway
+
+Session 9.4 supports server-side Gemini, Grok, and NVIDIA/Nemotron providers. The application remains functional through deterministic and grounded fallbacks when every key is absent. Configure only keys for providers you intend to use:
+
+| Variable | Purpose |
+|---|---|
+| `GEMINI_API_KEY` | Gemini Developer API authentication. |
+| `GROK_API_KEY` | xAI/Grok API authentication. |
+| `NVIDIA_API_KEY` | NVIDIA hosted NIM authentication; optional tertiary provider. |
+
+Provider order, current model defaults, endpoints, timeouts, retries, context/output budgets, temperature profiles, and top-p are documented in `backend/.env.example`. Keep API keys in the hosting platform's secret manager, never as Docker build arguments or frontend variables.
 
 ---
 

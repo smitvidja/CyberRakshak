@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-09-06T17:45:56.586606+00:00",
+  "evaluation_cases": "C:\\Project\\CyberRakshak\\backend\\app\\data\\cyber_saathi\\llm_evaluation_cases.json",
+  "status": "passed",
+  "metrics": {
+    "case_count": 22,
+    "regression_accuracy": 1.0,
+    "valid_acceptance": 1.0,
+    "unsafe_rejection": 1.0,
+    "context_budget_correctness": 1.0,
+    "validator_latency_mean_ms": 0.1843,
+    "validator_latency_p95_ms": 0.3042
+  },
+  "failures": []
+}

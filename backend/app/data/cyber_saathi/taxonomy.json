@@ -10,8 +10,13 @@
   },
   "crime_domains": {
     "financial_fraud": ["bank", "upi", "payment", "transaction", "debited", "deducted", "money", "rupees", "paise", "paisa", "wallet", "refund scam", "कट गए", "पैसे", "बैंक"],
+    "ecommerce_fraud": ["online order", "online shopping", "product not delivered", "item not delivered", "order not delivered", "delivery nahi", "deliver nahi", "refund nahi", "website band", "website nahi chal", "t shirt", "t-shirt", "parcel nahi", "ऑनलाइन ऑर्डर", "सामान नहीं मिला"],
+    "account_compromise": ["account compromised", "account access", "logged into my account", "password changed", "unknown login", "account takeover", "अकाउंट एक्सेस", "पासवर्ड बदल दिया"],
+    "impersonation": ["digital arrest", "fake police", "fake officer", "bank officer banke", "pretending to be", "impersonating", "fake profile", "nakli profile", "नकली पुलिस", "अधिकारी बनकर", "नकली प्रोफाइल"],
     "identity_theft": ["identity theft", "stole my identity", "impersonation", "impersonating", "account was hacked", "account hacked", "account hack", "profile hacked", "fake profile", "otp shared", "पहचान चोरी", "अकाउंट हैक"],
     "online_harassment": ["harassment", "abuse", "bullying", "stalking", "threat", "blackmail", "dhamki", "परेशान", "धमकी", "ब्लैकमेल"],
+    "women_child_online_safety": ["morphed image", "intimate image", "revenge porn", "sextortion", "woman blackmail", "mahila", "महिला", "अश्लील फोटो"],
+    "cyberstalking": ["cyberstalking", "cyber stalk", "stalking online", "tracking my location", "बार-बार पीछा", "लोकेशन ट्रैक"],
     "phishing_scam": ["phishing", "suspicious link", "fake link", "scam message", "lottery", "job scam", "लिंक", "फिशिंग"],
     "malware": ["malware", "virus", "ransomware", "infected", "malicious app", "वायरस"],
     "misinformation": ["fake news", "misinformation", "rumour", "deepfake", "फर्जी खबर", "अफवाह"],
@@ -21,13 +26,13 @@
   "missing_domain_source_slots": [
     {
       "domain": "women_and_child_online_safety",
-      "status": "source_required",
-      "note": "Only manually reviewed safety fixtures are allowed until an authoritative source is approved."
+      "status": "authoritative_sources_available",
+      "note": "NCRP and CERT-In reviewed public guidance is indexed separately from training datasets."
     },
     {
       "domain": "online_harassment_abuse",
-      "status": "source_required",
-      "note": "Do not infer broad coverage from generic cybersecurity datasets."
+      "status": "authoritative_sources_available",
+      "note": "NCRP and CERT-In reviewed public guidance is indexed separately from generic datasets."
     }
   ],
   "critical_entity_types": [

@@ -14,6 +14,8 @@ Then load only the minimum sufficient task-specific context.
 
 For frontend work, also read `design.md` and inspect the visual references in all three `design/` folders before making a design decision.
 
+For every Phase 9 / Cyber Saathi session, also read `docs/phase-9-operating-memory.md` before planning, coding, testing, or resuming interrupted work. It records the mandatory timebox, proven Windows shell/URL setup, bounded verification sequence, design acceptance rule, and checkpoint format established after the Phase 6 delays.
+
 ## Source Hierarchy
 
 ```mermaid

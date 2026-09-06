@@ -85,7 +85,7 @@
     "source_dataset": "cyber_saathi_manual_safety",
     "split": "evaluation",
     "intent": "report_incident",
-    "crime_domain": "identity_theft",
+    "crime_domain": "impersonation",
     "urgency": "medium",
     "sentiment": "distressed",
     "selected_for": ["identity_theft", "account_service", "cross_language_equivalence"],

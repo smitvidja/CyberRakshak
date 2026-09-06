@@ -15,6 +15,7 @@ import {TextInput} from "@/components/ui/FormFields";
 import {StatePanel, SurfaceCard} from "@/components/ui/Surface";
 import {SessionConflictDialog} from "@/components/ui/SessionConflictDialog";
 import {useIsomorphicLayoutEffect} from "@/lib/hooks/useIsomorphicLayoutEffect";
+import {getCyberSaathiReportHandoff} from "@/lib/cyber-saathi/report-handoff";
 
 const dashboardPath = (locale: string) => `/${locale}/report-crime/dashboard`;
 const profilePath = (locale: string) => `/${locale}/report-crime/profile`;
@@ -180,7 +181,7 @@ export function MockIdentityForm() {
     setAccessToken(result.data.access_token);
     setMockIdentityProfile(result.data.profile);
     setReportMode("identified");
-    router.push(profilePath(locale));
+    router.push(getCyberSaathiReportHandoff() ? `/${locale}/report-crime/new/incident` : profilePath(locale));
   }
 
   return <main className="citizen-page shell-container py-8 sm:py-12">

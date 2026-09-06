@@ -41,6 +41,16 @@ def test_understanding_api_returns_structured_result() -> None:
     assert result["needs_clarification"] is False
 
 
+def test_noisy_minor_morphed_image_message_reaches_women_child_domain() -> None:
+    result = UnderstandingEngine.analyze(
+        "Someone using my morfed img im mminor girl"
+    )
+
+    assert result.crime_domain == CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY
+    assert result.intent == Intent.SEEK_GUIDANCE
+    assert result.needs_clarification is False
+
+
 def test_equivalent_language_variants_preserve_meaning() -> None:
     utterances = [
         "I received a suspicious bank link. What should I do?",
@@ -210,6 +220,31 @@ def test_child_safety_urgent_language_is_explicit_without_fabricated_coverage() 
         ("Someone stole my identity", Intent.SEEK_GUIDANCE, CrimeDomain.IDENTITY_THEFT),
         ("This post contains fake news", Intent.SEEK_GUIDANCE, CrimeDomain.MISINFORMATION),
         ("I received a cyber terrorism threat", Intent.SEEK_GUIDANCE, CrimeDomain.CYBER_TERRORISM),
+        (
+            "I paid for an online t-shirt but the order was not delivered",
+            Intent.SEEK_GUIDANCE,
+            CrimeDomain.ECOMMERCE_FRAUD,
+        ),
+        (
+            "KYC update nahi kiya toh account block bola aur link open kar diya",
+            Intent.SEEK_GUIDANCE,
+            CrimeDomain.PHISHING_SCAM,
+        ),
+        (
+            "A fake officer put my father under digital arrest",
+            Intent.SEEK_GUIDANCE,
+            CrimeDomain.IMPERSONATION,
+        ),
+        (
+            "Someone is tracking my location and cyberstalking me",
+            Intent.SEEK_GUIDANCE,
+            CrimeDomain.CYBERSTALKING,
+        ),
+        (
+            "A woman's morphed image is being used for blackmail",
+            Intent.SEEK_GUIDANCE,
+            CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY,
+        ),
     ],
 )
 def test_required_taxonomy_routes_are_explicit(

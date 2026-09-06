@@ -72,6 +72,23 @@ ACCOUNT_SERVICES = ("bank account", "email account", "social media account", "up
 LOCATIONS = ("delhi", "mumbai", "ahmedabad", "bengaluru", "bangalore", "kolkata", "chennai", "pune", "jaipur")
 CRITICAL_TYPES = {EntityType(value) for value in TAXONOMY["critical_entity_types"]}
 
+NOISY_TOKEN_REPLACEMENTS = {
+    "morfed": "morphed",
+    "morphd": "morphed",
+    "morfd": "morphed",
+    "mminor": "minor",
+    "minnor": "minor",
+    "chlid": "child",
+    "wommen": "women",
+    "screnshot": "screenshot",
+    "screenshort": "screenshot",
+    "instgram": "instagram",
+    "whatsap": "whatsapp",
+    "phising": "phishing",
+    "fising": "phishing",
+    "img": "image",
+}
+
 
 class UnderstandingEngine:
     @classmethod
@@ -79,7 +96,7 @@ class UnderstandingEngine:
         cls, message: str, preferred_language: LanguageCode | None = None
     ) -> UnderstandingResult:
         text = " ".join(message.strip().split())
-        lowered = text.casefold()
+        lowered = cls.normalize_query(text)
         language = cls.detect_language(text, preferred_language)
         response_language = cls.response_language(language, preferred_language)
         intent = cls.classify_intent(lowered)
@@ -134,7 +151,10 @@ class UnderstandingEngine:
 
     @staticmethod
     def classify_intent(text: str) -> Intent:
-        if any(marker in text for marker in TAXONOMY["intents"]["track_report"]):
+        track_markers = [
+            marker for marker in TAXONOMY["intents"]["track_report"] if marker != "track"
+        ]
+        if any(marker in text for marker in track_markers) or re.search(r"\btrack\b", text):
             return Intent.TRACK_REPORT
         if any(marker in text for marker in TAXONOMY["intents"]["cyber_warrior"]):
             return Intent.CYBER_WARRIOR
@@ -153,14 +173,41 @@ class UnderstandingEngine:
         return Intent.UNKNOWN
 
     @staticmethod
+    def normalize_query(message: str) -> str:
+        """Normalize common citizen/STT noise without changing extracted values."""
+        lowered = " ".join(message.casefold().split())
+        tokens = re.findall(r"[a-z0-9\u0900-\u097f]+|[^a-z0-9\u0900-\u097f\s]", lowered)
+        normalized = [NOISY_TOKEN_REPLACEMENTS.get(token, token) for token in tokens]
+        result = re.sub(r"\s+([@:/.,!?])", r"\1", " ".join(normalized))
+        return re.sub(r"\s*-\s*", "-", result)
+
+    @staticmethod
     def classify_domain(text: str) -> CrimeDomain:
         domain_markers = TAXONOMY["crime_domains"]
-        if any(marker in text for marker in LOSS_MARKERS):
-            return CrimeDomain.FINANCIAL_FRAUD
+        # Specific scenarios must win over broad words such as bank, payment, or
+        # money. Otherwise a KYC link, digital-arrest call, or undelivered order
+        # collapses into the generic financial playbook.
+        priority_domains = (
+            CrimeDomain.ECOMMERCE_FRAUD,
+            CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY,
+            CrimeDomain.CHILD_SAFETY,
+            CrimeDomain.CYBERSTALKING,
+            CrimeDomain.IMPERSONATION,
+            CrimeDomain.ACCOUNT_COMPROMISE,
+        )
+        for domain in priority_domains:
+            if any(marker in text for marker in domain_markers[domain.value]):
+                return domain
         if "link" in text and any(
-            marker in text for marker in ("suspicious", "fake", "scam", "संदिग्ध", "फर्जी")
+            marker in text
+            for marker in (
+                "suspicious", "fake", "scam", "kyc", "account block",
+                "open kar", "click", "संदिग्ध", "फर्जी", "खोल",
+            )
         ):
             return CrimeDomain.PHISHING_SCAM
+        if any(marker in text for marker in LOSS_MARKERS):
+            return CrimeDomain.FINANCIAL_FRAUD
         if any(marker in text for marker in domain_markers["phishing_scam"]):
             return CrimeDomain.PHISHING_SCAM
         scored = {

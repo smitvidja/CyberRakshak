@@ -13,6 +13,7 @@ import {StatePanel, SurfaceCard} from "@/components/ui/Surface";
 import {complaintCategoriesApi, complaintsApi, evidenceApi} from "@/lib/api/complaints";
 import type {ApiRecord} from "@/lib/api/auth";
 import {addComplaintEvidence, getAccessToken, getComplaintDraft, getComplaintEvidence, getReportCategoryHint, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
+import {clearCyberSaathiReportHandoff, getCyberSaathiReportHandoff, updateCyberSaathiReportHandoffFiles} from "@/lib/cyber-saathi/report-handoff";
 
 type Category = {description: string | null; id: string; name: string};
 type FieldErrors = Record<string, string>;
@@ -138,6 +139,7 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
   const [evidenceDescription, setEvidenceDescription] = useState("");
   const [evidenceError, setEvidenceError] = useState("");
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
+  const [handoffFiles, setHandoffFiles] = useState<File[]>([]);
   const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>([]);
 
   useEffect(() => {
@@ -158,6 +160,20 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
         const categoryHint = getReportCategoryHint();
         const hintedCategory = categoryHint ? loadedCategories.find((category) => categoryMatchesHint(category.name, categoryHint)) : undefined;
         if (hintedCategory) setForm((current) => current.categoryId ? current : {...current, categoryId: hintedCategory.id});
+        const saathiHandoff = getCyberSaathiReportHandoff();
+        if (saathiHandoff) {
+          const prefill = saathiHandoff.prefill;
+          const incidentAt = prefill.incident_at && !Number.isNaN(Date.parse(prefill.incident_at)) ? toLocalDateTimeInput(prefill.incident_at) : "";
+          setForm((current) => ({
+            ...current,
+            categoryId: hintedCategory?.id || current.categoryId,
+            description: prefill.description || current.description,
+            incidentAt,
+            lossAmount: prefill.financial_loss_amount || current.lossAmount,
+            title: prefill.title || current.title
+          }));
+          setHandoffFiles(saathiHandoff.files);
+        }
       } else {
         setServiceError(t("categoriesError"));
       }
@@ -239,6 +255,14 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
       location: hasLocation ? location : null,
       title: form.title.trim()
     };
+    const saathiHandoff = draftId === "new" ? getCyberSaathiReportHandoff() : null;
+    if (saathiHandoff) {
+      if (saathiHandoff.prefill.reporting_for !== "UNKNOWN") payload.reporting_for = saathiHandoff.prefill.reporting_for;
+      payload.affected_person_name = saathiHandoff.prefill.affected_person_name;
+      if (saathiHandoff.prefill.suspect_identifiers.length) {
+        payload.suspects = [{contact_details: saathiHandoff.prefill.suspect_identifiers.join(", ")}];
+      }
+    }
     const result = draftId === "new"
       ? await complaintsApi.createDraft({...payload, is_anonymous: !isIdentifiedReport()}, requestOptions())
       : await complaintsApi.updateDraft(draftId, payload, requestOptions());
@@ -250,35 +274,50 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
     }
 
     const savedDraftId = asString(result.data.id);
-    if (evidenceFile) {
+    const filesToUpload = [...handoffFiles, ...(evidenceFile ? [evidenceFile] : [])];
+    let allEvidenceUploaded = true;
+    const failedFiles: File[] = [];
+    for (const file of filesToUpload) {
       const evidencePayload = new FormData();
       evidencePayload.set("complaint_id", savedDraftId);
       evidencePayload.set("description", evidenceDescription.trim());
-      evidencePayload.set("file", evidenceFile);
+      evidencePayload.set("file", file);
       const uploadResult = await evidenceApi.upload(evidencePayload, requestOptions());
       if (!uploadResult.ok) {
         setEvidenceError(t("evidenceError"));
+        allEvidenceUploaded = false;
+        failedFiles.push(file);
       } else {
         const item = {
-          fileName: asString(uploadResult.data.file_name) || evidenceFile.name,
-          fileSize: Number(uploadResult.data.file_size) || evidenceFile.size,
+          fileName: asString(uploadResult.data.file_name) || file.name,
+          fileSize: Number(uploadResult.data.file_size) || file.size,
           id: asString(uploadResult.data.id)
         };
         addComplaintEvidence(savedDraftId, item);
         setEvidenceItems((current) => [...current, item]);
-        setEvidenceFile(null);
-        setEvidenceDescription("");
-        setEvidenceError("");
       }
+    }
+    if (allEvidenceUploaded) {
+      setEvidenceFile(null);
+      setHandoffFiles([]);
+      setEvidenceDescription("");
+      setEvidenceError("");
+      clearCyberSaathiReportHandoff();
+    } else {
+      setHandoffFiles(failedFiles);
+      updateCyberSaathiReportHandoffFiles(failedFiles);
     }
     setComplaintDraft({data: result.data, id: savedDraftId});
     setForm(incidentFromDraft(result.data));
     setMessage(t("saved"));
     setSaving(false);
+    if (!allEvidenceUploaded) {
+      if (draftId === "new") router.replace(incidentPath(locale, savedDraftId));
+      return;
+    }
     if (shouldContinue) {
       router.push(peoplePath(locale, savedDraftId));
-    }
-    if (draftId === "new") {
+    } else if (draftId === "new") {
       router.replace(incidentPath(locale, savedDraftId));
     }
   }
@@ -325,6 +364,7 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
           </SurfaceCard>
           <SurfaceCard className="citizen-evidence-panel" heading={t("evidenceTitle")}>
             <UploadDropzone accept=".pdf,.png,.jpg,.jpeg" browseLabel={t("browseEvidence")} description={t("evidenceDescription")} error={evidenceError} id="complaint-evidence" maxSizeLabel={t("evidenceSize")} onFilesSelected={(files) => { setEvidenceFile(files[0] ?? null); setEvidenceError(""); }} title={evidenceFile ? evidenceFile.name : t("evidenceUploadTitle")} />
+            {handoffFiles.length ? <ul className="mt-4 divide-y divide-[var(--border)] rounded-[var(--radius)] border border-[var(--border)]">{handoffFiles.map((file) => <li className="px-4 py-3 text-sm text-[var(--ink)]" key={`${file.name}-${file.size}`}>{file.name} ({file.size} bytes) · {t("evidenceSaveCopy")}</li>)}</ul> : null}
             <div className="mt-4 max-w-xl"><TextInput id="evidence-description" label={t("evidenceDescriptionLabel")} onChange={(event) => setEvidenceDescription(event.target.value)} value={evidenceDescription} /></div>
             <p className="mt-3 text-xs leading-5 text-[var(--muted)]">{t("evidenceSaveCopy")}</p>
             {evidenceItems.length > 0 ? <ul className="mt-4 divide-y divide-[var(--border)] rounded-[var(--radius)] border border-[var(--border)]">{evidenceItems.map((item) => <li className="px-4 py-3 text-sm text-[var(--ink)]" key={item.id}>{t("evidenceUploaded", {fileName: item.fileName, fileSize: item.fileSize})}</li>)}</ul> : null}

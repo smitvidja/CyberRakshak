@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Annotated, Literal
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class LanguageCode(str, Enum):
@@ -46,8 +46,13 @@ class Intent(str, Enum):
 
 class CrimeDomain(str, Enum):
     FINANCIAL_FRAUD = "financial_fraud"
+    ECOMMERCE_FRAUD = "ecommerce_fraud"
+    ACCOUNT_COMPROMISE = "account_compromise"
+    IMPERSONATION = "impersonation"
     IDENTITY_THEFT = "identity_theft"
     ONLINE_HARASSMENT = "online_harassment"
+    WOMEN_CHILD_ONLINE_SAFETY = "women_child_online_safety"
+    CYBERSTALKING = "cyberstalking"
     PHISHING_SCAM = "phishing_scam"
     MALWARE = "malware"
     MISINFORMATION = "misinformation"
@@ -70,6 +75,13 @@ class KnowledgeDomain(str, Enum):
     IDENTITY_THEFT = "identity_theft"
     SUSPICIOUS_IDENTIFIERS = "suspicious_identifiers"
     GENERAL_CYBER_SAFETY = "general_cyber_safety"
+    ECOMMERCE_CONSUMER_GRIEVANCE = "ecommerce_consumer_grievance"
+
+
+class IncidentQueueStatus(str, Enum):
+    ACTIVE = "active"
+    QUEUED = "queued"
+    COMPLETED = "completed"
 
 
 class Urgency(str, Enum):
@@ -132,11 +144,102 @@ class TurnKind(str, Enum):
     ERROR = "error"
 
 
+class TurnPurpose(str, Enum):
+    NEW_INCIDENT = "new_incident"
+    SAME_INCIDENT_DETAIL = "same_incident_detail"
+    DUPLICATE_INCIDENT = "duplicate_incident"
+    CORRECTION = "correction"
+    CONFIRMATION = "confirmation"
+    ACTION_COMPLETED = "action_completed"
+    ACTION_BLOCKED = "action_blocked"
+    NEXT_STEP = "next_step"
+    SWITCH_INCIDENT = "switch_incident"
+    REPORT_PREPARATION = "report_preparation"
+    REPORTING_MODE = "reporting_mode"
+    GENERAL_QUESTION = "general_question"
+
+
+class ChecklistStatus(str, Enum):
+    MISSING = "missing"
+    COLLECTED = "collected"
+    NOT_AVAILABLE = "not_available"
+    OPTIONAL = "optional"
+
+
 class GroundingStatus(str, Enum):
     NOT_USED = "not_used"
     GROUNDED = "grounded"
     NO_RESULT = "no_result"
     DETERMINISTIC_PLAYBOOK = "deterministic_playbook"
+
+
+class LLMProvider(str, Enum):
+    GEMINI = "gemini"
+    GROK = "grok"
+    NVIDIA = "nvidia"
+
+
+class LLMWorkflowAction(str, Enum):
+    NONE = "none"
+    REPORT_CRIME = "report_crime"
+    TRACK_COMPLAINT = "track_complaint"
+    CHECK_SUSPECT = "check_suspect"
+    CYBER_WARRIOR = "cyber_warrior"
+
+
+LLMSuggestedAction = Annotated[str, Field(min_length=1, max_length=300)]
+LLMSourceChunkId = Annotated[
+    str, Field(pattern=r"^[a-z0-9_:-]+$", min_length=1, max_length=150)
+]
+LLMSafetyFlag = Annotated[
+    str, Field(pattern=r"^[a-z0-9_:-]+$", min_length=1, max_length=80)
+]
+
+
+class LLMStructuredResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    answer: str = Field(min_length=1, max_length=2400)
+    confidence: float = Field(ge=0, le=1)
+    urgency: Urgency
+    suggested_actions: list[LLMSuggestedAction] = Field(default_factory=list, max_length=5)
+    clarification_needed: bool
+    workflow_action: LLMWorkflowAction = LLMWorkflowAction.NONE
+    sources: list[LLMSourceChunkId] = Field(default_factory=list, max_length=3)
+    safety_flags: list[LLMSafetyFlag] = Field(default_factory=list, max_length=10)
+
+
+class LLMProviderAttempt(BaseModel):
+    provider: LLMProvider
+    model: str = Field(min_length=1, max_length=150)
+    status: Literal[
+        "success",
+        "not_configured",
+        "timeout",
+        "rate_limited",
+        "provider_error",
+        "malformed_output",
+        "safety_rejected",
+        "deadline_exceeded",
+    ]
+    latency_ms: float = Field(ge=0)
+
+
+class LLMGenerationResult(BaseModel):
+    response: LLMStructuredResponse | None = None
+    provider: LLMProvider | None = None
+    model: str | None = Field(default=None, max_length=150)
+    fallback_used: bool = False
+    deterministic_fallback: bool = False
+    latency_ms: float = Field(ge=0)
+    attempts: list[LLMProviderAttempt] = Field(default_factory=list, max_length=8)
+
+
+class LLMProviderHealth(BaseModel):
+    provider: LLMProvider
+    model: str
+    status: Literal["available", "not_configured", "unavailable"]
+    latency_ms: float = Field(ge=0)
 
 
 ConfidenceScore = Annotated[float, Field(ge=0, le=1)]
@@ -179,6 +282,46 @@ class IncidentState(BaseModel):
         return confidence_band(self.confidence)
 
 
+class ReportChecklistItem(BaseModel):
+    key: str = Field(pattern=r"^[a-z0-9_]+$", max_length=80)
+    label: str = Field(min_length=1, max_length=240)
+    status: ChecklistStatus = ChecklistStatus.MISSING
+    required: bool = True
+    value_preview: str | None = Field(default=None, max_length=300)
+
+
+class AttachmentAnalysis(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    file_name: str = Field(min_length=1, max_length=255)
+    mime_type: Literal["application/pdf", "image/png", "image/jpeg"]
+    file_size: int = Field(ge=1, le=10 * 1024 * 1024)
+    checksum: str = Field(pattern=r"^[a-f0-9]{64}$")
+    media_summary: str = Field(min_length=1, max_length=300)
+    extracted_text_preview: str | None = Field(default=None, max_length=500)
+    extracted_entities: list[Entity] = Field(default_factory=list, max_length=20)
+    needs_user_review: bool = True
+
+
+class ReportPreparation(BaseModel):
+    reporting_for: Literal["SELF", "CHILD", "OTHER", "UNKNOWN"] = "UNKNOWN"
+    affected_person_name: str | None = Field(default=None, max_length=255)
+    checklist: list[ReportChecklistItem] = Field(default_factory=list, max_length=20)
+    attachments: list[AttachmentAnalysis] = Field(default_factory=list, max_length=10)
+    missing_required_keys: list[str] = Field(default_factory=list, max_length=20)
+    ready_for_review: bool = False
+
+
+class ConversationIncident(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    sequence: int = Field(ge=1, le=10)
+    queue_status: IncidentQueueStatus
+    incident: IncidentState
+    completed_actions: list[str] = Field(default_factory=list, max_length=20)
+    blocked_actions: dict[str, int] = Field(default_factory=dict)
+    message_fingerprints: list[str] = Field(default_factory=list, max_length=30)
+    report_preparation: ReportPreparation = Field(default_factory=ReportPreparation)
+
+
 class ConversationSource(BaseModel):
     chunk_id: str = Field(pattern=r"^[a-z0-9_:-]+$", max_length=150)
     source_id: str = Field(pattern=r"^[a-z0-9_]+$", max_length=100)
@@ -199,15 +342,25 @@ class ConversationTurn(BaseModel):
     grounding_status: GroundingStatus = GroundingStatus.NOT_USED
     sources: list[ConversationSource] = Field(default_factory=list, max_length=3)
     retrieval_latency_ms: float | None = Field(default=None, ge=0)
+    llm_provider: LLMProvider | None = None
+    llm_model: str | None = Field(default=None, max_length=150)
+    llm_fallback_used: bool = False
+    llm_latency_ms: float | None = Field(default=None, ge=0)
+    safety_flags: list[str] = Field(default_factory=list, max_length=10)
+    purpose: TurnPurpose | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class ComplaintPrefill(BaseModel):
+    title: str | None = Field(default=None, max_length=255)
     description: str | None = Field(default=None, max_length=8000)
     crime_domain: CrimeDomain = CrimeDomain.UNKNOWN
     financial_loss_amount: str | None = Field(default=None, max_length=100)
     incident_at: str | None = Field(default=None, max_length=100)
     suspect_identifiers: list[str] = Field(default_factory=list, max_length=20)
+    reporting_for: Literal["SELF", "CHILD", "OTHER", "UNKNOWN"] = "UNKNOWN"
+    affected_person_name: str | None = Field(default=None, max_length=255)
+    attachment_ids: list[UUID] = Field(default_factory=list, max_length=10)
 
 
 class WorkflowHandoff(BaseModel):
@@ -235,8 +388,11 @@ class ConversationState(BaseModel):
     reporting_mode: ReportingMode = ReportingMode.UNDECIDED
     turns: list[ConversationTurn] = Field(default_factory=list, max_length=50)
     incident: IncidentState = Field(default_factory=IncidentState)
+    incidents: list[ConversationIncident] = Field(default_factory=list, max_length=10)
+    active_incident_id: UUID | None = None
     pending_confirmation_entity_ids: list[UUID] = Field(default_factory=list, max_length=30)
     handoff: WorkflowHandoff | None = None
+    last_turn_purpose: TurnPurpose | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -250,6 +406,10 @@ class ConversationMessageRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
     state: ConversationState
     reporting_mode: ReportingMode | None = None
+
+
+class ConversationAttachmentRequest(BaseModel):
+    state: ConversationState
 
 
 class UnderstandingRequest(BaseModel):

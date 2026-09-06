@@ -28,8 +28,8 @@ def test_explicit_ingestion_creates_a_persistent_traceable_index() -> None:
     result = rebuild_index()
 
     assert result["status"] == "passed"
-    assert result["source_count"] == 13
-    assert result["chunk_count"] == 30
+    assert result["source_count"] == 14
+    assert result["chunk_count"] == 32
     assert result["embedding_dimension"] == 384
     assert result["index_bytes"] < MAX_INDEX_BYTES
     assert INDEX_PATH.exists()
@@ -93,7 +93,7 @@ def test_persisted_index_is_read_by_a_fresh_python_process() -> None:
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert completed.stdout.strip().endswith("2026.09.3.2 False")
+    assert completed.stdout.strip().endswith("2026.09.3.3 False")
 
 
 def test_stale_or_tampered_index_fails_closed(tmp_path, monkeypatch) -> None:
@@ -151,7 +151,7 @@ def test_knowledge_gold_set_meets_relevance_source_and_no_result_gates() -> None
     result = evaluate()
 
     assert result["status"] == "passed"
-    assert result["metrics"]["case_count"] == 30
+    assert result["metrics"]["case_count"] == 32
     assert result["metrics"]["retrieval_relevance"] == 1
     assert result["metrics"]["source_correctness"] == 1
     assert result["metrics"]["no_result_correctness"] == 1

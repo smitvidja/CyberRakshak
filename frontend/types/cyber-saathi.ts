@@ -1,5 +1,6 @@
 export type SaathiLanguage = "EN" | "HI" | "HINGLISH" | "MIXED";
 export type ReportingMode = "undecided" | "anonymous" | "identified";
+export type TurnPurpose = "new_incident" | "same_incident_detail" | "duplicate_incident" | "correction" | "confirmation" | "action_completed" | "action_blocked" | "next_step" | "switch_incident" | "report_preparation" | "reporting_mode" | "general_question";
 export type IncidentStatus =
   | "unknown" | "suspected" | "identified" | "urgent"
   | "awaiting_confirmation" | "awaiting_user_input" | "guidance_given"
@@ -34,6 +35,12 @@ export type SaathiTurn = {
     section_title: string;
   }>;
   retrieval_latency_ms: number | null;
+  llm_provider?: "gemini" | "grok" | "nvidia" | null;
+  llm_model?: string | null;
+  llm_fallback_used?: boolean;
+  llm_latency_ms?: number | null;
+  safety_flags?: string[];
+  purpose?: TurnPurpose | null;
   created_at: string;
 };
 
@@ -50,6 +57,46 @@ export type SaathiIncident = {
   occurred_recently: boolean | null;
   needs_clarification: boolean;
   response_language: SaathiLanguage;
+};
+
+export type QueuedSaathiIncident = {
+  id: string;
+  sequence: number;
+  queue_status: "active" | "queued" | "completed";
+  incident: SaathiIncident;
+  completed_actions: string[];
+  blocked_actions: Record<string, number>;
+  message_fingerprints: string[];
+  report_preparation: ReportPreparation;
+};
+
+export type ReportChecklistItem = {
+  key: string;
+  label: string;
+  status: "missing" | "collected" | "not_available" | "optional";
+  required: boolean;
+  value_preview: string | null;
+};
+
+export type AttachmentAnalysis = {
+  id: string;
+  file_name: string;
+  mime_type: "application/pdf" | "image/png" | "image/jpeg";
+  file_size: number;
+  checksum: string;
+  media_summary: string;
+  extracted_text_preview: string | null;
+  extracted_entities: SaathiEntity[];
+  needs_user_review: boolean;
+};
+
+export type ReportPreparation = {
+  reporting_for: "SELF" | "CHILD" | "OTHER" | "UNKNOWN";
+  affected_person_name: string | null;
+  checklist: ReportChecklistItem[];
+  attachments: AttachmentAnalysis[];
+  missing_required_keys: string[];
+  ready_for_review: boolean;
 };
 
 export type ConfidenceBand = "low" | "medium" | "high";
@@ -74,10 +121,14 @@ export type SaathiHandoff = {
   route: string;
   prefill: {
     description: string | null;
+    title: string | null;
     crime_domain: string;
     financial_loss_amount: string | null;
     incident_at: string | null;
     suspect_identifiers: string[];
+    reporting_for: "SELF" | "CHILD" | "OTHER" | "UNKNOWN";
+    affected_person_name: string | null;
+    attachment_ids: string[];
   };
 };
 
@@ -88,8 +139,11 @@ export type ConversationState = {
   reporting_mode: ReportingMode;
   turns: SaathiTurn[];
   incident: SaathiIncident;
+  incidents: QueuedSaathiIncident[];
+  active_incident_id: string | null;
   pending_confirmation_entity_ids: string[];
   handoff: SaathiHandoff | null;
+  last_turn_purpose: TurnPurpose | null;
   created_at: string;
   updated_at: string;
 };

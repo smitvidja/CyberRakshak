@@ -55,7 +55,9 @@ Error shape:
 
 `POST /api/v1/cyber-saathi/knowledge/search` performs bounded retrieval only from the reviewed authoritative knowledge index. It accepts a citizen query, optional `domain`, optional language preference, a capped `top_k` (1–5), and a relevance threshold.
 
-The knowledge-only domain filter is one of `financial_fraud`, `upi_payment_fraud`, `phishing`, `account_compromise`, `impersonation`, `harassment_abuse`, `women_child_online_safety`, `cyberstalking`, `malware_device_compromise`, `identity_theft`, `suspicious_identifiers`, or `general_cyber_safety`. Domain tags are attached to each chunk, so filtering does not admit an unrelated section merely because another section from the same document covers that domain.
+The knowledge-only domain filter is one of `financial_fraud`, `upi_payment_fraud`, `phishing`, `account_compromise`, `impersonation`, `harassment_abuse`, `women_child_online_safety`, `cyberstalking`, `malware_device_compromise`, `identity_theft`, `suspicious_identifiers`, `general_cyber_safety`, or `ecommerce_consumer_grievance`. Domain tags are attached to each chunk, so filtering does not admit an unrelated section merely because another section from the same document covers that domain.
+
+Conversation state retains a backward-compatible active `incident` plus an ordered `incidents` collection, `active_incident_id`, queue status, and completed-action markers. This lets one chat preserve multiple separate events while working through one incident at a time. Reporting-mode selection is a workflow action and does not reclassify or overwrite the incident.
 
 The response returns `no_result` when retrieval is weak instead of inventing a procedure. Each result includes the chunk ID, source ID, official source URL, title, jurisdiction, domain tags, version, section title, and relevance score. The generated index is rebuilt explicitly with:
 
@@ -67,6 +69,12 @@ cd backend
 The API never rebuilds embeddings at startup and does not perform live government or portal lookups. A stale source-pack hash, invalid chunk hash, unsupported index schema, more than 500 chunks, or an index larger than 2 MiB causes retrieval to fail closed until explicit re-ingestion.
 
 Normal conversation replies expose `grounding_status`, `retrieval_latency_ms`, and a bounded `sources` list on each assistant turn. A grounded source contains its exact `chunk_id`, source title/type/URL, jurisdiction, version, and section title. Weak retrieval returns a clarification with `grounding_status=no_result`; an unavailable index cannot suppress the deterministic urgent-financial playbook, which is marked `deterministic_playbook` when no source can be attached.
+
+Eligible grounded guidance may pass through the server-side multi-provider LLM gateway. The assistant turn then exposes only safe observability fields: `llm_provider`, `llm_model`, `llm_fallback_used`, `llm_latency_ms`, and `safety_flags`. API keys, raw prompts, provider request/response bodies, and provider error bodies are never part of the response. Generated source IDs must match retrieved chunks; otherwise that output is rejected and the next provider or deterministic grounded response is used.
+
+Urgent financial playbooks, critical-entity confirmation, low-confidence clarification, and workflow handoff remain deterministic. They do not wait for or depend on an LLM.
+
+`POST /api/v1/cyber-saathi/conversations/{conversation_id}/attachments` accepts multipart `state_json` plus one `file`. It permits only PDF, PNG, JPG, or JPEG up to 10 MB, verifies the file signature, extracts bounded basic metadata/text hints transiently, and returns the updated incident report packet. This endpoint does not persist the binary; the existing complaint-evidence endpoint remains the sole storage owner after a draft exists.
 
 ## FE -> API -> BE Flow
 
@@ -167,7 +175,7 @@ Frontend route guards never replace backend authorization.
 
 ## Synthetic Identity Prototype
 
-The local-only mock eKYC flow is intentionally separate from real identity providers:
+The local-only synthetic identity OTP flow is intentionally separate from real identity providers:
 
 - `POST /api/v1/auth/mock-identity/request-otp` accepts a supplied `demo_identity_id`, checks the synthetic database record, and returns only a masked linked demo mobile and expiry. It does not send an SMS or return an OTP.
 - `POST /api/v1/auth/mock-identity/verify-otp` accepts that ID plus a six-digit demonstration OTP and an optional `role` intent limited to `CITIZEN` or `CYBER_WARRIOR`. It consumes the requested OTP once, creates or reuses a role-specific local prototype account, returns an access token, and returns synthetic autofill data. It never permits this mock flow to issue an administrator session.

@@ -1,7 +1,32 @@
 {
-  "version": "2026.09.3.2",
+  "version": "2026.09.3.3",
   "reviewed_at": "2026-09-06",
   "sources": [
+    {
+      "source_id": "nch_ecommerce_grievance",
+      "source_title": "National Consumer Helpline: E-commerce Grievance Guidance",
+      "source_type": "official_consumer_guidance",
+      "source_url": "https://consumerhelpline.gov.in/public/index.php/contact",
+      "jurisdiction": "India",
+      "domains": ["ecommerce_consumer_grievance"],
+      "language": "EN",
+      "version": "public guidance reviewed 2026-09-06",
+      "published_at": "2026-09-06",
+      "sections": [
+        {
+          "title": "Online order not delivered or refund not received",
+          "domains": ["ecommerce_consumer_grievance"],
+          "text": "For an online order that was not delivered, arrived incorrectly, or was not refunded, preserve the order confirmation, invoice, payment record, promised delivery date, tracking status, seller details, and customer-support messages. Contact the seller or platform through its official grievance channel, clearly request delivery, replacement, or refund as appropriate, and keep the written complaint acknowledgement or reference number. Do not make another payment to unlock a refund.",
+          "retrieval_terms": ["online shopping", "order not delivered", "product not received", "website closed", "refund not received", "seller grievance", "delivery nahi", "t shirt order"]
+        },
+        {
+          "title": "Escalating an unresolved e-commerce consumer grievance",
+          "domains": ["ecommerce_consumer_grievance"],
+          "text": "The Department of Consumer Affairs National Consumer Helpline accepts consumer grievances through its official web portal and helpline 1915. If the seller or platform does not resolve an e-commerce complaint, the consumer can register the grievance with the available evidence and keep the NCH docket number for follow-up. This is consumer-grievance guidance; use cybercrime.gov.in or 1930 when the facts indicate cyber financial fraud rather than an ordinary delivery, quality, cancellation, or refund dispute. Cyber Saathi must not promise a refund or legal outcome.",
+          "retrieval_terms": ["National Consumer Helpline", "1915", "consumer complaint", "ecommerce grievance", "NCH docket", "seller not responding", "online order refund"]
+        }
+      ]
+    },
     {
       "source_id": "ncrp_financial_fraud",
       "source_title": "Citizen Financial Cyber Frauds Reporting and Management System",

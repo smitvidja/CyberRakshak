@@ -13,6 +13,12 @@ export const cyberSaathiApi = {
       state,
       reporting_mode: reportingMode
     }),
+  analyzeAttachment: (state: ConversationState, file: File) => {
+    const payload = new FormData();
+    payload.set("state_json", JSON.stringify(state));
+    payload.set("file", file);
+    return apiClient.upload<ConversationResponse>(`/cyber-saathi/conversations/${state.id}/attachments`, payload);
+  },
   understand: (message: string, preferredLanguage?: SaathiLanguage) =>
     apiClient.post<UnderstandingResult>("/cyber-saathi/understand", {
       message,

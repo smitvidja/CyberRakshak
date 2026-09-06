@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import {useLocale, useTranslations} from "next-intl";
-import {AlertTriangle, ArrowRight, Bot, Check, ExternalLink, Languages, LoaderCircle, LockKeyhole, Mic, RefreshCw, Send, ShieldCheck, UserRound} from "lucide-react";
+import {useRouter} from "next/navigation";
+import {AlertTriangle, ArrowRight, Bot, Check, ExternalLink, FileText, Languages, LoaderCircle, LockKeyhole, Mic, Paperclip, RefreshCw, Send, ShieldCheck, UserRound} from "lucide-react";
 import {useEffect, useRef, useState, type FormEvent} from "react";
 
 import {cyberSaathiApi} from "@/lib/api/cyber-saathi";
+import {prepareCyberSaathiReportHandoff} from "@/lib/cyber-saathi/report-handoff";
+import {getAccessToken, setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
 import type {ConversationState, ReportingMode, SaathiLanguage} from "@/types/cyber-saathi";
 
 const STORAGE_KEY = "cyberrakshak.cyber-saathi.conversation.v1";
@@ -13,6 +16,7 @@ const STORAGE_KEY = "cyberrakshak.cyber-saathi.conversation.v1";
 export function CyberSaathiConversation() {
   const t = useTranslations("cyberSaathi");
   const locale = useLocale();
+  const router = useRouter();
   const [state, setState] = useState<ConversationState | null>(null);
   const [language, setLanguage] = useState<SaathiLanguage>(locale === "hi" ? "HI" : "EN");
   const [message, setMessage] = useState("");
@@ -20,8 +24,12 @@ export function CyberSaathiConversation() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [voiceNotice, setVoiceNotice] = useState(false);
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
+  const [attachmentError, setAttachmentError] = useState("");
+  const [attaching, setAttaching] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const attachmentInputRef = useRef<HTMLInputElement>(null);
   const initializedRef = useRef(false);
 
   useEffect(() => {
@@ -32,6 +40,8 @@ export function CyberSaathiConversation() {
       try {
         const parsed = JSON.parse(stored) as ConversationState;
         if (parsed.id && Array.isArray(parsed.turns)) {
+          // Browser-only persisted conversation state must hydrate after mount.
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setState(parsed);
           setLanguage(parsed.language);
           setLoading(false);
@@ -97,7 +107,32 @@ export function CyberSaathiConversation() {
     window.localStorage.removeItem(STORAGE_KEY);
     setState(null);
     setVoiceNotice(false);
+    setAttachmentFiles([]);
+    setAttachmentError("");
     void startConversation(language);
+  }
+
+  async function analyzeAttachment(file: File) {
+    if (!state || attaching) return;
+    if (!["application/pdf", "image/png", "image/jpeg"].includes(file.type)) {
+      setAttachmentError(t("attachmentTypeError"));
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setAttachmentError(t("attachmentSizeError"));
+      return;
+    }
+    setAttaching(true);
+    setAttachmentError("");
+    const result = await cyberSaathiApi.analyzeAttachment(state, file);
+    if (result.ok) {
+      setState(result.data.state);
+      setAttachmentFiles((current) => current.some((item) => item.name === file.name && item.size === file.size) ? current : [...current, file]);
+    } else {
+      setAttachmentError(t("attachmentAnalyzeError"));
+    }
+    setAttaching(false);
+    if (attachmentInputRef.current) attachmentInputRef.current.value = "";
   }
 
   const pendingEntity = state?.incident.entities.find((entity) =>
@@ -107,15 +142,59 @@ export function CyberSaathiConversation() {
     ? new Intl.NumberFormat(locale === "hi" ? "hi-IN" : "en-IN").format(Number(pendingEntity.normalized_value))
     : pendingEntity?.value;
   const handoff = state?.handoff;
-  const anonymousAllowed = state?.incident.crime_domain === "child_safety";
+  const incidentCount = state?.incidents?.length ?? 0;
+  const queuedCount = state?.incidents?.filter((item) => item.queue_status === "queued").length ?? 0;
+  const activeRecord = state?.incidents?.find((item) => item.id === state.active_incident_id);
+  const reportPreparation = activeRecord?.report_preparation;
+  const showReportPreparation = Boolean(
+    reportPreparation
+    && (state?.last_turn_purpose === "report_preparation"
+      || reportPreparation.attachments.length
+      || state?.incident.status === "ready_to_report")
+  );
+  const anonymousAllowed = ["child_safety", "women_child_online_safety"].includes(
+    state?.incident.crime_domain ?? ""
+  );
   const canHandoff = Boolean(
     handoff
     && !state?.pending_confirmation_entity_ids.length
+    && (handoff.target !== "report_crime" || reportPreparation?.ready_for_review)
     && (handoff.target !== "report_crime" || state?.reporting_mode !== "undecided")
   );
+  const categoryByDomain: Record<string, string> = {
+    financial_fraud: "financial",
+    ecommerce_fraud: "commerce",
+    phishing_scam: "identity",
+    account_compromise: "identity",
+    identity_theft: "identity",
+    impersonation: "identity",
+    malware: "other",
+    online_harassment: "harassment",
+    cyberstalking: "harassment",
+    child_safety: "women-child",
+    women_child_online_safety: "women-child"
+  };
+  const categoryHint = handoff ? categoryByDomain[handoff.prefill.crime_domain] ?? "other" : "other";
   const handoffPath = handoff?.target === "report_crime"
-    ? `/${locale}${handoff.route}?mode=${handoff.reporting_mode === "undecided" ? "identified" : handoff.reporting_mode}${handoff.prefill.crime_domain === "financial_fraud" ? "&category=financial" : ""}`
+    ? `/${locale}${handoff.route}?mode=${handoff.reporting_mode === "undecided" ? "identified" : handoff.reporting_mode}&category=${categoryHint}`
     : handoff ? `/${locale}${handoff.route}` : `/${locale}/report-crime`;
+
+  function continueToReport() {
+    if (!state || !handoff || handoff.target !== "report_crime") return;
+    prepareCyberSaathiReportHandoff({
+      conversationId: state.id,
+      files: attachmentFiles,
+      prefill: handoff.prefill
+    });
+    const mode = handoff.reporting_mode === "anonymous" ? "anonymous" : "identified";
+    setReportMode(mode);
+    setReportCategoryHint(categoryHint);
+    if (mode === "identified" && !getAccessToken()) {
+      router.push(`/${locale}/report-crime/verify`);
+      return;
+    }
+    router.push(`/${locale}/report-crime/new/incident`);
+  }
 
   return (
     <main className="bg-[#f5f8fc] pb-8">
@@ -124,7 +203,7 @@ export function CyberSaathiConversation() {
           <header className="flex flex-col gap-4 border-b border-[#dbe5f0] bg-[#f8fbff] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <span aria-hidden="true" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#0b58c7] text-white"><Bot size={23} /></span>
-              <div className="min-w-0"><div className="flex items-center gap-2"><h1 id="saathi-title" className="text-xl font-bold text-[#08245c]">{t("title")}</h1><span className="rounded-full bg-[#e2f5e8] px-2 py-0.5 text-[11px] font-bold text-[#15803d]">{t("available")}</span></div><p className="mt-0.5 text-sm text-slate-600">{t("subtitle")}</p></div>
+              <div className="min-w-0"><div className="flex items-center gap-2"><h1 id="saathi-title" className="text-xl font-bold text-[#08245c]">{t("title")}</h1><span className="rounded-full bg-[#e2f5e8] px-2 py-0.5 text-[11px] font-bold text-[#15803d]">{t("available")}</span></div><p className="mt-0.5 text-sm text-slate-600">{t("subtitle")}</p>{incidentCount ? <p className="mt-1 text-[11px] font-semibold text-[#315274]">{t("incidentCount", {count: incidentCount})}{queuedCount ? ` · ${t("queuedCount", {count: queuedCount})}` : ""}</p> : null}</div>
             </div>
             <div className="flex items-center gap-2">
               <label className="sr-only" htmlFor="saathi-language">{t("languageLabel")}</label>
@@ -141,6 +220,7 @@ export function CyberSaathiConversation() {
                 <div className={`max-w-[86%] rounded-[8px] px-4 py-3 text-sm leading-6 sm:max-w-[76%] ${turn.role === "user" ? "bg-[#0b4fb3] text-white" : turn.kind === "safety" ? "border border-[#f2c46d] bg-[#fff8e8] text-[#563b05]" : "border border-[#dce6f1] bg-white text-slate-700"}`}>
                   {turn.kind === "safety" ? <strong className="mb-1 flex items-center gap-2 text-[#8a5400]"><AlertTriangle size={16} />{t("urgentTitle")}</strong> : null}
                   <p className="whitespace-pre-wrap break-words">{turn.content}</p>
+                  {!turn.llm_provider && turn.kind === "safety" ? <p className="mt-2 text-[10px] font-bold uppercase tracking-wide text-[#7a5205]">{t("deterministicSafety")}</p> : null}
                   {turn.sources?.length ? (
                     <div className={`mt-3 border-t pt-3 ${turn.kind === "safety" ? "border-[#ead49e]" : "border-[#dce6f1]"}`}>
                       <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-[#315274]">{t("sourcesLabel")}</p>
@@ -159,6 +239,22 @@ export function CyberSaathiConversation() {
                 {turn.role === "user" ? <span aria-hidden="true" className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#dfe9f7] text-[#173c71]"><UserRound size={16} /></span> : null}
               </article>
             ))}
+            {showReportPreparation && reportPreparation ? (
+              <section className="mb-4 ml-10 max-w-2xl rounded-[8px] border border-[#b8cceb] bg-white p-4" aria-labelledby="saathi-report-packet">
+                <div className="flex items-center gap-2 text-[#08245c]"><FileText size={17} /><h3 className="text-sm font-bold" id="saathi-report-packet">{t("reportPacketTitle")}</h3></div>
+                <p className="mt-1 text-xs leading-5 text-slate-600">{t("reportPacketCopy")}</p>
+                <ul className="mt-3 divide-y divide-slate-200 rounded-[6px] border border-slate-200">
+                  {reportPreparation.checklist.map((item) => (
+                    <li className="flex items-start gap-2 px-3 py-2 text-xs" key={item.key}>
+                      <span aria-hidden="true" className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full text-[10px] font-bold ${item.status === "collected" ? "bg-green-100 text-green-700" : item.status === "not_available" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}`}>{item.status === "collected" ? "✓" : item.status === "not_available" ? "!" : "·"}</span>
+                      <span><strong className="text-slate-700">{item.label}</strong>{item.value_preview ? <span className="mt-0.5 block break-words text-slate-500">{item.value_preview}</span> : null}</span>
+                    </li>
+                  ))}
+                </ul>
+                {reportPreparation.attachments.length ? <ul className="mt-3 space-y-1 text-xs text-slate-600">{reportPreparation.attachments.map((item) => <li className="flex items-center gap-2" key={item.id}><Paperclip size={12} />{item.file_name} · {item.media_summary}</li>)}</ul> : null}
+                <p className="mt-3 text-[11px] leading-4 text-slate-500">{t("attachmentRuntimeNote")}</p>
+              </section>
+            ) : null}
             {pendingEntity ? (
               <section className="mb-4 ml-10 max-w-xl rounded-[8px] border border-[#b8cceb] bg-white p-4" aria-label={t("confirmationTitle")}>
                 <p className="text-xs font-bold uppercase text-[#315274]">{t("confirmationTitle")}</p>
@@ -176,10 +272,13 @@ export function CyberSaathiConversation() {
           <form className="border-t border-[#dbe5f0] bg-white p-4" onSubmit={submit}>
             <label className="sr-only" htmlFor="saathi-message">{t("inputLabel")}</label>
             <div className="flex items-end gap-2 rounded-[8px] border border-[#aebfd3] bg-white p-2 focus-within:border-[#0b58c7] focus-within:ring-2 focus-within:ring-blue-100">
+              <input accept=".pdf,.png,.jpg,.jpeg" className="sr-only" disabled={loading || sending || attaching} onChange={(event) => { const file = event.target.files?.[0]; if (file) void analyzeAttachment(file); }} ref={attachmentInputRef} type="file" />
               <textarea className="max-h-32 min-h-11 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-500" disabled={loading || sending} id="saathi-message" maxLength={4000} onChange={(event) => setMessage(event.target.value)} placeholder={t("placeholder")} ref={inputRef} rows={1} value={message} />
+              <button aria-label={t("attachEvidence")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] border border-[#c6d4e4] text-[#0b58c7] hover:bg-blue-50 disabled:opacity-50" disabled={loading || sending || attaching || !state?.incident.summary} onClick={() => attachmentInputRef.current?.click()} title={t("attachEvidence")} type="button">{attaching ? <LoaderCircle className="animate-spin" size={18} /> : <Paperclip size={18} />}</button>
               <button aria-label={t("voiceButton")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] border border-[#c6d4e4] text-[#0b58c7] hover:bg-blue-50" onClick={() => setVoiceNotice(true)} title={t("voiceButton")} type="button"><Mic size={18} /></button>
               <button aria-label={t("send")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] bg-[#0b4fb3] text-white disabled:cursor-not-allowed disabled:opacity-50" disabled={!message.trim() || loading || sending} title={t("send")} type="submit"><Send size={18} /></button>
             </div>
+            {attachmentError ? <p className="mt-2 text-xs font-semibold text-red-700" role="alert">{attachmentError}</p> : null}
             <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-slate-500"><span className="flex items-center gap-1"><LockKeyhole size={12} />{t("privacyNote")}</span><span>{message.length}/4000</span></div>
           </form>
         </section>
@@ -195,7 +294,7 @@ export function CyberSaathiConversation() {
                 {!anonymousAllowed ? <p className="mt-2 text-[11px] leading-4 text-slate-500">{t("anonymousUnavailable")}</p> : null}
               </div>
             ) : null}
-            {canHandoff && handoff ? <Link className="mt-4 flex min-h-10 items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" href={handoffPath}>{handoff.target === "track_complaint" ? t("trackAction") : t("reportAction")}<ArrowRight size={17} /></Link> : <p className="mt-4 rounded-[6px] bg-[#edf4ff] px-3 py-2.5 text-xs leading-5 text-[#174574]">{pendingEntity ? t("confirmBeforeHandoff") : handoff?.target === "report_crime" ? t("chooseModeBeforeHandoff") : t("describePrompt")}</p>}
+            {canHandoff && handoff ? handoff.target === "report_crime" ? <button className="mt-4 flex min-h-10 w-full items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" onClick={continueToReport} type="button">{t("reportAction")}<ArrowRight size={17} /></button> : <Link className="mt-4 flex min-h-10 items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" href={handoffPath}>{t("trackAction")}<ArrowRight size={17} /></Link> : <p className="mt-4 rounded-[6px] bg-[#edf4ff] px-3 py-2.5 text-xs leading-5 text-[#174574]">{pendingEntity ? t("confirmBeforeHandoff") : handoff?.target === "report_crime" && !reportPreparation?.ready_for_review ? t("completePacketBeforeHandoff") : handoff?.target === "report_crime" ? t("chooseModeBeforeHandoff") : t("describePrompt")}</p>}
           </section>
           <section className="rounded-[8px] border border-[#d7e2ef] bg-white p-5">
             <h2 className="font-bold text-[#08245c]">{t("boundariesTitle")}</h2>

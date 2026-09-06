@@ -1,19 +1,24 @@
 from uuid import UUID
 
-from fastapi import APIRouter, status
+from typing import Annotated
 
-from app.core.errors import success_response
+from fastapi import APIRouter, File, Form, UploadFile, status
+from pydantic import ValidationError
+
+from app.core.errors import APIError, success_response
 from app.schemas.common import SuccessResponse
 from app.schemas.cyber_saathi import (
     ConversationCreate,
     ConversationMessageRequest,
     ConversationResponse,
+    ConversationState,
     KnowledgeSearchRequest,
     KnowledgeSearchResponse,
     UnderstandingRequest,
     UnderstandingResult,
 )
 from app.services.cyber_saathi_service import CyberSaathiService
+from app.services.cyber_saathi_attachment import read_and_analyze_attachment
 from app.services.cyber_saathi_knowledge import KnowledgeService
 from app.services.cyber_saathi_understanding import UnderstandingEngine
 
@@ -38,6 +43,27 @@ def send_message(
     conversation_id: UUID, payload: ConversationMessageRequest
 ) -> dict[str, object]:
     return success_response(CyberSaathiService.reply(conversation_id, payload))
+
+
+@router.post(
+    "/conversations/{conversation_id}/attachments",
+    response_model=SuccessResponse[ConversationResponse],
+)
+async def analyze_conversation_attachment(
+    conversation_id: UUID,
+    file: Annotated[UploadFile, File(...)],
+    state_json: Annotated[str, Form()],
+) -> dict[str, object]:
+    try:
+        state = ConversationState.model_validate_json(state_json)
+    except ValidationError:
+        raise APIError(
+            status_code=422,
+            code="INVALID_CONVERSATION_STATE",
+            message="The conversation state could not be validated.",
+        ) from None
+    analysis, _ = await read_and_analyze_attachment(file)
+    return success_response(CyberSaathiService.add_attachment(conversation_id, state, analysis))
 
 
 @router.post(

@@ -2,7 +2,7 @@ import json
 from functools import lru_cache
 from typing import Annotated
 
-from pydantic import Field, field_validator
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
@@ -34,6 +34,28 @@ class Settings(BaseSettings):
     )
     local_storage_path: str = "storage"
     evidence_max_file_size: int = Field(default=10 * 1024 * 1024, ge=1)
+    llm_enabled: bool = True
+    llm_primary_provider: str = "gemini"
+    llm_secondary_provider: str = "grok"
+    llm_tertiary_provider: str = "nvidia"
+    gemini_api_key: SecretStr | None = None
+    gemini_model: str = "gemini-2.5-flash"
+    gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta"
+    grok_api_key: SecretStr | None = None
+    grok_model: str = "grok-3-mini"
+    grok_base_url: str = "https://api.x.ai/v1"
+    nvidia_api_key: SecretStr | None = None
+    nvidia_model: str = "nvidia/nemotron-3-super-120b-a12b"
+    nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
+    llm_provider_timeout_seconds: float = Field(default=6.0, ge=0.2, le=10)
+    llm_total_timeout_seconds: float = Field(default=8.0, ge=0.5, le=20)
+    llm_max_retries: int = Field(default=1, ge=0, le=2)
+    llm_max_input_tokens: int = Field(default=3000, ge=500, le=16000)
+    llm_max_output_tokens: int = Field(default=600, ge=100, le=2000)
+    llm_safety_temperature: float = Field(default=0.1, ge=0, le=1)
+    llm_explanation_temperature: float = Field(default=0.25, ge=0, le=1)
+    llm_conversation_temperature: float = Field(default=0.4, ge=0, le=1)
+    llm_top_p: float = Field(default=0.9, gt=0, le=1)
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -64,6 +86,24 @@ class Settings(BaseSettings):
                 raise ValueError("CORS_ORIGINS JSON must be an array of strings.")
             return [origin.strip() for origin in parsed if origin.strip()]
         return [origin.strip() for origin in candidate.split(",") if origin.strip()]
+
+    @field_validator(
+        "llm_primary_provider", "llm_secondary_provider", "llm_tertiary_provider"
+    )
+    @classmethod
+    def validate_llm_provider(cls, value: str) -> str:
+        candidate = value.strip().casefold()
+        if candidate not in {"gemini", "grok", "nvidia"}:
+            raise ValueError("LLM provider must be gemini, grok, or nvidia")
+        return candidate
+
+    @field_validator("gemini_base_url", "grok_base_url", "nvidia_base_url")
+    @classmethod
+    def validate_provider_base_url(cls, value: str) -> str:
+        candidate = value.rstrip("/")
+        if not candidate.startswith("https://"):
+            raise ValueError("LLM provider base URLs must use HTTPS")
+        return candidate
 
 
 @lru_cache
