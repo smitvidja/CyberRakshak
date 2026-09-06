@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "inspection_manifest": "backend/app/data/cyber_saathi/dataset_inspection.json",
   "datasets": [
     {
@@ -117,7 +117,7 @@
       "rag_allowed": true,
       "evaluation_allowed": true,
       "training_allowed": false,
-      "known_limitations": ["Initial six-source, eight-chunk baseline", "Must remain separate from all supplementary datasets", "No live portal lookup or claim of government-system access"]
+      "known_limitations": ["Reviewed 13-source, 30-chunk corpus; source coverage is intentionally bounded", "Must remain separate from all supplementary datasets", "No live portal lookup or claim of government-system access", "Local source PDFs are staging material and are not loaded at application startup", "Regulatory guidance retains date/version and never promises a specific bank outcome"]
     }
   ]
 }

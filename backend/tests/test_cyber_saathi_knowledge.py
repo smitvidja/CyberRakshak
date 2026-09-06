@@ -14,8 +14,8 @@ def test_explicit_ingestion_creates_a_persistent_traceable_index() -> None:
     result = rebuild_index()
 
     assert result["status"] == "passed"
-    assert result["source_count"] == 6
-    assert result["chunk_count"] == 8
+    assert result["source_count"] == 13
+    assert result["chunk_count"] == 30
     assert result["embedding_dimension"] == 384
     assert INDEX_PATH.exists()
 
@@ -75,7 +75,7 @@ def test_knowledge_gold_set_meets_relevance_source_and_no_result_gates() -> None
     result = evaluate()
 
     assert result["status"] == "passed"
-    assert result["metrics"]["case_count"] == 12
+    assert result["metrics"]["case_count"] == 21
     assert result["metrics"]["retrieval_relevance"] == 1
     assert result["metrics"]["source_correctness"] == 1
     assert result["metrics"]["no_result_correctness"] == 1

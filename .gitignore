@@ -32,6 +32,7 @@ storage/
 backend/uploads/
 backend/storage/
 dataset-CyberSathi/
+knowledge-sources/
 
 # Logs and operating-system files
 *.log

@@ -1,8 +1,8 @@
 {
-  "version": "2026.09.3",
+  "version": "2026.09.3.1",
   "cases": [
     {"query": "Mere UPI se paise cut gaye, kya karun?", "domain": "financial_fraud", "expected_source_id": "ncrp_financial_fraud"},
-    {"query": "A fraudulent bank transaction happened today", "domain": "financial_fraud", "expected_source_id": "ncrp_financial_fraud"},
+    {"query": "A fraudulent bank transaction happened today", "domain": "financial_fraud", "expected_source_id": "rbi_unauthorised_transactions"},
     {"query": "Mujhe phishing email aur fake link mila hai", "domain": "phishing_scam", "expected_source_id": "ncrp_citizen_manual"},
     {"query": "I clicked a suspicious email attachment and my account may be compromised", "domain": "malware", "expected_source_id": "ncrp_citizen_manual"},
     {"query": "Instagram par abusive messages aur stalking ho rahi hai", "domain": "online_harassment", "expected_source_id": "ncrp_citizen_manual"},
@@ -11,6 +11,15 @@
     {"query": "Someone made a fake profile with my photo", "domain": "identity_theft", "expected_source_id": "ncrp_citizen_manual"},
     {"query": "Ye UPI ID aur phone number suspicious hai, check kaise karun?", "domain": "unknown", "expected_source_id": "ncrp_identifier_facilities"},
     {"query": "Mujhe sirf online safety tips chahiye", "domain": null, "expected_source_id": "ncrp_cyber_safety_tips"},
+    {"query": "A caller says I am under digital arrest and must pay now", "domain": "phishing_scam", "expected_source_id": "certin_digital_safety_compass"},
+    {"query": "Someone sent a fake banking APK and wants remote access to my phone", "domain": "financial_fraud", "expected_source_id": "certin_digital_safety_compass"},
+    {"query": "I got a work from home job but they demand an upfront fee", "domain": "financial_fraud", "expected_source_id": "certin_digital_safety_compass"},
+    {"query": "An online game friend gives my child compliments, asks for photos, and says to keep it secret", "domain": "child_safety", "expected_source_id": "certin_cyber_smart_kids"},
+    {"query": "My child is being bullied online, what evidence should we keep?", "domain": "online_harassment", "expected_source_id": "ncrp_cyber_safety_tips"},
+    {"query": "महिला सुरक्षा के लिए OTP और संदिग्ध लिंक से कैसे बचें?", "domain": "phishing_scam", "expected_source_id": "certin_mahila_raksha_hi"},
+    {"query": "An unknown app wants camera and contacts permission", "domain": "malware", "expected_source_id": "certin_mahila_raksha_en"},
+    {"query": "A caller asks for my CVV and UPI PIN to receive money", "domain": "financial_fraud", "expected_source_id": "certin_cyber_awareness_2023"},
+    {"query": "My bank debit is unauthorised. How quickly should I notify my bank?", "domain": "financial_fraud", "expected_source_id": "rbi_unauthorised_transactions"},
     {"query": "Mere phone ki battery low hai", "domain": null, "expected_source_id": null},
     {"query": "Tell me a dinner recipe", "domain": null, "expected_source_id": null}
   ]
