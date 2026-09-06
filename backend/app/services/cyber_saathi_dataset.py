@@ -140,8 +140,21 @@ def validate_registry() -> None:
     if not by_name["Authoritative citizen knowledge corpus"]["rag_allowed"]:
         raise ValueError("The separate authoritative corpus must own future RAG usage")
     inspected = inspection.get("datasets", [])
-    if len(inspected) != 9:
-        raise ValueError("All nine discovered external datasets must remain inspected")
+    expected_ids = {
+        "bitext_27k",
+        "generic_chatbot_xlsx",
+        "generic_conversations_json",
+        "cyber_chat_history_csv",
+        "cyber_chat_history_sqlite",
+        "sentiment_chat_csv",
+        "cybersecurity_corpus_csv",
+        "cybermetric_train_parquet",
+        "cybermetric_validation_parquet",
+        "cybersecurity_32k_parquet",
+    }
+    inspected_ids = {str(dataset.get("id", "")) for dataset in inspected}
+    if inspected_ids != expected_ids:
+        raise ValueError("All ten supplied dataset artifacts must remain inspected")
     for dataset in inspected:
         if dataset.get("rows", 0) <= 0 or len(dataset.get("sha256", "")) != 64:
             raise ValueError(f"Incomplete inspection evidence for {dataset.get('id', 'unknown')}")

@@ -31,6 +31,7 @@ uploads/
 storage/
 backend/uploads/
 backend/storage/
+dataset-CyberSathi/
 
 # Logs and operating-system files
 *.log

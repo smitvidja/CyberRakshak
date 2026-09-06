@@ -20,7 +20,7 @@
 - cybermetric 10K validation is held out and cannot be used for training.
 - Generic chatbot, sentiment, cybersecurity corpus, 32K instructions, and cybermetric train are supplementary only.
 - The authoritative citizen knowledge corpus is a separate empty slot for Session 9.3. No generic dataset is treated as citizen guidance.
-- Nine supplied datasets were inspected without ingesting them into runtime or RAG. `dataset_inspection.json` records file fingerprints, row counts, observed schemas, null counts where supported, and the policy decision used by the registry.
+- All ten supplied dataset artifacts were inspected without ingesting them into runtime or RAG. `dataset_inspection.json` records file fingerprints, row counts, observed schemas, null counts where supported, and the policy decision used by the registry. Raw sources remain local and untracked.
 - Women and Child Online Safety and Online Harassment have explicit `source_required` taxonomy slots. Current examples are small manually reviewed safety fixtures, not claims of broad coverage.
 
 ## Normalization and split controls
@@ -50,6 +50,7 @@ Each selected source group must provide reviewed English, Hindi, and Hinglish va
 | Generic chatbot workbook | 1,358 | session/message/response/category/intent fields | Supplementary conversation only |
 | Generic intent JSON | 278 patterns across 29 intents | tag, context, patterns, responses | Supplementary intent only |
 | Chat history CSV | 29 | id, session_id, role, message | Supplementary conversation only |
+| Chat history SQLite | 29 | message_store: id, session_id, message | Supplementary conversation only |
 | Sentiment chat CSV | 584 | message, sentiment | Supplementary sentiment only |
 | Cybersecurity corpus | 1,000 | text, label | Supplementary technical only |
 | cybermetric train | 9,189 | system, instruction, input, output, info | Supplementary technical only |

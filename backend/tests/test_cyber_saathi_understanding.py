@@ -153,7 +153,11 @@ def test_dataset_registry_and_split_are_controlled() -> None:
     evaluation_ids = {row.source_example_id for row in prepared["evaluation"]}
 
     assert support_ids.isdisjoint(evaluation_ids)
-    assert len(inspection["datasets"]) == 9
+    assert len(inspection["datasets"]) == 10
+    assert {row["id"] for row in inspection["datasets"]} >= {
+        "bitext_27k",
+        "cyber_chat_history_sqlite",
+    }
     assert all(row["rows"] > 0 and row["schema"] for row in inspection["datasets"])
     assert len(generated) == len(sources) * 3
     assert all(row.original_text and row.source_dataset for row in generated)
