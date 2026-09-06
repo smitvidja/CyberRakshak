@@ -109,15 +109,15 @@
     {
       "name": "Authoritative citizen knowledge corpus",
       "location": "backend/app/data/cyber_saathi/authoritative_knowledge",
-      "availability": "separate_slot_empty",
-      "purpose": ["future_rag_authority"],
-      "schema": "authoritative_knowledge_document_v1",
+      "availability": "present_indexed",
+      "purpose": ["authoritative_knowledge", "lightweight_retrieval", "evaluation"],
+      "schema": "knowledge_source_pack_v1 -> knowledge_index_v1",
       "domain": "indian_citizen_cyber_guidance",
-      "allowed_usage": "Only reviewed official/public guidance approved in Session 9.3.",
+      "allowed_usage": "Only reviewed official/public guidance approved in Session 9.3. Runtime reads the generated index only; re-ingestion is explicit.",
       "rag_allowed": true,
       "evaluation_allowed": true,
       "training_allowed": false,
-      "known_limitations": ["No documents approved yet", "Must remain separate from all supplementary datasets"]
+      "known_limitations": ["Initial six-source, eight-chunk baseline", "Must remain separate from all supplementary datasets", "No live portal lookup or claim of government-system access"]
     }
   ]
 }

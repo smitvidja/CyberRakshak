@@ -1,0 +1,124 @@
+{
+  "version": "2026.09.3",
+  "reviewed_at": "2026-09-06",
+  "sources": [
+    {
+      "source_id": "ncrp_financial_fraud",
+      "source_title": "Citizen Financial Cyber Frauds Reporting and Management System",
+      "source_type": "official_public_guidance",
+      "source_url": "https://cybercrime.gov.in/uploadmedia/instructions_citizenreportingcyberfrauds.pdf",
+      "jurisdiction": "India",
+      "domains": ["financial_fraud"],
+      "language": "EN",
+      "version": "public guidance reviewed 2026-09-06",
+      "published_at": "2023",
+      "sections": [
+        {
+          "title": "Urgent financial fraud reporting",
+          "text": "For a suspected unauthorized bank, wallet, card, or UPI transaction, act promptly. The National Cybercrime Reporting Portal guidance directs victims to call 1930 or report at cybercrime.gov.in. Preserve the transaction screenshot and keep the bank or wallet name, transaction ID, transaction date, relevant account or UPI details, and any acknowledgement available. Do not share OTP, PIN, password, or send more money.",
+          "retrieval_terms": ["UPI fraud", "bank debit", "paise cut gaye", "1930", "unauthorized transaction", "wallet payment"]
+        }
+      ]
+    },
+    {
+      "source_id": "ncrp_citizen_manual",
+      "source_title": "National Cybercrime Reporting Portal Citizen Manual: Other Cyber Crime",
+      "source_type": "official_public_guidance",
+      "source_url": "https://cybercrime.gov.in/UploadMedia/MHA-CitizenManualReportOtherCyberCrime-v10.pdf",
+      "jurisdiction": "India",
+      "domains": ["phishing_scam", "online_harassment", "identity_theft", "malware"],
+      "language": "EN",
+      "version": "v10 public manual",
+      "published_at": "2019",
+      "sections": [
+        {
+          "title": "Phishing and account compromise evidence",
+          "text": "For a phishing email or suspected account compromise, preserve original evidence. Save the email as PDF or EML when possible, retain screenshots, email headers, relevant attachments, the suspicious URL, and the approximate incident date and time. Do not delete the original email, header, screenshot, or attachment before you have recorded the evidence needed for a report.",
+          "retrieval_terms": ["phishing", "fake link", "email hack", "password", "header", "suspicious URL", "link click"]
+        },
+        {
+          "title": "Harassment, abuse, and cyberstalking evidence",
+          "text": "For cyber bullying, stalking, sexting, threatening messages, or abusive social-media content, preserve the original chat, message, profile ID, page URL, and screenshots. Platforms may offer reporting or flagging controls under their own policies. The portal manual lists Online and Social Media Related Crime categories for cyber bullying, stalking, sexting, and related reports.",
+          "retrieval_terms": ["Instagram abuse", "abusive messages", "harassment", "cyberstalking", "threat", "blackmail", "social media"]
+        },
+        {
+          "title": "Impersonation, malicious attachments, and device risk",
+          "text": "A fake profile or impersonating email can be reported with the relevant profile ID, URL, screenshots, service-provider details, and approximate date and time. The portal manual also warns that malicious email attachments can install malware or capture saved credentials. Preserve evidence and avoid opening suspicious attachments or sharing one-time passwords.",
+          "retrieval_terms": ["fake profile", "impersonation", "identity theft", "malware", "ransomware", "attachment", "device compromise"]
+        }
+      ]
+    },
+    {
+      "source_id": "ncrp_women_child_faq",
+      "source_title": "National Cybercrime Reporting Portal FAQ: Women and Child Reporting",
+      "source_type": "official_public_guidance",
+      "source_url": "https://cybercrime.gov.in/Webform/FAQ.aspx",
+      "jurisdiction": "India",
+      "domains": ["child_safety", "online_harassment"],
+      "language": "EN",
+      "version": "web FAQ reviewed 2026-09-06",
+      "published_at": "2026-09-06",
+      "sections": [
+        {
+          "title": "Women and child safety reporting boundary",
+          "text": "The National Cybercrime Reporting Portal has a Women and Child reporting section and a Report Other Cybercrimes section. Its FAQ describes anonymous reporting only for specified online sexually explicit content; it must not be presented as anonymous reporting for every incident. For any report, keep the complaint details accurate and complete. If there is immediate danger, seek local emergency help as well as preserving safe evidence.",
+          "retrieval_terms": ["women safety", "child safety", "minor", "online grooming", "anonymous report", "unsafe content", "harassment"]
+        }
+      ]
+    },
+    {
+      "source_id": "ncrp_hindi_faq",
+      "source_title": "राष्ट्रीय साइबर अपराध रिपोर्टिंग पोर्टल: अक्सर पूछे जाने वाले प्रश्न",
+      "source_type": "official_public_guidance",
+      "source_url": "https://www.cybercrime.gov.in/Hindi/FAQhn.aspx",
+      "jurisdiction": "India",
+      "domains": ["child_safety", "financial_fraud", "phishing_scam", "online_harassment"],
+      "language": "HI",
+      "version": "Hindi web FAQ reviewed 2026-09-06",
+      "published_at": "2026-09-06",
+      "sections": [
+        {
+          "title": "हिंदी में रिपोर्टिंग और साक्ष्य",
+          "text": "राष्ट्रीय साइबर अपराध रिपोर्टिंग पोर्टल पर महिलाओं और बच्चों से जुड़े अपराध तथा अन्य साइबर अपराध की रिपोर्टिंग के अलग विकल्प हैं। उपलब्ध साक्ष्य जैसे बैंक स्टेटमेंट, ऑनलाइन धन-अंतरण की रसीद, ई-मेल की प्रति, वेबपेज URL, बातचीत की प्रतिलिपि और संदिग्ध नंबर के स्क्रीनशॉट सुरक्षित रखें। किसी पहचानकर्ता की रिपोर्ट को अपराध का प्रमाण न मानें।",
+          "retrieval_terms": ["मेरे पैसे कट गए", "UPI", "फिशिंग", "साइबर स्टॉकिंग", "बच्चे की सुरक्षा", "स्क्रीनशॉट", "शिकायत"]
+        }
+      ]
+    },
+    {
+      "source_id": "ncrp_identifier_facilities",
+      "source_title": "National Cybercrime Reporting Portal: Suspect Repository and Report Suspect",
+      "source_type": "official_public_guidance",
+      "source_url": "https://cybercrime.gov.in/",
+      "jurisdiction": "India",
+      "domains": ["unknown"],
+      "language": "EN",
+      "version": "portal information reviewed 2026-09-06",
+      "published_at": "2026-09-06",
+      "sections": [
+        {
+          "title": "Suspicious identifier handling",
+          "text": "The National Cybercrime Reporting Portal describes facilities to search or report suspect mobile numbers, email IDs, account numbers, URLs, messaging handles, SMS headers, and social-media URLs. A reported or matched identifier is not proof that a person is a criminal. Cyber Saathi must not claim live access to the portal or return a live match; it can direct a citizen to the official portal and preserve the identifier for review.",
+          "retrieval_terms": ["check number", "suspicious UPI ID", "reported phone", "email check", "URL check", "identifier"]
+        }
+      ]
+    },
+    {
+      "source_id": "ncrp_cyber_safety_tips",
+      "source_title": "National Cybercrime Reporting Portal: Cyber Safety Tips",
+      "source_type": "official_public_guidance",
+      "source_url": "https://cybercrime.gov.in/",
+      "jurisdiction": "India",
+      "domains": ["unknown", "phishing_scam", "malware"],
+      "language": "EN",
+      "version": "portal information reviewed 2026-09-06",
+      "published_at": "2026-09-06",
+      "sections": [
+        {
+          "title": "General cyber safety",
+          "text": "The National Cybercrime Reporting Portal publishes cyber safety tips for protecting people, data, and devices. Treat unexpected links, attachments, and requests for passwords, PINs, or one-time passwords with caution. For a suspicious but unclear event, do not invent a diagnosis: ask what happened, preserve relevant evidence, and use the official reporting route when the citizen wants to report a cybercrime.",
+          "retrieval_terms": ["online safety", "suspicious message", "OTP", "password", "unknown link", "general cyber safety"]
+        }
+      ]
+    }
+  ]
+}

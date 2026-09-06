@@ -1,0 +1,17 @@
+{
+  "version": "2026.09.3",
+  "cases": [
+    {"query": "Mere UPI se paise cut gaye, kya karun?", "domain": "financial_fraud", "expected_source_id": "ncrp_financial_fraud"},
+    {"query": "A fraudulent bank transaction happened today", "domain": "financial_fraud", "expected_source_id": "ncrp_financial_fraud"},
+    {"query": "Mujhe phishing email aur fake link mila hai", "domain": "phishing_scam", "expected_source_id": "ncrp_citizen_manual"},
+    {"query": "I clicked a suspicious email attachment and my account may be compromised", "domain": "malware", "expected_source_id": "ncrp_citizen_manual"},
+    {"query": "Instagram par abusive messages aur stalking ho rahi hai", "domain": "online_harassment", "expected_source_id": "ncrp_citizen_manual"},
+    {"query": "बच्चे की ऑनलाइन सुरक्षा और शिकायत के बारे में मदद चाहिए", "domain": "child_safety", "expected_source_id": "ncrp_hindi_faq"},
+    {"query": "Can I report women and child related online content anonymously?", "domain": "child_safety", "expected_source_id": "ncrp_women_child_faq"},
+    {"query": "Someone made a fake profile with my photo", "domain": "identity_theft", "expected_source_id": "ncrp_citizen_manual"},
+    {"query": "Ye UPI ID aur phone number suspicious hai, check kaise karun?", "domain": "unknown", "expected_source_id": "ncrp_identifier_facilities"},
+    {"query": "Mujhe sirf online safety tips chahiye", "domain": null, "expected_source_id": "ncrp_cyber_safety_tips"},
+    {"query": "Mere phone ki battery low hai", "domain": null, "expected_source_id": null},
+    {"query": "Tell me a dinner recipe", "domain": null, "expected_source_id": null}
+  ]
+}

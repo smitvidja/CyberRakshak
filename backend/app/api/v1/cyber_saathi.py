@@ -8,10 +8,13 @@ from app.schemas.cyber_saathi import (
     ConversationCreate,
     ConversationMessageRequest,
     ConversationResponse,
+    KnowledgeSearchRequest,
+    KnowledgeSearchResponse,
     UnderstandingRequest,
     UnderstandingResult,
 )
 from app.services.cyber_saathi_service import CyberSaathiService
+from app.services.cyber_saathi_knowledge import KnowledgeService
 from app.services.cyber_saathi_understanding import UnderstandingEngine
 
 
@@ -45,3 +48,11 @@ def understand_message(payload: UnderstandingRequest) -> dict[str, object]:
     return success_response(
         UnderstandingEngine.analyze(payload.message, payload.preferred_language)
     )
+
+
+@router.post(
+    "/knowledge/search",
+    response_model=SuccessResponse[KnowledgeSearchResponse],
+)
+def search_knowledge(payload: KnowledgeSearchRequest) -> dict[str, object]:
+    return success_response(KnowledgeService.search(payload))

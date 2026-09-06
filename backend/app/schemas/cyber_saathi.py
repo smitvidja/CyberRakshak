@@ -244,6 +244,61 @@ class LatencyBudget(BaseModel):
     first_useful_response_ms: int = Field(default=2900, ge=0)
 
 
+class KnowledgeSourceMetadata(BaseModel):
+    source_id: str = Field(pattern=r"^[a-z0-9_]+$", max_length=100)
+    source_title: str = Field(min_length=1, max_length=300)
+    source_type: str = Field(min_length=1, max_length=100)
+    source_url: str = Field(min_length=1, max_length=1000)
+    jurisdiction: str = Field(min_length=1, max_length=100)
+    domains: list[CrimeDomain] = Field(min_length=1, max_length=6)
+    language: LanguageCode
+    version: str = Field(min_length=1, max_length=100)
+    published_at: str = Field(min_length=1, max_length=50)
+
+
+class KnowledgeChunk(BaseModel):
+    chunk_id: str = Field(pattern=r"^[a-z0-9_:-]+$", max_length=150)
+    source: KnowledgeSourceMetadata
+    section_title: str = Field(min_length=1, max_length=300)
+    text: str = Field(min_length=1, max_length=1200)
+    retrieval_terms: list[str] = Field(default_factory=list, max_length=30)
+    content_hash: str = Field(min_length=64, max_length=64)
+    embedding: list[float] = Field(min_length=384, max_length=384)
+
+
+class KnowledgeSearchRequest(BaseModel):
+    query: str = Field(min_length=3, max_length=1000)
+    domain: CrimeDomain | None = None
+    language: LanguageCode | None = None
+    top_k: int = Field(default=3, ge=1, le=5)
+    minimum_relevance: float = Field(default=0.16, ge=0, le=1)
+
+
+class KnowledgeMatch(BaseModel):
+    chunk_id: str
+    source_id: str
+    source_title: str
+    source_url: str
+    source_type: str
+    jurisdiction: str
+    domains: list[CrimeDomain]
+    language: LanguageCode
+    version: str
+    section_title: str
+    text: str
+    relevance_score: float = Field(ge=0, le=1)
+
+
+class KnowledgeSearchResponse(BaseModel):
+    query: str
+    domain_filter: CrimeDomain | None = None
+    retrieval_latency_ms: float = Field(ge=0)
+    index_version: str
+    no_result: bool
+    matches: list[KnowledgeMatch] = Field(default_factory=list, max_length=5)
+    bounded_context: str = Field(default="", max_length=2400)
+
+
 class ConversationResponse(BaseModel):
     state: ConversationState
     latency_budget: LatencyBudget = Field(default_factory=LatencyBudget)

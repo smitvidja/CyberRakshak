@@ -48,7 +48,21 @@ Error shape:
 /api/v1/warrior-reports
 /api/v1/notifications
 /api/v1/admin
+/api/v1/cyber-saathi
 ```
+
+## Cyber Saathi knowledge retrieval
+
+`POST /api/v1/cyber-saathi/knowledge/search` performs bounded retrieval only from the reviewed authoritative knowledge index. It accepts a citizen query, optional `domain`, optional language preference, a capped `top_k` (1–5), and a relevance threshold.
+
+The response returns `no_result` when retrieval is weak instead of inventing a procedure. Each result includes the chunk ID, source ID, official source URL, title, jurisdiction, domain tags, version, section title, and relevance score. The generated index is rebuilt explicitly with:
+
+```powershell
+cd backend
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi_knowledge
+```
+
+The API never rebuilds embeddings at startup and does not perform live government or portal lookups.
 
 ## FE -> API -> BE Flow
 
