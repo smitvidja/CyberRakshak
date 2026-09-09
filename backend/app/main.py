@@ -22,6 +22,7 @@ def create_application() -> FastAPI:
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["Authorization", "Content-Type", "Accept", "Origin"],
+        expose_headers=["X-Voice-Provider", "X-TTS-First-Audio-Ms"],
     )
     register_exception_handlers(application)
 

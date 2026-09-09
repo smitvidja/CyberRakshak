@@ -74,6 +74,15 @@ Eligible grounded guidance may pass through the server-side multi-provider LLM g
 
 Urgent financial playbooks, critical-entity confirmation, low-confidence clarification, and workflow handoff remain deterministic. They do not wait for or depend on an LLM.
 
+## Cyber Saathi voice APIs
+
+- `GET /api/v1/cyber-saathi/voice/capabilities` returns only safe Sarvam configuration/capability flags and model labels. It never returns the subscription key.
+- `WS /api/v1/cyber-saathi/conversations/{conversation_id}/voice/transcriptions/stream?language=EN|HI|HINGLISH|MIXED` proxies 16 kHz mono linear16 audio to Sarvam Realtime STT and returns partial/final transcript events. The browser never connects to Sarvam directly.
+- `POST /api/v1/cyber-saathi/voice/transcriptions` accepts a short supported recording plus the conversation language as the non-WebSocket fallback. Sarvam's synchronous contract limits this path to recordings under 30 seconds.
+- `POST /api/v1/cyber-saathi/voice/speech` accepts bounded response text and language and streams MPEG audio from Sarvam TTS. Audio is not persisted or cached.
+
+Final voice transcripts enter the existing conversation message endpoint. Voice does not bypass understanding, critical-entity confirmation, safety playbooks, report readiness, consent, or anonymous-reporting boundaries.
+
 `POST /api/v1/cyber-saathi/conversations/{conversation_id}/attachments` accepts multipart `state_json` plus one `file`. It permits only PDF, PNG, JPG, or JPEG up to 10 MB, verifies the file signature, extracts bounded basic metadata/text hints transiently, and returns the updated incident report packet. This endpoint does not persist the binary; the existing complaint-evidence endpoint remains the sole storage owner after a draft exists.
 
 ## FE -> API -> BE Flow

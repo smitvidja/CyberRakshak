@@ -547,3 +547,30 @@ class ConversationResponse(BaseModel):
     state: ConversationState
     latency_budget: LatencyBudget = Field(default_factory=LatencyBudget)
     mock_provider: bool = True
+
+
+class VoiceCapabilities(BaseModel):
+    provider: Literal["sarvam"] = "sarvam"
+    enabled: bool
+    configured: bool
+    realtime_stt: bool
+    rest_stt_fallback: bool
+    streaming_tts: bool
+    stt_model: str
+    realtime_stt_model: str
+    tts_model: str
+    max_recording_seconds: int
+
+
+class VoiceTranscription(BaseModel):
+    transcript: str = Field(min_length=1, max_length=4000)
+    detected_language_code: str | None = Field(default=None, max_length=20)
+    language_probability: float | None = Field(default=None, ge=0, le=1)
+    provider: Literal["sarvam"] = "sarvam"
+    model: str
+    stt_latency_ms: float = Field(ge=0)
+
+
+class VoiceSpeechRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=3500)
+    language: LanguageCode

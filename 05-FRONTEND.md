@@ -127,3 +127,12 @@ flowchart TD
 - Clear focus states.
 - Responsive layouts for desktop, mobile, and tablet.
 - Preserve the form stepper and dashboard information hierarchy on mobile.
+
+## Cyber Saathi Voice UX
+
+- Voice and text share one conversation state and one message pipeline. Switching modality must not start over or fork incident logic.
+- Present explicit ready, listening, processing, transcription, speaking, paused, retry, and unavailable states.
+- Keep the transcript editable and require the citizen to send it through the normal composer. Never auto-confirm amounts, phone numbers, UPI IDs, transaction IDs, URLs, names, or other critical report entities.
+- Stream audio playback with `MediaSource` where the browser supports the response codec; retain a buffered playback fallback.
+- If microphone, network, STT, TTS, or provider access fails, preserve any transcript, keep text input available, and offer retry.
+- Show microphone-to-STT, response, retrieval, LLM, TTS-first-audio, and end-to-end timing separately when measurements exist.

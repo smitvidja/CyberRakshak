@@ -67,6 +67,18 @@ class Settings(BaseSettings):
     rag_dense_weight: float = Field(default=0.55, ge=0, le=1)
     rag_sparse_weight: float = Field(default=0.25, ge=0, le=1)
     rag_lexical_weight: float = Field(default=0.20, ge=0, le=1)
+    voice_enabled: bool = True
+    sarvam_api_key: SecretStr | None = None
+    sarvam_base_url: str = "https://api.sarvam.ai"
+    sarvam_stt_model: str = "saaras:v4"
+    # The realtime endpoint currently accepts the v4 model as "saaras:v4".
+    # "saaras:v4-realtime" is rejected by the live service as invalid_model.
+    sarvam_realtime_stt_model: str = "saaras:v4"
+    sarvam_tts_model: str = "bulbul:v3"
+    sarvam_tts_speaker: str = "shubh"
+    voice_provider_timeout_seconds: float = Field(default=12.0, ge=1, le=30)
+    voice_max_audio_bytes: int = Field(default=10 * 1024 * 1024, ge=1024)
+    voice_max_recording_seconds: int = Field(default=30, ge=1, le=30)
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -108,7 +120,9 @@ class Settings(BaseSettings):
             raise ValueError("LLM provider must be gemini, grok, or nvidia")
         return candidate
 
-    @field_validator("gemini_base_url", "grok_base_url", "nvidia_base_url")
+    @field_validator(
+        "gemini_base_url", "grok_base_url", "nvidia_base_url", "sarvam_base_url"
+    )
     @classmethod
     def validate_provider_base_url(cls, value: str) -> str:
         candidate = value.rstrip("/")

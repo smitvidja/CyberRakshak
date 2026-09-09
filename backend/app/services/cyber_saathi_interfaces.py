@@ -18,11 +18,16 @@ class LLMGateway(Protocol):
 
 
 class VoiceAdapter(Protocol):
-    async def transcribe(self, *, audio: bytes, language: LanguageCode) -> str: ...
+    async def transcribe(
+        self,
+        *,
+        audio: bytes,
+        filename: str,
+        content_type: str,
+        language: LanguageCode,
+    ) -> object: ...
 
-    async def synthesize(
-        self, *, text: str, language: LanguageCode
-    ) -> AsyncIterator[bytes]: ...
+    async def synthesize(self, *, text: str, language: LanguageCode) -> object: ...
 
 
 class SafetyPlaybook(Protocol):

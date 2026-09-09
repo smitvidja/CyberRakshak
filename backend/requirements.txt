@@ -11,3 +11,4 @@ pwdlib[argon2]>=0.2,<1.0
 email-validator>=2.2,<3.0
 python-multipart>=0.0.9,<1.0
 pypdf>=5.0,<6.0
+websockets>=15,<18

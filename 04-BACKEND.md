@@ -115,3 +115,12 @@ Use a consistent response shape:
 ```
 
 Do not expose stack traces or secrets in API responses.
+
+## Cyber Saathi Voice
+
+- Keep Sarvam behind `SarvamVoiceAdapter`; routes and conversation services must not contain provider-specific request code.
+- The browser sends 16 kHz mono linear16 chunks only to the CyberRakshak WebSocket proxy. The Sarvam subscription key stays server-side.
+- Use tolerant language mapping: English uses `en-IN`; Hindi uses `hi-IN` with code-mix support; Hinglish/mixed realtime speech uses automatic detection with `codemix` mode.
+- Realtime STT is primary and the short-recording REST endpoint is the fallback. A voice failure must not mutate or delete conversation state.
+- TTS is returned as a no-store binary stream. Expose only safe provider/model/capability metadata and timing headers.
+- Reject unsupported audio, oversized chunks, and recordings longer than the configured limit before forwarding them.

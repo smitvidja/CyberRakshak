@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test:voice": "tsc -p tsconfig.voice-tests.json && node --test .voice-test-build/tests/voice-lifecycle.test.js",
     "lint": "eslint app components lib"
   },
   "dependencies": {

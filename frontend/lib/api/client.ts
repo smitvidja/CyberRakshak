@@ -46,7 +46,8 @@ function normalizeBaseUrl(baseUrl: string) {
   return baseUrl.replace(/\/$/, "");
 }
 
-function buildUrl(baseUrl: string, path: string) {
+export function buildApiUrl(path: string, baseUrl = process.env.NEXT_PUBLIC_API_URL) {
+  if (!baseUrl) throw new Error("NEXT_PUBLIC_API_URL must be configured before API requests are made.");
   return normalizeBaseUrl(baseUrl) + API_PREFIX + (path.startsWith("/") ? path : "/" + path);
 }
 
@@ -109,7 +110,7 @@ export function createApiClient(baseUrl = process.env.NEXT_PUBLIC_API_URL): ApiC
     }
 
     try {
-      const response = await fetch(buildUrl(resolvedBaseUrl, path), {
+      const response = await fetch(buildApiUrl(path, resolvedBaseUrl), {
         ...init,
         credentials: "include",
         headers,

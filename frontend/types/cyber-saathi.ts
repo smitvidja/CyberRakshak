@@ -182,3 +182,34 @@ export type ConversationResponse = {
   };
   mock_provider: boolean;
 };
+
+export type VoiceCapabilities = {
+  provider: "sarvam";
+  enabled: boolean;
+  configured: boolean;
+  realtime_stt: boolean;
+  rest_stt_fallback: boolean;
+  streaming_tts: boolean;
+  stt_model: string;
+  realtime_stt_model: string;
+  tts_model: string;
+  max_recording_seconds: number;
+};
+
+export type VoiceTranscription = {
+  transcript: string;
+  detected_language_code: string | null;
+  language_probability: number | null;
+  provider: "sarvam";
+  model: string;
+  stt_latency_ms: number;
+};
+
+export type VoiceLatency = {
+  microphone_to_stt_ms: number | null;
+  stt_to_response_ms: number | null;
+  retrieval_ms: number | null;
+  llm_ms: number | null;
+  tts_first_audio_ms: number | null;
+  end_to_end_first_response_ms: number | null;
+};

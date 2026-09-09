@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "incremental": false,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "noEmit": false,
+    "outDir": ".voice-test-build",
+    "sourceMap": false,
+    "target": "ES2022"
+  },
+  "include": [
+    "lib/cyber-saathi/voice-recorder.ts",
+    "lib/cyber-saathi/voice-session.ts",
+    "tests/voice-lifecycle.test.ts"
+  ]
+}

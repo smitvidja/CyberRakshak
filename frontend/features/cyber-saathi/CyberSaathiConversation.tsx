@@ -3,9 +3,10 @@
 import Link from "next/link";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
-import {AlertTriangle, ArrowRight, Bot, Check, ExternalLink, FileText, Languages, LoaderCircle, LockKeyhole, Mic, Paperclip, RefreshCw, Send, ShieldCheck, UserRound} from "lucide-react";
-import {useEffect, useLayoutEffect, useRef, useState, type FormEvent} from "react";
+import {AlertTriangle, ArrowRight, Bot, Check, ExternalLink, FileText, Keyboard, Languages, LoaderCircle, LockKeyhole, Mic, MicOff, Paperclip, Pause, Play, RefreshCw, Send, ShieldCheck, UserRound, Volume2, Waves} from "lucide-react";
+import {useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent} from "react";
 
+import {useCyberSaathiVoice} from "@/features/cyber-saathi/useCyberSaathiVoice";
 import {cyberSaathiApi} from "@/lib/api/cyber-saathi";
 import {prepareCyberSaathiReportHandoff} from "@/lib/cyber-saathi/report-handoff";
 import {setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
@@ -40,7 +41,7 @@ export function CyberSaathiConversation() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [voiceNotice, setVoiceNotice] = useState(false);
+  const [inputMode, setInputMode] = useState<"text" | "voice">("text");
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [attachmentError, setAttachmentError] = useState("");
   const [attaching, setAttaching] = useState(false);
@@ -48,6 +49,12 @@ export function CyberSaathiConversation() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const attachmentInputRef = useRef<HTMLInputElement>(null);
   const initializedRef = useRef(false);
+  const handleVoiceTranscript = useCallback((transcript: string) => setMessage(transcript), []);
+  const voice = useCyberSaathiVoice({
+    conversationId: state?.id,
+    language,
+    onTranscript: handleVoiceTranscript
+  });
 
   useLayoutEffect(() => {
     const input = inputRef.current;
@@ -108,17 +115,29 @@ export function CyberSaathiConversation() {
     setLoading(false);
   }
 
-  async function sendMessage(text: string, reportingMode?: ReportingMode, prepareReportDraft = false) {
+  async function sendMessage(text: string, reportingMode?: ReportingMode, prepareReportDraft = false, speakResponse = false) {
     const trimmed = text.trim();
     if (!state || !trimmed || sending) return;
     setSending(true);
     setError(null);
     const requestState = prepareReportDraft ? {...state, storage_consent: true} : state;
+    const conversationStarted = performance.now();
     const result = await cyberSaathiApi.send(requestState, trimmed, reportingMode, prepareReportDraft);
     if (result.ok) {
       setState(result.data.state);
       setLanguage(result.data.state.language);
       setMessage("");
+      if (speakResponse) {
+        const responseElapsed = Math.round(performance.now() - conversationStarted);
+        const assistantTurn = [...result.data.state.turns].reverse().find((turn) => turn.role === "assistant");
+        voice.recordConversationLatency({
+          stt_to_response_ms: responseElapsed,
+          retrieval_ms: assistantTurn?.retrieval_latency_ms ?? null,
+          llm_ms: assistantTurn?.llm_latency_ms ?? null,
+          end_to_end_first_response_ms: (voice.latency.microphone_to_stt_ms ?? 0) + responseElapsed
+        });
+        if (assistantTurn?.content) void voice.speak(assistantTurn.content, result.data.state.language);
+      }
     } else {
       setError(t("errors.send"));
     }
@@ -127,10 +146,11 @@ export function CyberSaathiConversation() {
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    void sendMessage(message);
+    void sendMessage(message, undefined, false, inputMode === "voice" && voice.status === "transcription");
   }
 
   function changeLanguage(nextLanguage: SaathiLanguage) {
+    voice.resetVoice();
     setLanguage(nextLanguage);
     if (state) {
       const next = {...state, language: nextLanguage};
@@ -141,7 +161,7 @@ export function CyberSaathiConversation() {
   function resetConversation() {
     window.localStorage.removeItem(STORAGE_KEY);
     setState(null);
-    setVoiceNotice(false);
+    voice.resetVoice();
     setAttachmentFiles([]);
     setAttachmentError("");
     void startConversation(language);
@@ -212,6 +232,21 @@ export function CyberSaathiConversation() {
   const handoffPath = handoff?.target === "report_crime"
     ? `/${locale}${handoff.route}?mode=${handoff.reporting_mode === "undecided" ? "identified" : handoff.reporting_mode}&category=${categoryHint}`
     : handoff ? `/${locale}${handoff.route}` : `/${locale}/report-crime`;
+  const voiceErrorKey = voice.errorCode && [
+    "MICROPHONE_PERMISSION_DENIED",
+    "MICROPHONE_UNAVAILABLE",
+    "VOICE_PROVIDER_UNAVAILABLE",
+    "VOICE_NETWORK_ERROR",
+    "VOICE_TIMEOUT",
+    "VOICE_RATE_LIMITED",
+    "NO_SPEECH_DETECTED",
+    "MICROPHONE_AUDIO_DISTORTED",
+    "RECORDING_TOO_LONG",
+    "VOICE_PLAYBACK_FAILED"
+  ].includes(voice.errorCode) ? voice.errorCode : "generic";
+  const microphoneError = ["MICROPHONE_PERMISSION_DENIED", "MICROPHONE_UNAVAILABLE", "NO_SPEECH_DETECTED", "MICROPHONE_AUDIO_DISTORTED"].includes(voiceErrorKey);
+  const voiceStatusKey = loading || sending ? "processing" : microphoneError ? "microphoneError" : voice.status;
+  const microphoneLevel = voice.captureDiagnostics ? Math.min(100, Math.round(voice.captureDiagnostics.rms_level * 800)) : 0;
 
   function openReportWorkflow(nextState: ConversationState, nextHandoff: NonNullable<ConversationState["handoff"]>) {
     prepareCyberSaathiReportHandoff({
@@ -323,15 +358,53 @@ export function CyberSaathiConversation() {
           </div>
 
           {error ? <div className="mx-4 mt-3 flex items-center justify-between gap-3 rounded-[6px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><span>{error}</span><button className="font-bold underline" onClick={() => state ? void sendMessage(message || t("retryMessage")) : void startConversation(language)} type="button">{t("retry")}</button></div> : null}
-          {voiceNotice ? <div className="mx-4 mt-3 rounded-[6px] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-[#174574]">{t("voiceUnavailable")}</div> : null}
 
           <form className="border-t border-[#dbe5f0] bg-white p-4" onSubmit={submit}>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+              <div aria-label={t("inputModeLabel")} className="inline-flex rounded-[6px] border border-[#b9cbe0] bg-[#f7faff] p-1" role="group">
+                <button aria-pressed={inputMode === "text"} className={`inline-flex min-h-8 items-center gap-1.5 rounded-[4px] px-3 text-xs font-bold ${inputMode === "text" ? "bg-white text-[#0b4fb3] shadow-sm" : "text-slate-600"}`} onClick={() => { voice.stopSpeech(); setInputMode("text"); }} type="button"><Keyboard size={14} />{t("textMode")}</button>
+                <button aria-pressed={inputMode === "voice"} className={`inline-flex min-h-8 items-center gap-1.5 rounded-[4px] px-3 text-xs font-bold ${inputMode === "voice" ? "bg-[#0b4fb3] text-white" : "text-slate-600"}`} onClick={() => setInputMode("voice")} type="button"><Mic size={14} />{t("voiceMode")}</button>
+              </div>
+              {voice.capabilities ? <span className="text-[11px] font-semibold text-slate-500">{voice.capabilities.configured ? `${voice.capabilities.provider} · ${voice.capabilities.realtime_stt_model}` : t("voiceProviderUnavailableShort")}</span> : null}
+            </div>
+
+            {inputMode === "voice" ? (
+              <section className={`mb-3 rounded-[8px] border px-4 py-3 ${voice.status === "listening" ? "border-red-200 bg-red-50" : voice.status === "unavailable" || voice.status === "retry" ? "border-amber-200 bg-amber-50" : "border-blue-200 bg-[#f4f8ff]"}`} aria-labelledby="voice-status-title">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span aria-hidden="true" className={`grid h-9 w-9 shrink-0 place-items-center rounded-full ${voice.status === "listening" ? "bg-red-100 text-red-700" : "bg-blue-100 text-[#0b58c7]"}`}>{voice.status === "listening" ? <Waves className="motion-safe:animate-pulse" size={18} /> : voice.status === "speaking" ? <Volume2 size={18} /> : <Mic size={18} />}</span>
+                    <div className="min-w-0"><p className="text-xs font-bold uppercase tracking-wide text-[#315274]" id="voice-status-title">{t(`voiceStatus.${voiceStatusKey}`)}</p><p aria-live="polite" className="mt-0.5 text-xs leading-5 text-slate-600">{loading || sending ? t("voiceHelp.processing") : voice.errorCode ? t(`voiceErrors.${voiceErrorKey}`) : t(`voiceHelp.${voice.status}`)}</p></div>
+                  </div>
+                  <div className="flex gap-2">
+                    {voice.status === "listening" ? <button className="inline-flex min-h-9 items-center gap-2 rounded-[6px] bg-red-700 px-3 text-xs font-bold text-white active:scale-[0.98]" onClick={() => void voice.stopListening()} type="button"><MicOff size={15} />{t("stopListening")}</button> : null}
+                    {voice.status === "speaking" || voice.status === "paused" ? <button className="inline-flex min-h-9 items-center gap-2 rounded-[6px] border border-[#0b58c7] bg-white px-3 text-xs font-bold text-[#0b58c7] active:scale-[0.98]" onClick={voice.toggleSpeech} type="button">{voice.status === "speaking" ? <Pause size={15} /> : <Play size={15} />}{voice.status === "speaking" ? t("pauseSpeech") : t("resumeSpeech")}</button> : null}
+                    {["ready", "retry", "transcription"].includes(voice.status) ? <button className="inline-flex min-h-9 items-center gap-2 rounded-[6px] bg-[#0b4fb3] px-3 text-xs font-bold text-white active:scale-[0.98] disabled:cursor-wait disabled:opacity-50" disabled={!state || !voice.capabilities?.configured || loading || sending} onClick={() => void voice.startListening()} type="button"><Mic size={15} />{voice.status === "retry" ? t("retryVoice") : t("startListening")}</button> : null}
+                  </div>
+                </div>
+                {voice.inputDevices.length ? <label className="mt-3 grid gap-1 border-t border-current/10 pt-3 text-xs font-bold text-[#315274] sm:max-w-md">{t("chooseMicrophone")}<select className="h-9 rounded-[6px] border border-[#b9cbe0] bg-white px-3 font-normal text-slate-700" disabled={voice.status === "listening" || voice.status === "processing"} onChange={(event) => voice.setSelectedDeviceId(event.target.value)} value={voice.selectedDeviceId}><option value="">{t("defaultMicrophone")}</option>{voice.inputDevices.map((device) => <option key={device.deviceId} value={device.deviceId}>{device.label}</option>)}</select></label> : null}
+                {voice.status === "listening" && voice.captureDiagnostics ? (
+                  <div className="mt-3 grid gap-2 border-t border-current/10 pt-3 text-xs text-slate-600 sm:grid-cols-[minmax(0,1fr)_180px] sm:items-center">
+                    <p className="truncate"><span className="font-bold text-[#315274]">{t("microphoneDevice")}:</span> {voice.captureDiagnostics.device_label}</p>
+                    <div><div className="mb-1 flex justify-between"><span>{t("inputLevel")}</span><span>{microphoneLevel}%</span></div><div aria-label={t("inputLevel")} aria-valuemax={100} aria-valuemin={0} aria-valuenow={microphoneLevel} className="h-2 overflow-hidden rounded-full bg-blue-100" role="meter"><span className="block h-full bg-[#0b58c7] transition-[width] duration-150" style={{width: `${microphoneLevel}%`}} /></div></div>
+                  </div>
+                ) : null}
+                {voice.partialTranscript ? <div className="mt-3 border-t border-current/10 pt-3"><p className="text-[10px] font-bold uppercase tracking-wide text-[#315274]">{t("liveTranscript")}</p><p className="mt-1 break-words text-sm leading-6 text-slate-700">{voice.partialTranscript}</p></div> : null}
+                {voice.recordingUrl ? <div className="mt-3 border-t border-current/10 pt-3"><p className="text-[10px] font-bold uppercase tracking-wide text-[#315274]">{t("recordingReview")}</p><p className="mt-1 text-xs leading-5 text-slate-600">{t("recordingReviewHelp")}</p><audio className="mt-2 h-9 w-full max-w-md" controls preload="metadata" src={voice.recordingUrl}>{t("recordingPlaybackUnsupported")}</audio></div> : null}
+                {voice.captureDiagnostics ? (
+                  <details className="mt-3 border-t border-current/10 pt-2 text-[11px] text-slate-600"><summary className="cursor-pointer font-bold text-[#315274]">{t("microphoneDiagnostics")}</summary><dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-3">
+                    <div><dt>{t("microphoneDevice")}</dt><dd className="truncate font-bold" title={voice.captureDiagnostics.device_label}>{voice.captureDiagnostics.device_label}</dd></div><div><dt>{t("captureStage")}</dt><dd className="font-bold">{voice.captureDiagnostics.failure_stage ?? voice.captureDiagnostics.stage}</dd></div><div><dt>{t("sampleRate")}</dt><dd className="font-bold">{voice.captureDiagnostics.sample_rate ?? "—"} Hz</dd></div><div><dt>{t("capturedDuration")}</dt><dd className="font-bold">{voice.captureDiagnostics.duration_ms} ms</dd></div><div><dt>{t("audioChunks")}</dt><dd className="font-bold">{voice.captureDiagnostics.pcm_chunk_count}</dd></div><div><dt>{t("audioData")}</dt><dd className="font-bold">{voice.captureDiagnostics.recording_bytes} bytes</dd></div><div><dt>{t("speechDetected")}</dt><dd className="font-bold">{voice.captureDiagnostics.speech_detected ? t("yes") : t("no")}</dd></div><div><dt>{t("peakLevel")}</dt><dd className="font-bold">{Math.round(voice.captureDiagnostics.peak_level * 100)}%</dd></div>{voice.detectedLanguage ? <div><dt>{t("detectedLanguage")}</dt><dd className="font-bold">{voice.detectedLanguage}</dd></div> : null}{voice.captureDiagnostics.browser_error_name ? <div><dt>{t("browserError")}</dt><dd className="font-bold">{voice.captureDiagnostics.browser_error_name}</dd></div> : null}
+                  </dl><p className="mt-2">{t("recordingLocalOnly")}</p></details>
+                ) : null}
+                {Object.values(voice.latency).some((value) => value !== null) ? <details className="mt-3 border-t border-current/10 pt-2 text-[11px] text-slate-600"><summary className="cursor-pointer font-bold text-[#315274]">{t("latencyTitle")}</summary><dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-3"><div><dt>{t("latency.stt")}</dt><dd className="font-bold">{voice.latency.microphone_to_stt_ms ?? "—"} ms</dd></div><div><dt>{t("latency.response")}</dt><dd className="font-bold">{voice.latency.stt_to_response_ms ?? "—"} ms</dd></div><div><dt>{t("latency.retrieval")}</dt><dd className="font-bold">{voice.latency.retrieval_ms ?? "—"} ms</dd></div><div><dt>{t("latency.llm")}</dt><dd className="font-bold">{voice.latency.llm_ms ?? "—"} ms</dd></div><div><dt>{t("latency.tts")}</dt><dd className="font-bold">{voice.latency.tts_first_audio_ms ?? "—"} ms</dd></div><div><dt>{t("latency.endToEnd")}</dt><dd className="font-bold">{voice.latency.end_to_end_first_response_ms ?? "—"} ms</dd></div></dl></details> : null}
+              </section>
+            ) : null}
+
             <label className="sr-only" htmlFor="saathi-message">{t("inputLabel")}</label>
             <div className="flex items-end gap-2 rounded-[8px] border border-[#aebfd3] bg-white p-2 focus-within:border-[#0b58c7] focus-within:ring-2 focus-within:ring-blue-100">
               <input accept=".pdf,.png,.jpg,.jpeg" className="sr-only" disabled={loading || sending || attaching} onChange={(event) => { const file = event.target.files?.[0]; if (file) void analyzeAttachment(file); }} ref={attachmentInputRef} type="file" />
               <textarea className="min-h-11 max-h-60 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-500" disabled={loading || sending} id="saathi-message" maxLength={4000} onChange={(event) => setMessage(event.target.value)} placeholder={t("placeholder")} ref={inputRef} rows={1} value={message} />
               <button aria-label={t("attachEvidence")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] border border-[#c6d4e4] text-[#0b58c7] hover:bg-blue-50 disabled:opacity-50" disabled={loading || sending || attaching || !state?.incident.summary} onClick={() => attachmentInputRef.current?.click()} title={t("attachEvidence")} type="button">{attaching ? <LoaderCircle className="animate-spin" size={18} /> : <Paperclip size={18} />}</button>
-              <button aria-label={t("voiceButton")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] border border-[#c6d4e4] text-[#0b58c7] hover:bg-blue-50" onClick={() => setVoiceNotice(true)} title={t("voiceButton")} type="button"><Mic size={18} /></button>
+              <button aria-label={voice.status === "listening" ? t("stopListening") : t("voiceButton")} className={`grid h-10 w-10 shrink-0 place-items-center rounded-[6px] border ${voice.status === "listening" ? "border-red-300 bg-red-50 text-red-700" : "border-[#c6d4e4] text-[#0b58c7] hover:bg-blue-50"}`} disabled={loading || sending} onClick={() => { setInputMode("voice"); if (voice.status === "listening") void voice.stopListening(); else void voice.startListening(); }} title={t("voiceButton")} type="button">{voice.status === "listening" ? <MicOff size={18} /> : <Mic size={18} />}</button>
               <button aria-label={t("send")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] bg-[#0b4fb3] text-white disabled:cursor-not-allowed disabled:opacity-50" disabled={!message.trim() || loading || sending} title={t("send")} type="submit"><Send size={18} /></button>
             </div>
             {attachmentError ? <p className="mt-2 text-xs font-semibold text-red-700" role="alert">{attachmentError}</p> : null}
