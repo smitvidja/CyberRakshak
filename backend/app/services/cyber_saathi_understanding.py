@@ -214,6 +214,8 @@ class UnderstandingEngine:
             return Intent.TRACK_REPORT
         if any(marker in text for marker in TAXONOMY["intents"]["cyber_warrior"]):
             return Intent.CYBER_WARRIOR
+        if any(marker in text for marker in TAXONOMY["intents"]["explore_cyber_risk"]):
+            return Intent.EXPLORE_CYBER_RISK
         if any(marker in text for marker in TAXONOMY["intents"]["check_identifier"]):
             return Intent.CHECK_IDENTIFIER
         if any(marker in text for marker in TAXONOMY["intents"]["report_incident"]):
@@ -559,6 +561,7 @@ class UnderstandingEngine:
             Intent.CHECK_IDENTIFIER,
             Intent.CYBER_WARRIOR,
             Intent.GENERAL_AWARENESS,
+            Intent.EXPLORE_CYBER_RISK,
         }:
             score += 0.25
         if entities:

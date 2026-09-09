@@ -269,7 +269,11 @@ class SarvamVoiceAdapter:
                     total_audio_bytes += decoded_size
                     maximum = self.settings.voice_max_recording_seconds * 16000 * 2
                     if total_audio_bytes > maximum:
-                        raise VoiceProviderError("RECORDING_TOO_LONG", "The recording reached the 30 second limit.", 422)
+                        raise VoiceProviderError(
+                            "RECORDING_TOO_LONG",
+                            f"The recording reached the {self.settings.voice_max_recording_seconds} second limit.",
+                            422,
+                        )
                 await provider_socket.send(json.dumps({key: value for key, value in message.items() if key in {"event", "audio"}}))
                 if event == "end":
                     return

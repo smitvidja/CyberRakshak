@@ -122,5 +122,6 @@ Do not expose stack traces or secrets in API responses.
 - The browser sends 16 kHz mono linear16 chunks only to the CyberRakshak WebSocket proxy. The Sarvam subscription key stays server-side.
 - Use tolerant language mapping: English uses `en-IN`; Hindi uses `hi-IN` with code-mix support; Hinglish/mixed realtime speech uses automatic detection with `codemix` mode.
 - Realtime STT is primary and the short-recording REST endpoint is the fallback. A voice failure must not mutate or delete conversation state.
+- Realtime capture is capped at 60 seconds. The synchronous Sarvam fallback remains limited to recordings under 30 seconds, so a longer failed realtime session preserves any partial transcript for review instead of sending an unsupported batch request.
 - TTS is returned as a no-store binary stream. Expose only safe provider/model/capability metadata and timing headers.
 - Reject unsupported audio, oversized chunks, and recordings longer than the configured limit before forwarding them.

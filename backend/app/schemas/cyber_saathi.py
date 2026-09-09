@@ -41,6 +41,7 @@ class Intent(str, Enum):
     TRACK_REPORT = "track_report"
     CYBER_WARRIOR = "cyber_warrior"
     GENERAL_AWARENESS = "general_awareness"
+    EXPLORE_CYBER_RISK = "explore_cyber_risk"
     UNKNOWN = "unknown"
 
 
@@ -134,6 +135,15 @@ class HandoffTarget(str, Enum):
     REPORT_CRIME = "report_crime"
     TRACK_COMPLAINT = "track_complaint"
     CYBER_WARRIOR = "cyber_warrior"
+    LEARNING_RESOURCES = "learning_resources"
+    SEARCH_SUSPECT_REPORTS = "search_suspect_reports"
+    SECURE_INDIA = "secure_india"
+
+
+class HandoffImplementationStatus(str, Enum):
+    AVAILABLE = "available"
+    PREVIEW = "preview"
+    PLANNED = "planned"
 
 
 class TurnKind(str, Enum):
@@ -396,6 +406,7 @@ class WorkflowHandoff(BaseModel):
     target: HandoffTarget
     reporting_mode: ReportingMode
     route: str = Field(pattern=r"^/", max_length=300)
+    implementation_status: HandoffImplementationStatus = HandoffImplementationStatus.AVAILABLE
     prefill: ComplaintPrefill = Field(default_factory=ComplaintPrefill)
 
     @model_validator(mode="after")

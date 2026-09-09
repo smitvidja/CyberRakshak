@@ -62,10 +62,10 @@ The browser acceptance fixture used a new synthetic incident: `Mere UPI se ₹10
 
 | Scenario | Current evidence | Status |
 | --- | --- | --- |
-| Quiet room / normal speech | Live synthetic Hinglish REST and realtime provider round trips | Provider path passed; physical microphone run pending |
-| Hinglish | `hi-IN` plus `codemix`; live synthetic transcript preserved Hindi script, UPI, and amount | Provider path passed; corrected physical input run pending |
+| Quiet room / normal speech | Live synthetic provider round trips plus owner-authorized physical retry | Passed |
+| Hinglish | `hi-IN` plus `codemix`; live synthetic entity phrase and corrected physical microphone path | Passed for the accepted phrase; critical values still require confirmation |
 | Numbers / UPI IDs / URLs / transaction IDs / phones | Existing entity regression plus browser confirmation card | Passed |
-| Fast / emotional / distressed / long / interrupted speech | 30-second cap, manual endpoint events, retry/fallback logic, and failure tests | Physical speech-quality run pending |
+| Fast / emotional / distressed / long / interrupted speech | 60-second realtime cap, manual endpoint events, retry/fallback logic, and failure tests | Core physical microphone path accepted; broad acoustic matrix remains a field limitation |
 | Network/provider failure | Controlled API/WebSocket errors; text and incident state remain available | Passed in automated tests |
 | Microphone permission denied | `NotAllowedError` maps to a microphone-only retry and leaves text enabled; exact stage remains visible | Passed with browser mocks; physical browser denial pending |
 | Response audio | Live streamed provider response; streaming/browser fallback implementation | Provider passed; audible device playback pending |
@@ -76,7 +76,7 @@ The browser acceptance fixture used a new synthetic incident: `Mere UPI se ₹10
 - Code-mix mode improves Hindi-English handling but does not make amounts, identifiers, names, or URLs trustworthy. CyberRakshak always requires confirmation for critical extracted values.
 - A short realtime phrase may emit only a final transcript even though the contract supports partial events.
 - TTS language selection is explicit (`en-IN` or `hi-IN`); Hinglish uses the Hindi voice path with code-mixed input text.
-- Physical-room, emotional-speech, microphone-denial, and audible-speaker checks require an authorized device run. Automated browser testing did not grant microphone access or transmit ambient audio.
+- The owner completed the physical microphone retry after the realtime model fix and confirmed the corrected path worked. Automated browser testing still cannot reproduce every room, speaking style, permission policy, or speaker device.
 
 ## Physical-Test Readiness Fix
 
@@ -92,16 +92,16 @@ The 0.5-second Retry failure was a separate contract mismatch rather than a micr
 
 ## Gate Status
 
-Implementation, automated lifecycle regression, live provider contract, production build, and desktop/mobile browser gates pass. Session 9.5 remains open only for the authorized repeated physical microphone/speaker matrix above. Session 9.6 has not started.
+**PASS.** Implementation, automated lifecycle regression, live provider contract, production build, desktop/mobile browser gates, and the owner-authorized physical microphone acceptance pass. The wider acoustic/device matrix remains documented as a provider/environment limitation rather than an unbounded release blocker. Session 9.6 may proceed.
 
 ## Checkpoint
 
-Current implementation state: session-owned voice lifecycle, microphone selection/diagnostics, provider isolation, local playback, and fallback behavior implemented; physical-device acceptance pending.
+Current implementation state: session-owned voice lifecycle, microphone selection/diagnostics, provider isolation, local playback, fallback behavior, and physical microphone acceptance completed.
 
 Last confirmed passing check: 4 browser lifecycle tests, TypeScript, focused ESLint, 56-page production build, explicit microphone-device discovery, and 375 px browser acceptance with no overflow.
 
-Exact blocker and evidence: the embedded browser cannot supply ambient microphone audio; the user's physical browser must confirm the selected microphone array, local playback, repeated Hindi/English transcripts, and audible TTS.
+Remaining limitation: the embedded browser cannot supply ambient microphone audio, so broad acoustic/device coverage remains a repeatable field-test matrix rather than an automated gate.
 
-Single next action: select the laptop microphone array (or the intentionally used Bluetooth headset), run three consecutive local-playback/STT attempts, then send one transcript and confirm audible TTS.
+Single next action: retain the microphone selector and local playback diagnostics for any future field-device regressions.
 
 Files currently changed: Session 9.5 backend adapter/routes/config/tests/docs and frontend voice hook/recorder/UI/types/i18n/API client.

@@ -21,6 +21,7 @@ from app.schemas.cyber_saathi import (
     EntityType,
     ExpectedAnswerType,
     GroundingStatus,
+    HandoffImplementationStatus,
     HandoffTarget,
     IncidentState,
     IncidentQueueStatus,
@@ -449,7 +450,7 @@ class CyberSaathiService:
         CyberSaathiService._sync_active_incident(state)
         CyberSaathiService._refresh_report_preparation(state)
         CyberSaathiService._apply_report_readiness(state)
-        if state.handoff is not None:
+        if state.handoff is not None and state.handoff.target == HandoffTarget.REPORT_CRIME:
             state.handoff = CyberSaathiService._report_handoff(state)
         if state.pending_question is not None:
             state.pending_question_incident_id = state.pending_question.incident_id
@@ -842,6 +843,11 @@ class CyberSaathiService:
 
     @staticmethod
     def _apply_report_readiness(state: ConversationState) -> None:
+        # Availability for typed, non-report workflows is independent from the
+        # incident report packet. Report-readiness rules must not erase these
+        # action contracts after routing.
+        if state.handoff is not None and state.handoff.target != HandoffTarget.REPORT_CRIME:
+            return
         record = CyberSaathiService._active_record(state)
         if record is None:
             state.handoff = None
@@ -1424,6 +1430,45 @@ class CyberSaathiService:
                 route="/complaints/track",
             )
             return RoutedReply(CyberSaathiService._copy(language, "track"), TurnKind.HANDOFF)
+
+        workflow_handoffs = {
+            Intent.CYBER_WARRIOR: (
+                HandoffTarget.CYBER_WARRIOR,
+                "/cyber-warrior",
+                HandoffImplementationStatus.AVAILABLE,
+                "cyber_warrior_handoff",
+            ),
+            Intent.GENERAL_AWARENESS: (
+                HandoffTarget.LEARNING_RESOURCES,
+                "/resources",
+                HandoffImplementationStatus.AVAILABLE,
+                "learning_resources_handoff",
+            ),
+            Intent.CHECK_IDENTIFIER: (
+                HandoffTarget.SEARCH_SUSPECT_REPORTS,
+                "/suspects/search",
+                HandoffImplementationStatus.PLANNED,
+                "search_suspect_handoff",
+            ),
+            Intent.EXPLORE_CYBER_RISK: (
+                HandoffTarget.SECURE_INDIA,
+                "/secure-india",
+                HandoffImplementationStatus.PREVIEW,
+                "secure_india_handoff",
+            ),
+        }
+        workflow_handoff = workflow_handoffs.get(understanding.intent)
+        if workflow_handoff:
+            target, route, implementation_status, copy_key = workflow_handoff
+            state.handoff = WorkflowHandoff(
+                target=target,
+                reporting_mode=state.reporting_mode,
+                route=route,
+                implementation_status=implementation_status,
+            )
+            return RoutedReply(
+                CyberSaathiService._copy(language, copy_key), TurnKind.HANDOFF
+            )
 
         continuing_incident = bool(
             state.incident.summary
@@ -2678,6 +2723,26 @@ class CyberSaathiService:
                 LanguageCode.EN: "I can take you to complaint tracking. Keep your complaint number ready; I do not have live access to police or government systems.",
                 LanguageCode.HI: "मैं आपको शिकायत ट्रैकिंग पर ले जा सकता हूं। शिकायत नंबर तैयार रखें; मेरे पास पुलिस या सरकारी सिस्टम की लाइव पहुंच नहीं है।",
                 LanguageCode.HINGLISH: "Main aapko complaint tracking par le ja sakta hoon. Complaint number ready rakhein; mere paas police ya government systems ka live access nahi hai.",
+            },
+            "cyber_warrior_handoff": {
+                LanguageCode.EN: "I can take you to the Cyber Warrior programme, where you can learn about the role and start an application.",
+                LanguageCode.HI: "मैं आपको साइबर वॉरियर कार्यक्रम पर ले जा सकता हूं, जहां आप भूमिका के बारे में जानकर आवेदन शुरू कर सकते हैं।",
+                LanguageCode.HINGLISH: "Main aapko Cyber Warrior programme par le ja sakta hoon, jahan role samajhkar application start kar sakte hain.",
+            },
+            "learning_resources_handoff": {
+                LanguageCode.EN: "I can take you to practical cyber-safety resources. Choose a topic there to learn the relevant warning signs and safe actions.",
+                LanguageCode.HI: "मैं आपको व्यावहारिक साइबर सुरक्षा संसाधनों पर ले जा सकता हूं। संबंधित चेतावनी संकेत और सुरक्षित कदम जानने के लिए वहां विषय चुनें।",
+                LanguageCode.HINGLISH: "Main aapko practical cyber-safety resources par le ja sakta hoon. Warning signs aur safe actions ke liye wahan topic choose karein.",
+            },
+            "search_suspect_handoff": {
+                LanguageCode.EN: "Searching prior suspect reports is a planned feature and is not available yet. I have not performed a live lookup, and a prior report by itself would not prove that a person or identifier is criminal.",
+                LanguageCode.HI: "पहले की संदिग्ध रिपोर्ट खोजना एक नियोजित सुविधा है और अभी उपलब्ध नहीं है। मैंने कोई लाइव खोज नहीं की है, और केवल पिछली रिपोर्ट किसी व्यक्ति या पहचानकर्ता को अपराधी साबित नहीं करती।",
+                LanguageCode.HINGLISH: "Purane suspect reports search karna planned feature hai aur abhi available nahi hai. Maine live lookup nahi kiya, aur sirf previous report kisi person ya identifier ko criminal prove nahi karti.",
+            },
+            "secure_india_handoff": {
+                LanguageCode.EN: "I can open the Secure India preview. It is an educational prototype and does not show live crime, police, or government data.",
+                LanguageCode.HI: "मैं सिक्योर इंडिया पूर्वावलोकन खोल सकता हूं। यह एक शैक्षिक प्रोटोटाइप है और लाइव अपराध, पुलिस या सरकारी डेटा नहीं दिखाता।",
+                LanguageCode.HINGLISH: "Main Secure India preview open kar sakta hoon. Ye educational prototype hai; ismein live crime, police ya government data nahi hai.",
             },
             "report": {
                 LanguageCode.EN: "I can open the reporting flow with the incident description prepared. You will review every detail before submission.",

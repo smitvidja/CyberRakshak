@@ -32,7 +32,14 @@ type ActiveVoiceSession = {
   connectionTimer: ReturnType<typeof setTimeout> | null;
   fallbackTimer: ReturnType<typeof setTimeout> | null;
   maxRecordingTimer: ReturnType<typeof setTimeout> | null;
+  completionMode: "review" | "send";
+  latestTranscript: string;
 };
+
+// Sarvam's batch STT endpoint accepts only short recordings. Longer captures
+// stay on the realtime path; if that path fails, preserve any partial text for
+// review instead of sending an unsupported batch request.
+const REST_FALLBACK_MAX_DURATION_MS = 29_000;
 
 const EMPTY_LATENCY: VoiceLatency = {
   microphone_to_stt_ms: null,
@@ -83,7 +90,7 @@ export function useCyberSaathiVoice({
 }: {
   conversationId?: string;
   language: SaathiLanguage;
-  onTranscript: (transcript: string) => void;
+  onTranscript: (transcript: string, sendImmediately: boolean) => void;
 }) {
   const [capabilities, setCapabilities] = useState<VoiceCapabilities | null>(null);
   const [status, setStatus] = useState<VoiceStatus>("ready");
@@ -189,6 +196,20 @@ export function useCyberSaathiVoice({
         updateStatus("retry");
         return;
       }
+      if (recording.diagnostics.duration_ms > REST_FALLBACK_MAX_DURATION_MS) {
+        await finalizeSession(session);
+        const transcript = session.latestTranscript.trim();
+        if (transcript) {
+          setPartialTranscript(transcript);
+          onTranscript(transcript, false);
+          setErrorCode(null);
+          updateStatus("transcription");
+        } else {
+          setErrorCode(providerFailureCode ?? "RECORDING_TOO_LONG");
+          updateStatus("retry");
+        }
+        return;
+      }
       const result = await cyberSaathiApi.transcribeRecording(recording.blob, language);
       if (!coordinatorRef.current.owns(session.token)) return;
       await finalizeSession(session);
@@ -196,7 +217,7 @@ export function useCyberSaathiVoice({
         const transcript = result.data.transcript.trim();
         setPartialTranscript(transcript);
         setDetectedLanguage(result.data.detected_language_code);
-        onTranscript(transcript);
+        onTranscript(transcript, session.completionMode === "send");
         setLatency((current) => ({...current, microphone_to_stt_ms: result.data.stt_latency_ms}));
         setErrorCode(null);
         updateStatus("transcription");
@@ -241,15 +262,16 @@ export function useCyberSaathiVoice({
     }
     await finalizeSession(session);
     setPartialTranscript(transcript);
-    onTranscript(transcript);
+    onTranscript(transcript, session.completionMode === "send");
     setLatency((current) => ({...current, microphone_to_stt_ms: Math.round(elapsed)}));
     setErrorCode(null);
     updateStatus("transcription");
   }, [finalizeSession, onTranscript, runRestFallback, stopCapture, updateStatus]);
 
-  const stopListening = useCallback(async () => {
+  const stopListening = useCallback(async (completionMode: "review" | "send" = "review") => {
     const session = activeSessionRef.current;
     if (!session || !coordinatorRef.current.owns(session.token) || session.token.phase !== "listening") return;
+    session.completionMode = completionMode;
     coordinatorRef.current.transition(session.token, "stopping");
     updateStatus("processing");
     if (session.maxRecordingTimer) clearTimeout(session.maxRecordingTimer);
@@ -259,6 +281,8 @@ export function useCyberSaathiVoice({
     await stopCapture(session);
     session.fallbackTimer = setTimeout(() => void runRestFallback(session), 4000);
   }, [runRestFallback, stopCapture, updateStatus]);
+
+  const finishAndSend = useCallback(() => stopListening("send"), [stopListening]);
 
   const startListening = useCallback(async () => {
     if (["listening", "processing"].includes(statusRef.current) || coordinatorRef.current.hasActiveSession) return;
@@ -283,7 +307,9 @@ export function useCyberSaathiVoice({
       failureHandled: false,
       connectionTimer: null,
       fallbackTimer: null,
-      maxRecordingTimer: null
+      maxRecordingTimer: null,
+      completionMode: "review",
+      latestTranscript: ""
     };
     activeSessionRef.current = session;
     replaceRecordingUrl(null);
@@ -350,12 +376,14 @@ export function useCyberSaathiVoice({
         coordinatorRef.current.transition(token, "listening");
         updateStatus("listening");
         session.maxRecordingTimer = setTimeout(
-          () => void stopListening(),
-          (capabilities.max_recording_seconds || 30) * 1000
+          () => void stopListening("review"),
+          (capabilities.max_recording_seconds || 60) * 1000
         );
       } else if (payload.event === "transcript.partial" && typeof payload.text === "string") {
+        session.latestTranscript = payload.text;
         setPartialTranscript(payload.text);
       } else if (payload.event === "transcript.final" && typeof payload.text === "string" && payload.text.trim()) {
+        session.latestTranscript = payload.text.trim();
         void finalizeTranscript(session, payload.text.trim());
       } else if (payload.event === "voice.error" || payload.event === "error") {
         void handleProviderFailure(session, typeof payload.code === "string" ? payload.code : "VOICE_PROVIDER_UNAVAILABLE");
@@ -498,6 +526,7 @@ export function useCyberSaathiVoice({
     captureDiagnostics,
     detectedLanguage,
     errorCode,
+    finishAndSend,
     latency,
     inputDevices,
     partialTranscript,

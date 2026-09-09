@@ -123,9 +123,10 @@ export type UnderstandingResult = {
 };
 
 export type SaathiHandoff = {
-  target: "report_crime" | "track_complaint" | "cyber_warrior";
+  target: "report_crime" | "track_complaint" | "cyber_warrior" | "learning_resources" | "search_suspect_reports" | "secure_india";
   reporting_mode: ReportingMode;
   route: string;
+  implementation_status: "available" | "preview" | "planned";
   prefill: {
     description: string | null;
     title: string | null;

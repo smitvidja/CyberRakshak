@@ -4,9 +4,10 @@
     "report_incident": ["report", "complaint", "शिकायत", "रिपोर्ट", "report karna"],
     "seek_guidance": ["what should i do", "help me", "kya karu", "क्या करूं", "मदद"],
     "check_identifier": ["check number", "check upi", "verify link", "is this safe", "जांच"],
-    "track_report": ["track complaint", "complaint status", "track report", "track", "शिकायत स्थिति", "ट्रैक", "report status"],
+    "track_report": ["track complaint", "complaint status", "complaint ka status", "status kya", "track report", "track", "शिकायत स्थिति", "शिकायत का स्टेटस", "ट्रैक", "report status"],
     "cyber_warrior": ["cyber warrior", "volunteer", "warrior application", "साइबर वॉरियर", "स्वयंसेवक"],
-    "general_awareness": ["safety tips", "learn cyber", "awareness", "कैसे सुरक्षित"]
+    "general_awareness": ["safety tips", "learn cyber", "awareness", "कैसे सुरक्षित"],
+    "explore_cyber_risk": ["cyber risk in my city", "cyber crime in my city", "fraud common in my city", "secure india", "मेरे शहर में साइबर", "मेरे शहर में फ्रॉड", "साइबर जोखिम", "सिक्योर इंडिया", "mere city mein cyber", "mere sheher mein fraud"]
   },
   "crime_domains": {
     "financial_fraud": ["bank", "upi", "payment", "transaction", "debited", "deducted", "money", "rupees", "paise", "paisa", "wallet", "refund scam", "कट गए", "पैसे", "बैंक"],

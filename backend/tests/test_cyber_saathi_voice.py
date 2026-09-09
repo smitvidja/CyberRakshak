@@ -64,6 +64,7 @@ def test_capability_api_never_exposes_credentials() -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["data"]["provider"] == "sarvam"
+    assert body["data"]["max_recording_seconds"] == 60
     assert "key" not in response.text.casefold()
 
 

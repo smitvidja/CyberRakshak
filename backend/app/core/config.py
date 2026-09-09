@@ -78,7 +78,7 @@ class Settings(BaseSettings):
     sarvam_tts_speaker: str = "shubh"
     voice_provider_timeout_seconds: float = Field(default=12.0, ge=1, le=30)
     voice_max_audio_bytes: int = Field(default=10 * 1024 * 1024, ge=1024)
-    voice_max_recording_seconds: int = Field(default=30, ge=1, le=30)
+    voice_max_recording_seconds: int = Field(default=60, ge=1, le=60)
 
     model_config = SettingsConfigDict(
         env_file=".env",

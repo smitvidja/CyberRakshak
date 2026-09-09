@@ -37,6 +37,42 @@ def prepare_report_draft(state):
     ).state
 
 
+@pytest.mark.parametrize(
+    ("message", "language", "target", "route", "implementation_status"),
+    [
+        ("How can I become a cyber warrior volunteer?", LanguageCode.EN, "cyber_warrior", "/cyber-warrior", "available"),
+        ("ऑनलाइन कैसे सुरक्षित रहें?", LanguageCode.HI, "learning_resources", "/resources", "available"),
+        ("Mujhe check UPI ID fraudster@ybl karna hai.", LanguageCode.HINGLISH, "search_suspect_reports", "/suspects/search", "planned"),
+        ("Show cyber risk in my city on Secure India", LanguageCode.EN, "secure_india", "/secure-india", "preview"),
+        ("Meri complaint ka status kya hai?", LanguageCode.HINGLISH, "track_complaint", "/complaints/track", "available"),
+    ],
+)
+def test_non_report_workflows_return_typed_handoffs(
+    message: str,
+    language: LanguageCode,
+    target: str,
+    route: str,
+    implementation_status: str,
+) -> None:
+    state = CyberSaathiService.start(ConversationCreate(language=language)).state
+    response = CyberSaathiService.reply(
+        state.id,
+        ConversationMessageRequest(message=message, state=state),
+    )
+
+    assert response.state.handoff is not None
+    assert response.state.handoff.target.value == target
+    assert response.state.handoff.route == route
+    assert response.state.handoff.implementation_status.value == implementation_status
+    assert response.state.turns[-1].kind.value == "handoff"
+    if target == "search_suspect_reports":
+        answer = response.state.turns[-1].content.casefold()
+        assert "live lookup" in answer
+        assert "criminal" in answer
+    if target == "track_complaint":
+        assert "live access" in response.state.turns[-1].content.casefold()
+
+
 def test_conversation_state_survives_multiple_validated_turns() -> None:
     client = TestClient(app)
     started = client.post(
