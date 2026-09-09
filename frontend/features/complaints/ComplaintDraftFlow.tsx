@@ -14,8 +14,9 @@ import {complaintCategoriesApi, complaintsApi, evidenceApi} from "@/lib/api/comp
 import type {ApiRecord} from "@/lib/api/auth";
 import {addComplaintEvidence, getAccessToken, getComplaintDraft, getComplaintEvidence, getReportCategoryHint, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
 import {clearCyberSaathiReportHandoff, getCyberSaathiReportHandoff, updateCyberSaathiReportHandoffFiles} from "@/lib/cyber-saathi/report-handoff";
+import {setGuestEvidenceFiles} from "@/lib/auth/guest-report-session";
 
-type Category = {description: string | null; id: string; name: string};
+type Category = {code: string; description: string | null; id: string; name: string};
 type FieldErrors = Record<string, string>;
 type IncidentForm = {
   categoryId: string;
@@ -42,6 +43,7 @@ const emptyIncidentForm: IncidentForm = {
 };
 
 const emptyPersonForm: PersonForm = {alias: "", contactDetails: "", description: "", name: ""};
+const guestDraftId = "guest-draft";
 
 function asString(value: unknown) {
   return typeof value === "string" ? value : "";
@@ -53,13 +55,18 @@ function toLocalDateTimeInput(value: string | Date = new Date()) {
   return localTime.toISOString().slice(0, 16);
 }
 
-function categoryMatchesHint(name: string, hint: string) {
-  const normalized = name.toLowerCase();
-  const keywords: Record<string, string[]> = {
-    women: ["women", "child"], financial: ["financial", "fraud"], identity: ["identity"], harassment: ["harassment", "bullying"], commerce: ["commerce", "shopping", "marketplace"], other: ["other"]
+function categoryMatchesHint(code: string, hint: string) {
+  const categoryCodes: Record<string, string> = {
+    women: "WOMEN_AND_CHILD_SAFETY",
+    "women-child": "WOMEN_AND_CHILD_SAFETY",
+    financial: "FINANCIAL_FRAUD",
+    identity: "IDENTITY_MISUSE",
+    harassment: "ONLINE_HARASSMENT",
+    commerce: "E_COMMERCE_FRAUD",
+    other: "OTHER_CYBER_CONCERN"
   };
   const key = hint === "women-child" ? "women" : hint;
-  return (keywords[key] ?? [key]).some((keyword) => normalized.includes(keyword));
+  return code === categoryCodes[key];
 }
 
 function asRecord(value: unknown): ApiRecord | null {
@@ -152,13 +159,14 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
       }
       if (categoryResult.ok) {
         const loadedCategories = categoryResult.data.map((item) => ({
+          code: asString(item.code),
           description: typeof item.description === "string" ? item.description : null,
           id: asString(item.id),
           name: asString(item.name)
         }));
         setCategories(loadedCategories);
         const categoryHint = getReportCategoryHint();
-        const hintedCategory = categoryHint ? loadedCategories.find((category) => categoryMatchesHint(category.name, categoryHint)) : undefined;
+        const hintedCategory = categoryHint ? loadedCategories.find((category) => categoryMatchesHint(category.code, categoryHint)) : undefined;
         if (hintedCategory) setForm((current) => current.categoryId ? current : {...current, categoryId: hintedCategory.id});
         const saathiHandoff = getCyberSaathiReportHandoff();
         if (saathiHandoff) {
@@ -167,9 +175,11 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
           setForm((current) => ({
             ...current,
             categoryId: hintedCategory?.id || current.categoryId,
+            city: prefill.city || current.city,
             description: prefill.description || current.description,
             incidentAt,
             lossAmount: prefill.financial_loss_amount || current.lossAmount,
+            state: prefill.state || current.state,
             title: prefill.title || current.title
           }));
           setHandoffFiles(saathiHandoff.files);
@@ -190,6 +200,15 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
           if (active && draftResult.ok) {
             setForm(incidentFromDraft(draftResult.data));
             setComplaintDraft({data: draftResult.data, id: draftId});
+            const evidenceResult = await evidenceApi.listByComplaint(draftId, requestOptions());
+            if (active && evidenceResult.ok) {
+              const serverEvidence = evidenceResult.data.map((item) => ({
+                fileName: asString(item.file_name),
+                fileSize: Number(item.file_size) || 0,
+                id: asString(item.id)
+              }));
+              setEvidenceItems(serverEvidence);
+            }
           } else if (active && !cachedDraft) {
             setServiceError(t("draftUnavailable"));
           }
@@ -259,9 +278,33 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
     if (saathiHandoff) {
       if (saathiHandoff.prefill.reporting_for !== "UNKNOWN") payload.reporting_for = saathiHandoff.prefill.reporting_for;
       payload.affected_person_name = saathiHandoff.prefill.affected_person_name;
-      if (saathiHandoff.prefill.suspect_identifiers.length) {
-        payload.suspects = [{contact_details: saathiHandoff.prefill.suspect_identifiers.join(", ")}];
+      if (saathiHandoff.prefill.suspect_identifiers.length || saathiHandoff.prefill.suspect_details) {
+        payload.suspects = [{
+          alias: saathiHandoff.prefill.suspect_alias || null,
+          contact_details: saathiHandoff.prefill.suspect_identifiers.join(", ") || null,
+          description: saathiHandoff.prefill.suspect_details || null,
+          name: saathiHandoff.prefill.suspect_name || null
+        }];
       }
+    }
+    const isGuestDraft = isIdentifiedReport() && !getAccessToken();
+    if (isGuestDraft) {
+      const category = categories.find((item) => item.id === form.categoryId);
+      const cachedDraft = draftId === guestDraftId ? getComplaintDraft() : null;
+      const data: ApiRecord = {
+        ...(cachedDraft?.id === guestDraftId ? cachedDraft.data : {}),
+        ...payload,
+        category: category ? {...category} : null,
+        id: guestDraftId,
+        is_anonymous: false,
+        status: "DRAFT"
+      };
+      setComplaintDraft({data, id: guestDraftId});
+      setGuestEvidenceFiles([...handoffFiles, ...(evidenceFile ? [evidenceFile] : [])]);
+      setSaving(false);
+      if (shouldContinue) router.push(peoplePath(locale, guestDraftId));
+      else router.replace(incidentPath(locale, guestDraftId));
+      return;
     }
     const result = draftId === "new"
       ? await complaintsApi.createDraft({...payload, is_anonymous: !isIdentifiedReport()}, requestOptions())
@@ -356,6 +399,7 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
             <div className="mt-4"><TextArea description={t("descriptionHelp")} error={errors.description} id="incident-description" label={t("descriptionLabel")} onChange={(event) => updateField("description", event.target.value)} required value={form.description} /></div>
           </SurfaceCard>
           <SurfaceCard className="citizen-location-panel" heading={t("locationTitle")}>
+            <p className="mb-4 text-sm leading-6 text-[var(--muted)]">{t("locationHelp")}</p>
             <div className="grid gap-4 sm:grid-cols-3">
               <TextInput id="incident-city" label={t("cityLabel")} onChange={(event) => updateField("city", event.target.value)} value={form.city} />
               <TextInput id="incident-district" label={t("districtLabel")} onChange={(event) => updateField("district", event.target.value)} value={form.district} />
@@ -433,11 +477,24 @@ export function ComplaintPeopleStep({draftId}: {draftId: string}) {
     setSaving(true);
     setError("");
     const suspects = hasSuspectInfo ? people.filter((person) => Object.values(person).some(Boolean)).map((person) => ({alias: person.alias || null, contact_details: person.contactDetails || null, description: person.description || null, name: person.name || null})) : [];
-    const result = await complaintsApi.updateDraft(draftId, {
+    const peoplePayload = {
       reporting_for: reportingFor,
       affected_person_name: reportingFor === "SELF" ? null : affectedPersonName.trim(),
       suspects
-    }, requestOptions());
+    };
+    if (draftId === guestDraftId) {
+      const cached = getComplaintDraft();
+      if (!cached) {
+        setError(t("draftUnavailable"));
+        setSaving(false);
+        return;
+      }
+      setComplaintDraft({data: {...cached.data, ...peoplePayload}, id: guestDraftId});
+      setSaving(false);
+      router.push(reviewPath(locale, guestDraftId));
+      return;
+    }
+    const result = await complaintsApi.updateDraft(draftId, peoplePayload, requestOptions());
     if (!result.ok) {
       setError(t("saveError"));
       setSaving(false);

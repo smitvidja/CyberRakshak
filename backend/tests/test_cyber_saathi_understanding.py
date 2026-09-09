@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -51,6 +53,38 @@ def test_noisy_minor_morphed_image_message_reaches_women_child_domain() -> None:
     assert result.needs_clarification is False
 
 
+@pytest.mark.parametrize(
+    ("message", "expected_domain"),
+    [
+        (
+            "Meri 15 saal ki cousin ko online friend ne private photos bhejne ko "
+            "convince kiya. Ab photos leak karne ki dhamki dekar paise maang raha hai.",
+            CrimeDomain.CHILD_SAFETY,
+        ),
+        (
+            "Mere ex ke paas meri private photos hain aur woh baat na karne par "
+            "photos online upload karne ki threat de raha hai. Kisko report karu?",
+            CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY,
+        ),
+        (
+            "A 16 year old is being blackmailed with intimate images for money",
+            CrimeDomain.CHILD_SAFETY,
+        ),
+        (
+            "Someone is threatening to leak my nude photos unless I pay",
+            CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY,
+        ),
+    ],
+)
+def test_intimate_image_abuse_outranks_money_and_report_words(
+    message: str, expected_domain: CrimeDomain
+) -> None:
+    result = UnderstandingEngine.analyze(message)
+
+    assert result.crime_domain == expected_domain
+    assert result.crime_domain != CrimeDomain.FINANCIAL_FRAUD
+
+
 def test_equivalent_language_variants_preserve_meaning() -> None:
     utterances = [
         "I received a suspicious bank link. What should I do?",
@@ -87,6 +121,67 @@ def test_critical_entities_require_confirmation_and_preserve_values() -> None:
         assert entities[entity_type].requires_confirmation is True
     assert entities[EntityType.AMOUNT].normalized_value == "12500"
     assert entities[EntityType.UPI_ID].normalized_value == "fraudster@ybl"
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "Mere account se 2 lakh 30 hazar chale gaye",
+        "Loss was 2 lakh 30 thousand rupees",
+        "Mere account se 2.3 lakh gaye",
+        "Loss was ₹2,30,000",
+        "Total 230000 rupees tha",
+    ],
+)
+def test_indian_amount_variants_normalise_to_one_total(message: str) -> None:
+    result = UnderstandingEngine.analyze(message)
+    amounts = [entity for entity in result.entities if entity.type == EntityType.AMOUNT]
+
+    assert len(amounts) == 1
+    assert amounts[0].normalized_value == "230000"
+
+
+def test_normalized_amount_uses_indian_grouping_for_visible_confirmation() -> None:
+    assert UnderstandingEngine.format_amount_for_display("230000") == "₹2,30,000"
+    assert UnderstandingEngine.format_amount_for_display("10000000") == "₹1,00,00,000"
+
+
+def test_relative_hinglish_date_and_time_are_combined_for_report_prefill() -> None:
+    result = UnderstandingEngine.analyze("link kal 6 pm aaya tha")
+    date_time = next(entity for entity in result.entities if entity.type == EntityType.DATE_TIME)
+
+    assert date_time.normalized_value == f"{(date.today() - timedelta(days=1)).isoformat()}T18:00:00"
+
+
+@pytest.mark.parametrize(
+    ("domain", "messages"),
+    [
+        (CrimeDomain.FINANCIAL_FRAUD, ("Money was debited from my bank account", "मेरे बैंक से पैसे कट गए", "I lost money from my bnak acount")),
+        (CrimeDomain.PHISHING_SCAM, ("I opened a fake link", "मैंने नकली लिंक खोला", "I opened a phising lnik")),
+        (CrimeDomain.ACCOUNT_COMPROMISE, ("My account was hacked and I cannot log in", "मेरा अकाउंट एक्सेस किसी और ने ले लिया", "My acount was haced")),
+        (CrimeDomain.IMPERSONATION, ("A fake cyber police officer called me", "नकली पुलिस अधिकारी ने कॉल किया", "A fake syber polce officer called")),
+        (CrimeDomain.IDENTITY_THEFT, ("My documents were misused for identity theft", "मेरी पहचान चोरी हुई", "My adahr misuse hua")),
+        (CrimeDomain.ECOMMERCE_FRAUD, ("My online order was not delivered", "ऑनलाइन ऑर्डर का सामान नहीं मिला", "Online order delevery nahi hui")),
+        (CrimeDomain.MALWARE, ("I installed an APK and gave remote access", "फोन में वायरस आ गया", "APK ko remot access diya")),
+        (CrimeDomain.ONLINE_HARASSMENT, ("I am receiving online harassment and abuse", "इंस्टाग्राम पर मुझे धमकी मिल रही है", "Someone is harrasing me online")),
+        (CrimeDomain.CYBERSTALKING, ("Someone is stalking online and tracking my location", "कोई मेरी लोकेशन ट्रैक कर रहा है", "Someone is stoking online")),
+        (CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY, ("A woman's morphed image is being shared", "महिला की अश्लील फोटो साझा हो रही है", "Woman morfd image shared")),
+        (CrimeDomain.CHILD_SAFETY, ("An adult is grooming a child online", "बच्चे को ऑनलाइन grooming messages आ रहे हैं", "Adult is gruming a child")),
+        (CrimeDomain.MISINFORMATION, ("A deepfake video is spreading misinformation", "फर्जी खबर वायरल हो रही है", "A deepfek video is viral")),
+        (CrimeDomain.CYBER_TERRORISM, ("A cyber terrorism threat targeted a hospital", "साइबर आतंकवाद की धमकी मिली", "A terror thret targeted a hospital")),
+        (CrimeDomain.OTHER, ("I need help with another cyber issue", "मुझे अन्य साइबर समस्या में मदद चाहिए", "I need help with an othr cyber isue")),
+        (CrimeDomain.UNKNOWN, ("Something unusual happened online", "ऑनलाइन कुछ अजीब हुआ", "Somthing odd hapend onlne")),
+    ],
+)
+def test_all_domain_routes_cover_english_hindi_and_typo_stt_variants(
+    domain: CrimeDomain,
+    messages: tuple[str, str, str],
+) -> None:
+    assert [UnderstandingEngine.analyze(message).crime_domain for message in messages] == [
+        domain,
+        domain,
+        domain,
+    ]
 
 
 def test_confidence_controls_clarification_behavior() -> None:

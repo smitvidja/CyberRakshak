@@ -1,7 +1,11 @@
 from datetime import date
 
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+from app.core.security import hash_password
+from app.models import MockIdentityProfile
 
 
 def request_demo_otp(client: TestClient, demo_identity_id: str = "99000000000001") -> None:
@@ -108,6 +112,30 @@ def test_mock_identity_rejects_unknown_identity_and_wrong_otp(
     )
     assert wrong_otp.status_code == 422
     assert wrong_otp.json()["error"]["code"] == "INVALID_OTP"
+
+
+def test_request_otp_repairs_a_stale_demo_credential_hash(
+    api_client: tuple[TestClient, Session],
+) -> None:
+    client, session = api_client
+    request_demo_otp(client, "99000000000004")
+    identity = session.scalar(
+        select(MockIdentityProfile).where(
+            MockIdentityProfile.demo_identity_id == "99000000000004"
+        )
+    )
+    assert identity is not None
+    identity.otp_code_hash = hash_password("000000")
+    session.commit()
+
+    request_demo_otp(client, "99000000000004")
+    verified = client.post(
+        "/api/v1/auth/mock-identity/verify-otp",
+        json={"demo_identity_id": "99000000000004", "otp": "222333"},
+    )
+
+    assert verified.status_code == 200
+    assert verified.json()["data"]["profile"]["full_name"] == "Priya Nair"
 
 
 def test_mock_identity_can_issue_a_separate_cyber_warrior_session(

@@ -38,5 +38,14 @@ class EvidenceRepository:
         return list(session.scalars(statement))
 
     @staticmethod
+    def list_by_complaint(session: Session, complaint_id: UUID) -> list[Evidence]:
+        statement = (
+            select(Evidence)
+            .where(Evidence.complaint_id == complaint_id)
+            .order_by(Evidence.created_at)
+        )
+        return list(session.scalars(statement))
+
+    @staticmethod
     def delete(session: Session, evidence: Evidence) -> None:
         session.delete(evidence)

@@ -1,5 +1,6 @@
 export type SaathiLanguage = "EN" | "HI" | "HINGLISH" | "MIXED";
 export type ReportingMode = "undecided" | "anonymous" | "identified";
+export type ExpectedAnswerType = "confirm_entities" | "final_loss_amount" | "yes_no" | "identifier_or_evidence" | "free_text";
 export type TurnPurpose = "new_incident" | "same_incident_detail" | "duplicate_incident" | "correction" | "confirmation" | "action_completed" | "action_blocked" | "next_step" | "switch_incident" | "report_preparation" | "reporting_mode" | "general_question";
 export type IncidentStatus =
   | "unknown" | "suspected" | "identified" | "urgent"
@@ -48,6 +49,7 @@ export type SaathiIncident = {
   status: IncidentStatus;
   intent: string;
   crime_domain: string;
+  related_domains: string[];
   urgency: "low" | "medium" | "high" | "critical";
   sentiment: string;
   language: SaathiLanguage;
@@ -85,6 +87,9 @@ export type AttachmentAnalysis = {
   file_size: number;
   checksum: string;
   media_summary: string;
+  extraction_method: "pdf_text" | "tesseract_ocr" | "metadata_only";
+  extraction_status: "completed" | "unavailable" | "no_text";
+  relevance_status: "relevant" | "uncertain" | "rejected";
   extracted_text_preview: string | null;
   extracted_entities: SaathiEntity[];
   needs_user_review: boolean;
@@ -97,6 +102,8 @@ export type ReportPreparation = {
   attachments: AttachmentAnalysis[];
   missing_required_keys: string[];
   ready_for_review: boolean;
+  packet_ready: boolean;
+  draft_prepared: boolean;
 };
 
 export type ConfidenceBand = "low" | "medium" | "high";
@@ -123,9 +130,15 @@ export type SaathiHandoff = {
     description: string | null;
     title: string | null;
     crime_domain: string;
+    related_domains: string[];
     financial_loss_amount: string | null;
     incident_at: string | null;
     suspect_identifiers: string[];
+    suspect_details: string | null;
+    suspect_name: string | null;
+    suspect_alias: string | null;
+    city: string | null;
+    state: string | null;
     reporting_for: "SELF" | "CHILD" | "OTHER" | "UNKNOWN";
     affected_person_name: string | null;
     attachment_ids: string[];
@@ -136,11 +149,20 @@ export type ConversationState = {
   id: string;
   status: "active" | "handed_off" | "completed";
   language: SaathiLanguage;
+  storage_consent: boolean;
   reporting_mode: ReportingMode;
   turns: SaathiTurn[];
   incident: SaathiIncident;
   incidents: QueuedSaathiIncident[];
   active_incident_id: string | null;
+  pending_question_incident_id: string | null;
+  pending_question: {
+    key: string;
+    answer_type: ExpectedAnswerType;
+    incident_id: string;
+    attempts: number;
+    last_answer: string | null;
+  } | null;
   pending_confirmation_entity_ids: string[];
   handoff: SaathiHandoff | null;
   last_turn_purpose: TurnPurpose | null;

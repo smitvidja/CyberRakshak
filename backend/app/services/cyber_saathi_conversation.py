@@ -132,8 +132,11 @@ def infer_reporting_for(state: ConversationState) -> tuple[str, str | None]:
     other = (
         "my father", "my mother", "my wife", "my husband", "my brother", "my sister",
         "mere papa", "meri mummy", "meri maa", "mere bhai", "meri behen", "my friend",
+        "my cousin", "meri cousin", "mere cousin",
     )
-    if any(marker in lowered for marker in child_other):
+    if any(marker in lowered for marker in child_other) or UnderstandingEngine.has_child_context(
+        lowered
+    ):
         return "CHILD", None
     if any(marker in lowered for marker in other):
         return "OTHER", None
@@ -143,6 +146,10 @@ def infer_reporting_for(state: ConversationState) -> tuple[str, str | None]:
         "meri account", "mera phone", "meri image", "meri photo", "i am minor", "i'm minor",
     )
     if any(marker in lowered for marker in self_markers):
+        return "SELF", None
+    if any(owner in lowered.split() for owner in ("my", "mere", "meri", "mera")) and any(
+        subject in lowered for subject in ("bank account", "account", "phone", "profile", "order")
+    ):
         return "SELF", None
     return "UNKNOWN", None
 
@@ -161,6 +168,12 @@ def build_report_preparation(
     entities_by_type = {entity.type: entity for entity in incident.entities}
     language = state.language
     labels = _labels(language)
+    requires_safety_evidence = incident.crime_domain in {
+        CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY,
+        CrimeDomain.CHILD_SAFETY,
+        CrimeDomain.ONLINE_HARASSMENT,
+        CrimeDomain.CYBERSTALKING,
+    }
 
     def item(
         key: str,
@@ -179,12 +192,13 @@ def build_report_preparation(
             if required
             else ChecklistStatus.OPTIONAL
         )
+        safe_preview = preview[:297] + "..." if preview and len(preview) > 300 else preview
         return ReportChecklistItem(
             key=key,
             label=labels[key],
             status=status,
             required=required,
-            value_preview=preview,
+            value_preview=safe_preview,
         )
 
     checklist = [
@@ -205,24 +219,96 @@ def build_report_preparation(
         item(
             "evidence",
             collected=bool(existing.attachments),
-            required=False,
+            required=requires_safety_evidence,
             preview=f"{len(existing.attachments)} attachment(s)" if existing.attachments else None,
             unavailable=record.blocked_actions.get("screenshot", 0) > 0 and not existing.attachments,
         ),
     ]
+    identifier_entities = [
+        entity
+        for entity in incident.entities
+        if entity.type
+        in {
+            EntityType.PHONE_NUMBER,
+            EntityType.EMAIL,
+            EntityType.UPI_ID,
+            EntityType.URL,
+            EntityType.USERNAME,
+            EntityType.ACCOUNT_ID,
+        }
+    ]
+    checklist.append(
+        item(
+            "suspect_details",
+            collected=bool(identifier_entities or existing.suspect_details),
+            required=False,
+            preview=(
+                ", ".join(entity.value for entity in identifier_entities[:4])
+                or existing.suspect_details
+            ),
+        )
+    )
     if incident.crime_domain == CrimeDomain.FINANCIAL_FRAUD:
+        protected = bool(
+            {"bank_contacted", "bank_protection_requested"}
+            & set(record.completed_actions)
+        )
+        checklist.append(
+            item(
+                "bank_action",
+                collected=protected,
+                required=False,
+                preview=labels["bank_action_done"] if protected else None,
+            )
+        )
         for key, entity_type in (
             ("amount", EntityType.AMOUNT),
             ("transaction_id", EntityType.TRANSACTION_ID),
             ("provider", EntityType.PROVIDER),
         ):
             entity = entities_by_type.get(entity_type)
-            checklist.append(item(key, collected=entity is not None, required=key == "amount", preview=entity.value if entity else None))
+            preview = None
+            if entity is not None:
+                preview = (
+                    UnderstandingEngine.format_amount_for_display(entity.normalized_value)
+                    if entity.type == EntityType.AMOUNT and entity.normalized_value
+                    else entity.value
+                )
+            checklist.append(item(key, collected=entity is not None, required=key == "amount", preview=preview))
     elif incident.crime_domain == CrimeDomain.ECOMMERCE_FRAUD:
         checklist.extend(
             (
                 item("order_reference", collected=EntityType.TRANSACTION_ID in entities_by_type, required=False),
                 item("seller_or_website", collected=EntityType.URL in entities_by_type, required=False),
+            )
+        )
+    elif incident.crime_domain in {CrimeDomain.PHISHING_SCAM, CrimeDomain.IMPERSONATION}:
+        checklist.append(
+            item(
+                "sender_or_link",
+                collected=bool(identifier_entities),
+                required=False,
+                preview=", ".join(entity.value for entity in identifier_entities[:4]) or None,
+            )
+        )
+    elif incident.crime_domain in {CrimeDomain.ACCOUNT_COMPROMISE, CrimeDomain.IDENTITY_THEFT}:
+        account = entities_by_type.get(EntityType.ACCOUNT_SERVICE) or entities_by_type.get(EntityType.USERNAME)
+        checklist.append(
+            item(
+                "affected_account",
+                collected=account is not None,
+                required=False,
+                preview=account.value if account else None,
+            )
+        )
+    elif incident.crime_domain in {CrimeDomain.MALWARE, CrimeDomain.CYBER_TERRORISM, CrimeDomain.MISINFORMATION}:
+        source = entities_by_type.get(EntityType.URL) or entities_by_type.get(EntityType.ACCOUNT_SERVICE)
+        checklist.append(
+            item(
+                "source_or_device",
+                collected=source is not None,
+                required=False,
+                preview=source.value if source else None,
             )
         )
     elif incident.crime_domain in {
@@ -235,7 +321,7 @@ def build_report_preparation(
         username = entities_by_type.get(EntityType.USERNAME)
         checklist.extend(
             (
-                item("platform", collected=platform is not None, required=False, preview=platform.value if platform else None),
+                item("platform", collected=platform is not None, required=True, preview=platform.value if platform else None),
                 item("profile_identifier", collected=username is not None, required=False, preview=username.value if username else None),
             )
         )
@@ -248,6 +334,9 @@ def build_report_preparation(
         attachments=existing.attachments,
         missing_required_keys=missing,
         ready_for_review=not missing,
+        packet_ready=existing.packet_ready,
+        draft_prepared=existing.draft_prepared,
+        suspect_details=existing.suspect_details,
     )
 
 
@@ -264,6 +353,12 @@ def _labels(language: LanguageCode) -> dict[str, str]:
         "seller_or_website": "Seller or website details (if known)",
         "platform": "App or social platform (if known)",
         "profile_identifier": "Profile/username/URL (if known)",
+        "suspect_details": "Suspect number, link, account or profile (if known)",
+        "bank_action": "Bank/UPI protection action",
+        "bank_action_done": "Official provider contacted / protection requested",
+        "sender_or_link": "Sender, caller, profile or link (if known)",
+        "affected_account": "Affected account or service (if known)",
+        "source_or_device": "Source, URL, app or affected device detail (if known)",
     }
     if language == LanguageCode.HI:
         return {
@@ -273,6 +368,12 @@ def _labels(language: LanguageCode) -> dict[str, str]:
             "incident_time": "अनुमानित तारीख और समय (यदि पता हो)",
             "evidence": "स्क्रीनशॉट, PDF, भुगतान प्रमाण या संदेश (वैकल्पिक)",
             "amount": "गई हुई राशि",
+            "suspect_details": "संदिग्ध नंबर, लिंक, अकाउंट या प्रोफाइल (यदि पता हो)",
+            "bank_action": "बैंक/UPI सुरक्षा कार्रवाई",
+            "bank_action_done": "आधिकारिक सेवा से संपर्क / सुरक्षा अनुरोध दर्ज",
+            "sender_or_link": "भेजने वाला, कॉलर, प्रोफाइल या लिंक (यदि पता हो)",
+            "affected_account": "प्रभावित अकाउंट या सेवा (यदि पता हो)",
+            "source_or_device": "स्रोत, URL, ऐप या प्रभावित डिवाइस विवरण (यदि पता हो)",
         }
     if language == LanguageCode.HINGLISH:
         return {
@@ -282,5 +383,11 @@ def _labels(language: LanguageCode) -> dict[str, str]:
             "incident_time": "Approximate date aur time (agar pata ho)",
             "evidence": "Screenshots, PDF, payment proof ya messages (optional)",
             "amount": "Kitna amount gaya",
+            "suspect_details": "Suspect number, link, account ya profile (agar pata ho)",
+            "bank_action": "Bank/UPI protection action",
+            "bank_action_done": "Official provider contacted / protection request recorded",
+            "sender_or_link": "Sender, caller, profile ya link (agar pata ho)",
+            "affected_account": "Affected account ya service (agar pata ho)",
+            "source_or_device": "Source, URL, app ya affected device detail (agar pata ho)",
         }
     return english

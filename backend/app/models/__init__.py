@@ -8,6 +8,7 @@ from app.models.complaint import (
 )
 from app.models.engagement import AuditLog, Notification
 from app.models.evidence import Evidence
+from app.models.cyber_saathi import CyberSaathiConversation
 from app.models.mock_identity import MockIdentityProfile
 from app.models.suspect import ReportedSuspect
 from app.models.user import CitizenProfile, User
@@ -33,6 +34,7 @@ __all__ = [
     "ComplaintStatusHistory",
     "ComplaintSuspect",
     "CyberWarriorProfile",
+    "CyberSaathiConversation",
     "Evidence",
     "MockIdentityProfile",
     "Notification",

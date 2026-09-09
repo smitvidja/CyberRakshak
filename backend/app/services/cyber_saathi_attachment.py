@@ -1,4 +1,4 @@
-"""Small, dependency-free evidence inspection for Cyber Saathi report preparation.
+"""Bounded evidence inspection for Cyber Saathi report preparation.
 
 The inspector is intentionally transient: it validates and reads the upload for
 metadata/basic text hints, but does not persist the file. The confirmed complaint
@@ -8,11 +8,15 @@ flow remains the only owner of stored evidence.
 from __future__ import annotations
 
 import re
+import shutil
 import struct
+import subprocess
+from io import BytesIO
 from hashlib import sha256
 from pathlib import Path
 
 from fastapi import UploadFile
+from pypdf import PdfReader
 
 from app.core.errors import APIError
 from app.schemas.cyber_saathi import AttachmentAnalysis
@@ -57,7 +61,7 @@ async def read_and_analyze_attachment(upload: UploadFile) -> tuple[AttachmentAna
         raise APIError(status_code=422, code="EMPTY_ATTACHMENT", message="The attachment is empty.")
     _validate_signature(expected_type, content)
 
-    preview, media_summary = _inspect_content(expected_type, content)
+    preview, media_summary, extraction_method, extraction_status = _inspect_content(expected_type, content)
     analysis_text = " ".join(part for part in (filename, preview) if part)
     extracted = UnderstandingEngine.analyze(analysis_text).entities if analysis_text else []
     return (
@@ -67,6 +71,8 @@ async def read_and_analyze_attachment(upload: UploadFile) -> tuple[AttachmentAna
             file_size=size,
             checksum=sha256(content).hexdigest(),
             media_summary=media_summary,
+            extraction_method=extraction_method,
+            extraction_status=extraction_status,
             extracted_text_preview=preview or None,
             extracted_entities=extracted,
             needs_user_review=True,
@@ -89,23 +95,48 @@ def _validate_signature(mime_type: str, content: bytes) -> None:
         )
 
 
-def _inspect_content(mime_type: str, content: bytes) -> tuple[str, str]:
+def _inspect_content(mime_type: str, content: bytes) -> tuple[str, str, str, str]:
     if mime_type == "application/pdf":
-        page_count = max(1, len(re.findall(rb"/Type\s*/Page\b", content)))
-        strings = [
-            match.decode("latin-1", errors="ignore").strip()
-            for match in re.findall(rb"[A-Za-z0-9][A-Za-z0-9@:/._+\-,() ]{5,}", content)
-        ]
-        preview = " ".join(strings)
-        preview = re.sub(r"\s+", " ", preview)[:500]
-        return preview, f"PDF document · approximately {page_count} page(s)"
+        try:
+            reader = PdfReader(BytesIO(content), strict=False)
+            page_count = len(reader.pages)
+            text = " ".join((page.extract_text() or "") for page in reader.pages[:10])
+            preview = re.sub(r"\s+", " ", text).strip()[:500]
+            status = "completed" if preview else "no_text"
+            return preview, f"PDF document · {page_count} page(s)", "pdf_text", status
+        except Exception as error:
+            raise APIError(
+                status_code=422,
+                code="UNREADABLE_ATTACHMENT",
+                message="The PDF could not be read safely. Export it again and retry.",
+            ) from error
     if mime_type == "image/png" and len(content) >= 24:
         width, height = struct.unpack(">II", content[16:24])
-        return "", f"PNG image · {width} × {height} pixels"
+        preview, method, status = _ocr_image(content)
+        return preview, f"PNG image · {width} × {height} pixels", method, status
     dimensions = _jpeg_dimensions(content)
     if dimensions:
-        return "", f"JPEG image · {dimensions[0]} × {dimensions[1]} pixels"
-    return "", "JPEG image · dimensions unavailable"
+        preview, method, status = _ocr_image(content)
+        return preview, f"JPEG image · {dimensions[0]} × {dimensions[1]} pixels", method, status
+    return "", "JPEG image · dimensions unavailable", "metadata_only", "unavailable"
+
+
+def _ocr_image(content: bytes) -> tuple[str, str, str]:
+    executable = shutil.which("tesseract")
+    if executable is None:
+        return "", "metadata_only", "unavailable"
+    try:
+        completed = subprocess.run(
+            [executable, "stdin", "stdout", "--dpi", "300", "-l", "eng+hin"],
+            input=content,
+            capture_output=True,
+            check=True,
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return "", "metadata_only", "unavailable"
+    preview = re.sub(r"\s+", " ", completed.stdout.decode("utf-8", errors="ignore")).strip()[:500]
+    return preview, "tesseract_ocr", "completed" if preview else "no_text"
 
 
 def _jpeg_dimensions(content: bytes) -> tuple[int, int] | None:

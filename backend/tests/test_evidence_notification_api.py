@@ -127,6 +127,12 @@ def test_identified_evidence_persists_metadata_audits_and_can_be_deleted(
     read_metadata = client.get(f"/api/v1/evidence/{evidence.id}", headers=headers)
     assert read_metadata.status_code == 200
 
+    listed_for_review = client.get(
+        f"/api/v1/evidence/by-complaint/{complaint_id}", headers=headers
+    )
+    assert listed_for_review.status_code == 200
+    assert [item["id"] for item in listed_for_review.json()["data"]] == [str(evidence.id)]
+
     deleted = client.delete(f"/api/v1/evidence/{evidence.id}", headers=headers)
     assert deleted.status_code == 204
     assert session.get(Evidence, evidence.id) is None

@@ -4,7 +4,7 @@ PostgreSQL is the database source of truth. Use UUID primary keys, `TIMESTAMPTZ`
 
 ## Core Tables
 
-The MVP schema contains 21 tables:
+The MVP schema contains 22 tables:
 
 1. `users`
 2. `citizen_profiles`
@@ -27,6 +27,7 @@ The MVP schema contains 21 tables:
 19. `notifications`
 20. `audit_logs`
 21. `mock_identity_profiles`
+22. `cyber_saathi_conversations` (consent-gated, redacted, 30-day conversation recovery and quality-review metadata; never part of the authoritative RAG corpus)
 
 ## Key Enums
 

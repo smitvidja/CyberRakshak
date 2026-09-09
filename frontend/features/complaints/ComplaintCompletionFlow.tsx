@@ -9,9 +9,10 @@ import {Button} from "@/components/ui/Button";
 import {TextInput} from "@/components/ui/FormFields";
 import {ResponsiveDataList, type DataListRow} from "@/components/ui/ResponsiveDataList";
 import {StatePanel, StatusChip, SurfaceCard} from "@/components/ui/Surface";
-import {complaintsApi} from "@/lib/api/complaints";
+import {complaintsApi, evidenceApi} from "@/lib/api/complaints";
 import type {ApiRecord} from "@/lib/api/auth";
 import {getAccessToken, getComplaintDraft, getComplaintEvidence, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
+import {getGuestEvidenceFiles, markGuestDraftForFinalSubmit} from "@/lib/auth/guest-report-session";
 
 type TrackingRecord = ApiRecord & {history?: ApiRecord[]};
 
@@ -27,10 +28,6 @@ function requestOptions() {
   return getReportMode() === "identified" ? {accessToken: getAccessToken() ?? undefined} : undefined;
 }
 
-function reviewPath(locale: string, draftId: string) {
-  return "/" + locale + "/report-crime/" + draftId + "/review";
-}
-
 function statusTone(status: string) {
   if (status === "SUBMITTED" || status === "RESOLVED") return "success" as const;
   if (status === "IN_REVIEW" || status === "UNDER_REVIEW") return "info" as const;
@@ -44,6 +41,7 @@ function displayDate(value: unknown, locale: string) {
 }
 
 function displayAmount(value: unknown, locale: string) {
+  if (value === null || value === undefined || (typeof value === "string" && !value.trim())) return "-";
   const amount = Number(value);
   return Number.isFinite(amount) ? new Intl.NumberFormat(locale === "hi" ? "hi-IN" : "en-IN", {currency: "INR", style: "currency"}).format(amount) : "-";
 }
@@ -84,6 +82,7 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [serverEvidence, setServerEvidence] = useState<Array<{fileName: string; fileSize: number; id: string}>>([]);
 
   useEffect(() => {
     let active = true;
@@ -95,6 +94,14 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
         if (active && result.ok) {
           setDraft(result.data);
           setComplaintDraft({data: result.data, id: draftId});
+          const evidenceResult = await evidenceApi.listByComplaint(draftId, requestOptions());
+          if (active && evidenceResult.ok) {
+            setServerEvidence(evidenceResult.data.map((item) => ({
+              fileName: asString(item.file_name),
+              fileSize: Number(item.file_size) || 0,
+              id: asString(item.id)
+            })));
+          }
         } else if (active && !cached) {
           setError(t("draftUnavailable"));
         }
@@ -114,6 +121,11 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
     }
     setSubmitting(true);
     setError("");
+    if (getReportMode() === "identified" && !getAccessToken()) {
+      markGuestDraftForFinalSubmit();
+      router.push(`/${locale}/report-crime/verify`);
+      return;
+    }
     const result = await complaintsApi.submit(draftId, requestOptions());
     if (!result.ok) {
       setError(t("submitError"));
@@ -131,7 +143,10 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
   const category = asRecord(draft.category);
   const location = asRecord(draft.location);
   const suspects = Array.isArray(draft.suspects) ? draft.suspects.map((item) => asRecord(item)).filter((item): item is ApiRecord => item !== null) : [];
-  const evidence = getComplaintEvidence(draftId);
+  const pendingGuestEvidence = draftId === "guest-draft"
+    ? getGuestEvidenceFiles().map((file, index) => ({fileName: file.name, fileSize: file.size, id: `guest-${index}`}))
+    : [];
+  const evidence = serverEvidence.length ? serverEvidence : pendingGuestEvidence.length ? pendingGuestEvidence : getComplaintEvidence(draftId);
   const locationValue = [asString(location?.city), asString(location?.district), asString(location?.state)].filter(Boolean).join(", ") || "-";
 
   return <main className="citizen-page citizen-review-page shell-container py-8 sm:py-12">
@@ -158,7 +173,9 @@ export function ComplaintSubmitted({complaintNumber}: {complaintNumber: string})
   const locale = useLocale();
   const router = useRouter();
   const [identified, setIdentified] = useState(false);
-  useEffect(() => { setIdentified(getReportMode() === "identified"); }, []);
+  useEffect(() => {
+    queueMicrotask(() => setIdentified(getReportMode() === "identified"));
+  }, []);
   const events = [
     {label: t("timelineStages.submitted"), description: t("timelineStageCopy.submitted"), timestamp: t("timelineNow"), tone: "success" as const},
     {label: t("timelineStages.underReview"), description: t("timelineStageCopy.underReview"), timestamp: t("timelinePending"), tone: "neutral" as const},
@@ -184,6 +201,7 @@ export function ComplaintTrackingLookup() {
 export function ComplaintTrackingDetail({complaintNumber}: {complaintNumber: string}) {
   const t = useTranslations("complaintCompletion");
   const locale = useLocale();
+  const router = useRouter();
   const [complaint, setComplaint] = useState<TrackingRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -199,7 +217,7 @@ export function ComplaintTrackingDetail({complaintNumber}: {complaintNumber: str
     return () => { active = false; };
   }, [complaintNumber]);
   if (loading) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("trackingLoadingTitle")} tone="loading">{t("trackingLoadingCopy")}</StatePanel></main>;
-  if (!complaint || error) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel action={<Button onClick={() => window.location.assign("/" + locale + "/complaints/track")} variant="outline">{t("tryAnother")}</Button>} title={t("trackingErrorTitle")} tone="error">{t("trackingErrorCopy")}</StatePanel></main>;
+  if (!complaint || error) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel action={<Button onClick={() => router.push("/" + locale + "/complaints/track")} variant="outline">{t("tryAnother")}</Button>} title={t("trackingErrorTitle")} tone="error">{t("trackingErrorCopy")}</StatePanel></main>;
   const events = trackingStages(t, complaint, locale);
   return <main className="citizen-page citizen-track-detail-page shell-container py-8 sm:py-12"><div className="citizen-workspace mx-auto max-w-4xl space-y-6"><p className="eyebrow">{t("trackEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("trackingTitle")}</h1><SurfaceCard heading={t("trackingSummaryTitle")}><dl className="grid gap-4 sm:grid-cols-3"><div><dt className="text-sm font-bold text-[var(--muted)]">{t("referenceLabel")}</dt><dd className="mt-1 font-bold text-[var(--navy)]">{asString(complaint.complaint_number)}</dd></div><div><dt className="text-sm font-bold text-[var(--muted)]">{t("statusLabel")}</dt><dd className="mt-1"><StatusChip label={statusLabel(t, complaint.status)} tone={statusTone(asString(complaint.status))} /></dd></div><div><dt className="text-sm font-bold text-[var(--muted)]">{t("priorityLabel")}</dt><dd className="mt-1 text-sm text-[var(--ink)]">{asString(complaint.priority) || "-"}</dd></div></dl></SurfaceCard><SurfaceCard heading={t("timelineTitle")}><StatusTimeline events={events} label={t("timelineLabel")} /></SurfaceCard><StatePanel title={t("prototypeUpdateTitle")} tone="info">{t("prototypeUpdateCopy")}</StatePanel></div></main>;
 }
@@ -215,8 +233,10 @@ export function MyComplaints() {
   const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
-    setIdentified(getReportMode() === "identified" && Boolean(getAccessToken()));
-    setSessionReady(true);
+    queueMicrotask(() => {
+      setIdentified(getReportMode() === "identified" && Boolean(getAccessToken()));
+      setSessionReady(true);
+    });
   }, []);
 
   useEffect(() => {

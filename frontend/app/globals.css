@@ -163,6 +163,12 @@ button, input, select, textarea { font: inherit; }
 .brand-support strong, .brand-support span { display: block; }
 .brand-support span { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 2px; color: var(--navy); font-size: 22px; font-weight: 800; letter-spacing: .01em; }
 .brand-support:hover span, .brand-support:focus-visible span { color: var(--blue); }
+.brand-header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 18px; min-width: 0; }
+.citizen-dashboard-entry { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; border-right: 1px solid #d8e5f2; padding-right: 18px; color: var(--navy); text-decoration: none; white-space: nowrap; }
+.citizen-dashboard-entry > span { display: grid; height: 38px; width: 38px; place-items: center; border: 1px solid #b9d8f4; border-radius: 50%; background: #edf6ff; color: var(--blue); transition: background-color 150ms ease, color 150ms ease, transform 150ms ease; }
+.citizen-dashboard-entry strong { font-size: 13px; font-weight: 800; }
+.citizen-dashboard-entry:hover > span, .citizen-dashboard-entry:focus-visible > span { background: var(--blue); color: #fff; transform: translateY(-1px); }
+.citizen-dashboard-entry:focus-visible { border-radius: 6px; outline: 3px solid rgb(7 95 185 / .22); outline-offset: 3px; }
 .brand-mark { border-radius: 50%; object-fit: contain; }
 
 /* Shown only on reporting/registration routes - deliberately light (soft blue, no
@@ -282,7 +288,11 @@ button, input, select, textarea { font: inherit; }
   .brand-content { min-height: unset; }
   .brand-header .brand-content { grid-template-columns: 1fr; justify-items: start; gap: 10px; }
   .brand-reassurance { display: none; }
+  .brand-header-actions { width: 100%; justify-content: space-between; gap: 12px; }
+  .citizen-dashboard-entry { padding-right: 12px; }
+  .citizen-dashboard-entry strong { font-size: 12px; }
   .brand-support { text-align: left; }
+  .brand-support span { justify-content: flex-start; }
   .nav-list { border-radius: 12px; padding: 5px 8px; }
   .nav-list a { padding: 10px 12px; }
   .support-band > div { gap: 8px; }
@@ -322,6 +332,8 @@ button, input, select, textarea { font: inherit; }
 .citizen-dashboard-welcome { border-left: 4px solid var(--blue); }
 .citizen-dashboard-action { transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
 .citizen-dashboard-action:hover { transform: translateY(-2px); border-color: #91bfe9; box-shadow: 0 8px 18px rgb(15 42 74 / .10); }
+.citizen-dashboard-logout { min-width: 170px; border-color: var(--danger) !important; color: var(--danger) !important; }
+.citizen-dashboard-logout:hover, .citizen-dashboard-logout:focus-visible { background: #fff2f0 !important; }
 .citizen-evidence-panel { border-top-color: #7aaee0; }
 .citizen-evidence-panel .evidence-dropzone { min-height: 142px; }
 .affected-person-option { transition: transform 150ms ease, border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease; }

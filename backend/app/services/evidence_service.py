@@ -155,6 +155,20 @@ class EvidenceService:
         return EvidenceRepository.list_by_warrior_report(session, warrior_report_id)
 
     @staticmethod
+    def list_for_complaint(
+        session: Session,
+        complaint_id: UUID,
+        current_user: User,
+    ) -> list[Evidence]:
+        complaint = ComplaintRepository.get_with_details(session, complaint_id)
+        if complaint is None:
+            raise APIError(status_code=404, code="NOT_FOUND", message="Complaint not found.")
+        if complaint.is_anonymous and current_user.role is not UserRole.ADMIN:
+            raise APIError(status_code=403, code="FORBIDDEN", message="You do not have permission to access this evidence.")
+        ensure_resource_owner(complaint.user_id, current_user)
+        return EvidenceRepository.list_by_complaint(session, complaint_id)
+
+    @staticmethod
     def delete(
         session: Session,
         evidence_id: UUID,

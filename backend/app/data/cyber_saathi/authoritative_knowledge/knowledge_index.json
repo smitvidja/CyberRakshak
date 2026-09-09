@@ -1,10 +1,13 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "index_version": "2026.09.3.3",
   "embedding_version": "hashed-unicode-ngrams-v1",
   "embedding_dimension": 384,
+  "semantic_embedding_provider": null,
+  "semantic_embedding_model": null,
+  "semantic_embedding_dimension": null,
   "source_pack_hash": "0aa76a8cb1914cfeed905b7bf22284088fa12f0329f189e83c6912a82bc533d3",
-  "generated_at": "2026-09-06T17:50:53.753696+00:00",
+  "generated_at": "2026-09-08T15:22:59.572207+00:00",
   "chunks": [
     {
       "chunk_id": "nch_ecommerce_grievance:1:1",
@@ -422,7 +425,8 @@
         0.04143716,
         -0.02071858,
         0.08589577
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "nch_ecommerce_grievance:2:1",
@@ -839,7 +843,8 @@
         0.11677062,
         -0.03639604,
         0.01213201
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_financial_fraud:1:1",
@@ -1257,7 +1262,8 @@
         0.17341097,
         -0.03676752,
         0.0812178
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_citizen_manual:1:1",
@@ -1681,7 +1687,8 @@
         0.06373472,
         -0.01820992,
         0.06601096
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_citizen_manual:2:1",
@@ -2105,7 +2112,8 @@
         0.01839047,
         -0.00919524,
         0.01839047
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_citizen_manual:3:1",
@@ -2530,7 +2538,8 @@
         0.05705764,
         -0.01901921,
         0.09866217
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_women_child_faq:1:1",
@@ -2949,7 +2958,8 @@
         0.03963994,
         0.0,
         0.04871414
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_hindi_faq:1:1",
@@ -3377,7 +3387,8 @@
         0.0191779,
         0.0,
         0.01753408
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_identifier_facilities:1:1",
@@ -3793,7 +3804,8 @@
         0.00841127,
         0.0,
         0.0252338
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_cyber_safety_tips:1:1",
@@ -4217,7 +4229,8 @@
         0.02789256,
         -0.02963584,
         0.09704285
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_cyber_safety_tips:2:1",
@@ -4642,7 +4655,8 @@
         0.08841351,
         0.0,
         0.06776605
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_cyber_safety_tips:3:1",
@@ -5067,7 +5081,8 @@
         0.02570924,
         0.0,
         0.04284874
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "ncrp_cyber_safety_tips:4:1",
@@ -5490,7 +5505,8 @@
         0.06517892,
         -0.00814737,
         0.08656575
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_digital_safety_compass:1:1",
@@ -5914,7 +5930,8 @@
         0.00996174,
         -0.02179132,
         0.01992349
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_digital_safety_compass:2:1",
@@ -6338,7 +6355,8 @@
         0.01881004,
         -0.03762008,
         0.13637278
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_digital_safety_compass:3:1",
@@ -6764,7 +6782,8 @@
         0.04014393,
         -0.01605757,
         0.15053975
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_digital_safety_compass:4:1",
@@ -7188,7 +7207,8 @@
         0.0090755,
         -0.02722649,
         0.06579734
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_digital_safety_compass:5:1",
@@ -7612,7 +7632,8 @@
         0.00867577,
         0.0,
         0.07157506
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_cyber_smart_kids:1:1",
@@ -8033,7 +8054,8 @@
         0.02154109,
         0.0,
         0.09047259
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_cyber_smart_kids:2:1",
@@ -8456,7 +8478,8 @@
         0.02252419,
         -0.01029677,
         0.04118709
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_cyber_smart_kids:3:1",
@@ -8877,7 +8900,8 @@
         0.02072885,
         0.0,
         0.0
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_cyber_smart_kids:4:1",
@@ -9299,7 +9323,8 @@
         0.0,
         0.0,
         0.10785017
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_mahila_raksha_en:1:1",
@@ -9723,7 +9748,8 @@
         0.02524278,
         0.0,
         0.09664377
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_mahila_raksha_en:2:1",
@@ -10148,7 +10174,8 @@
         0.01889884,
         0.0,
         0.15591543
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_mahila_raksha_en:3:1",
@@ -10572,7 +10599,8 @@
         0.07541076,
         -0.0229511,
         0.10950954
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_mahila_raksha_hi:1:1",
@@ -10996,7 +11024,8 @@
         0.01883709,
         -0.00941854,
         0.03767418
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_cyber_awareness_2023:1:1",
@@ -11424,7 +11453,8 @@
         0.02775886,
         -0.01741732,
         0.00870866
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_cyber_awareness_2023:2:1",
@@ -11850,7 +11880,8 @@
         0.04313738,
         0.0,
         0.04475503
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_cyber_awareness_2023:3:1",
@@ -12278,7 +12309,8 @@
         0.11510391,
         0.0,
         0.06513197
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "certin_cyber_awareness_2023:4:1",
@@ -12706,7 +12738,8 @@
         0.05489251,
         -0.02661455,
         0.04435758
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "rbi_payment_fraud_awareness:1:1",
@@ -13129,7 +13162,8 @@
         0.04351727,
         -0.02774226,
         0.05439659
-      ]
+      ],
+      "semantic_embedding": null
     },
     {
       "chunk_id": "rbi_unauthorised_transactions:1:1",
@@ -13547,7 +13581,8 @@
         0.08366695,
         0.0,
         0.02194543
-      ]
+      ],
+      "semantic_embedding": null
     }
   ]
 }

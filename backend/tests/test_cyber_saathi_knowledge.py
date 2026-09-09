@@ -6,7 +6,13 @@ from fastapi.testclient import TestClient
 
 from app.core.errors import APIError
 from app.main import app
-from app.schemas.cyber_saathi import KnowledgeDomain, KnowledgeSearchRequest, LanguageCode
+from app.schemas.cyber_saathi import (
+    ConversationCreate,
+    KnowledgeDomain,
+    KnowledgeSearchRequest,
+    LanguageCode,
+)
+from app.services.cyber_saathi_service import CyberSaathiService
 from app.services import cyber_saathi_knowledge as knowledge_module
 from app.services.cyber_saathi_knowledge import (
     INDEX_PATH,
@@ -159,3 +165,53 @@ def test_knowledge_gold_set_meets_relevance_source_and_no_result_gates() -> None
     assert result["metrics"]["chunk_correctness"] == 1
     assert result["metrics"]["false_positive_count"] == 0
     assert result["metrics"]["false_negative_count"] == 0
+
+
+def test_hybrid_index_can_use_a_domain_scoped_semantic_paraphrase(tmp_path, monkeypatch) -> None:
+    source_copy = tmp_path / "sources.json"
+    source_copy.write_bytes(SOURCE_PACK_PATH.read_bytes())
+    index_copy = tmp_path / "knowledge_index.json"
+    monkeypatch.setattr(knowledge_module, "SOURCE_PACK_PATH", source_copy)
+    monkeypatch.setattr(knowledge_module, "INDEX_PATH", index_copy)
+    rebuild_index(index_copy)
+
+    payload = json.loads(index_copy.read_text(encoding="utf-8"))
+    vector = [0.0] * 128
+    vector[0] = 1.0
+    payload["semantic_embedding_provider"] = "gemini"
+    payload["semantic_embedding_model"] = "test-multilingual-model"
+    payload["semantic_embedding_dimension"] = 128
+    for chunk in payload["chunks"]:
+        chunk["semantic_embedding"] = vector
+    index_copy.write_text(json.dumps(payload), encoding="utf-8")
+    KnowledgeService.clear_cache()
+    monkeypatch.setattr(
+        KnowledgeService,
+        "_semantic_query_embedding",
+        classmethod(lambda _cls, _index, _query: vector),
+    )
+
+    response = KnowledgeService.search(
+        KnowledgeSearchRequest(
+            query="My parcel vanished",
+            domain=KnowledgeDomain.ECOMMERCE_CONSUMER_GRIEVANCE,
+        )
+    )
+
+    assert response.no_result is False
+    assert response.retrieval_strategy == "hybrid_dense_sparse_lexical"
+    assert response.matches[0].semantic_score == 1
+
+
+def test_follow_up_retrieval_query_keeps_active_incident_context() -> None:
+    state = CyberSaathiService.start(ConversationCreate()).state
+    state.incident.summary = "A fake UPI QR code caused an unauthorised transfer"
+    query = CyberSaathiService._build_retrieval_query(
+        state=state,
+        message="haan, same issue",
+        domain_expansion="upi payment qr wallet fraud transaction",
+    )
+
+    assert "fake upi qr code" in query
+    assert "same issue" in query
+    assert "upi payment qr wallet fraud transaction" in query

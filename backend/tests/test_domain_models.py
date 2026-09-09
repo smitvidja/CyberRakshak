@@ -30,6 +30,7 @@ APPROVED_TABLES = {
     "complaint_status_history",
     "complaint_suspects",
     "complaints",
+    "cyber_saathi_conversations",
     "cyber_warrior_profiles",
     "evidence",
     "mock_identity_profiles",
@@ -62,6 +63,7 @@ REQUIRED_QUERY_INDEXES = {
         "ix_complaints_user_id",
     },
     "cyber_warrior_profiles": {"ix_cyber_warrior_profiles_verification_status"},
+    "cyber_saathi_conversations": {"ix_cyber_saathi_conversations_expires_at"},
     "evidence": {
         "ix_evidence_complaint_id",
         "ix_evidence_suspect_report_id",

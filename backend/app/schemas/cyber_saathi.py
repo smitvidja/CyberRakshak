@@ -159,6 +159,22 @@ class TurnPurpose(str, Enum):
     GENERAL_QUESTION = "general_question"
 
 
+class ExpectedAnswerType(str, Enum):
+    CONFIRM_ENTITIES = "confirm_entities"
+    FINAL_LOSS_AMOUNT = "final_loss_amount"
+    YES_NO = "yes_no"
+    IDENTIFIER_OR_EVIDENCE = "identifier_or_evidence"
+    FREE_TEXT = "free_text"
+
+
+class PendingQuestion(BaseModel):
+    key: str = Field(pattern=r"^[a-z0-9_]+$", min_length=1, max_length=80)
+    answer_type: ExpectedAnswerType
+    incident_id: UUID
+    attempts: int = Field(default=0, ge=0, le=20)
+    last_answer: str | None = Field(default=None, max_length=500)
+
+
 class ChecklistStatus(str, Enum):
     MISSING = "missing"
     COLLECTED = "collected"
@@ -267,6 +283,7 @@ class IncidentState(BaseModel):
     status: IncidentStatus = IncidentStatus.UNKNOWN
     intent: Intent = Intent.UNKNOWN
     crime_domain: CrimeDomain = CrimeDomain.UNKNOWN
+    related_domains: list[CrimeDomain] = Field(default_factory=list, max_length=4)
     urgency: Urgency = Urgency.LOW
     sentiment: Sentiment = Sentiment.NEUTRAL
     language: LanguageCode = LanguageCode.EN
@@ -297,6 +314,9 @@ class AttachmentAnalysis(BaseModel):
     file_size: int = Field(ge=1, le=10 * 1024 * 1024)
     checksum: str = Field(pattern=r"^[a-f0-9]{64}$")
     media_summary: str = Field(min_length=1, max_length=300)
+    extraction_method: Literal["pdf_text", "tesseract_ocr", "metadata_only"] = "metadata_only"
+    extraction_status: Literal["completed", "unavailable", "no_text"] = "no_text"
+    relevance_status: Literal["relevant", "uncertain", "rejected"] = "uncertain"
     extracted_text_preview: str | None = Field(default=None, max_length=500)
     extracted_entities: list[Entity] = Field(default_factory=list, max_length=20)
     needs_user_review: bool = True
@@ -309,6 +329,9 @@ class ReportPreparation(BaseModel):
     attachments: list[AttachmentAnalysis] = Field(default_factory=list, max_length=10)
     missing_required_keys: list[str] = Field(default_factory=list, max_length=20)
     ready_for_review: bool = False
+    packet_ready: bool = False
+    draft_prepared: bool = False
+    suspect_details: str | None = Field(default=None, max_length=1000)
 
 
 class ConversationIncident(BaseModel):
@@ -355,9 +378,15 @@ class ComplaintPrefill(BaseModel):
     title: str | None = Field(default=None, max_length=255)
     description: str | None = Field(default=None, max_length=8000)
     crime_domain: CrimeDomain = CrimeDomain.UNKNOWN
+    related_domains: list[CrimeDomain] = Field(default_factory=list, max_length=4)
     financial_loss_amount: str | None = Field(default=None, max_length=100)
     incident_at: str | None = Field(default=None, max_length=100)
     suspect_identifiers: list[str] = Field(default_factory=list, max_length=20)
+    suspect_details: str | None = Field(default=None, max_length=1000)
+    suspect_name: str | None = Field(default=None, max_length=255)
+    suspect_alias: str | None = Field(default=None, max_length=255)
+    city: str | None = Field(default=None, max_length=100)
+    state: str | None = Field(default=None, max_length=100)
     reporting_for: Literal["SELF", "CHILD", "OTHER", "UNKNOWN"] = "UNKNOWN"
     affected_person_name: str | None = Field(default=None, max_length=255)
     attachment_ids: list[UUID] = Field(default_factory=list, max_length=10)
@@ -385,11 +414,14 @@ class ConversationState(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     status: ConversationStatus = ConversationStatus.ACTIVE
     language: LanguageCode = LanguageCode.EN
+    storage_consent: bool = False
     reporting_mode: ReportingMode = ReportingMode.UNDECIDED
     turns: list[ConversationTurn] = Field(default_factory=list, max_length=50)
     incident: IncidentState = Field(default_factory=IncidentState)
     incidents: list[ConversationIncident] = Field(default_factory=list, max_length=10)
     active_incident_id: UUID | None = None
+    pending_question_incident_id: UUID | None = None
+    pending_question: PendingQuestion | None = None
     pending_confirmation_entity_ids: list[UUID] = Field(default_factory=list, max_length=30)
     handoff: WorkflowHandoff | None = None
     last_turn_purpose: TurnPurpose | None = None
@@ -400,12 +432,19 @@ class ConversationState(BaseModel):
 class ConversationCreate(BaseModel):
     language: LanguageCode = LanguageCode.EN
     reporting_mode: ReportingMode = ReportingMode.UNDECIDED
+    storage_consent: bool = False
 
 
 class ConversationMessageRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
     state: ConversationState
     reporting_mode: ReportingMode | None = None
+    prepare_report_draft: bool = False
+
+
+class ConversationFeedback(BaseModel):
+    rating: int = Field(ge=1, le=5)
+    comment: str | None = Field(default=None, max_length=1000)
 
 
 class ConversationAttachmentRequest(BaseModel):
@@ -461,6 +500,9 @@ class KnowledgeChunk(BaseModel):
     retrieval_terms: list[str] = Field(default_factory=list, max_length=30)
     content_hash: str = Field(min_length=64, max_length=64)
     embedding: list[float] = Field(min_length=384, max_length=384)
+    # Optional multilingual dense vector. It is created only during explicit
+    # ingestion, so a normal API start or test run never downloads a local model.
+    semantic_embedding: list[float] | None = Field(default=None, min_length=128, max_length=3072)
 
 
 class KnowledgeSearchRequest(BaseModel):
@@ -484,6 +526,10 @@ class KnowledgeMatch(BaseModel):
     section_title: str
     text: str
     relevance_score: float = Field(ge=0, le=1)
+    retrieval_strategy: str = Field(default="sparse_lexical", max_length=50)
+    lexical_score: float | None = Field(default=None, ge=0, le=1)
+    sparse_score: float | None = Field(default=None, ge=0, le=1)
+    semantic_score: float | None = Field(default=None, ge=0, le=1)
 
 
 class KnowledgeSearchResponse(BaseModel):
@@ -494,6 +540,7 @@ class KnowledgeSearchResponse(BaseModel):
     no_result: bool
     matches: list[KnowledgeMatch] = Field(default_factory=list, max_length=5)
     bounded_context: str = Field(default="", max_length=2400)
+    retrieval_strategy: str = Field(default="sparse_lexical", max_length=50)
 
 
 class ConversationResponse(BaseModel):

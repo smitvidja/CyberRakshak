@@ -66,7 +66,7 @@ cd backend
 .\.venv\Scripts\python.exe -m app.services.cyber_saathi_knowledge
 ```
 
-The API never rebuilds embeddings at startup and does not perform live government or portal lookups. A stale source-pack hash, invalid chunk hash, unsupported index schema, more than 500 chunks, or an index larger than 2 MiB causes retrieval to fail closed until explicit re-ingestion.
+The API never rebuilds embeddings at startup and does not perform live government or portal lookups. The current file-backed index always contains a lightweight 384-dimensional sparse vector. An operator may explicitly ingest optional 768-dimensional multilingual dense vectors with `--semantic`; query ranking then combines lexical grounding, sparse similarity, and dense similarity. A stale source-pack hash, invalid chunk hash, unsupported index schema, invalid vector dimensions, more than 500 chunks, or an index larger than 8 MiB causes retrieval to fail closed until explicit re-ingestion. Dense-only retrieval is allowed only within an inferred knowledge domain; unscoped queries still require lexical grounding.
 
 Normal conversation replies expose `grounding_status`, `retrieval_latency_ms`, and a bounded `sources` list on each assistant turn. A grounded source contains its exact `chunk_id`, source title/type/URL, jurisdiction, version, and section title. Weak retrieval returns a clarification with `grounding_status=no_result`; an unavailable index cannot suppress the deterministic urgent-financial playbook, which is marked `deterministic_playbook` when no source can be attached.
 

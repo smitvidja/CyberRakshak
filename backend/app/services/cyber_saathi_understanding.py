@@ -1,5 +1,6 @@
 import json
 import re
+from datetime import date, timedelta
 from collections.abc import Iterable
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -42,8 +43,20 @@ AMOUNT_PATTERN = re.compile(
     r"(?P<unit>hazaar|hazar|thousand|lakh|crore|हजार|लाख|करोड़|rupees?|rupaye|रुपये|रुपए))",
     re.IGNORECASE,
 )
+COMPOSITE_AMOUNT_PATTERN = re.compile(
+    r"(?:(?:₹|rs\.?|inr)\s*)?"
+    r"(?P<major_value>[0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*"
+    r"(?P<major_unit>lakh|crore|लाख|करोड़)\s*(?:and\s+)?"
+    r"(?P<minor_value>[0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*"
+    r"(?P<minor_unit>hazaar|hazar|thousand|lakh|हजार|लाख)"
+    r"(?:\s*(?:rupees?|rupaye|रुपये|रुपए))?",
+    re.IGNORECASE,
+)
 DATE_PATTERN = re.compile(r"\b(?:[0-2]?\d|3[01])[-/]?(?:0?\d|1[0-2])[-/]?(?:20)?\d{2}\b")
-TIME_PATTERN = re.compile(r"\b(?:[01]?\d|2[0-3])(?::[0-5]\d)\s*(?:am|pm)?\b", re.IGNORECASE)
+TIME_PATTERN = re.compile(
+    r"\b(?:(?:[01]?\d|2[0-3]):[0-5]\d\s*(?:am|pm)?|(?:0?[1-9]|1[0-2])\s*(?:am|pm))\b",
+    re.IGNORECASE,
+)
 USERNAME_PATTERN = re.compile(r"(?<![\w.@])@[a-zA-Z0-9_.]{2,30}\b")
 
 HINGLISH_MARKERS = {
@@ -54,7 +67,9 @@ HINGLISH_MARKERS = {
 }
 LOSS_MARKERS = {
     "debited", "deducted", "money lost", "lost money", "cut gaye", "kat gaye", "कट गए",
-    "पैसे गए", "transfer ho", "sent money", "payment kiya",
+    "पैसे गए", "transfer ho", "transfer karwa", "transfer karwa liye", "sent money",
+    "payment kiya", "paise chale", "paise chale gaye", "sare paise", "सारे पैसे",
+    "chale gaye", "chala gaya", "nikal gaye", "nikal gaya", "निकल गए", "चले गए",
 }
 RECENT_MARKERS = {"now", "today", "just now", "ongoing", "abhi", "aaj", "अभी", "आज"}
 HIGH_URGENCY_MARKERS = {
@@ -62,6 +77,22 @@ HIGH_URGENCY_MARKERS = {
     "right now", "abhi", "अभी",
 }
 CRITICAL_MARKERS = {"suicide", "self harm", "immediate danger", "life threat", "urgent help", "तुरंत मदद"}
+CHILD_CONTEXT_PATTERN = re.compile(
+    r"(?:\b(?:child|minor|underage|kid|schoolgirl|schoolboy|bachcha|baccha|bachchi|bacchi|"
+    r"bacha|bache)\b|बच्च|नाबालिग|"
+    r"\b(?:[1-9]|1[0-7])\s*(?:years?(?:\s+old)?|yrs?(?:\s+old)?|saal)(?:\s+(?:ka|ki|ke))?\b)",
+    re.IGNORECASE,
+)
+INTIMATE_CONTENT_MARKERS = (
+    "private photo", "private image", "private video", "intimate photo", "intimate image",
+    "intimate video", "nude photo", "nude image", "nude video", "nudes", "revenge porn",
+    "morphed photo", "morphed image", "अश्लील फोटो", "निजी फोटो", "निजी वीडियो",
+)
+IMAGE_ABUSE_MARKERS = (
+    "blackmail", "sextortion", "leak", "upload", "post online", "share online", "viral",
+    "threat", "dhamki", "force", "coerc", "maang", "मांग", "धमकी", "ब्लैकमेल",
+    "वायरल", "अपलोड",
+)
 PROVIDERS = {
     "sbi": "SBI", "hdfc": "HDFC Bank", "icici": "ICICI Bank", "axis": "Axis Bank",
     "paytm": "Paytm", "phonepe": "PhonePe", "google pay": "Google Pay", "gpay": "Google Pay",
@@ -73,10 +104,29 @@ LOCATIONS = ("delhi", "mumbai", "ahmedabad", "bengaluru", "bangalore", "kolkata"
 CRITICAL_TYPES = {EntityType(value) for value in TAXONOMY["critical_entity_types"]}
 
 NOISY_TOKEN_REPLACEMENTS = {
+    "acount": "account",
+    "adahr": "aadhaar",
+    "adhar": "aadhaar",
+    "bnak": "bank",
+    "ciber": "cyber",
+    "deepfek": "deepfake",
+    "delevery": "delivery",
+    "gruming": "grooming",
+    "haced": "hacked",
+    "harrasment": "harassment",
+    "harrasing": "harassment",
+    "lnik": "link",
+    "polce": "police",
+    "remot": "remote",
+    "seler": "seller",
+    "stoking": "stalking",
+    "syber": "cyber",
+    "thret": "threat",
     "morfed": "morphed",
     "morphd": "morphed",
     "morfd": "morphed",
     "mminor": "minor",
+    "nbakli": "nakli",
     "minnor": "minor",
     "chlid": "child",
     "wommen": "women",
@@ -87,6 +137,12 @@ NOISY_TOKEN_REPLACEMENTS = {
     "phising": "phishing",
     "fising": "phishing",
     "img": "image",
+    "kardiya": "kar diya",
+    "krdiya": "kr diya",
+    "karvadiya": "karva diya",
+    "karwadiya": "karwa diya",
+    "krvadiya": "krva diya",
+    "krwadiya": "krwa diya",
 }
 
 
@@ -182,11 +238,62 @@ class UnderstandingEngine:
         return re.sub(r"\s*-\s*", "-", result)
 
     @staticmethod
+    def has_child_context(text: str) -> bool:
+        return bool(CHILD_CONTEXT_PATTERN.search(text))
+
+    @staticmethod
+    def has_intimate_image_abuse(text: str) -> bool:
+        return any(marker in text for marker in INTIMATE_CONTENT_MARKERS) and any(
+            marker in text for marker in IMAGE_ABUSE_MARKERS
+        )
+
+    @staticmethod
     def classify_domain(text: str) -> CrimeDomain:
         domain_markers = TAXONOMY["crime_domains"]
-        # Specific scenarios must win over broad words such as bank, payment, or
-        # money. Otherwise a KYC link, digital-arrest call, or undelivered order
-        # collapses into the generic financial playbook.
+        # Safety-sensitive image abuse must win before broad financial words.
+        # A blackmailer asking for money is not evidence that money was lost,
+        # and an explicitly under-18 victim must stay on the child-safety path.
+        child_context = UnderstandingEngine.has_child_context(text)
+        intimate_image_abuse = UnderstandingEngine.has_intimate_image_abuse(text)
+        if child_context and (
+            intimate_image_abuse
+            or any(
+                marker in text
+                for marker in (
+                    "groom", "online friend", "secret request", "send photo", "bhejne",
+                    "bully", "harass", "threat", "blackmail", "dhamki", "धमकी",
+                )
+            )
+        ):
+            return CrimeDomain.CHILD_SAFETY
+        if intimate_image_abuse:
+            return CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY
+        # A paid order that was never delivered is a consumer/e-commerce
+        # dispute, not an unauthorised-money-loss case.  Keep that route ahead
+        # of the broad payment wording below.
+        if any(
+            marker in text
+            for marker in domain_markers[CrimeDomain.ECOMMERCE_FRAUD.value]
+        ):
+            return CrimeDomain.ECOMMERCE_FRAUD
+        # When money has actually gone, the immediate victim workflow is
+        # financial fraud even if the lure was a fake officer, health scheme, or
+        # another impersonation. The impersonation facts remain in the summary.
+        if any(marker in text for marker in LOSS_MARKERS) and any(
+            marker in text for marker in ("bank", "account", "upi", "payment", "transfer", "paise", "पैसे")
+        ):
+            return CrimeDomain.FINANCIAL_FRAUD
+        if "account" in text and any(
+            marker in text
+            for marker in (
+                "compromised", "compromise", "hacked", "cannot log in",
+                "can't log in", "cant log in", "login nahi", "access nahi",
+            )
+        ):
+            return CrimeDomain.ACCOUNT_COMPROMISE
+        # Specific scenarios must otherwise win over broad words such as bank,
+        # payment, or money. A KYC link or fake-authority call without loss must
+        # retain its own preventive guidance.
         priority_domains = (
             CrimeDomain.ECOMMERCE_FRAUD,
             CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY,
@@ -210,6 +317,18 @@ class UnderstandingEngine:
             return CrimeDomain.FINANCIAL_FRAUD
         if any(marker in text for marker in domain_markers["phishing_scam"]):
             return CrimeDomain.PHISHING_SCAM
+        if any(
+            marker in text
+            for marker in (
+                "another cyber issue",
+                "other cyber issue",
+                "othr cyber isue",
+                "dusri cyber problem",
+                "anya cyber samasya",
+                "अन्य साइबर",
+            )
+        ):
+            return CrimeDomain.OTHER
         scored = {
             CrimeDomain(domain): sum(
                 (2 if " " in marker else 1) for marker in markers if marker in text
@@ -251,12 +370,57 @@ class UnderstandingEngine:
         add_matches(EntityType.UPI_ID, UPI_PATTERN.finditer(message), 0.98, lambda m: m.group(0).casefold())
         add_matches(EntityType.PHONE_NUMBER, PHONE_PATTERN.finditer(message), 0.97, lambda m: re.sub(r"\D", "", m.group(0))[-10:])
         add_matches(EntityType.TRANSACTION_ID, TRANSACTION_PATTERN.finditer(message), 0.94, lambda m: m.group(1).upper())
+        # Parse Indian composite amounts before the single-unit pattern so
+        # "2 lakh 30 hazar" is one value (230000), not two ambiguous values.
+        add_matches(
+            EntityType.AMOUNT,
+            COMPOSITE_AMOUNT_PATTERN.finditer(message),
+            0.97,
+            cls._normalize_composite_amount,
+        )
         add_matches(EntityType.AMOUNT, AMOUNT_PATTERN.finditer(message), 0.95, cls._normalize_amount)
         add_matches(EntityType.DATE, DATE_PATTERN.finditer(message), 0.9)
         add_matches(EntityType.TIME, TIME_PATTERN.finditer(message), 0.88)
         add_matches(EntityType.USERNAME, USERNAME_PATTERN.finditer(message), 0.9, lambda m: m.group(0).casefold())
 
         lowered = message.casefold()
+        relative_date: date | None = None
+        if not any(entity.type == EntityType.DATE for entity in entities):
+            if any(marker in lowered for marker in ("today", "aaj", "आज")):
+                relative_date = date.today()
+            elif any(marker in lowered for marker in ("yesterday", "kal", "कल")):
+                relative_date = date.today() - timedelta(days=1)
+            if relative_date is not None:
+                cls._add_literal_entity(
+                    entities,
+                    EntityType.DATE,
+                    "today" if relative_date == date.today() else "yesterday",
+                    relative_date.isoformat(),
+                    0.88,
+                )
+        if relative_date is not None:
+            time_entity = next(
+                (entity for entity in entities if entity.type == EntityType.TIME), None
+            )
+            if time_entity is not None:
+                clock = TIME_PATTERN.fullmatch(time_entity.value.strip())
+                if clock is not None:
+                    time_text = time_entity.value.strip().casefold()
+                    hour_text, _, minute_text = time_text.partition(":")
+                    hour = int(re.match(r"\d+", hour_text).group(0))
+                    minute_match = re.match(r"\d+", minute_text) if minute_text else None
+                    minute = int(minute_match.group(0)) if minute_match else 0
+                    if "pm" in time_text and hour < 12:
+                        hour += 12
+                    elif "am" in time_text and hour == 12:
+                        hour = 0
+                    cls._add_literal_entity(
+                        entities,
+                        EntityType.DATE_TIME,
+                        f"{time_entity.value} {'today' if relative_date == date.today() else 'yesterday'}",
+                        f"{relative_date.isoformat()}T{hour:02d}:{minute:02d}:00",
+                        0.9,
+                    )
         for marker, canonical in PROVIDERS.items():
             if marker in lowered:
                 cls._add_literal_entity(entities, EntityType.PROVIDER, marker, canonical, 0.91)
@@ -300,7 +464,54 @@ class UnderstandingEngine:
             value = Decimal(raw.replace(",", "")) * multiplier
         except InvalidOperation:
             return raw
-        return format(value, "f")
+        return UnderstandingEngine._format_amount(value)
+
+    @staticmethod
+    def _normalize_composite_amount(match: re.Match[str]) -> str:
+        multipliers = {
+            "hazaar": Decimal("1000"), "hazar": Decimal("1000"),
+            "thousand": Decimal("1000"), "हजार": Decimal("1000"),
+            "lakh": Decimal("100000"), "लाख": Decimal("100000"),
+            "crore": Decimal("10000000"), "करोड़": Decimal("10000000"),
+        }
+        try:
+            major = Decimal(match.group("major_value").replace(",", ""))
+            minor = Decimal(match.group("minor_value").replace(",", ""))
+            value = (
+                major * multipliers[match.group("major_unit").casefold()]
+                + minor * multipliers[match.group("minor_unit").casefold()]
+            )
+        except (InvalidOperation, KeyError):
+            return match.group(0)
+        return UnderstandingEngine._format_amount(value)
+
+    @staticmethod
+    def _format_amount(value: Decimal) -> str:
+        rendered = format(value, "f")
+        if "." in rendered:
+            rendered = rendered.rstrip("0").rstrip(".")
+        return rendered
+
+    @staticmethod
+    def format_amount_for_display(normalized: str) -> str:
+        """Render a normalized amount with Indian digit grouping."""
+        whole, dot, fraction = normalized.partition(".")
+        sign = "-" if whole.startswith("-") else ""
+        digits = whole.lstrip("-")
+        if not digits.isdigit():
+            return normalized
+        if len(digits) > 3:
+            tail = digits[-3:]
+            head = digits[:-3]
+            groups: list[str] = []
+            while head:
+                groups.insert(0, head[-2:])
+                head = head[:-2]
+            digits = ",".join([*groups, tail])
+        rendered = f"{sign}{digits}"
+        if dot and fraction:
+            rendered += f".{fraction}"
+        return f"₹{rendered}"
 
     @staticmethod
     def classify_urgency(text: str, domain: CrimeDomain) -> Urgency:
@@ -391,9 +602,9 @@ class UnderstandingEngine:
                 LanguageCode.HINGLISH: "Continue karne se pehle main incident type confirm karein.",
             },
             "uncertain": {
-                LanguageCode.EN: "I am not fully certain what happened. Please briefly describe the event and what you need help with.",
-                LanguageCode.HI: "मुझे अभी पूरी तरह स्पष्ट नहीं है कि क्या हुआ। कृपया घटना और अपनी जरूरत संक्षेप में बताएं।",
-                LanguageCode.HINGLISH: "Mujhe abhi fully clear nahi hai ki kya hua. Please event aur required help short mein batayein.",
+                LanguageCode.EN: "I am not fully certain what happened. What happened, and what help do you need?",
+                LanguageCode.HI: "मुझे अभी पूरी तरह स्पष्ट नहीं है कि क्या हुआ। क्या हुआ था और आपको किस मदद की जरूरत है?",
+                LanguageCode.HINGLISH: "Mujhe abhi fully clear nahi hai. Kya hua tha aur aapko kis help ki zarurat hai?",
             },
         }
         localized = prompts[key]

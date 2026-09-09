@@ -56,6 +56,17 @@ class Settings(BaseSettings):
     llm_explanation_temperature: float = Field(default=0.25, ge=0, le=1)
     llm_conversation_temperature: float = Field(default=0.4, ge=0, le=1)
     llm_top_p: float = Field(default=0.9, gt=0, le=1)
+    # Cyber Saathi knowledge retrieval stays file-backed for the deliberately small,
+    # reviewed corpus. Dense embeddings are generated only by explicit ingestion and
+    # queried through the configured server-side Gemini credential; no local model is
+    # downloaded or loaded at API startup.
+    rag_semantic_embeddings_enabled: bool = True
+    rag_semantic_embedding_model: str = "gemini-embedding-001"
+    rag_semantic_embedding_dimensions: int = Field(default=768, ge=128, le=3072)
+    rag_semantic_embedding_timeout_seconds: float = Field(default=1.5, ge=0.2, le=5)
+    rag_dense_weight: float = Field(default=0.55, ge=0, le=1)
+    rag_sparse_weight: float = Field(default=0.25, ge=0, le=1)
+    rag_lexical_weight: float = Field(default=0.20, ge=0, le=1)
 
     model_config = SettingsConfigDict(
         env_file=".env",

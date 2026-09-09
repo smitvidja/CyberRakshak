@@ -3,11 +3,13 @@
 import {useEffect, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
-import {FilePlus2, Files, Search, ShieldCheck, UserRound} from "lucide-react";
+import {FilePlus2, Files, LogOut, Search, ShieldCheck, UserRound} from "lucide-react";
 
 import {authApi, type MockIdentityProfile} from "@/lib/api/auth";
+import {complaintsApi, evidenceApi} from "@/lib/api/complaints";
 import {usersApi} from "@/lib/api/users";
-import {clearCitizenSession, getAccessToken, getMockIdentityProfile, getReportMode, setAccessToken, setMockIdentityProfile, setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
+import {clearCitizenSession, getAccessToken, getComplaintDraft, getMockIdentityProfile, getReportMode, setAccessToken, setComplaintDraft, setMockIdentityProfile, setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
+import {clearGuestEvidenceFiles, consumeGuestDraftFinalSubmit, getGuestEvidenceFiles, markGuestDraftForFinalSubmit} from "@/lib/auth/guest-report-session";
 import {clearWarriorSession} from "@/lib/auth/warrior-session";
 import {getActiveSession} from "@/lib/auth/session-guard";
 import {Button} from "@/components/ui/Button";
@@ -15,10 +17,8 @@ import {TextInput} from "@/components/ui/FormFields";
 import {StatePanel, SurfaceCard} from "@/components/ui/Surface";
 import {SessionConflictDialog} from "@/components/ui/SessionConflictDialog";
 import {useIsomorphicLayoutEffect} from "@/lib/hooks/useIsomorphicLayoutEffect";
-import {getCyberSaathiReportHandoff} from "@/lib/cyber-saathi/report-handoff";
 
 const dashboardPath = (locale: string) => `/${locale}/report-crime/dashboard`;
-const profilePath = (locale: string) => `/${locale}/report-crime/profile`;
 const permitsAnonymousReporting = (category: string | null) => category === "women" || category === "women-child";
 
 type ProfileForm = Omit<MockIdentityProfile, "age" | "registered_mobile"> & {alternate_phone: string};
@@ -46,7 +46,7 @@ export function ReportTypeChoice() {
     const params = new URLSearchParams(window.location.search);
     const nextCategory = params.get("category");
     const mode = params.get("mode");
-    setCategory(nextCategory);
+    queueMicrotask(() => setCategory(nextCategory));
 
     if (nextCategory) setReportCategoryHint(nextCategory);
     if (mode !== "anonymous" && mode !== "identified") return;
@@ -143,8 +143,13 @@ export function MockIdentityForm() {
   // isomorphic-layout-effect hook) so the blocked form never flashes visibly usable first.
   const [sessionConflict, setSessionConflict] = useState<{name: string; role: "citizen" | "warrior"} | null>(null);
   useIsomorphicLayoutEffect(() => {
-    setSessionConflict(getActiveSession());
-  }, []);
+    const activeSession = getActiveSession();
+    if (activeSession?.role === "citizen") {
+      router.replace(dashboardPath(locale));
+      return;
+    }
+    setSessionConflict(activeSession);
+  }, [locale, router]);
 
   function resolveConflictByLoggingOut() {
     if (!sessionConflict) return;
@@ -181,7 +186,55 @@ export function MockIdentityForm() {
     setAccessToken(result.data.access_token);
     setMockIdentityProfile(result.data.profile);
     setReportMode("identified");
-    router.push(getCyberSaathiReportHandoff() ? `/${locale}/report-crime/new/incident` : profilePath(locale));
+    const guestDraft = getComplaintDraft();
+    if (guestDraft?.id === "guest-draft" && consumeGuestDraftFinalSubmit()) {
+      const data = guestDraft.data;
+      const created = await complaintsApi.createDraft({
+        category_id: data.category_id,
+        is_anonymous: false,
+        reporting_for: data.reporting_for ?? "SELF",
+        affected_person_name: data.affected_person_name ?? null,
+        title: data.title,
+        description: data.description,
+        incident_at: data.incident_at ?? null,
+        financial_loss_amount: data.financial_loss_amount ?? null,
+        location: data.location ?? null,
+        suspects: data.suspects ?? []
+      }, {accessToken: result.data.access_token});
+      if (!created.ok) {
+        markGuestDraftForFinalSubmit();
+        setError(t("identityVerifyError"));
+        setLoading(false);
+        return;
+      }
+      const createdId = typeof created.data.id === "string" ? created.data.id : "";
+      for (const file of getGuestEvidenceFiles()) {
+        const evidencePayload = new FormData();
+        evidencePayload.set("complaint_id", createdId);
+        evidencePayload.set("description", "Evidence added before final identity verification");
+        evidencePayload.set("file", file);
+        const uploaded = await evidenceApi.upload(evidencePayload, {accessToken: result.data.access_token});
+        if (!uploaded.ok) {
+          markGuestDraftForFinalSubmit();
+          setError(t("identityVerifyError"));
+          setLoading(false);
+          return;
+        }
+      }
+      const submitted = await complaintsApi.submit(createdId, {accessToken: result.data.access_token});
+      if (!submitted.ok) {
+        markGuestDraftForFinalSubmit();
+        setError(t("identityVerifyError"));
+        setLoading(false);
+        return;
+      }
+      clearGuestEvidenceFiles();
+      setComplaintDraft({data: submitted.data, id: createdId});
+      const complaintNumber = typeof submitted.data.complaint_number === "string" ? submitted.data.complaint_number : "";
+      router.push(`/${locale}/complaints/submitted/${encodeURIComponent(complaintNumber)}`);
+      return;
+    }
+    router.push(dashboardPath(locale));
   }
 
   return <main className="citizen-page shell-container py-8 sm:py-12">
@@ -218,8 +271,10 @@ export function VerifiedProfileReview() {
       router.replace(`/${locale}/report-crime/verify`);
       return;
     }
-    setProfile(stored);
-    setForm(profileFormFrom(stored));
+    queueMicrotask(() => {
+      setProfile(stored);
+      setForm(profileFormFrom(stored));
+    });
   }, [locale, router]);
 
   if (!profile || !form) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("profileLoadingTitle")} tone="loading">{t("profileLoadingCopy")}</StatePanel></main>;
@@ -260,6 +315,12 @@ export function CitizenStartState() {
     setProfileName(getMockIdentityProfile()?.full_name ?? "");
   }, []);
 
+  function logout() {
+    clearCitizenSession();
+    setReportMode("identified");
+    router.replace(`/${locale}/report-crime/verify`);
+  }
+
   const cards = [
     {icon: UserRound, title: t("dashboardProfileTitle"), copy: t("dashboardProfileCopy"), action: t("dashboardProfileAction"), href: identified ? "/" + locale + "/report-crime/profile" : "/" + locale + "/report-crime"},
     {icon: FilePlus2, title: t("dashboardReportTitle"), copy: t("dashboardReportCopy"), action: t("dashboardReportAction"), href: "/" + locale + "/report-crime/new/incident"},
@@ -282,6 +343,7 @@ export function CitizenStartState() {
           {cards.map(({icon: Icon, title, copy, action, href}) => <article className="citizen-dashboard-action flex min-h-[250px] flex-col rounded-[8px] border border-[var(--border)] bg-white p-5 text-center shadow-[var(--shadow)]" key={title}><span aria-hidden="true" className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#edf6ff] text-[#075fb9]"><Icon size={27} strokeWidth={1.7} /></span><h3 className="mt-4 text-lg font-bold text-[var(--navy)]">{title}</h3><p className="mt-2 flex-1 text-sm leading-6 text-[var(--muted)]">{copy}</p><Button className="mt-5 w-full" onClick={() => router.push(href)} variant="outline">{action}</Button></article>)}
         </section>
         <StatePanel title={t("dashboardSecurityTitle")} tone="info">{t("dashboardSecurityCopy")}</StatePanel>
+        {identified ? <div className="flex justify-center"><Button className="citizen-dashboard-logout" onClick={logout} variant="outline"><LogOut aria-hidden="true" size={17} />{t("dashboardLogout")}</Button></div> : null}
       </div>
     </main>
   );

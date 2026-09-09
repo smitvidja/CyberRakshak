@@ -684,7 +684,7 @@ def test_urgent_financial_playbook_never_calls_llm(monkeypatch) -> None:
     assert "OTP/PIN/password" in response.state.turns[-1].content
 
 
-def test_financial_progress_followup_uses_llm_after_deterministic_first_response(
+def test_financial_progress_followup_keeps_workflow_control_out_of_llm(
     monkeypatch,
 ) -> None:
     calls: list[dict[str, object]] = []
@@ -724,9 +724,13 @@ def test_financial_progress_followup_uses_llm_after_deterministic_first_response
         ),
     )
 
-    assert len(calls) == 1
+    assert calls == []
     turn = followup.state.turns[-1]
-    assert turn.llm_provider == LLMProvider.GEMINI
+    assert turn.llm_provider is None
     assert turn.kind.value == "message"
     assert "?" in turn.content
+    assert "1." in turn.content
+    assert "2." in turn.content
+    assert "3." in turn.content
+    assert "1930" not in turn.content
     assert "OTP/PIN/password" not in turn.content

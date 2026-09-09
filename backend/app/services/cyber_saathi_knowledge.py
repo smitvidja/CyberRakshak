@@ -27,6 +27,10 @@ from app.schemas.cyber_saathi import (
     KnowledgeSourceMetadata,
     LanguageCode,
 )
+from app.services.cyber_saathi_semantic_embeddings import (
+    GeminiSemanticEmbeddingProvider,
+    SemanticEmbeddingError,
+)
 from app.services.cyber_saathi_understanding import DATA_DIR
 
 
@@ -36,10 +40,10 @@ INDEX_PATH = KNOWLEDGE_DIR / "knowledge_index.json"
 EVALUATION_CASES_PATH = DATA_DIR / "knowledge_evaluation_cases.json"
 EMBEDDING_DIMENSION = 384
 EMBEDDING_VERSION = "hashed-unicode-ngrams-v1"
-INDEX_SCHEMA_VERSION = "1.1.0"
+INDEX_SCHEMA_VERSION = "1.2.0"
 MAX_CHUNK_CHARS = 900
 MAX_CONTEXT_CHARS = 2200
-MAX_INDEX_BYTES = 2 * 1024 * 1024
+MAX_INDEX_BYTES = 8 * 1024 * 1024
 MAX_INDEX_CHUNKS = 500
 # ``\w`` splits Devanagari vowel and virama marks. Keep a full Devanagari
 # sequence together so Hindi source/query lexical grounding is meaningful.
@@ -159,8 +163,22 @@ def load_source_pack(path: Path = SOURCE_PACK_PATH) -> KnowledgeSourcePack:
     return KnowledgeSourcePack.model_validate_json(path.read_text(encoding="utf-8"))
 
 
-def build_index(source_pack: KnowledgeSourcePack | None = None) -> dict[str, Any]:
+def build_index(
+    source_pack: KnowledgeSourcePack | None = None,
+    *,
+    semantic_embeddings: bool = False,
+    semantic_provider: GeminiSemanticEmbeddingProvider | None = None,
+) -> dict[str, Any]:
+    """Build the persisted index.
+
+    Sparse vectors are always present. Dense multilingual vectors are opt-in so
+    tests and ordinary ingestion remain offline unless the operator explicitly
+    requests the configured hosted embedding provider.
+    """
     pack = source_pack or load_source_pack()
+    provider = semantic_provider or (GeminiSemanticEmbeddingProvider() if semantic_embeddings else None)
+    if provider is not None and not provider.configured:
+        raise ValueError("Semantic ingestion was requested but Gemini embeddings are not configured")
     chunks: list[KnowledgeChunk] = []
     seen_hashes: set[str] = set()
     for source in pack.sources:
@@ -176,6 +194,11 @@ def build_index(source_pack: KnowledgeSourcePack | None = None) -> dict[str, Any
                     raise ValueError(f"Duplicate authoritative knowledge chunk: {source.source_id}")
                 seen_hashes.add(content_hash)
                 embedding_input = " ".join((text, section.title, *section.retrieval_terms))
+                semantic_embedding = None
+                if provider is not None:
+                    semantic_embedding = provider.embed(
+                        embedding_input, task_type="RETRIEVAL_DOCUMENT"
+                    )
                 chunks.append(
                     KnowledgeChunk(
                         chunk_id=f"{source.source_id}:{suffix}",
@@ -186,6 +209,7 @@ def build_index(source_pack: KnowledgeSourcePack | None = None) -> dict[str, Any
                         retrieval_terms=[_normalize_text(term) for term in section.retrieval_terms],
                         content_hash=content_hash,
                         embedding=embed_text(embedding_input),
+                        semantic_embedding=semantic_embedding,
                     )
                 )
     if not chunks:
@@ -200,15 +224,26 @@ def build_index(source_pack: KnowledgeSourcePack | None = None) -> dict[str, Any
         "index_version": pack.version,
         "embedding_version": EMBEDDING_VERSION,
         "embedding_dimension": EMBEDDING_DIMENSION,
+        "semantic_embedding_provider": provider.provider if provider is not None else None,
+        "semantic_embedding_model": provider.model if provider is not None else None,
+        "semantic_embedding_dimension": provider.dimensions if provider is not None else None,
         "source_pack_hash": source_hash,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "chunks": [chunk.model_dump(mode="json") for chunk in chunks],
     }
 
 
-def rebuild_index(output_path: Path = INDEX_PATH) -> dict[str, Any]:
+def rebuild_index(
+    output_path: Path = INDEX_PATH,
+    *,
+    semantic_embeddings: bool = False,
+    semantic_provider: GeminiSemanticEmbeddingProvider | None = None,
+) -> dict[str, Any]:
     """Explicitly build the persisted index; never call this from application startup."""
-    index = build_index()
+    index = build_index(
+        semantic_embeddings=semantic_embeddings,
+        semantic_provider=semantic_provider,
+    )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
@@ -224,6 +259,7 @@ def rebuild_index(output_path: Path = INDEX_PATH) -> dict[str, Any]:
         "source_count": len({chunk["source"]["source_id"] for chunk in index["chunks"]}),
         "chunk_count": len(index["chunks"]),
         "embedding_dimension": EMBEDDING_DIMENSION,
+        "semantic_embedding_dimension": index["semantic_embedding_dimension"],
         "index_version": index["index_version"],
         "index_bytes": index_bytes,
     }
@@ -275,6 +311,18 @@ class KnowledgeService:
             )
             for chunk in chunks
         )
+        semantic_vectors = [chunk.semantic_embedding for chunk in chunks]
+        semantic_dimension = index.get("semantic_embedding_dimension")
+        semantic_index_valid = (
+            all(vector is None for vector in semantic_vectors)
+            and semantic_dimension is None
+        ) or (
+            isinstance(semantic_dimension, int)
+            and 128 <= semantic_dimension <= 3072
+            and all(vector is not None and len(vector) == semantic_dimension for vector in semantic_vectors)
+            and bool(index.get("semantic_embedding_provider"))
+            and bool(index.get("semantic_embedding_model"))
+        )
         if (
             index.get("schema_version") != INDEX_SCHEMA_VERSION
             or index.get("embedding_version") != EMBEDDING_VERSION
@@ -283,6 +331,7 @@ class KnowledgeService:
             or len(chunks) > MAX_INDEX_CHUNKS
             or index.get("source_pack_hash") != current_source_hash
             or not content_hashes_valid
+            or not semantic_index_valid
         ):
             raise APIError(
                 status_code=503,
@@ -313,19 +362,73 @@ class KnowledgeService:
         overlap = query_tokens.intersection(source_tokens)
         return len(overlap) >= 2 or bool(overlap.intersection(HIGH_SIGNAL_TERMS))
 
+    @staticmethod
+    def _lexical_score(query: str, chunk: KnowledgeChunk) -> float:
+        query_tokens = _meaningful_tokens(query)
+        if not query_tokens:
+            return 0.0
+        source_tokens = _meaningful_tokens(
+            " ".join((chunk.section_title, chunk.text, *chunk.retrieval_terms))
+        )
+        overlap = query_tokens.intersection(source_tokens)
+        if not overlap:
+            return 0.0
+        term_matches = sum(
+            1 for term in chunk.retrieval_terms if term.casefold() in query.casefold()
+        )
+        return min(1.0, len(overlap) / min(6, len(query_tokens)) + min(0.25, term_matches * 0.08))
+
+    @classmethod
+    def _semantic_query_embedding(cls, index: dict[str, Any], query: str) -> list[float] | None:
+        if index.get("semantic_embedding_provider") != "gemini":
+            return None
+        provider = GeminiSemanticEmbeddingProvider()
+        if not provider.configured or provider.model != index.get("semantic_embedding_model"):
+            return None
+        try:
+            embedding = provider.query_embedding(query)
+        except SemanticEmbeddingError:
+            return None
+        if len(embedding) != index.get("semantic_embedding_dimension"):
+            return None
+        return embedding
+
     @classmethod
     def search(cls, request: KnowledgeSearchRequest) -> KnowledgeSearchResponse:
         started = time.perf_counter()
         index = cls._load_index()
         query_embedding = embed_text(request.query)
+        semantic_query_embedding = cls._semantic_query_embedding(index, request.query)
+        strategy = "hybrid_dense_sparse_lexical" if semantic_query_embedding is not None else "sparse_lexical"
         candidates: list[KnowledgeMatch] = []
         for raw_chunk in index["chunks"]:
             chunk = KnowledgeChunk.model_validate(raw_chunk)
             if request.domain is not None and request.domain not in chunk.domains:
                 continue
-            if not cls._has_lexical_grounding(request.query, chunk):
+            lexical_grounded = cls._has_lexical_grounding(request.query, chunk)
+            lexical_score = cls._lexical_score(request.query, chunk)
+            sparse_score = cls._cosine(query_embedding, chunk.embedding)
+            semantic_score = (
+                cls._cosine(semantic_query_embedding, chunk.semantic_embedding)
+                if semantic_query_embedding is not None and chunk.semantic_embedding is not None
+                else None
+            )
+            # Domain-filtered semantic retrieval can recover a natural paraphrase.
+            # A non-domain query still needs lexical grounding to avoid broad false positives.
+            semantic_grounded = bool(
+                request.domain is not None and semantic_score is not None and semantic_score >= 0.55
+            )
+            if not lexical_grounded and not semantic_grounded:
                 continue
-            relevance = cls._cosine(query_embedding, chunk.embedding)
+            if semantic_score is None:
+                relevance = sparse_score
+            else:
+                settings = GeminiSemanticEmbeddingProvider().settings
+                relevance = (
+                    settings.rag_dense_weight * semantic_score
+                    + settings.rag_sparse_weight * sparse_score
+                    + settings.rag_lexical_weight * lexical_score
+                )
             if request.language is not None and request.language == chunk.source.language:
                 relevance = min(1.0, relevance + 0.02)
             if relevance < request.minimum_relevance:
@@ -344,6 +447,10 @@ class KnowledgeService:
                     section_title=chunk.section_title,
                     text=chunk.text,
                     relevance_score=round(relevance, 4),
+                    retrieval_strategy=strategy,
+                    lexical_score=round(lexical_score, 4),
+                    sparse_score=round(sparse_score, 4),
+                    semantic_score=round(semantic_score, 4) if semantic_score is not None else None,
                 )
             )
         matches = sorted(candidates, key=lambda match: match.relevance_score, reverse=True)[: request.top_k]
@@ -363,14 +470,20 @@ class KnowledgeService:
             no_result=not matches,
             matches=matches,
             bounded_context="\n\n".join(context_parts),
+            retrieval_strategy=strategy,
         )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build the Cyber Saathi authoritative knowledge index")
     parser.add_argument("--output", type=Path, default=INDEX_PATH)
+    parser.add_argument(
+        "--semantic",
+        action="store_true",
+        help="Generate hosted multilingual document vectors using the configured Gemini key.",
+    )
     args = parser.parse_args()
-    print(json.dumps(rebuild_index(args.output), ensure_ascii=False))
+    print(json.dumps(rebuild_index(args.output, semantic_embeddings=args.semantic), ensure_ascii=False))
 
 
 if __name__ == "__main__":

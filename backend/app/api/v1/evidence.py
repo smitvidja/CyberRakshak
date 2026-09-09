@@ -64,6 +64,20 @@ async def upload_evidence(
 
 
 @router.get(
+    "/by-complaint/{complaint_id}",
+    response_model=SuccessResponse[list[EvidenceResponse]],
+    responses={401: {"model": ErrorResponse}, 403: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+def list_complaint_evidence(
+    complaint_id: UUID,
+    session: Annotated[Session, Depends(get_db_session)],
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> dict[str, object]:
+    items = EvidenceService.list_for_complaint(session, complaint_id, current_user)
+    return success_response([EvidenceResponse.model_validate(item) for item in items])
+
+
+@router.get(
     "/by-warrior-report/{report_id}",
     response_model=SuccessResponse[list[EvidenceResponse]],
     responses={

@@ -4,10 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import {useLocale, useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
-import {Home, PhoneCall, Shield, ShieldCheck} from "lucide-react";
+import {Home, PhoneCall, Shield, ShieldCheck, UserRound} from "lucide-react";
 import {useState, type ReactNode} from "react";
 
-import {getReportCategoryHint} from "@/lib/auth/citizen-session";
+import {getAccessToken, getMockIdentityProfile, getReportCategoryHint} from "@/lib/auth/citizen-session";
 import {routing} from "@/lib/i18n/routing";
 import {useIsomorphicLayoutEffect} from "@/lib/hooks/useIsomorphicLayoutEffect";
 
@@ -39,14 +39,20 @@ export function ProductShell({children}: ProductShellProps) {
     parts[1] = nextLocale;
     return parts.join("/") || "/" + nextLocale;
   };
+  const [citizenSignedIn, setCitizenSignedIn] = useState(false);
+  useIsomorphicLayoutEffect(() => {
+    setCitizenSignedIn(Boolean(getAccessToken() && getMockIdentityProfile()));
+  }, [pathname]);
   // "learn" pointed first at /{locale}/resources when that route didn't exist
   // (404), then at /cyber-warrior/resources - which put a citizen inside the
   // private warrior dashboard sidebar just to read safety tips. /resources now
   // really exists as its own standalone public page (app/[locale]/resources).
-  const navItems = [["home", "/" + locale], ["saathi", "/" + locale + "/cyber-saathi"], ["report", "/" + locale + "/report-crime"], ["track", "/" + locale + "/complaints/track"], ["suspects", "/" + locale + "/suspects/report"], ["warriors", "/" + locale + "/cyber-warrior"], ["learn", "/" + locale + "/resources"], ["contact", "/" + locale + "/contact"]] as const;
   const homeHref = "/" + locale;
   const dashboardHref = homeHref + "/report-crime/dashboard";
   const reportHref = homeHref + "/report-crime";
+  const verifyHref = reportHref + "/verify";
+  const citizenDashboardEntryHref = citizenSignedIn ? dashboardHref : verifyHref;
+  const navItems = [["home", homeHref], ["saathi", homeHref + "/cyber-saathi"], ["citizenDashboard", citizenDashboardEntryHref], ["report", reportHref], ["track", homeHref + "/complaints/track"], ["suspects", homeHref + "/suspects/report"], ["warriors", homeHref + "/cyber-warrior"], ["learn", homeHref + "/resources"], ["contact", homeHref + "/contact"]] as const;
   const warriorHref = homeHref + "/cyber-warrior";
   const warriorDashboardHref = warriorHref + "/dashboard";
   const breadcrumbItems: Array<{href?: string; label: string}> = [{href: homeHref, label: t("nav.home")}];
@@ -169,6 +175,13 @@ export function ProductShell({children}: ProductShellProps) {
   // matches its own section, including sub-routes under it.
   function isNavItemActive(key: string, href: string) {
     if (key === "home") return pathname === homeHref;
+    if (key === "citizenDashboard") {
+      return pathname === dashboardHref || pathname === verifyHref || pathname === reportHref + "/profile";
+    }
+    if (key === "report") {
+      const citizenAccountRoutes = [dashboardHref, verifyHref, reportHref + "/profile"];
+      return pathname === reportHref || (pathname.startsWith(reportHref + "/") && !citizenAccountRoutes.includes(pathname));
+    }
     return pathname === href || pathname.startsWith(href + "/");
   }
 
@@ -191,7 +204,7 @@ export function ProductShell({children}: ProductShellProps) {
         <button aria-label={t("increaseTextSize")} disabled={fontScale >= FONT_SCALE_MAX} onClick={() => adjustFontScale(1)} type="button">A+</button>
       </span>
       <span aria-hidden="true">|</span>{routing.locales.map((nextLocale) => <Link className={nextLocale === locale ? "language-current" : ""} href={localeHref(nextLocale)} key={nextLocale}>{t("languages." + nextLocale)}</Link>)}</div></div></div>
-    <header className="brand-header"><div className="shell-container brand-content"><Link className="brand-lockup" href={"/" + locale}><Image alt="" aria-hidden="true" className="brand-mark" height={44} priority src="/images/awareness/logo-v2.webp" width={44} /><span><strong>{t("brandHindi")}</strong><small>{t("brandEnglish")}</small></span></Link><p className="brand-reassurance"><ShieldCheck aria-hidden="true" size={17} />{t("reassuranceLine")}</p><a className="brand-support" href={"tel:" + t("supportNumber")}><strong>{t("supportLabel")}</strong><span><PhoneCall aria-hidden="true" size={17} />{t("supportNumber")}</span></a></div></header>
+    <header className="brand-header"><div className="shell-container brand-content"><Link className="brand-lockup" href={"/" + locale}><Image alt="" aria-hidden="true" className="brand-mark" height={44} priority src="/images/awareness/logo-v2.webp" width={44} /><span><strong>{t("brandHindi")}</strong><small>{t("brandEnglish")}</small></span></Link><p className="brand-reassurance"><ShieldCheck aria-hidden="true" size={17} />{t("reassuranceLine")}</p><div className="brand-header-actions"><Link aria-label={t("nav.citizenDashboard")} className="citizen-dashboard-entry" href={citizenDashboardEntryHref} title={t("nav.citizenDashboard")}><span aria-hidden="true"><UserRound size={21} strokeWidth={1.8} /></span><strong>{t("nav.citizenDashboard")}</strong></Link><a className="brand-support" href={"tel:" + t("supportNumber")}><strong>{t("supportLabel")}</strong><span><PhoneCall aria-hidden="true" size={17} />{t("supportNumber")}</span></a></div></div></header>
     <nav className="primary-nav" aria-label={t("primaryNavigation")}><div className="shell-container nav-list">{navItems.map(([key, href]) => {
       const active = isNavItemActive(key, href);
       return <Link className={active ? "is-active" : undefined} href={href} key={key}>{active && key === "home" ? <Home aria-hidden="true" size={15} /> : null}{t("nav." + key)}</Link>;

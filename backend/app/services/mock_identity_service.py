@@ -259,6 +259,10 @@ class MockIdentityService:
                     otp_code_hash=hash_password(demo_identity["otp"]),
                 )
                 session.add(identity)
+            elif not verify_password(demo_identity["otp"], identity.otp_code_hash):
+                # Demo credentials are a documented, local-only contract. Repair rows created
+                # by older seeds so the OTP in DEMO-CREDENTIALS.md remains usable.
+                identity.otp_code_hash = hash_password(demo_identity["otp"])
             identity.demo_identity_id = demo_identity["demo_identity_id"]
             identity.registered_mobile = demo_identity["registered_mobile"]
             identity.full_name = demo_identity["full_name"]
