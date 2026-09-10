@@ -3,7 +3,7 @@ import Link from "next/link";
 import {hasLocale} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
-import {BellRing, Bot, BookOpenCheck, ClipboardCheck, FileDown, FileSearch, FileText, GraduationCap, Languages, Lightbulb, Map, Megaphone, Mic, PhoneCall, ShieldCheck, Siren, UserRoundPlus} from "lucide-react";
+import { BellRing, Bot, BookOpenCheck, ClipboardCheck, FileSearch, GraduationCap, Languages, Lightbulb, Megaphone, Mic, PhoneCall, ShieldCheck, Siren, UserRoundPlus } from "lucide-react";
 
 import {routing} from "@/lib/i18n/routing";
 
@@ -48,18 +48,15 @@ export default async function LocaleHomePage({params}: Props) {
     {key: "tips", icon: Lightbulb}
   ] as const;
   const upcomingFeatures = [
-    {key: "secureIndia", href: `/${locale}/secure-india`, icon: Map},
     {key: "speechToText", href: null, icon: Mic},
-    {key: "regionalLanguages", href: null, icon: Languages},
-    {key: "suspectSearch", href: null, icon: FileSearch},
-    {key: "resumeAutofill", href: null, icon: FileText},
-    {key: "downloadableSubmission", href: null, icon: FileDown}
+    {key: "regionalLanguages", href: null, icon: Languages}
   ] as const;
   const quickLinks = [
     {key: "saathi", href: `/${locale}/cyber-saathi`, icon: Bot},
     {key: "warrior", href: `/${locale}/cyber-warrior`, icon: UserRoundPlus},
     {key: "learn", href: learningHref, icon: BellRing},
     {key: "secure", href: secureIndiaHref, icon: ShieldCheck},
+    {key: "suspects", href: `/${locale}/suspects/search`, icon: FileSearch},
     {key: "track", href: trackHref, icon: ClipboardCheck}
   ] as const;
 

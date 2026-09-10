@@ -338,12 +338,17 @@ export function CitizenStartState() {
           </div>
           <div className="flex items-center gap-3 text-[#075fb9]"><ShieldCheck size={42} strokeWidth={1.5} /><p className="max-w-[220px] text-sm font-semibold leading-6 text-[var(--navy)]">{t("dashboardSafetyCopy")}</p></div>
         </section>
-        <div><h2 className="text-2xl font-bold text-[var(--navy)]">{t("dashboardTitle")}</h2><p className="mt-1 text-sm text-[var(--muted)]">{t("dashboardCopy")}</p></div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-[var(--navy)]">{t("dashboardTitle")}</h2>
+            <p className="mt-1 text-sm text-[var(--muted)]">{t("dashboardCopy")}</p>
+          </div>
+          {identified ? <Button className="citizen-dashboard-logout shrink-0" onClick={logout} variant="outline"><LogOut aria-hidden="true" size={17} />{t("dashboardLogout")}</Button> : null}
+        </div>
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {cards.map(({icon: Icon, title, copy, action, href}) => <article className="citizen-dashboard-action flex min-h-[250px] flex-col rounded-[8px] border border-[var(--border)] bg-white p-5 text-center shadow-[var(--shadow)]" key={title}><span aria-hidden="true" className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#edf6ff] text-[#075fb9]"><Icon size={27} strokeWidth={1.7} /></span><h3 className="mt-4 text-lg font-bold text-[var(--navy)]">{title}</h3><p className="mt-2 flex-1 text-sm leading-6 text-[var(--muted)]">{copy}</p><Button className="mt-5 w-full" onClick={() => router.push(href)} variant="outline">{action}</Button></article>)}
         </section>
         <StatePanel title={t("dashboardSecurityTitle")} tone="info">{t("dashboardSecurityCopy")}</StatePanel>
-        {identified ? <div className="flex justify-center"><Button className="citizen-dashboard-logout" onClick={logout} variant="outline"><LogOut aria-hidden="true" size={17} />{t("dashboardLogout")}</Button></div> : null}
       </div>
     </main>
   );
