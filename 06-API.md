@@ -145,6 +145,37 @@ result. Responses expose aggregate geography only - never complaint rows, report
 evidence or coordinates taken from citizen data. `source_type` is `SYNTHETIC` and must not
 be changed without the source contract described in `08-SECURITY.md`.
 
+## Complaint Copy API
+
+- `GET /complaints/{complaint_id}/copy` returns `application/pdf` for one submitted complaint.
+
+Authorization has two paths and a complaint number satisfies neither:
+
+- **Identified**: the owner's `Authorization: Bearer` session. A different account gets `404`,
+  not `403`, so the endpoint cannot be used to confirm that a complaint exists.
+- **Anonymous**: `X-Complaint-Access-Token`, a scoped capability minted at submission and
+  returned exactly once in the submit response. It travels in a header, never the URL, so it
+  cannot leak through history, referrers or access logs. Wrong, expired, revoked and
+  other-complaint codes all return the same `403`.
+
+A draft has no copy (`404`). Responses carry `Cache-Control: no-store, private` and
+`X-Content-Type-Options: nosniff`.
+
+`Content-Disposition: attachment` is sent to every consumer **except** a cors-mode `fetch`
+(detected via `Sec-Fetch-Mode`). Chrome refuses to hand a cross-origin `fetch()` a response
+that carries that header, and the deployed topology puts the app and the API on different
+origins, so sending it unconditionally breaks the in-app download. The web client reads the
+blob and names the saved file itself, so nothing is lost; direct navigation, curl and
+server-side clients - the consumers that actually need telling to save rather than render -
+still receive the attachment header.
+
+`POST /complaints/{id}/submit` returns the usual complaint payload plus `access_token`, which
+is non-null only for anonymous complaints.
+
+`X-Complaint-Access-Token` must remain in the API's CORS `allow_headers`: a custom request
+header triggers a preflight, and without it browsers block the anonymous download whenever the
+frontend and API are on different origins - which is the deployed topology.
+
 ## Suspect APIs
 
 - `POST /suspects/reports`

@@ -21,8 +21,8 @@ def create_application() -> FastAPI:
         allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type", "Accept", "Origin"],
-        expose_headers=["X-Voice-Provider", "X-TTS-First-Audio-Ms"],
+        allow_headers=["Authorization", "Content-Type", "Accept", "Origin", "X-Complaint-Access-Token"],
+        expose_headers=["X-Voice-Provider", "X-TTS-First-Audio-Ms", "Content-Disposition"],
     )
     register_exception_handlers(application)
 

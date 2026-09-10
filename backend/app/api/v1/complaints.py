@@ -188,6 +188,7 @@ def download_complaint_copy(
     session: Annotated[Session, Depends(get_db_session)],
     current_user: Annotated[User | None, Depends(get_optional_current_user)],
     x_complaint_access_token: Annotated[str | None, Header()] = None,
+    sec_fetch_mode: Annotated[str | None, Header()] = None,
 ) -> Response:
     """Return a PDF copy of one submitted complaint.
 
@@ -200,12 +201,17 @@ def download_complaint_copy(
     pdf_bytes = render_complaint_copy(document)
     # The filename is built from the server-side complaint number only.
     safe_number = "".join(ch for ch in complaint.complaint_number if ch.isalnum() or ch in "-_")
-    return Response(
-        content=pdf_bytes,
-        media_type="application/pdf",
-        headers={
-            "Content-Disposition": f'attachment; filename="CyberRakshak-Complaint-{safe_number}.pdf"',
-            "Cache-Control": "no-store, private",
-            "X-Content-Type-Options": "nosniff",
-        },
-    )
+    headers = {
+        "Cache-Control": "no-store, private",
+        "X-Content-Type-Options": "nosniff",
+    }
+    # Chrome refuses to hand a cross-origin fetch() a response carrying
+    # Content-Disposition, and the deployed topology puts the app and the API on
+    # different origins - so sending it unconditionally breaks the download in the
+    # browser. The web client reads the blob and saves it under this same filename
+    # itself, so the header is omitted for a cors-mode fetch and kept for every
+    # other consumer (direct navigation, curl, server-side clients), which is what
+    # actually needs to be told to save rather than render.
+    if (sec_fetch_mode or "").lower() != "cors":
+        headers["Content-Disposition"] = f'attachment; filename="CyberRakshak-Complaint-{safe_number}.pdf"'
+    return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)

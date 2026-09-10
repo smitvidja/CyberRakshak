@@ -299,3 +299,47 @@ def test_document_model_is_built_from_persisted_data_only(api_client: tuple[Test
     titles = [section.title for section in document.sections]
     assert titles[0] == "Complaint reference"
     assert "What happens next" in titles
+
+
+def test_cors_preflight_allows_the_complaint_access_token_header(api_client: tuple[TestClient, Session]) -> None:
+    """A custom header triggers a preflight; if it is not allowed the browser
+    blocks the anonymous download cross-origin, which is the deployed topology.
+    TestClient bypasses CORS, so this asserts the middleware config directly."""
+    from app.core.config import get_settings
+    from app.main import create_application
+
+    application = create_application()
+    cors = [m for m in application.user_middleware if "CORS" in str(m.cls)]
+    assert cors, "CORS middleware must be installed"
+    allowed = {h.lower() for h in cors[0].kwargs["allow_headers"]}
+    assert "x-complaint-access-token" in allowed
+    assert "authorization" in allowed
+    assert get_settings() is not None
+
+
+def test_download_is_an_attachment_but_stays_fetchable_cross_origin(api_client: tuple[TestClient, Session]) -> None:
+    """Chrome fails a cross-origin fetch() whose response is marked a download.
+
+    The browser client reads the blob and names the file itself, so a cors-mode
+    fetch is served inline while every other consumer still gets an attachment.
+    Without this the download is broken in the deployed split-origin topology.
+    """
+    client, session = api_client
+    owner = register(client)
+    submitted = create_and_submit(client, session, anonymous=False, headers=owner)
+    url = f"/api/v1/complaints/{submitted['id']}/copy"
+
+    default = client.get(url, headers=owner)
+    assert default.status_code == 200
+    assert default.headers["content-disposition"].startswith("attachment")
+
+    navigation = client.get(url, headers={**owner, "Sec-Fetch-Mode": "navigate"})
+    assert navigation.headers["content-disposition"].startswith("attachment")
+
+    fetched = client.get(url, headers={**owner, "Sec-Fetch-Mode": "cors"})
+    assert fetched.status_code == 200
+    assert "content-disposition" not in fetched.headers, "Chrome blocks a cross-origin fetch carrying this header"
+    # The protective headers are identical either way.
+    assert fetched.headers["x-content-type-options"] == "nosniff"
+    assert "no-store" in fetched.headers["cache-control"]
+    assert fetched.content.startswith(b"%PDF-")

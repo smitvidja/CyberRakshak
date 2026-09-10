@@ -311,3 +311,28 @@ POSTGRES_PORT=5433 docker compose up --build
 
 Uploads survive local restarts via the `backend_storage` volume. Render has no
 equivalent by default — §5 still applies there.
+
+## Runtime additions from Phase 10
+
+Three dependencies were added for resume parsing and complaint-copy PDFs. All three ship
+manylinux wheels and install cleanly on `python:3.12-slim` with no compiler, verified by
+building the image and importing them inside it:
+
+- `python-docx` - DOCX resume text extraction.
+- `fpdf2` - complaint-copy PDF rendering.
+- `uharfbuzz` - text shaping. **Not optional.** Without it fpdf2 silently degrades and
+  Devanagari renders with broken conjuncts and misplaced matras, so Hindi PDFs would look
+  wrong rather than fail loudly.
+
+Fonts live in `backend/app/assets/fonts/` (Noto Sans + Noto Sans Devanagari, SIL OFL, licence
+shipped alongside). They are inside `backend/`, so the existing `COPY backend/ backend/` layer
+includes them and no `.dockerignore` rule excludes them.
+
+The frontend ships `public/data/india-states-v1.json` (Secure India state boundaries). The
+frontend Dockerfile already copies `public/` explicitly.
+
+No new environment variables are required. `RESUME_PARSER` defaults to `document`; setting it
+to `mock` forces the static demo parser and must not be used in a real deployment.
+
+Both new tables arrive through Alembic, and the container entrypoint already runs
+`alembic upgrade head` on every start, so no manual migration step is needed.

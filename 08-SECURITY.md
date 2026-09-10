@@ -105,6 +105,36 @@ bounded on every axis:
   fingerprint instead of the raw identifier and holds no link to the original reporter, so a
   correction request cannot be used to unmask or contact whoever filed the report.
 
+## Complaint Copy Access
+
+A complaint copy contains the full complaint body, so retrieving one is gated harder than
+tracking it:
+
+- **A complaint number never opens a copy.** It is a tracking reference many people may see.
+  Public tracking stays status-only and cannot be escalated into complaint content.
+- **Identified complaints** require the owner's session. A wrong owner receives `404`, so the
+  endpoint cannot be used to enumerate or confirm complaints. This is IDOR-safe by id and by
+  number.
+- **Anonymous complaints** use a separate capability generated with `secrets.token_urlsafe(32)`
+  at submission. Only a SHA-256 digest is stored, the row carries no identity column, and it is
+  bound to exactly one complaint with an expiry and a revocation field. Losing it means the
+  copy cannot be recovered - stated plainly to the citizen rather than solved by attaching
+  identity.
+- Wrong, expired, revoked and other-complaint capabilities fail identically, so the response
+  cannot be used to distinguish them.
+- The capability is sent as a header, never a URL parameter, and is never written into the PDF,
+  a filename, a log or an error body.
+
+The renderer consumes a sanitized document model rather than a database row, so storage keys,
+private URLs, internal ids, tokens and reporter identity cannot reach a generated document even
+by mistake. Evidence appears as user-facing metadata only. Suspect details are labelled an
+allegation, not a finding. Every copy carries a prominent disclaimer that it is not an FIR, not
+a police or government acknowledgement, and not proof of submission to any authority.
+
+Citizen-supplied text has control characters stripped at the API boundary. Besides keeping
+control bytes out of generated documents, this closes a real fault where a NUL byte in a
+complaint description reached PostgreSQL and raised an unhandled driver error.
+
 ## Secure India Data
 
 Secure India is served from a versioned synthetic snapshot, never from citizen data:
