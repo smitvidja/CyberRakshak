@@ -120,9 +120,8 @@ button, input, select, textarea { font: inherit; }
 .brand-support span { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 2px; color: var(--navy); font-size: 22px; font-weight: 800; letter-spacing: .01em; }
 .brand-support:hover span, .brand-support:focus-visible span { color: var(--blue); }
 .brand-header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 18px; min-width: 0; }
-.citizen-dashboard-entry { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; border-right: 1px solid #d8e5f2; padding-right: 18px; color: var(--navy); text-decoration: none; white-space: nowrap; }
+.citizen-dashboard-entry { display: inline-flex; min-height: 44px; align-items: center; border-right: 1px solid #d8e5f2; padding-right: 16px; color: var(--navy); text-decoration: none; }
 .citizen-dashboard-entry > span { display: grid; height: 38px; width: 38px; place-items: center; border: 1px solid #b9d8f4; border-radius: 50%; background: #edf6ff; color: var(--blue); transition: background-color 150ms ease, color 150ms ease, transform 150ms ease; }
-.citizen-dashboard-entry strong { font-size: 13px; font-weight: 800; }
 .citizen-dashboard-entry:hover > span, .citizen-dashboard-entry:focus-visible > span { background: var(--blue); color: #fff; transform: translateY(-1px); }
 .citizen-dashboard-entry:focus-visible { border-radius: 6px; outline: 3px solid rgb(7 95 185 / .22); outline-offset: 3px; }
 .brand-mark { border-radius: 50%; object-fit: contain; }
