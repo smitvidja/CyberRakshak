@@ -16,6 +16,25 @@ import type {ConversationState, ReportingMode, SaathiLanguage} from "@/types/cyb
 // v2 adds explicit storage consent and server-backed recovery; keep v1 untouched
 // instead of silently treating an older browser-only payload as consented data.
 const STORAGE_KEY = "cyberrakshak.cyber-saathi.conversation.v2";
+// Kept beside the conversation rather than inside it: this is a browser-only UI
+// preference, and the conversation payload is validated by the API.
+const LANGUAGE_CHOSEN_KEY = "cyberrakshak.cyber-saathi.language-chosen";
+
+function markLanguageChosen() {
+  try {
+    window.sessionStorage.setItem(LANGUAGE_CHOSEN_KEY, "1");
+  } catch {
+    // A blocked sessionStorage must not break the conversation.
+  }
+}
+
+function hasChosenLanguage() {
+  try {
+    return window.sessionStorage.getItem(LANGUAGE_CHOSEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 function AssistantTurnContent({content}: {content: string}) {
   const lines = content.split("\n");
   const firstStep = lines.findIndex((line) => /^\s*\d+[.)]\s+/.test(line));
@@ -46,6 +65,7 @@ export function CyberSaathiConversation() {
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [attachmentError, setAttachmentError] = useState("");
   const [attaching, setAttaching] = useState(false);
+  const [languageNotice, setLanguageNotice] = useState<SaathiLanguage | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const attachmentInputRef = useRef<HTMLInputElement>(null);
@@ -78,16 +98,25 @@ export function CyberSaathiConversation() {
         const parsed = JSON.parse(stored) as ConversationState;
         if (parsed.id && Array.isArray(parsed.turns)) {
           // Browser-only persisted conversation state must hydrate after mount.
+          // A conversation that inherited its language from the page follows the
+          // page when the citizen switches it. Once they pick a language inside
+          // the chat, that choice wins and the page no longer overrides it.
+          const pageLanguage: SaathiLanguage = locale === "hi" ? "HI" : "EN";
+          const adopt = (restored: ConversationState) =>
+            hasChosenLanguage() ? restored : {...restored, language: pageLanguage};
+
           if (parsed.storage_consent) {
             void cyberSaathiApi.resume(parsed.id).then((result) => {
-              setState(result.ok ? result.data.state : parsed);
-              setLanguage((result.ok ? result.data.state : parsed).language);
+              const restored = adopt(result.ok ? result.data.state : parsed);
+              setState(restored);
+              setLanguage(restored.language);
               setLoading(false);
             });
           } else {
             queueMicrotask(() => {
-              setState(parsed);
-              setLanguage(parsed.language);
+              const restored = adopt(parsed);
+              setState(restored);
+              setLanguage(restored.language);
               setLoading(false);
             });
           }
@@ -131,6 +160,7 @@ export function CyberSaathiConversation() {
     if (result.ok) {
       setState(result.data.state);
       setLanguage(result.data.state.language);
+      setLanguageNotice(null);
       setMessage("");
       if (speakResponse) {
         const responseElapsed = Math.round(performance.now() - conversationStarted);
@@ -160,10 +190,15 @@ export function CyberSaathiConversation() {
 
   function changeLanguage(nextLanguage: SaathiLanguage) {
     voice.resetVoice();
+    markLanguageChosen();
     setLanguage(nextLanguage);
     if (state) {
       const next = {...state, language: nextLanguage};
       setState(next);
+      // Earlier turns keep the language they were written in: a citizen's own
+      // words become their complaint description, so they are never rewritten.
+      // Say so plainly instead of leaving the mixed thread looking broken.
+      setLanguageNotice(state.turns.length > 1 ? nextLanguage : null);
     }
   }
 
@@ -313,6 +348,12 @@ export function CyberSaathiConversation() {
 
           <div aria-live="polite" className="h-[460px] overflow-y-auto bg-[#fafdff] px-4 py-5 sm:px-6">
             {loading ? <div className="grid h-full place-items-center text-sm text-slate-600"><span className="flex items-center gap-2"><LoaderCircle className="animate-spin" size={18} />{t("loading")}</span></div> : null}
+            {languageNotice ? (
+              <p className="mb-4 flex items-start gap-2 rounded-[6px] border border-[#cddff5] bg-[#eef5ff] px-3 py-2 text-xs leading-5 text-[#174574]">
+                <Languages aria-hidden="true" className="mt-0.5 shrink-0" size={14} />
+                {t("languageChangedNote", {language: t("languageNames." + languageNotice)})}
+              </p>
+            ) : null}
             {!loading && state?.turns.map((turn) => (
               <article className={`mb-4 flex gap-2.5 ${turn.role === "user" ? "justify-end" : "justify-start"}`} key={turn.id}>
                 {turn.role === "assistant" ? <span aria-hidden="true" className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#e5efff] text-[#0b58c7]"><Bot size={17} /></span> : null}

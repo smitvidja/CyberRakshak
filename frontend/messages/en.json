@@ -1382,6 +1382,12 @@
     "errors": {
       "start": "The conversation could not start. Check the API connection and retry.",
       "send": "Your message was not delivered. Nothing was submitted; please retry."
+    },
+    "languageChangedNote": "Switched to {language}. New replies will be in {language}. Earlier messages stay exactly as they were sent, because what you wrote becomes your complaint.",
+    "languageNames": {
+      "EN": "English",
+      "HI": "Hindi",
+      "HINGLISH": "Hinglish"
     }
   },
   "suspectSearch": {
