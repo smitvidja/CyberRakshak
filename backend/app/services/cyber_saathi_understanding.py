@@ -201,22 +201,21 @@ class UnderstandingEngine:
     ) -> LanguageCode:
         """Choose the language to answer in.
 
-        A conversation set to Hindi or Hinglish is answered in that language even
-        when a single message looks like something else. Someone who has selected
-        हिन्दी and then types a romanised line is still asking for Hindi, and
-        silently switching on them was ignoring an explicit instruction.
+        The chosen language wins, always. English means English, Hindi means
+        Devanagari Hindi, Hinglish means Hindi written in Latin script - whatever
+        an individual message happens to look like. Detection is only consulted
+        when no language has been chosen at all, which is the case for the
+        stateless understanding endpoint.
 
-        English is treated as the interface default rather than a choice, so an
-        English conversation still adopts a citizen who writes in Hindi or
-        Hinglish. This mirrors CyberSaathiService._resolve_response_language, so
-        the two layers can no longer disagree about the answer language.
+        Guessing from the message was the bug: a citizen who picked English and
+        typed in Devanagari got Hinglish back, so one conversation mixed all
+        three. A citizen can still switch mid-chat, either with the selector or
+        by asking in words, which CyberSaathiService handles.
         """
-        if preferred_language in {LanguageCode.HI, LanguageCode.HINGLISH}:
+        if preferred_language in {LanguageCode.EN, LanguageCode.HI, LanguageCode.HINGLISH}:
             return preferred_language
         if detected != LanguageCode.MIXED:
             return detected
-        if preferred_language == LanguageCode.EN:
-            return preferred_language
         return LanguageCode.HINGLISH
 
     @staticmethod

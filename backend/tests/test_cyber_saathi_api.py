@@ -1261,7 +1261,9 @@ def test_phishing_recovery_attempt_answers_stored_question_before_blocker_route(
 
 
 def test_exact_financial_journey_reaches_packet_without_repeating_or_escalation_dump() -> None:
-    state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.EN)).state
+    # Started in Hinglish because that is what the citizen would select; the
+    # conversation no longer re-guesses its language from each message.
+    state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.HINGLISH)).state
     state = CyberSaathiService.reply(
         state.id,
         ConversationMessageRequest(
@@ -1542,7 +1544,9 @@ def test_noisy_women_child_message_gets_domain_specific_grounded_guidance() -> N
 
 def test_hinglish_financial_follow_up_changes_language_and_advances_after_bank_freeze() -> None:
     """Regression for the real victim journey, not a source-text dump."""
-    state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.EN)).state
+    # Started in Hinglish because that is what the citizen would select; the
+    # conversation no longer re-guesses its language from each message.
+    state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.HINGLISH)).state
     state = CyberSaathiService.reply(
         state.id,
         ConversationMessageRequest(

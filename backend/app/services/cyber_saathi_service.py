@@ -273,16 +273,18 @@ class CyberSaathiService:
         detected: LanguageCode,
     ) -> LanguageCode:
         lowered = normalized_text(message)
+        # Asking in words ("reply in hindi") is an explicit instruction and still
+        # switches the conversation, exactly like using the selector.
         for language, markers in LANGUAGE_SWITCHES.items():
             if any(marker in lowered for marker in markers):
                 return language
-        # The first substantive citizen message establishes its practical
-        # language. This fixes the default-English UI silently answering an
-        # otherwise Hinglish conversation in English; later short replies such
-        # as "haan" keep the established Hinglish/Hindi style.
-        if current == LanguageCode.EN and detected in {LanguageCode.HI, LanguageCode.HINGLISH}:
-            return detected
-        return current if current in {LanguageCode.EN, LanguageCode.HI, LanguageCode.HINGLISH} else detected
+        # Otherwise the chosen language is kept. The conversation no longer
+        # re-guesses from each message: a citizen on English who types one
+        # Devanagari line is not asking to be answered in Hinglish, and switching
+        # on them produced chats mixing all three languages at once.
+        if current in {LanguageCode.EN, LanguageCode.HI, LanguageCode.HINGLISH}:
+            return current
+        return detected
 
     @staticmethod
     def start(payload: ConversationCreate) -> ConversationResponse:

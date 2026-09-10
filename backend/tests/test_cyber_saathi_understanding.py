@@ -352,47 +352,62 @@ def test_required_taxonomy_routes_are_explicit(
     assert result.crime_domain == expected_domain
 
 
-def test_explicit_language_selection_is_not_overridden_by_message_style() -> None:
-    """A citizen who selects हिन्दी keeps getting Hindi even if they type romanised.
+def test_selected_language_always_decides_the_answer_language() -> None:
+    """The selector is an instruction, not a hint.
 
-    Detection used to win outright, so one Hinglish-looking line silently
-    switched the conversation away from the language the citizen had chosen.
-    English is still treated as the interface default, so an English
-    conversation continues to adopt a citizen writing in Hindi or Hinglish.
+    English means English, Hindi means Devanagari, Hinglish means Hindi in Latin
+    script - regardless of what any single message looks like. Guessing from the
+    message produced chats that mixed all three at once.
     """
-    hi = LanguageCode.HI
-    hinglish = LanguageCode.HINGLISH
-    en = LanguageCode.EN
+    languages = [LanguageCode.EN, LanguageCode.HI, LanguageCode.HINGLISH]
+    for selected in languages:
+        for typed in languages + [LanguageCode.MIXED]:
+            assert UnderstandingEngine.response_language(typed, selected) is selected, (
+                f"selected {selected} but answered in {UnderstandingEngine.response_language(typed, selected)} "
+                f"after a {typed} message"
+            )
 
-    # explicit selections stick
-    assert UnderstandingEngine.response_language(hinglish, hi) is hi
-    assert UnderstandingEngine.response_language(en, hi) is hi
-    assert UnderstandingEngine.response_language(hi, hinglish) is hinglish
-
-    # the English default still adapts to the citizen
-    assert UnderstandingEngine.response_language(hinglish, en) is hinglish
-    assert UnderstandingEngine.response_language(hi, en) is hi
-
-    # no stated preference falls back to what was detected
-    assert UnderstandingEngine.response_language(hinglish, None) is hinglish
+    # The stateless understanding endpoint has no selection, so it may detect.
+    assert UnderstandingEngine.response_language(LanguageCode.HINGLISH, None) is LanguageCode.HINGLISH
+    assert UnderstandingEngine.response_language(LanguageCode.MIXED, None) is LanguageCode.HINGLISH
 
 
-def test_hindi_conversation_answers_in_devanagari_after_a_romanised_message() -> None:
+def test_asking_in_words_still_switches_the_conversation_language() -> None:
+    resolve = CyberSaathiService._resolve_response_language
+    # A Devanagari message must not drag an English conversation elsewhere...
+    assert resolve(LanguageCode.EN, "कुछ लोग परेशान कर रहे हैं", LanguageCode.HI) is LanguageCode.EN
+    # ...but asking for a language explicitly is honoured.
+    assert resolve(LanguageCode.EN, "please reply in hindi", LanguageCode.EN) is LanguageCode.HI
+    assert resolve(LanguageCode.HI, "answer in english", LanguageCode.HI) is LanguageCode.EN
+
+
+def test_a_conversation_answers_only_in_the_selected_language() -> None:
+    """End to end: each selection answers in its own script, whatever is typed."""
     client = TestClient(app)
-    started = client.post(
-        "/api/v1/cyber-saathi/conversations",
-        json={"language": "HI", "storage_consent": False, "reporting_mode": "undecided"},
-    )
-    assert started.status_code == 201, started.text
-    state = started.json()["data"]["state"]
-    assert re.search(r"[ऀ-ॿ]", state["turns"][0]["content"]), "welcome must be Hindi"
+    devanagari = re.compile(r"[\u0900-\u097F]")
+    # A romanised line for the Hindi/Hinglish cases, Devanagari for the English case.
+    probes = {
+        "HI": ("mere sath kya hua pata hai", True),
+        "HINGLISH": ("मेरे साथ धोखा हुआ है", False),
+        "EN": ("मेरे साथ धोखा हुआ है", False),
+    }
 
-    replied = client.post(
-        f"/api/v1/cyber-saathi/conversations/{state['id']}/messages",
-        json={"state": state, "message": "mere sath kya hua pata hai"},
-    )
-    assert replied.status_code == 200, replied.text
-    next_state = replied.json()["data"]["state"]
-    assert next_state["language"] == "HI"
-    answer = [turn for turn in next_state["turns"] if turn["role"] == "assistant"][-1]["content"]
-    assert re.search(r"[ऀ-ॿ]", answer), f"expected Hindi, got: {answer}"
+    for selected, (message, expect_devanagari) in probes.items():
+        started = client.post(
+            "/api/v1/cyber-saathi/conversations",
+            json={"language": selected, "storage_consent": False, "reporting_mode": "undecided"},
+        )
+        assert started.status_code == 201, started.text
+        state = started.json()["data"]["state"]
+        welcome = state["turns"][0]["content"]
+        assert bool(devanagari.search(welcome)) is expect_devanagari, f"{selected} welcome: {welcome}"
+
+        replied = client.post(
+            f"/api/v1/cyber-saathi/conversations/{state['id']}/messages",
+            json={"state": state, "message": message},
+        )
+        assert replied.status_code == 200, replied.text
+        next_state = replied.json()["data"]["state"]
+        assert next_state["language"] == selected, f"{selected} drifted to {next_state['language']}"
+        answer = [turn for turn in next_state["turns"] if turn["role"] == "assistant"][-1]["content"]
+        assert bool(devanagari.search(answer)) is expect_devanagari, f"{selected} answered: {answer}"
