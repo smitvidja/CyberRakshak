@@ -1,3 +1,4 @@
+import re
 from datetime import date, timedelta
 from uuid import uuid4
 
@@ -1642,3 +1643,43 @@ def test_phishing_followup_with_money_loss_promotes_primary_financial_route() ->
     assert state.incident.crime_domain == CrimeDomain.FINANCIAL_FRAUD
     assert CrimeDomain.PHISHING_SCAM in state.incident.related_domains
     assert "Rs 25000" in (state.incident.summary or "")
+
+
+def test_consented_conversation_can_still_change_language(api_client) -> None:
+    """A stored conversation must honour the language selector.
+
+    The route reloads the server copy for consented chats so a stale or tampered
+    client state cannot rewrite the record. That reload also overwrote the
+    language the citizen had just chosen, so a saved conversation was stuck in
+    whatever language it started in no matter what the selector said.
+    """
+    client, _ = api_client
+    started = client.post(
+        "/api/v1/cyber-saathi/conversations",
+        json={"language": "HINGLISH", "storage_consent": True, "reporting_mode": "undecided"},
+    )
+    assert started.status_code == 201, started.text
+    state = started.json()["data"]["state"]
+
+    first = client.post(
+        f"/api/v1/cyber-saathi/conversations/{state['id']}/messages",
+        json={"state": state, "message": "kisi ne mujhe pareshan kiya hai"},
+    )
+    assert first.status_code == 200, first.text
+    state = first.json()["data"]["state"]
+    assert state["language"] == "HINGLISH"
+
+    # The citizen switches the selector to English; the client sends the change.
+    state["language"] = "EN"
+    switched = client.post(
+        f"/api/v1/cyber-saathi/conversations/{state['id']}/messages",
+        json={"state": state, "message": "some people are harassing me online"},
+    )
+    assert switched.status_code == 200, switched.text
+    after = switched.json()["data"]["state"]
+    assert after["language"] == "EN", "the stored language overwrote the citizen's choice"
+    answer = [turn for turn in after["turns"] if turn["role"] == "assistant"][-1]["content"]
+    assert not re.search(r"[ऀ-ॿ]", answer), f"expected English, got: {answer}"
+
+    # The rest of the stored conversation is still authoritative.
+    assert len(after["turns"]) >= 4

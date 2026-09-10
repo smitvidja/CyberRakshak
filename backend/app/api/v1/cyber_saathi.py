@@ -72,7 +72,14 @@ def send_message(
 ) -> dict[str, object]:
     if payload.state.storage_consent:
         try:
-            payload = payload.model_copy(update={"state": CyberSaathiPersistence.load(session, conversation_id)})
+            stored = CyberSaathiPersistence.load(session, conversation_id)
+            # The stored copy stays authoritative for conversation content, so a
+            # stale or tampered client state cannot rewrite the record. The
+            # language selector is the exception: it is a live control the
+            # citizen just used, and reloading over it silently discarded their
+            # choice, so a consented chat could never change language.
+            stored.language = payload.state.language
+            payload = payload.model_copy(update={"state": stored})
         except APIError as error:
             if error.code != "CONVERSATION_NOT_FOUND":
                 raise
