@@ -26,6 +26,7 @@ export type ApiRequestOptions = {
 
 export type ApiClient = {
   delete<T>(path: string, options?: ApiRequestOptions): Promise<ApiResult<T>>;
+  download(path: string, options?: ApiRequestOptions): Promise<ApiResult<Blob>>;
   get<T>(path: string, options?: ApiRequestOptions): Promise<ApiResult<T>>;
   patch<T>(path: string, body?: BodyInit | null, options?: ApiRequestOptions): Promise<ApiResult<T>>;
   post<T>(path: string, body?: BodyInit | null, options?: ApiRequestOptions): Promise<ApiResult<T>>;
@@ -124,8 +125,36 @@ export function createApiClient(baseUrl = process.env.NEXT_PUBLIC_API_URL): ApiC
     }
   }
 
+  async function download(path: string, options: ApiRequestOptions = {}): Promise<ApiResult<Blob>> {
+    const headers = new Headers(options.headers);
+    if (options.accessToken) {
+      headers.set("Authorization", "Bearer " + options.accessToken);
+    }
+
+    try {
+      const response = await fetch(buildApiUrl(path, resolvedBaseUrl), {
+        credentials: "include",
+        headers,
+        method: "GET",
+        signal: options.signal
+      });
+
+      if (!response.ok) {
+        // Errors still arrive as the normal JSON envelope, so failures keep the
+        // same shape and handling as every other call.
+        const payload = await response.json().catch(() => null);
+        return parseEnvelope<Blob>(payload, response.status);
+      }
+
+      return {data: await response.blob(), ok: true};
+    } catch (error) {
+      return {error: asError(error), ok: false};
+    }
+  }
+
   return {
     request,
+    download,
     get: (path, options) => request(path, {method: "GET"}, options),
     post: (path, body, options) => request(path, {body, method: "POST"}, options),
     put: (path, body, options) => request(path, {body, method: "PUT"}, options),
@@ -136,6 +165,7 @@ export function createApiClient(baseUrl = process.env.NEXT_PUBLIC_API_URL): ApiC
 
 export const apiClient = {
   delete: <T>(path: string, options?: ApiRequestOptions) => createApiClient().delete<T>(path, options),
+  download: (path: string, options?: ApiRequestOptions) => createApiClient().download(path, options),
   get: <T>(path: string, options?: ApiRequestOptions) => createApiClient().get<T>(path, options),
   patch: <T>(path: string, body?: unknown, options?: ApiRequestOptions) => createApiClient().patch<T>(path, body === undefined ? null : jsonBody(body), options),
   post: <T>(path: string, body?: unknown, options?: ApiRequestOptions) => createApiClient().post<T>(path, body === undefined ? null : jsonBody(body), options),

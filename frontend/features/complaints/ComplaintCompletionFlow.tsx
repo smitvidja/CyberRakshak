@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useEffect, useState, useSyncExternalStore} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
 
@@ -10,6 +10,7 @@ import {TextInput} from "@/components/ui/FormFields";
 import {ResponsiveDataList, type DataListRow} from "@/components/ui/ResponsiveDataList";
 import {StatePanel, StatusChip, SurfaceCard} from "@/components/ui/Surface";
 import {complaintsApi, evidenceApi} from "@/lib/api/complaints";
+import {downloadComplaintCopy, getComplaintCopyAccessSnapshot, getServerComplaintCopyAccessSnapshot, rememberComplaintCopyAccess, subscribeToComplaintCopyAccess} from "@/lib/complaint-copy";
 import type {ApiRecord} from "@/lib/api/auth";
 import {getAccessToken, getComplaintDraft, getComplaintEvidence, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
 import {getGuestEvidenceFiles, markGuestDraftForFinalSubmit} from "@/lib/auth/guest-report-session";
@@ -134,6 +135,11 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
     }
     setComplaintDraft({data: result.data, id: draftId});
     const complaintNumber = asString(result.data.complaint_number);
+    // An anonymous submission returns its download capability exactly once.
+    rememberComplaintCopyAccess(complaintNumber, {
+      accessToken: typeof result.data.access_token === "string" ? result.data.access_token : null,
+      complaintId: draftId
+    });
     router.push("/" + locale + "/complaints/submitted/" + encodeURIComponent(complaintNumber));
   }
 
@@ -170,6 +176,28 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
 
 export function ComplaintSubmitted({complaintNumber}: {complaintNumber: string}) {
   const t = useTranslations("complaintCompletion");
+  const [copyState, setCopyState] = useState<"idle" | "working" | "unavailable" | "failed">("idle");
+  const copyAccess = useSyncExternalStore(
+    subscribeToComplaintCopyAccess,
+    () => getComplaintCopyAccessSnapshot(complaintNumber),
+    getServerComplaintCopyAccessSnapshot
+  );
+
+  async function downloadCopy() {
+    if (!copyAccess) {
+      setCopyState("unavailable");
+      return;
+    }
+    setCopyState("working");
+    const outcome = await downloadComplaintCopy({
+      accessToken: copyAccess.accessToken,
+      complaintId: copyAccess.complaintId,
+      complaintNumber,
+      sessionToken: getAccessToken()
+    });
+    setCopyState(outcome === "ok" ? "idle" : outcome === "unauthorized" ? "unavailable" : "failed");
+  }
+
   const locale = useLocale();
   const router = useRouter();
   const [identified, setIdentified] = useState(false);
@@ -182,7 +210,7 @@ export function ComplaintSubmitted({complaintNumber}: {complaintNumber: string})
     {label: t("timelineStages.investigation"), description: t("timelineStageCopy.investigation"), timestamp: t("timelinePending"), tone: "neutral" as const},
     {label: t("timelineStages.resolution"), description: t("timelineStageCopy.resolution"), timestamp: t("timelinePending"), tone: "neutral" as const}
   ];
-  return <main className="citizen-page citizen-success-page shell-container py-8 sm:py-12"><div className="citizen-success-panel mx-auto max-w-5xl space-y-6"><p className="eyebrow">{t("submittedEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("submittedTitle")}</h1><StatePanel title={t("referenceTitle")} tone="success"><strong className="block text-lg">{complaintNumber}</strong><span>{t("referenceCopy")}</span></StatePanel><div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px]"><SurfaceCard heading={t("timelineTitle")}><StatusTimeline events={events} label={t("timelineLabel")} /></SurfaceCard><SurfaceCard heading={t("whatNextTitle")}><p className="text-sm leading-6 text-[var(--muted)]">{t("whatNextCopy")}</p><div className="mt-5 grid gap-3"><Button onClick={() => router.push("/" + locale + "/complaints/track/" + encodeURIComponent(complaintNumber))}>{t("trackAction")}</Button>{identified ? <Button onClick={() => router.push("/" + locale + "/complaints")} variant="outline">{t("myReportsAction")}</Button> : null}</div></SurfaceCard></div></div></main>;
+  return <main className="citizen-page citizen-success-page shell-container py-8 sm:py-12"><div className="citizen-success-panel mx-auto max-w-5xl space-y-6"><p className="eyebrow">{t("submittedEyebrow")}</p><h1 className="text-3xl font-bold text-[var(--navy)] sm:text-4xl">{t("submittedTitle")}</h1><StatePanel title={t("referenceTitle")} tone="success"><strong className="block text-lg">{complaintNumber}</strong><span>{t("referenceCopy")}</span></StatePanel><div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px]"><SurfaceCard heading={t("timelineTitle")}><StatusTimeline events={events} label={t("timelineLabel")} /></SurfaceCard><SurfaceCard heading={t("whatNextTitle")}><p className="text-sm leading-6 text-[var(--muted)]">{t("whatNextCopy")}</p><div className="mt-5 grid gap-3"><Button onClick={() => router.push("/" + locale + "/complaints/track/" + encodeURIComponent(complaintNumber))}>{t("trackAction")}</Button><Button isLoading={copyState === "working"} onClick={downloadCopy} variant="outline">{t("downloadCopyAction")}</Button>{identified ? <Button onClick={() => router.push("/" + locale + "/complaints")} variant="outline">{t("myReportsAction")}</Button> : null}</div><p className="mt-3 text-xs leading-5 text-[var(--muted)]">{copyState === "unavailable" ? t("downloadCopyUnavailable") : copyState === "failed" ? t("downloadCopyError") : identified ? t("downloadCopyNoteIdentified") : t("downloadCopyNoteAnonymous")}</p></SurfaceCard></div></div></main>;
 }
 export function ComplaintTrackingLookup() {
   const t = useTranslations("complaintCompletion");
@@ -261,7 +289,7 @@ export function MyComplaints() {
   if (!identified) return <main className="citizen-page shell-container py-8 sm:py-12"><div className="mx-auto max-w-3xl"><StatePanel action={<Button onClick={() => router.push("/" + locale + "/complaints/track")} variant="outline">{t("trackAction")}</Button>} title={t("anonymousReportsTitle")} tone="info">{t("anonymousReportsCopy")}</StatePanel></div></main>;
   if (error) return <main className="citizen-page shell-container py-8 sm:py-12"><StatePanel title={t("myReportsErrorTitle")} tone="error">{t("myReportsErrorCopy")}</StatePanel></main>;
 
-  const rows = (items: ApiRecord[]): DataListRow[] => items.map((item) => ({id: asString(item.id), values: {title: asString(item.title), reference: asString(item.complaint_number), status: <StatusChip label={statusLabel(t, item.status)} tone={statusTone(asString(item.status))} />, action: <Button onClick={() => router.push(asString(item.status) === "DRAFT" ? "/" + locale + "/report-crime/" + asString(item.id) + "/incident" : "/" + locale + "/complaints/track/" + encodeURIComponent(asString(item.complaint_number)))} size="sm" variant="outline">{asString(item.status) === "DRAFT" ? t("continueDraft") : t("viewTracking")}</Button>}}));
+  const rows = (items: ApiRecord[]): DataListRow[] => items.map((item) => ({id: asString(item.id), values: {title: asString(item.title), reference: asString(item.complaint_number), status: <StatusChip label={statusLabel(t, item.status)} tone={statusTone(asString(item.status))} />, action: <div className="flex flex-wrap gap-2"><Button onClick={() => router.push(asString(item.status) === "DRAFT" ? "/" + locale + "/report-crime/" + asString(item.id) + "/incident" : "/" + locale + "/complaints/track/" + encodeURIComponent(asString(item.complaint_number)))} size="sm" variant="outline">{asString(item.status) === "DRAFT" ? t("continueDraft") : t("viewTracking")}</Button>{asString(item.status) === "DRAFT" ? null : <Button onClick={() => void downloadComplaintCopy({complaintId: asString(item.id), complaintNumber: asString(item.complaint_number), sessionToken: getAccessToken()})} size="sm" variant="outline">{t("downloadCopyShort")}</Button>}</div>}}));
   const drafts = complaints.filter((item) => asString(item.status) === "DRAFT");
   const submitted = complaints.filter((item) => asString(item.status) !== "DRAFT");
   const columns = [{key: "title", label: t("tableTitle")}, {key: "reference", label: t("tableReference")}, {key: "status", label: t("tableStatus")}, {key: "action", label: t("tableAction")}];

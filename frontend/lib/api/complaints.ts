@@ -7,6 +7,7 @@ export const complaintCategoriesApi = {
 
 export const complaintsApi = {
   createDraft: (payload: ApiRecord, options?: ApiRequestOptions) => apiClient.post<ApiRecord>("/complaints/drafts", payload, options),
+  downloadCopy: (id: string, options?: ApiRequestOptions) => apiClient.download("/complaints/" + id + "/copy", options),
   getById: (id: string, options?: ApiRequestOptions) => apiClient.get<ApiRecord>("/complaints/" + id, options),
   listMine: (options?: ApiRequestOptions) => apiClient.get<ApiRecord[]>("/complaints/my", options),
   statusHistory: (id: string, options?: ApiRequestOptions) => apiClient.get<ApiRecord[]>("/complaints/" + id + "/status-history", options),

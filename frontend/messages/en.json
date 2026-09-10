@@ -411,7 +411,7 @@
     "noSuspectCopy": "Continue without guessing. You can report only what you know.",
     "saveContinue": "Save and continue"
   },
-  "complaintCompletion": {
+  "complaintCompletion":   {
     "eyebrow": "Complaint review",
     "title": "Review and submit your complaint",
     "intro": "Check the saved details carefully. You can return to any section to make changes before submission.",
@@ -522,7 +522,13 @@
       "resolution": "The final action appears when available."
     },
     "timelinePending": "Yet to start",
-    "timelineNow": "Just now"
+    "timelineNow": "Just now",
+    "downloadCopyAction": "Download complaint copy (PDF)",
+    "downloadCopyShort": "Download copy",
+    "downloadCopyNoteIdentified": "You can download this copy again any time from My Complaints while signed in.",
+    "downloadCopyNoteAnonymous": "Download and save this copy now. Because this report is anonymous, it is tied to this browser session only - if you lose it, the full copy cannot be recovered. Your complaint number will still work for status tracking.",
+    "downloadCopyUnavailable": "This copy can no longer be downloaded from this device. The complaint number still works for status tracking.",
+    "downloadCopyError": "The copy could not be prepared. Check your connection and try again."
   },
   "suspectReport": {
     "eyebrow": "Reported identifier",
