@@ -13,7 +13,7 @@ This document is the source-of-truth record required before `source_type` could 
 | Field | Value |
 | --- | --- |
 | `dataset_id` | `secure-india-synthetic-v1` |
-| `version` | `1.1.0` |
+| `version` | `1.2.0` |
 | `source_type` | `SYNTHETIC` |
 | `source_label` | CyberRakshak synthetic demonstration dataset |
 | `published_at` | 2026-09-10 |
@@ -21,7 +21,9 @@ This document is the source-of-truth record required before `source_type` could 
 | Location | `backend/app/data/secure_india/snapshot.json` |
 
 Version `1.1.0` replaced the hand-placed `x`/`y` pixel pairs of `1.0.0` with real `lon`/`lat`
-coordinates plus a declared projection window, so map geometry is data rather than layout.
+coordinates plus a declared projection window. Version `1.2.0` re-based that window onto real
+published state boundaries (see **Map Geometry**), replacing a hand-drawn national silhouette
+that had been distorted enough to plot Chennai in the sea.
 
 ## Shape
 
@@ -55,11 +57,35 @@ crime type links to).
   the toggle demonstrates genuine re-ranking; they are not census values.
 - **Legend bins are derived, not fixed.** Bin width is computed from the maximum value in the
   current selection and rounded to a readable step, so the legend always matches what is drawn.
-- **Coordinates are city points, not boundaries.** The map is a proportional-symbol map. It
-  does not show police jurisdictions, administrative boundaries, or where any incident occurred.
-- **The national outline is a simplified silhouette** projected from the same lon/lat window.
-  It is a visual frame for the city markers, not a survey-accurate or authoritative boundary,
-  and carries no claim about any border.
+- **The data is city points, not areas.** State boundaries are drawn as a basemap, but no
+  value is ever attributed to a state: the map is a proportional-symbol map over 10 cities.
+  It does not show police jurisdictions and never shows where any incident occurred.
+
+## Map Geometry
+
+State boundaries are **real geometry**, not a hand-drawn silhouette. They are published as a
+versioned static asset at `frontend/public/data/india-states-v1.json`.
+
+| Field | Value |
+| --- | --- |
+| Source | `udit-001/india-maps-data` district boundaries (2020-era Indian administrative units) |
+| Build step | district polygons dissolved to 36 states/UTs, simplified at 0.02 degrees |
+| Size | ~55 KB, 36 features |
+| Projection | equirectangular over lon 68.10-97.39, lat 6.77-37.08, corrected for meridian convergence |
+| viewBox | `0 0 100 111.56` |
+
+The source depicts India's official administrative extent, including the full Ladakh and
+Jammu & Kashmir claim and Arunachal Pradesh. Boundaries are simplified for display and are
+**not survey-accurate**; the asset is a visual frame for city markers and is not an
+authoritative statement of any border.
+
+The API projects city coordinates with exactly the window and viewBox this asset was built
+with. A backend test parses the published asset and asserts every city lands inside its
+declared state polygon, so a projection or geometry change that would misplace a city fails
+the build rather than shipping a wrong map.
+
+Regenerating the asset requires `shapely`, which is a **build-time-only** tool and is
+deliberately not a project dependency.
 
 ## Privacy Position
 

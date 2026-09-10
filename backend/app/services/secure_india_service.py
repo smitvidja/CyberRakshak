@@ -38,10 +38,16 @@ class SecureIndiaService:
         return {key: data[key] for key in ("dataset_id", "version", "source_type", "source_label", "published_at", "period_end", "methodology")}
 
     @staticmethod
-    def _project(lon: float, lat: float, projection: dict[str, float]) -> tuple[float, float]:
-        """Equirectangular projection into the 0-100 map viewBox used by the UI."""
-        x = (lon - projection["lon_min"]) / (projection["lon_max"] - projection["lon_min"]) * 100
-        y = (projection["lat_max"] - lat) / (projection["lat_max"] - projection["lat_min"]) * 100
+    def _project(lon: float, lat: float, projection: dict[str, Any]) -> tuple[float, float]:
+        """Project a coordinate into the map viewBox.
+
+        The window and viewBox are the ones the published state-boundary asset was
+        generated with, so a plotted city lands inside its real state. The asset
+        corrects for meridian convergence; that factor cancels on the x axis and is
+        already baked into the viewBox height, so it does not reappear here.
+        """
+        x = (lon - projection["lon_min"]) / (projection["lon_max"] - projection["lon_min"]) * projection["view_box_width"]
+        y = (projection["lat_max"] - lat) / (projection["lat_max"] - projection["lat_min"]) * projection["view_box_height"]
         return round(x, 2), round(y, 2)
 
     @staticmethod

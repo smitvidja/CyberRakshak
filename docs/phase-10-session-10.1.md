@@ -47,14 +47,16 @@ The tree already contained a working first pass. This session:
    made `loading` derived - removing two `react-hooks/set-state-in-effect` errors and any
    possibility of a hydration mismatch.
 7. Added a request debounce that also removes a redundant aborted API call on every deep link.
-8. Redrew the national outline from 76 to 116 projected points and corrected the Coromandel
-   coast, which had been leaving Chennai plotted in the sea.
-9. Added 7 backend contract tests and mutation-tested them.
+8. **Replaced the hand-drawn national silhouette with real state boundaries.** The outline was
+   distorted enough to plot Chennai in the sea, and a national-outline containment check was
+   too weak to catch it. Boundaries now come from published district geometry dissolved to 36
+   states/UTs, shipped as a versioned 55 KB static asset, with state borders drawn.
+9. Added 8 backend contract tests and mutation-tested them.
 10. Removed the dead preview/screenshot CSS and message keys left behind by the old page.
 
 ## Files changed
 
-32 tracked files modified, 15 new files. Principal additions:
+Principal additions:
 
 ```text
 backend/app/api/v1/secure_india.py
@@ -69,6 +71,7 @@ frontend/features/suspects/SuspectSearch.tsx
 frontend/app/[locale]/suspects/search/page.tsx
 frontend/lib/api/secure-india.ts
 frontend/lib/suspect-handoff.ts
+frontend/public/data/india-states-v1.json
 docs/secure-india-dataset.md
 ```
 
@@ -79,8 +82,11 @@ docs/secure-india-dataset.md
   public map by construction rather than by filtering discipline.
 - **One response drives every surface.** Metrics, map, legend, rankings, hot zones and hot
   crimes all come from a single `summary` call.
-- **Geometry is data.** Coordinates live in the snapshot as lon/lat with a declared projection
-  window; the service projects, the frontend renders.
+- **Geometry is data, and it is verified.** Coordinates live in the snapshot as lon/lat with a
+  declared projection window; the service projects, the frontend renders. State boundaries are
+  a versioned static asset generated from published district geometry (shapely is build-time
+  only, not a project dependency). A test parses the published asset and asserts every city
+  lands inside its declared state, so a bad projection fails the suite instead of shipping.
 - **The query string owns filter state**, consumed via `useSyncExternalStore` with the default
   view as the server snapshot, so the route still prerenders and cannot mismatch on hydration.
 - **One normalization helper** serves report creation, public search and corrections.
@@ -99,8 +105,10 @@ Documented in `06-API.md` and `08-SECURITY.md`. Key guarantees:
 ## Tests run
 
 - `pytest -q` (full backend suite)
+- shapely-based offline check that all 10 cities fall in their declared state polygon
 - `pytest tests/test_secure_india_and_suspect_search.py`
-- mutation checks against three deliberately broken service behaviours
+- mutation checks against five deliberately broken behaviours, including a shifted map
+  projection and swapped city coordinates
 - `npx tsc --noEmit`
 - `npm run lint` plus an explicit `eslint features/` pass
 - `npm run build`
@@ -111,9 +119,9 @@ Documented in `06-API.md` and `08-SECURITY.md`. Key guarantees:
 
 | Gate | Result |
 | --- | --- |
-| Backend suite | **293 passed** (was 286; 7 added) |
-| Focused Secure India / suspect tests | **12 passed** |
-| Mutation checks | 3/3 caught by the intended test, green after restore |
+| Backend suite | **294 passed** (was 286; 8 added) |
+| Focused Secure India / suspect tests | **13 passed** |
+| Mutation checks | 5/5 caught by the intended test, green after restore |
 | TypeScript | 0 errors |
 | Lint (`app components lib`) | clean |
 | Lint (`features/secure-india`, `features/suspects`, `lib`) | clean |
@@ -130,12 +138,17 @@ all filters; hover, keyboard focus and Enter on map markers; ranked-table select
 same selection; mobile tap selection without hover; both locales; Secure India to suspect
 search; no-match result copy; navbar suspect destination.
 
-Two defects were found by measurement rather than by eye and then fixed:
+Defects found by measurement rather than by eye, and fixed:
 
-- `isPointInFill` containment showed **Chennai plotted outside the coastline**; the Coromandel
-  edge was corrected until all 10 cities fall inside.
+- The hand-drawn outline was **geometrically wrong**, plotting Chennai in the sea. Checking
+  containment against the *national* outline was the wrong test - a distorted outline swallows
+  every marker and still passes. Replaced with real state geometry, and the test replaced with
+  **"does each city fall inside its declared state polygon"**, which is the assertion that
+  actually holds the map honest.
 - Box measurement showed the **Reset control wrapping to a second row**; the filter grid was
   widened to six columns.
+- State borders were initially invisible: `vector-effect: non-scaling-stroke` makes
+  `stroke-width` a screen-pixel value, so `.16` was sub-pixel.
 
 A first attempt at a white text halo made the rank numbers *less* legible (stroke far too heavy
 for a 2.6px glyph). It was reverted in favour of a raised minimum radius, confirmed by

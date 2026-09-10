@@ -1,12 +1,12 @@
 {
   "dataset_id": "secure-india-synthetic-v1",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "source_type": "SYNTHETIC",
   "source_label": "CyberRakshak synthetic demonstration dataset",
   "published_at": "2026-09-10T00:00:00Z",
   "period_end": "2026-08-31",
-  "methodology": "Illustrative city-level counts created for product demonstration. They are not derived from complaints, police systems, government portals, or real people. Period filters apply fixed synthetic scaling factors; per-lakh values use synthetic population figures. Map positions are projected from published city coordinates and carry no complaint-level location data.",
-  "projection": {"lon_min": 67.5, "lon_max": 97.8, "lat_min": 7.6, "lat_max": 36.2},
+  "methodology": "Illustrative city-level counts created for product demonstration. They are not derived from complaints, police systems, government portals, or real people. Period filters apply fixed synthetic scaling factors; per-lakh values use synthetic population figures. Map positions are projected from published city coordinates onto real state boundaries and carry no complaint-level location data.",
+  "projection": {"lon_min": 68.1, "lon_max": 97.39, "lat_min": 6.77, "lat_max": 37.08, "view_box_width": 100.0, "view_box_height": 111.56, "geometry_asset": "/data/india-states-v1.json"},
   "period_factors": {"7d": 0.24, "30d": 1.0, "1y": 10.8},
   "categories": [
     {"id": "financial", "resource_slug": "financial-fraud"},

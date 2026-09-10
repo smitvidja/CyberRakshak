@@ -22,9 +22,14 @@ const defaultFilters: Filters = {city: "all", crimeType: "all", period: "30d", s
 // radius, a rank number and an exact value in the ranked table.
 const bucketColors = ["#fbe3d3", "#f7bf9a", "#ef8f63", "#d9533a", "#9e1b18"];
 
-// National outline projected from the same lon/lat window the API uses, so the
-// silhouette and the plotted cities share one coordinate system.
-const indiaOutline = "M22.11 5.59 L23.43 3.5 L26.73 0.7 L30.69 1.05 L33.99 2.45 L35.64 5.59 L37.62 7.34 L38.61 10.49 L37.29 12.94 L38.28 15.03 L40.92 18.18 L44.22 20.28 L47.52 20.63 L50.5 22.73 L53.8 24.48 L56.77 25.87 L60.4 27.62 L63.37 28.32 L67.0 29.02 L68.32 29.02 L69.97 30.42 L70.63 31.82 L70.96 32.52 L72.94 32.87 L75.58 32.52 L79.21 32.87 L80.86 30.77 L83.17 29.02 L86.8 26.57 L90.43 27.62 L93.73 28.32 L96.7 27.27 L98.68 28.32 L98.35 31.12 L96.04 32.17 L94.06 33.92 L91.42 33.57 L89.77 36.01 L89.11 38.46 L88.12 41.26 L85.81 42.66 L84.49 44.76 L84.82 47.55 L83.17 49.3 L82.84 51.05 L81.52 43.71 L82.51 40.91 L77.56 38.46 L73.6 38.11 L70.63 38.46 L67.99 40.91 L69.97 41.96 L68.32 45.45 L70.63 48.95 L68.32 50.7 L65.02 51.05 L64.03 52.45 L62.71 54.55 L60.73 56.29 L58.42 58.04 L56.44 59.79 L54.13 62.24 L51.16 64.69 L48.84 67.13 L46.53 68.88 L44.55 70.28 L43.23 71.33 L42.57 73.43 L42.9 76.22 L43.4 79.02 L42.9 81.82 L41.25 84.27 L40.59 86.71 L39.6 88.81 L38.61 90.56 L36.63 93.01 L34.98 94.76 L34.32 96.85 L33.0 98.25 L31.68 97.55 L30.69 95.45 L29.37 93.01 L28.05 90.21 L27.06 87.41 L25.41 84.97 L23.76 81.82 L22.77 79.37 L21.78 76.22 L20.79 73.08 L19.8 70.98 L18.81 68.53 L18.15 65.73 L17.49 62.24 L17.16 59.44 L17.16 56.64 L17.82 54.2 L16.83 51.75 L15.51 50.7 L13.2 53.15 L10.56 53.85 L7.92 52.8 L5.61 50.35 L3.96 48.25 L2.31 46.15 L2.97 44.06 L5.28 42.66 L8.25 41.96 L10.23 37.41 L11.22 33.57 L13.53 30.07 L16.5 27.97 L19.14 23.78 L21.45 20.98 L23.43 18.18 L25.41 14.69 L27.06 12.59 L24.42 9.79 Z";
+// Real state boundaries, published as a versioned static asset and generated from
+// district geometry dissolved to state level. The API projects city coordinates
+// with the same window and viewBox this asset was built with, so a plotted city
+// lands inside its actual state - verified in the backend test suite.
+const geometryAsset = "/data/india-states-v1.json";
+
+type IndiaGeometry = {states: Array<{d: string; name: string}>; view_box: {height: number; width: number}};
+
 
 function readFiltersFromSearch(search: string): Filters {
   const params = new URLSearchParams(search);
@@ -96,7 +101,21 @@ export function SecureIndiaDashboard() {
   const [response, setResponse] = useState<{error: boolean; key: string; summary: SecureIndiaSummary | null}>({error: false, key: "", summary: null});
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
+  const [geometry, setGeometry] = useState<IndiaGeometry | null>(null);
   const mapRef = useRef<HTMLDivElement | null>(null);
+
+  // Boundary geometry never changes with filters, so it is fetched once as a
+  // cacheable static asset rather than travelling in every summary response.
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(geometryAsset, {signal: controller.signal})
+      .then((response) => (response.ok ? response.json() : null))
+      .then((value: IndiaGeometry | null) => {
+        if (!controller.signal.aborted && value) setGeometry(value);
+      })
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, []);
 
   const queryString = useMemo(
     () => new URLSearchParams({city: filters.city, crime_type: filters.crimeType, period: filters.period, state: filters.state, view: filters.view}).toString(),
@@ -252,8 +271,21 @@ export function SecureIndiaDashboard() {
 
                 <div className="secure-india-map-layout">
                   <div className="secure-india-map-frame" ref={mapRef}>
-                    <svg aria-label={t("mapAria")} className="secure-india-map" role="img" viewBox="0 0 100 105">
-                      <path className="secure-india-map-outline" d={indiaOutline} />
+                    <svg
+                      aria-label={t("mapAria")}
+                      className="secure-india-map"
+                      role="img"
+                      viewBox={`0 0 ${geometry?.view_box.width ?? 100} ${geometry?.view_box.height ?? 111.56}`}
+                    >
+                      <g className="secure-india-states">
+                        {(geometry?.states ?? []).map((state) => (
+                          <path
+                            className={"secure-india-state" + (selected?.state === state.name ? " is-selected" : "")}
+                            d={state.d}
+                            key={state.name}
+                          />
+                        ))}
+                      </g>
                       {regions.map((region, index) => {
                         // Radius is proportional to the square root of the value so
                         // that circle AREA, not radius, encodes magnitude.

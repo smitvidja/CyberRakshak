@@ -1,3 +1,4 @@
+import json
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
@@ -171,13 +172,72 @@ def test_secure_india_projection_and_snapshot_are_valid() -> None:
         assert snapshot["projection"]["lon_min"] <= city["lon"] <= snapshot["projection"]["lon_max"]
         assert snapshot["projection"]["lat_min"] <= city["lat"] <= snapshot["projection"]["lat_max"]
 
+    projection = snapshot["projection"]
     summary = SecureIndiaService.summary()
-    assert all(0 <= region.x <= 100 and 0 <= region.y <= 100 for region in summary.map_regions)
+    assert all(0 <= region.x <= projection["view_box_width"] for region in summary.map_regions)
+    assert all(0 <= region.y <= projection["view_box_height"] for region in summary.map_regions)
     kolkata = next(region for region in summary.map_regions if region.id == "kolkata")
     kochi = next(region for region in summary.map_regions if region.id == "kochi")
     mumbai = next(region for region in summary.map_regions if region.id == "mumbai")
     assert kolkata.x > mumbai.x, "eastern city must project to the right of a western one"
     assert kochi.y > mumbai.y, "southern city must project below a northern one"
+
+
+def _svg_path_to_rings(path: str) -> list[list[tuple[float, float]]]:
+    """Parse the M x y L x y ... Z subpaths emitted by the geometry build step."""
+    rings: list[list[tuple[float, float]]] = []
+    for chunk in path.split("M"):
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        numbers = [float(value) for value in chunk.replace("Z", "").replace("L", " ").split()]
+        points = list(zip(numbers[0::2], numbers[1::2]))
+        if len(points) >= 3:
+            rings.append(points)
+    return rings
+
+
+def _point_in_rings(x: float, y: float, rings: list[list[tuple[float, float]]]) -> bool:
+    """Even-odd ray casting, so holes inside a state correctly read as outside."""
+    inside = False
+    for ring in rings:
+        for index in range(len(ring)):
+            x1, y1 = ring[index]
+            x2, y2 = ring[(index + 1) % len(ring)]
+            if (y1 > y) != (y2 > y):
+                crossing = x1 + (y - y1) / (y2 - y1) * (x2 - x1)
+                if crossing > x:
+                    inside = not inside
+    return inside
+
+
+def test_every_city_projects_inside_its_declared_state() -> None:
+    """The map must never place a city in the wrong state.
+
+    Guards the exact defect that a national-outline containment check misses: an
+    outline can be wrong in shape while still swallowing every marker.
+    """
+    from app.services.secure_india_service import DATA_PATH, SecureIndiaService
+
+    asset_path = DATA_PATH.resolve().parents[4] / "frontend" / "public" / "data" / "india-states-v1.json"
+    assert asset_path.exists(), f"published geometry asset missing at {asset_path}"
+    geometry = json.loads(asset_path.read_text(encoding="utf-8"))
+
+    snapshot = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    projection = snapshot["projection"]
+    # The asset and the API must share one frame, or every marker is offset.
+    assert geometry["view_box"]["width"] == projection["view_box_width"]
+    assert geometry["view_box"]["height"] == projection["view_box_height"]
+
+    rings_by_state = {state["name"]: _svg_path_to_rings(state["d"]) for state in geometry["states"]}
+    misplaced = []
+    for region in SecureIndiaService.summary().map_regions:
+        rings = rings_by_state.get(region.state)
+        assert rings, f"no published geometry for {region.state}"
+        if not _point_in_rings(region.x, region.y, rings):
+            elsewhere = [name for name, other in rings_by_state.items() if _point_in_rings(region.x, region.y, other)]
+            misplaced.append(f"{region.city} declared {region.state} but plotted in {elsewhere or 'no state'}")
+    assert not misplaced, "; ".join(misplaced)
 
 
 def test_secure_india_per_lakh_uses_the_declared_denominator() -> None:
