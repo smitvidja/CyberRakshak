@@ -65,6 +65,46 @@ flowchart TD
 - Require user review/edit/confirmation before final profile writes.
 - Do not use parser output to make automated approval decisions in the MVP.
 
+## Public Suspect Search
+
+Suspect search is the only public endpoint that reads citizen-submitted report data, so it is
+bounded on every axis:
+
+- **Transport.** The identifier travels in a `POST` body, never in a query string, so it
+  cannot leak through URLs, browser history, referrers, bookmarks or access logs.
+- **Eligibility.** Only `VERIFIED` reports contribute to a match. `SUBMITTED`,
+  `UNDER_REVIEW` and `REJECTED` records are invisible to the public, so an unreviewed
+  allegation can never surface as a public accusation. A newly filed report therefore does
+  not change public results until an admin reviews it.
+- **Exactness.** Matching is exact on the server-normalized value. Wildcard, prefix, partial,
+  fuzzy and batch queries are not supported, which removes the endpoint's value as an
+  identifier-enumeration oracle.
+- **Response shape.** Only identifier type, masked identifier, match state, a count capped at
+  5 and a disclosure code are returned. Reporter identity, descriptions, evidence, complaint
+  ids, storage keys, admin notes and row-level timestamps are never included.
+- **Rate limiting.** `PublicSearchRateLimiter` throttles per client key (hashed before it is
+  used as a bucket key) and returns a controlled `429 RATE_LIMITED`.
+- **Language.** A no-match result states only that no eligible reviewed signal exists in this
+  prototype dataset; it must never state that an identifier is safe. A match states that the
+  identifier appeared in reviewed reports and must never assert guilt or criminality.
+- **Corrections.** The false-positive pathway persists a reviewable record that stores an HMAC
+  fingerprint instead of the raw identifier and holds no link to the original reporter, so a
+  correction request cannot be used to unmask or contact whoever filed the report.
+
+## Secure India Data
+
+Secure India is served from a versioned synthetic snapshot, never from citizen data:
+
+- No `complaints`, `complaint_locations`, reporter profile or evidence row is ever read into
+  the public map, regardless of what exists locally.
+- Every response carries `source_type: SYNTHETIC` plus source label, version, period and
+  methodology, and the UI labels the figures as illustrative at page, map and card level.
+- Map coordinates are projected from published city locations. No complaint-level or
+  person-level coordinate is published, so a filter selection can never be read as consent to
+  publish a citizen's report location.
+- Changing `source_type` away from `SYNTHETIC` requires a documented license, attribution,
+  jurisdiction, freshness, transformation, minimum-cell-size and privacy contract first.
+
 ## Logging And Audit
 
 Log:

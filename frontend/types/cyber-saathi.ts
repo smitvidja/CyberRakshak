@@ -127,6 +127,7 @@ export type SaathiHandoff = {
   reporting_mode: ReportingMode;
   route: string;
   implementation_status: "available" | "preview" | "planned";
+  identifier: {identifier_type: string; identifier_value: string} | null;
   prefill: {
     description: string | null;
     title: string | null;

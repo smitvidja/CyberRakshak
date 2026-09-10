@@ -1,9 +1,10 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models import ReportedSuspect
+from app.models import ReportedSuspect, SuspectCorrectionRequest
+from app.models.enums import ReportedSuspectIdentifierType, ReportedSuspectStatus
 
 
 class ReportedSuspectRepository:
@@ -24,3 +25,21 @@ class ReportedSuspectRepository:
             .order_by(ReportedSuspect.created_at.desc())
         )
         return list(session.scalars(statement))
+
+    @staticmethod
+    def count_eligible_exact_matches(
+        session: Session,
+        identifier_type: ReportedSuspectIdentifierType,
+        normalized_identifier: str,
+    ) -> int:
+        statement = select(func.count(ReportedSuspect.id)).where(
+            ReportedSuspect.identifier_type == identifier_type,
+            ReportedSuspect.normalized_identifier == normalized_identifier,
+            ReportedSuspect.status == ReportedSuspectStatus.VERIFIED,
+        )
+        return int(session.scalar(statement) or 0)
+
+    @staticmethod
+    def add_correction(session: Session, correction: SuspectCorrectionRequest) -> SuspectCorrectionRequest:
+        session.add(correction)
+        return correction

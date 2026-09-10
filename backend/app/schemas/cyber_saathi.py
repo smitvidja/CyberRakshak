@@ -402,11 +402,17 @@ class ComplaintPrefill(BaseModel):
     attachment_ids: list[UUID] = Field(default_factory=list, max_length=10)
 
 
+class SuspectIdentifierHandoff(BaseModel):
+    identifier_type: Literal["PHONE", "EMAIL", "UPI", "BANK_ACCOUNT", "WEBSITE", "SOCIAL_MEDIA", "OTHER"]
+    identifier_value: str = Field(min_length=2, max_length=500)
+
+
 class WorkflowHandoff(BaseModel):
     target: HandoffTarget
     reporting_mode: ReportingMode
     route: str = Field(pattern=r"^/", max_length=300)
     implementation_status: HandoffImplementationStatus = HandoffImplementationStatus.AVAILABLE
+    identifier: SuspectIdentifierHandoff | None = None
     prefill: ComplaintPrefill = Field(default_factory=ComplaintPrefill)
 
     @model_validator(mode="after")

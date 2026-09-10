@@ -4,7 +4,7 @@ PostgreSQL is the database source of truth. Use UUID primary keys, `TIMESTAMPTZ`
 
 ## Core Tables
 
-The MVP schema contains 22 tables:
+The MVP schema contains 23 tables:
 
 1. `users`
 2. `citizen_profiles`
@@ -28,6 +28,7 @@ The MVP schema contains 22 tables:
 20. `audit_logs`
 21. `mock_identity_profiles`
 22. `cyber_saathi_conversations` (consent-gated, redacted, 30-day conversation recovery and quality-review metadata; never part of the authoritative RAG corpus)
+23. `suspect_correction_requests` (false-positive/correction reports raised against a suspect-search result; stores no raw identifier and no link to the original reporter)
 
 ## Key Enums
 
@@ -36,6 +37,7 @@ The MVP schema contains 22 tables:
 - Complaint priority: `LOW`, `NORMAL`, `HIGH`, `CRITICAL`
 - Reported suspect identifier type: `PHONE`, `EMAIL`, `UPI`, `BANK_ACCOUNT`, `WEBSITE`, `SOCIAL_MEDIA`, `OTHER`
 - Reported suspect status: `SUBMITTED`, `UNDER_REVIEW`, `VERIFIED`, `REJECTED`
+- Suspect correction status: `SUBMITTED`, `UNDER_REVIEW`, `RESOLVED`, `REJECTED`
 - Cyber Warrior verification: `PENDING`, `VERIFIED`, `REJECTED`
 - Warrior application status: `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED`, `REJECTED`
 - Resume parsing status: `PENDING`, `PROCESSING`, `COMPLETED`, `FAILED`
@@ -128,12 +130,31 @@ Minimum indexes:
 - `complaint_status_history.complaint_id`
 - `complaint_suspects.complaint_id`
 - `reported_suspects.identifier_type`, `reported_suspects.identifier_value`, `reported_suspects.status`
+- `reported_suspects(identifier_type, normalized_identifier, status)` composite, serving the exact-match public search
+- `suspect_correction_requests(identifier_type, identifier_fingerprint)`, `suspect_correction_requests.status`
 - `evidence.complaint_id`, `evidence.suspect_report_id`, `evidence.warrior_report_id`
 - `cyber_warrior_profiles.user_id`, `cyber_warrior_profiles.verification_status`
 - `warrior_applications.application_number`, `warrior_applications.status`, `warrior_applications.warrior_id`
 - `warrior_reports.warrior_id`, `warrior_reports.status`
 - `notifications.user_id`, `notifications.is_read`
 - `audit_logs.user_id`, `audit_logs.entity_type`, `audit_logs.entity_id`, `audit_logs.created_at`
+
+## Suspect Search Columns
+
+`reported_suspects.normalized_identifier` (NOT NULL) stores the server-canonicalized form of
+`identifier_value` produced by the single normalization helper in
+`reported_suspect_service`. Public exact-match search compares against this column only, so
+the citizen's original input is preserved for display while lookups stay canonical. The
+backfill in migration `a1b2c3d4e5f6` seeds existing rows with `lower(trim(identifier_value))`.
+
+`suspect_correction_requests` deliberately stores no raw identifier:
+
+- `identifier_fingerprint` is an HMAC-SHA256 of `"{type}:{normalized}"` keyed with the
+  application secret, so equivalent reports group together without the value being
+  recoverable from the table;
+- `masked_identifier` is a display-only partial form;
+- there is no foreign key to `reported_suspects` or to any user, so a correction request can
+  never be used to identify or contact the original reporter.
 
 ## Delete Strategy
 

@@ -112,6 +112,27 @@ flowchart TD
   G --> H[Profile, skills, education, experience, certifications]
 ```
 
+## Public Aggregate Flow
+
+```mermaid
+flowchart TD
+  A[Citizen opens Secure India] --> B[Query string holds filter state]
+  B --> C[GET /secure-india/summary]
+  C --> D[SecureIndiaService]
+  D --> E[Versioned synthetic snapshot file]
+  E --> F[Filter, aggregate, project, bucket]
+  F --> G[One typed response drives every surface]
+```
+
+Secure India is a read-only path over a file-backed synthetic snapshot. It has no repository
+and no database access, which is what structurally guarantees that no complaint, reporter,
+location or evidence row can reach the public map.
+
+Public suspect search is the one public path that does touch citizen data. It enters through
+the normal route -> service -> repository chain, but the repository only ever returns a count
+of `VERIFIED` rows matching an exact normalized identifier, so no row-level data crosses the
+service boundary in the first place.
+
 ## Error Flow
 
 ```mermaid

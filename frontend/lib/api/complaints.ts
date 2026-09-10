@@ -24,7 +24,9 @@ export const evidenceApi = {
 };
 
 export const suspectsApi = {
+  createCorrection: (payload: ApiRecord, options?: ApiRequestOptions) => apiClient.post<ApiRecord>("/suspects/corrections", payload, options),
   createReport: (payload: ApiRecord, options?: ApiRequestOptions) => apiClient.post<ApiRecord>("/suspects/reports", payload, options),
   getById: (id: string, options?: ApiRequestOptions) => apiClient.get<ApiRecord>("/suspects/reports/" + id, options),
-  listMine: (options?: ApiRequestOptions) => apiClient.get<ApiRecord[]>("/suspects/reports/my", options)
+  listMine: (options?: ApiRequestOptions) => apiClient.get<ApiRecord[]>("/suspects/reports/my", options),
+  search: (payload: ApiRecord, options?: ApiRequestOptions) => apiClient.post<ApiRecord>("/suspects/search", payload, options)
 };

@@ -9,10 +9,10 @@ from app.core.errors import success_response
 from app.core.security import require_roles
 from app.models import User
 from app.models.enums import UserRole
-from app.schemas.admin import AuditLogResponse, ComplaintStatusUpdate, ReportedSuspectStatusUpdate, WarriorApplicationStatusUpdate
+from app.schemas.admin import AuditLogResponse, ComplaintStatusUpdate, ReportedSuspectStatusUpdate, SuspectCorrectionStatusUpdate, WarriorApplicationStatusUpdate
 from app.schemas.common import ErrorResponse, SuccessResponse
 from app.schemas.complaint import ComplaintResponse, ComplaintSummaryResponse
-from app.schemas.suspect import ReportedSuspectResponse
+from app.schemas.suspect import ReportedSuspectResponse, SuspectCorrectionResponse
 from app.schemas.warrior import WarriorApplicationResponse
 from app.services.admin_service import AdminService
 
@@ -38,6 +38,16 @@ def list_suspect_reports(session: Annotated[Session, Depends(get_db_session)], c
 @router.patch("/suspect-reports/{report_id}/status", response_model=SuccessResponse[ReportedSuspectResponse], responses={403: {"model": ErrorResponse}, 404: {"model": ErrorResponse}})
 def update_suspect_status(report_id: UUID, payload: ReportedSuspectStatusUpdate, session: Annotated[Session, Depends(get_db_session)], current_user: AdminUser) -> dict[str, object]:
     return success_response(ReportedSuspectResponse.model_validate(AdminService.update_reported_suspect_status(session, report_id, payload, current_user)), message="Reported suspect status updated.")
+
+
+@router.get("/suspect-corrections", response_model=SuccessResponse[list[SuspectCorrectionResponse]], responses={403: {"model": ErrorResponse}})
+def list_suspect_corrections(session: Annotated[Session, Depends(get_db_session)], current_user: AdminUser) -> dict[str, object]:
+    return success_response([SuspectCorrectionResponse.model_validate(item) for item in AdminService.list_suspect_corrections(session)])
+
+
+@router.patch("/suspect-corrections/{correction_id}/status", response_model=SuccessResponse[SuspectCorrectionResponse], responses={403: {"model": ErrorResponse}, 404: {"model": ErrorResponse}})
+def update_suspect_correction_status(correction_id: UUID, payload: SuspectCorrectionStatusUpdate, session: Annotated[Session, Depends(get_db_session)], current_user: AdminUser) -> dict[str, object]:
+    return success_response(SuspectCorrectionResponse.model_validate(AdminService.update_suspect_correction_status(session, correction_id, payload, current_user)), message="Correction request status updated.")
 
 
 @router.get("/warrior-applications", response_model=SuccessResponse[list[WarriorApplicationResponse]], responses={403: {"model": ErrorResponse}})

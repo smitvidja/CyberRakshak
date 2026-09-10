@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.core.errors import APIError
-from app.models import ComplaintStatusHistory, User
+from app.models import ComplaintStatusHistory, SuspectCorrectionRequest, User
 from app.models.enums import (
     ComplaintStatus,
     WarriorApplicationStatus,
@@ -16,6 +16,7 @@ from app.repositories.warrior_repository import WarriorRepository
 from app.schemas.admin import (
     ComplaintStatusUpdate,
     ReportedSuspectStatusUpdate,
+    SuspectCorrectionStatusUpdate,
     WarriorApplicationStatusUpdate,
 )
 from app.services.audit_service import AuditService
@@ -57,6 +58,22 @@ class AdminService:
         session.commit()
         session.refresh(report)
         return report
+
+    @staticmethod
+    def list_suspect_corrections(session: Session):
+        return AdminRepository.list_suspect_corrections(session)
+
+    @staticmethod
+    def update_suspect_correction_status(session: Session, correction_id: UUID, payload: SuspectCorrectionStatusUpdate, admin: User):
+        correction = session.get(SuspectCorrectionRequest, correction_id)
+        if correction is None:
+            raise APIError(status_code=404, code="NOT_FOUND", message="Correction request not found.")
+        correction.status = payload.status
+        correction.resolution_note = payload.resolution_note
+        AuditService.record(session, action="suspect_correction.status_updated", entity_type="suspect_correction", entity_id=correction.id, user_id=admin.id, details={"status": payload.status.value})
+        session.commit()
+        session.refresh(correction)
+        return correction
 
     @staticmethod
     def list_applications(session: Session):

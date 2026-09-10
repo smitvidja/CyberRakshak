@@ -52,7 +52,7 @@ export function ProductShell({children}: ProductShellProps) {
   const reportHref = homeHref + "/report-crime";
   const verifyHref = reportHref + "/verify";
   const citizenDashboardEntryHref = citizenSignedIn ? dashboardHref : verifyHref;
-  const navItems = [["home", homeHref], ["saathi", homeHref + "/cyber-saathi"], ["citizenDashboard", citizenDashboardEntryHref], ["report", reportHref], ["track", homeHref + "/complaints/track"], ["suspects", homeHref + "/suspects/report"], ["warriors", homeHref + "/cyber-warrior"], ["learn", homeHref + "/resources"], ["contact", homeHref + "/contact"]] as const;
+  const navItems = [["home", homeHref], ["saathi", homeHref + "/cyber-saathi"], ["citizenDashboard", citizenDashboardEntryHref], ["report", reportHref], ["track", homeHref + "/complaints/track"], ["suspects", homeHref + "/suspects/search"], ["warriors", homeHref + "/cyber-warrior"], ["learn", homeHref + "/resources"], ["contact", homeHref + "/contact"]] as const;
   const warriorHref = homeHref + "/cyber-warrior";
   const warriorDashboardHref = warriorHref + "/dashboard";
   const breadcrumbItems: Array<{href?: string; label: string}> = [{href: homeHref, label: t("nav.home")}];

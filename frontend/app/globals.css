@@ -75,43 +75,6 @@ button, input, select, textarea { font: inherit; }
 .upcoming-features-badge { display: inline-block; border-radius: 999px; background: #f0a94e; padding: 6px 14px; color: #4a2c00; font-size: 12px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
 .upcoming-feature-tile { text-decoration: none; transition: background-color .15s; }
 
-/* Secure India - an "upcoming feature" teaser, deliberately separate from
-   /resources. Large, high-contrast "upcoming" badge per the explicit ask: make
-   it unmistakable this is not live yet, not a subtle caption. */
-.secure-india-page { display: grid; gap: 22px; padding: 28px 0 44px; }
-.secure-india-hero { border-radius: 10px; background: linear-gradient(135deg, #073d87, #0a58c2); padding: 32px 28px; color: #fff; }
-.secure-india-badge { display: inline-block; border-radius: 999px; background: #ffb020; padding: 7px 16px; color: #3a2400; font-size: 13px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
-.secure-india-hero h1 { margin-top: 14px; font-size: 30px; font-weight: 800; }
-.secure-india-hero p { max-width: 62ch; margin-top: 8px; color: #dbe9ff; font-size: 15px; line-height: 1.6; }
-.secure-india-preview { border: 1px solid var(--border); border-radius: 10px; background: #fff; padding: 22px; }
-.secure-india-preview h2 { color: var(--navy); font-size: 17px; font-weight: 800; }
-.secure-india-preview-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
-.secure-india-preview-tile { border: 1px solid var(--border); border-radius: 8px; background: #f7fafd; padding: 16px; }
-.secure-india-preview-tile > span { display: grid; height: 40px; width: 40px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
-.secure-india-preview-tile strong { display: block; margin-top: 10px; color: var(--navy); font-size: 14px; }
-.secure-india-preview-tile small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
-.secure-india-mock-note { margin-top: 16px; border-left: 3px solid #ffb020; border-radius: 0 7px 7px 0; background: #fff8ea; padding: 12px 14px; color: #6b4a00; font-size: 12.5px; line-height: 1.55; }
-.secure-india-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-radius: 10px; background: var(--blue-soft); padding: 18px 22px; }
-.secure-india-cta strong { display: block; color: var(--navy); font-size: 15px; font-weight: 800; }
-.secure-india-cta span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
-.secure-india-cta a { flex-shrink: 0; border-radius: 7px; background: var(--blue); padding: 11px 20px; color: #fff; font-size: 14px; font-weight: 800; text-decoration: none; }
-.secure-india-cta a:hover, .secure-india-cta a:focus-visible { background: var(--navy); }
-.secure-india-helpline { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
-.secure-india-screenshot { border: 1px solid var(--border); border-radius: 10px; background: #fff; padding: 22px; }
-.secure-india-screenshot h2 { color: var(--navy); font-size: 17px; font-weight: 800; }
-.secure-india-screenshot-copy { max-width: 68ch; margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.6; }
-/* The mockup is a full-page screenshot (tall, 900x2093) - framed like a browser
-   window rather than shown bare, so it unmistakably reads as "a preview of a
-   screen" and not as live content rendered on this page. */
-.secure-india-screenshot-frame { position: relative; margin: 16px auto 0; overflow: hidden; border: 1px solid #d7e2ee; border-radius: 10px; background: #eef3f9; max-width: 620px; }
-.secure-india-screenshot-frame::before { content: ""; position: absolute; inset: 0 0 auto 0; z-index: 1; height: 34px; border-bottom: 1px solid #d7e2ee; background: #f4f7fb; }
-.secure-india-screenshot-frame::after { content: "\25CF \25CF \25CF"; position: absolute; top: 10px; left: 14px; z-index: 2; color: #b9c6d6; font-size: 11px; letter-spacing: 3px; }
-.secure-india-screenshot-chip { position: absolute; top: 44px; right: 14px; z-index: 2; border-radius: 999px; background: #ffb020; padding: 5px 12px; color: #3a2400; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; box-shadow: 0 2px 8px rgb(0 0 0 / .15); }
-.secure-india-screenshot-image { display: block; width: 100%; height: auto; margin-top: 34px; }
-@media (max-width: 700px) {
-  .secure-india-cta { flex-direction: column; align-items: flex-start; }
-  .secure-india-cta a { width: 100%; text-align: center; }
-}
 
 /* Contact / support page */
 .contact-page { padding: 28px 0 44px; display: grid; gap: 26px; }
@@ -992,5 +955,258 @@ button, input, select, textarea { font: inherit; }
   .warrior-report-list-row.is-draft { grid-template-columns: 32px 1fr; grid-template-areas: "icon title" "icon status" "actions actions"; row-gap: 6px; }
   .warrior-report-row-actions { grid-column: 1 / -1; grid-area: actions; flex-wrap: wrap; }
   .warrior-leaderboard-pagination { flex-direction: column; align-items: flex-start; }
+}
+
+/* Session 10.1: Secure India is a working synthetic-data explorer. The dense,
+   institutional composition follows the supplied portal reference while the
+   explicit source treatment prevents demonstration figures being mistaken for
+   government or complaint data. */
+.secure-india-page { display: block; padding: 0 0 48px; background: #f3f6fa; }
+.secure-india-live-hero { position: relative; overflow: hidden; background: #0b3768; color: #fff; }
+.secure-india-live-hero::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .12; background-image: linear-gradient(rgb(255 255 255 / .16) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / .16) 1px, transparent 1px); background-size: 38px 38px; mask-image: linear-gradient(90deg, transparent 5%, #000 70%); }
+.secure-india-live-hero > div { position: relative; z-index: 1; padding-top: 30px; padding-bottom: 0; }
+.secure-india-kicker { display: flex; align-items: center; gap: 7px; color: #9fc6ef !important; font-size: 11px !important; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+.secure-india-live-hero h1 { margin-top: 7px; max-width: 760px; font-size: clamp(29px, 4vw, 46px); font-weight: 850; line-height: 1.05; letter-spacing: -.035em; text-wrap: balance; }
+.secure-india-live-hero > div > p:not(.secure-india-kicker) { max-width: 68ch; margin-top: 12px; color: #d8e8f8; font-size: 14px; line-height: 1.65; }
+.secure-india-source-flag { display: inline-flex; margin-top: 18px; align-items: center; gap: 9px; border-left: 3px solid #f2a12b; background: rgb(255 255 255 / .08); padding: 9px 13px; color: #eaf4ff; font-size: 11px; line-height: 1.45; }
+.secure-india-source-flag strong { display: block; color: #ffc463; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+.secure-india-metrics { display: grid; margin-top: 24px; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid rgb(255 255 255 / .16); border-bottom: 0; background: rgb(255 255 255 / .06); }
+.secure-india-metrics > div { display: flex; min-height: 72px; flex-direction: column-reverse; justify-content: center; border-right: 1px solid rgb(255 255 255 / .16); padding: 12px 18px; }
+.secure-india-metrics > div:last-child { border-right: 0; }
+.secure-india-metrics dt { margin-top: 3px; color: #b8d2ea; font-size: 10.5px; }
+.secure-india-metrics dd { color: #fff; font-size: 23px; font-weight: 850; font-variant-numeric: tabular-nums; line-height: 1; }
+.secure-india-content { display: grid; gap: 18px; padding-top: 18px; }
+.secure-india-filter-panel { display: grid; grid-template-columns: minmax(120px, 1.05fr) minmax(112px, 1fr) minmax(112px, 1fr) auto auto auto; gap: 12px; align-items: end; border: 1px solid #dae2eb; background: #fff; padding: 15px 17px; box-shadow: 0 8px 24px rgb(11 55 104 / .05); }
+.secure-india-filter-panel label, .secure-india-filter-panel legend { display: block; color: #536477; font-size: 10px; font-weight: 750; }
+.secure-india-filter-panel select { display: block; width: 100%; height: 36px; margin-top: 5px; border: 1px solid #cdd8e4; border-radius: 3px; background: #fff; padding: 0 30px 0 9px; color: #17324f; font-size: 12px; }
+.secure-india-filter-panel fieldset { min-width: 0; }
+.secure-india-segmented { display: flex; height: 36px; margin-top: 5px; border: 1px solid #cdd8e4; border-radius: 3px; overflow: hidden; }
+.secure-india-segmented button { min-width: 38px; border-right: 1px solid #cdd8e4; background: #fff; padding: 0 10px; color: #536477; font-size: 11px; font-weight: 800; transition: background .18s, color .18s; }
+.secure-india-segmented button:last-child { border-right: 0; }
+.secure-india-segmented button[aria-pressed="true"] { background: #0b4d91; color: #fff; }
+.secure-india-segmented button:focus-visible, .secure-india-filter-panel select:focus-visible { outline: 3px solid rgb(11 79 179 / .25); outline-offset: 2px; }
+.secure-india-data-note { display: flex; align-items: center; gap: 10px; border-left: 3px solid #f2a12b; background: #fff8e9; padding: 10px 13px; color: #644817; font-size: 11px; }
+.secure-india-data-note strong { flex: 0 0 auto; color: #8a5800; text-transform: uppercase; letter-spacing: .05em; }
+.secure-india-main-grid { display: grid; grid-template-columns: minmax(0, 1.72fr) minmax(300px, .88fr); gap: 18px; align-items: start; }
+.secure-india-map-card, .secure-india-ranking, .secure-india-hot-section, .secure-india-methodology { border: 1px solid #dae2eb; background: #fff; }
+.secure-india-map-card, .secure-india-ranking, .secure-india-hot-section { padding: 18px; }
+.secure-india-section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; color: #0b4d91; }
+.secure-india-section-head p { color: #c76515; font-size: 9px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.secure-india-section-head h2 { margin-top: 2px; color: #102e4d; font-size: 16px; font-weight: 850; letter-spacing: -.01em; }
+.secure-india-section-head > span { color: #63768a; font-size: 10px; }
+.secure-india-map-layout { display: grid; margin-top: 12px; grid-template-columns: minmax(0, 1fr) 150px; gap: 12px; min-height: 430px; background-color: #f5f8f3; background-image: linear-gradient(#dfe8de 1px, transparent 1px), linear-gradient(90deg, #dfe8de 1px, transparent 1px); background-size: 28px 28px; padding: 12px; }
+.secure-india-map { width: 100%; height: 420px; filter: drop-shadow(0 7px 11px rgb(26 48 40 / .13)); }
+.secure-india-map-outline { fill: #f8e5d7; stroke: #5a665e; stroke-width: .8; }
+.secure-india-map g { cursor: pointer; outline: none; }
+.secure-india-map g circle { stroke: #fff; stroke-width: .8; transition: r .18s, filter .18s; }
+.secure-india-map g text { fill: #fff; font-size: 3px; font-weight: 850; text-anchor: middle; pointer-events: none; }
+.secure-india-map g:hover circle, .secure-india-map g:focus-visible circle, .secure-india-map g.is-active circle { filter: drop-shadow(0 0 2px #6f0f0f); stroke: #791a18; stroke-width: 1.2; }
+.secure-india-map g:focus-visible circle { stroke: #072f61; stroke-width: 2; }
+.secure-india-map-detail { align-self: center; border-top: 3px solid #c83a2e; background: #fff; padding: 16px 13px; box-shadow: 0 10px 26px rgb(20 48 69 / .12); }
+.secure-india-map-detail > span { color: #6a7a8b; font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.secure-india-map-detail h3 { margin-top: 5px; color: #102e4d; font-size: 17px; font-weight: 850; }
+.secure-india-map-detail p { color: #6a7a8b; font-size: 11px; }
+.secure-india-map-detail > strong { display: block; margin-top: 14px; color: #102e4d; font-size: 28px; font-weight: 850; font-variant-numeric: tabular-nums; }
+.secure-india-map-detail > small { display: block; color: #6a7a8b; font-size: 9px; }
+.secure-india-map-detail em { display: flex; margin-top: 12px; align-items: center; gap: 4px; font-size: 10px; font-style: normal; font-weight: 800; }
+.secure-india-map-detail em.up, .secure-india-ranking .up { color: #a32722; }
+.secure-india-map-detail em.down, .secure-india-ranking .down { color: #19704b; }
+.secure-india-map-disclaimer { margin-top: 10px; color: #63768a; font-size: 10px; line-height: 1.5; }
+.secure-india-table-wrap { margin-top: 12px; overflow-x: auto; }
+.secure-india-ranking table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.secure-india-ranking th { border-bottom: 2px solid #d9e2eb; padding: 7px 5px; color: #64778c; font-size: 9px; text-align: left; text-transform: uppercase; }
+.secure-india-ranking td { border-bottom: 1px solid #e6ebf1; padding: 8px 5px; color: #294057; font-variant-numeric: tabular-nums; }
+.secure-india-ranking tr.is-active { background: #eef5fd; }
+.secure-india-ranking td button { color: #102e4d; text-align: left; }
+.secure-india-ranking td button:hover strong { color: #0b5db2; text-decoration: underline; }
+.secure-india-ranking td strong, .secure-india-ranking td small { display: block; }
+.secure-india-ranking td small { margin-top: 1px; color: #7a8998; font-size: 9px; }
+.secure-india-hot-section { min-width: 0; }
+.secure-india-zone-grid, .secure-india-crime-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.secure-india-zone-grid > button, .secure-india-crime-grid > article { position: relative; min-width: 0; border: 1px solid #dfe6ed; border-right: 0; background: #fff; padding: 15px 13px; text-align: left; }
+.secure-india-zone-grid > button:last-child, .secure-india-crime-grid > article:last-child { border-right: 1px solid #dfe6ed; }
+.secure-india-zone-grid > button { transition: background .18s, transform .18s; }
+.secure-india-zone-grid > button:hover, .secure-india-zone-grid > button:focus-visible { z-index: 1; background: #f6faff; transform: translateY(-2px); outline: 2px solid #0b5db2; outline-offset: -2px; }
+.secure-india-zone-grid > button > span, .secure-india-crime-grid > article > span { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 4px; background: #c96c17; color: #fff; font-size: 10px; font-weight: 850; }
+.secure-india-zone-grid strong, .secure-india-zone-grid small, .secure-india-zone-grid b, .secure-india-zone-grid em { display: block; }
+.secure-india-zone-grid strong { margin-top: 10px; color: #17324f; font-size: 12px; }
+.secure-india-zone-grid small { color: #748496; font-size: 9px; }
+.secure-india-zone-grid b { margin-top: 8px; color: #0b4d91; font-size: 19px; font-variant-numeric: tabular-nums; }
+.secure-india-zone-grid em { display: flex; margin-top: 10px; align-items: center; justify-content: space-between; color: #b35e10; font-size: 9px; font-style: normal; font-weight: 800; }
+.secure-india-crime-grid > article > span { background: #0b4d91; }
+.secure-india-crime-grid h3 { margin-top: 10px; color: #17324f; font-size: 12px; font-weight: 800; }
+.secure-india-crime-grid strong { display: inline-block; margin-top: 9px; color: #0b4d91; font-size: 20px; font-variant-numeric: tabular-nums; }
+.secure-india-crime-grid small { display: block; min-height: 28px; color: #748496; font-size: 9px; line-height: 1.4; }
+.secure-india-crime-grid a { display: flex; margin-top: 10px; align-items: center; justify-content: space-between; border-top: 3px solid #dce5ed; padding-top: 8px; color: #b35e10; font-size: 9px; font-weight: 800; text-decoration: none; }
+.secure-india-crime-grid a:hover, .secure-india-crime-grid a:focus-visible { color: #0b4d91; border-color: #0b4d91; }
+.secure-india-suspect-band, .secure-india-cta, .secure-india-learning { display: flex; align-items: center; justify-content: space-between; gap: 18px; border-radius: 4px; padding: 16px 18px; }
+.secure-india-suspect-band { background: #e7f1fb; border: 1px solid #c6dbef; color: #0b4d91; }
+.secure-india-suspect-band > div, .secure-india-learning > div { display: flex; align-items: center; gap: 12px; }
+.secure-india-suspect-band strong, .secure-india-suspect-band small, .secure-india-learning strong, .secure-india-learning small { display: block; }
+.secure-india-suspect-band strong, .secure-india-learning strong { color: #102e4d; font-size: 13px; }
+.secure-india-suspect-band small, .secure-india-learning small { margin-top: 2px; color: #586d83; font-size: 10px; }
+.secure-india-suspect-band > a, .secure-india-cta > a, .secure-india-learning > a { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; border-radius: 3px; padding: 9px 14px; font-size: 11px; font-weight: 850; text-decoration: none; transition: background .18s, transform .18s; }
+.secure-india-suspect-band > a { background: #0b4d91; color: #fff; }
+.secure-india-cta { background: #0b3768; color: #fff; }
+.secure-india-cta strong { color: #fff; }
+.secure-india-cta span { color: #c9dff3; }
+.secure-india-cta > a { background: #f28b22; color: #fff; }
+.secure-india-learning { border: 1px solid #dbe3eb; background: #edf3f7; }
+.secure-india-learning > a { border: 1px solid #66788b; color: #17324f; }
+.secure-india-suspect-band > a:hover, .secure-india-suspect-band > a:focus-visible, .secure-india-cta > a:hover, .secure-india-cta > a:focus-visible { background: #082a50; transform: translateY(-1px); }
+.secure-india-learning > a:hover, .secure-india-learning > a:focus-visible { background: #fff; }
+.secure-india-methodology { padding: 15px 18px; }
+.secure-india-methodology summary { cursor: pointer; color: #17324f; font-size: 12px; font-weight: 800; }
+.secure-india-methodology p { max-width: 90ch; margin-top: 10px; color: #586d83; font-size: 11px; line-height: 1.6; }
+.secure-india-methodology dl { display: flex; margin-top: 10px; gap: 24px; }
+.secure-india-methodology dt { color: #758599; font-size: 9px; text-transform: uppercase; }
+.secure-india-methodology dd { color: #17324f; font-size: 10px; font-weight: 700; }
+.secure-india-map-skeleton { min-height: 480px; border: 1px solid #dae2eb; background: linear-gradient(90deg, #edf2f6 25%, #f8fafc 50%, #edf2f6 75%); background-size: 200% 100%; animation: secure-india-loading 1.4s infinite; }
+.secure-india-state { display: flex; align-items: flex-start; gap: 12px; border-left: 4px solid #b42318; background: #fff0ee; padding: 15px; color: #8f2118; }
+.secure-india-state h2 { font-size: 14px; font-weight: 800; }.secure-india-state p { margin-top: 3px; font-size: 11px; }
+@keyframes secure-india-loading { to { background-position: -200% 0; } }
+
+/* --- Session 10.1: interactive map, derived legend and shared meters --- */
+.secure-india-subtitle { margin-top: 6px; color: #a9cdec !important; font-size: 13px !important; font-weight: 600; }
+.secure-india-helpline { display: flex; align-items: center; gap: 8px; padding-top: 2px; color: #63768a; font-size: 12px; }
+.secure-india-reset { display: inline-flex; height: 36px; align-self: end; align-items: center; gap: 6px; border: 1px solid #cdd8e4; border-radius: 3px; background: #fff; padding: 0 13px; color: #4a5c70; font-size: 11px; font-weight: 800; transition: background .18s, color .18s; }
+.secure-india-reset:hover:not(:disabled), .secure-india-reset:focus-visible { background: #eef4fb; color: #0b4d91; border-color: #9dbcdc; }
+.secure-india-reset:disabled { opacity: .45; cursor: not-allowed; }
+.secure-india-breadcrumb { display: flex; align-items: center; gap: 2px; }
+.secure-india-state button { margin-top: 9px; border: 1px solid #b42318; border-radius: 3px; background: #fff; padding: 6px 13px; color: #8f2118; font-size: 11px; font-weight: 800; }
+.secure-india-state button:hover, .secure-india-state button:focus-visible { background: #8f2118; color: #fff; }
+
+/* The frame keeps the SVG's own aspect ratio so tooltip percentages land on
+   exactly the coordinates the API projected. */
+.secure-india-map-layout { grid-template-columns: minmax(0, 1fr) 200px; min-height: 0; align-items: start; }
+.secure-india-map-frame { position: relative; min-width: 0; }
+.secure-india-map { width: 100%; height: auto; aspect-ratio: 100 / 105; }
+.secure-india-map-side { display: grid; gap: 10px; min-width: 0; }
+.secure-india-map-detail { align-self: stretch; }
+.secure-india-marker circle { stroke: #7c2d16; stroke-width: .35; transition: r .18s ease, stroke-width .18s ease; }
+.secure-india-marker text { fill: #401306; font-size: 2.4px; font-weight: 850; text-anchor: middle; pointer-events: none; }
+.secure-india-marker > circle:not(.secure-india-marker-ring) { fill-opacity: .93; }
+.secure-india-marker:hover circle, .secure-india-marker:focus-visible circle { stroke: #5c1a0c; stroke-width: 1; }
+.secure-india-marker:focus-visible { outline: none; }
+.secure-india-marker:focus-visible circle { stroke: #0b3768; stroke-width: 1.4; }
+.secure-india-marker-ring { fill: none; stroke: #0b3768; stroke-width: .7; stroke-dasharray: 2 1.6; }
+.secure-india-tooltip { position: absolute; z-index: 3; transform: translate(-50%, -132%); border: 1px solid #16324f; border-radius: 3px; background: #0b3768; padding: 6px 9px; color: #fff; pointer-events: none; white-space: nowrap; box-shadow: 0 6px 16px rgb(11 55 104 / .28); }
+.secure-india-tooltip strong { display: block; font-size: 11px; font-weight: 850; }
+.secure-india-tooltip span { display: block; color: #a9cdec; font-size: 9px; }
+.secure-india-tooltip b { display: inline-block; margin-top: 3px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.secure-india-tooltip small { color: #a9cdec; font-size: 9px; }
+
+.secure-india-legend { border: 1px solid #e2e8ef; background: #fbfcfd; padding: 10px 11px; }
+.secure-india-legend p { color: #55677b; font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.secure-india-legend ul { display: grid; margin-top: 7px; gap: 4px; }
+.secure-india-legend li { display: flex; align-items: center; gap: 7px; color: #3c4d60; font-size: 10px; font-variant-numeric: tabular-nums; }
+.secure-india-legend li span { width: 15px; height: 10px; flex: 0 0 auto; border: 1px solid rgb(0 0 0 / .18); }
+
+.secure-india-table-note { margin-top: 9px; color: #63768a; font-size: 10px; line-height: 1.5; }
+.secure-india-ranking caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.secure-india-rank { display: grid; width: 18px; height: 18px; place-items: center; border-radius: 3px; background: #eef2f6; color: #55677b; font-size: 9px; font-weight: 850; }
+.secure-india-rank.is-top { background: #c96c17; color: #fff; }
+.secure-india-empty { margin-top: 10px; border-left: 3px solid #9dbcdc; background: #f2f7fc; padding: 10px 12px; color: #33556f; font-size: 11px; }
+.secure-india-map-card.is-loading .secure-india-map-layout { opacity: .55; transition: opacity .18s; }
+
+/* Meters share the map's ramp. These selectors are deliberately more specific
+   than the numbered-badge rules above, which also match a direct <span>. */
+.secure-india-zone-grid > button > span.secure-india-meter,
+.secure-india-crime-grid > article > span.secure-india-meter { display: block; width: 100%; height: 4px; margin-top: 10px; border-radius: 2px; background: #e8edf2; color: inherit; font-size: 0; }
+.secure-india-meter > i { display: block; height: 100%; border-radius: 2px; }
+
+@media (max-width: 1000px) {
+  .secure-india-main-grid { grid-template-columns: minmax(0, 1fr); }
+  .secure-india-zone-grid, .secure-india-crime-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .secure-india-zone-grid > button, .secure-india-crime-grid > article { border-right: 1px solid #dfe6ed; }
+}
+@media (max-width: 760px) {
+  .secure-india-filter-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .secure-india-map-layout { grid-template-columns: minmax(0, 1fr); }
+  .secure-india-map { max-width: 420px; margin: 0 auto; }
+  .secure-india-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .secure-india-metrics > div:nth-child(2n) { border-right: 0; }
+  .secure-india-suspect-band, .secure-india-cta, .secure-india-learning { flex-direction: column; align-items: flex-start; }
+  .secure-india-suspect-band > a, .secure-india-cta > a, .secure-india-learning > a { width: 100%; justify-content: center; }
+}
+@media (max-width: 520px) {
+  .secure-india-zone-grid, .secure-india-crime-grid { grid-template-columns: minmax(0, 1fr); }
+  .secure-india-filter-panel { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .secure-india-map-skeleton { animation: none; }
+  .secure-india-marker circle, .secure-india-zone-grid > button, .secure-india-reset, .secure-india-suspect-band > a, .secure-india-cta > a { transition: none; }
+  .secure-india-zone-grid > button:hover, .secure-india-zone-grid > button:focus-visible, .secure-india-suspect-band > a:hover, .secure-india-cta > a:hover { transform: none; }
+}
+
+
+/* Exact identifier lookup: visually adjacent to Secure India, but kept as a
+   distinct workflow so its privacy and interpretation guidance cannot be missed. */
+.suspect-search-page { min-height: 65vh; background: #f3f6fa; padding-bottom: 48px; }
+.suspect-search-hero { background: #0b3768; color: #fff; }
+.suspect-search-hero > div { padding-top: 28px; padding-bottom: 30px; }
+.suspect-search-hero p { display: flex; align-items: center; gap: 7px; color: #ffc463; font-size: 10px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.suspect-search-hero h1 { margin-top: 8px; font-size: clamp(28px, 4vw, 42px); font-weight: 850; letter-spacing: -.03em; }
+.suspect-search-hero span { display: block; max-width: 70ch; margin-top: 10px; color: #d4e5f5; font-size: 14px; line-height: 1.65; }
+.suspect-search-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, .7fr); gap: 18px; padding-top: 20px; align-items: start; }
+.suspect-search-panel, .suspect-search-guidance, .suspect-result, .suspect-correction-panel { border: 1px solid #d8e2ec; background: #fff; padding: 22px; }
+.suspect-search-panel-head { display: flex; align-items: flex-start; gap: 12px; }
+.suspect-search-panel-head > span { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; background: #e7f1fb; color: #0b4d91; }
+.suspect-search-panel-head h2, .suspect-search-guidance h2, .suspect-result h2, .suspect-correction-panel h2 { color: #102e4d; font-size: 17px; font-weight: 850; }
+.suspect-search-panel-head p, .suspect-correction-panel > div > p { margin-top: 3px; color: #607489; font-size: 11px; line-height: 1.55; }
+.suspect-search-panel form { margin-top: 20px; }
+.suspect-search-fields { display: grid; grid-template-columns: minmax(180px, .65fr) minmax(0, 1.35fr); gap: 14px; margin-bottom: 16px; }
+.suspect-search-privacy { display: flex; margin-top: 16px; align-items: flex-start; gap: 7px; border-top: 1px solid #e5ebf1; padding-top: 12px; color: #607489; font-size: 10px; line-height: 1.5; }
+.suspect-search-privacy svg { flex: 0 0 auto; color: #0b4d91; }
+.suspect-search-guidance { border-top: 3px solid #f09a2b; }
+.suspect-search-guidance ul { display: grid; margin-top: 14px; gap: 13px; }
+.suspect-search-guidance li { display: flex; align-items: flex-start; gap: 8px; color: #435a71; font-size: 11px; line-height: 1.5; }
+.suspect-search-guidance li svg { width: 16px; height: 16px; flex: 0 0 auto; color: #0b5dab; }
+.suspect-search-guidance > a { display: inline-flex; margin-top: 18px; align-items: center; gap: 6px; color: #0b4d91; font-size: 11px; font-weight: 800; text-decoration: none; }
+.suspect-search-guidance > a:hover { text-decoration: underline; }
+.suspect-result, .suspect-correction-panel { grid-column: 1 / -1; }
+.suspect-result { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 15px; border-left-width: 4px; }
+.suspect-result > span { display: grid; width: 44px; height: 44px; place-items: center; }
+.suspect-result.is-match { border-left-color: #d17a13; background: #fffaf0; }.suspect-result.is-match > span { background: #fbe8c9; color: #a75a04; }
+.suspect-result.is-clear { border-left-color: #277554; background: #f0faf5; }.suspect-result.is-clear > span { background: #dcefe6; color: #166144; }
+.suspect-result.is-error { border-left-color: #b42318; background: #fff2f0; color: #8f2118; }
+.suspect-result-kicker { color: #5c7085; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
+.suspect-result h2 { margin-top: 3px; }.suspect-result h2 + p { max-width: 80ch; margin-top: 6px; color: #3e566e; font-size: 13px; line-height: 1.6; }
+.suspect-result > div > strong { display: block; margin-top: 11px; color: #253f59; font-size: 11px; line-height: 1.55; }
+.suspect-result-actions { display: flex; margin-top: 18px; flex-wrap: wrap; align-items: center; gap: 10px; }
+.suspect-result-actions > button:not(.button) { display: inline-flex; min-height: 38px; align-items: center; gap: 6px; border: 1px solid #9badbf; border-radius: 4px; background: #fff; padding: 8px 12px; color: #234665; font-size: 11px; font-weight: 800; }
+.suspect-result-actions > button:hover { background: #edf4fb; }
+.suspect-correction-panel { display: grid; grid-template-columns: .72fr 1.28fr; gap: 28px; border-top: 3px solid #0b4d91; }
+.suspect-correction-panel form { display: grid; gap: 14px; }
+.suspect-correction-success { display: flex; align-items: flex-start; gap: 10px; background: #e9f7ef; padding: 14px; color: #175f42; }
+.suspect-correction-success span, .suspect-correction-success strong { display: block; }.suspect-correction-success span { font-size: 11px; line-height: 1.55; }.suspect-correction-success strong { font-size: 13px; }
+
+@media (max-width: 980px) {
+  .secure-india-filter-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .secure-india-main-grid { grid-template-columns: 1fr; }
+  .secure-india-zone-grid, .secure-india-crime-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .secure-india-zone-grid > button, .secure-india-crime-grid > article { border-right: 1px solid #dfe6ed; }
+}
+@media (max-width: 700px) {
+  .secure-india-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .secure-india-metrics > div:nth-child(2) { border-right: 0; }
+  .secure-india-metrics > div:nth-child(-n+2) { border-bottom: 1px solid rgb(255 255 255 / .16); }
+  .secure-india-filter-panel { grid-template-columns: 1fr; }
+  .secure-india-map-layout { grid-template-columns: 1fr; min-height: 0; }
+  .secure-india-map { height: 360px; }
+  .secure-india-map-detail { width: 100%; }
+  .secure-india-zone-grid, .secure-india-crime-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .secure-india-zone-grid > button, .secure-india-crime-grid > article { min-width: 190px; scroll-snap-align: start; }
+  .secure-india-suspect-band, .secure-india-cta, .secure-india-learning { align-items: flex-start; flex-direction: column; }
+  .secure-india-suspect-band > a, .secure-india-cta > a, .secure-india-learning > a { justify-content: center; width: 100%; }
+  .secure-india-methodology dl { flex-direction: column; gap: 8px; }
+  .suspect-search-layout { grid-template-columns: 1fr; }
+  .suspect-search-fields, .suspect-correction-panel { grid-template-columns: 1fr; }
+  .suspect-result, .suspect-correction-panel { grid-column: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .secure-india-map-skeleton { animation: none; }
+  .secure-india-map g circle, .secure-india-zone-grid > button, .secure-india-suspect-band > a, .secure-india-cta > a { transition: none; }
+  html { scroll-behavior: auto; }
 }
 

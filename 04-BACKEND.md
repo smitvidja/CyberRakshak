@@ -88,6 +88,33 @@ flowchart TD
 
 The parser service returns untrusted structured suggestions. Save suggestions to `resume_parsing_results`; update final profile tables only after user review and confirmation.
 
+## Secure India Service
+
+`SecureIndiaService` reads one versioned synthetic snapshot from
+`app/data/secure_india/snapshot.json` (cached with `lru_cache`) and owns all filtering,
+aggregation, projection and legend calculation. The frontend renders only.
+
+- Filters are validated against the snapshot; unknown categories, states, or a city outside the
+  selected state raise `422 INVALID_FILTER`.
+- Lon/lat are projected to map coordinates server-side using the projection constants stored in
+  the snapshot, so geometry stays data rather than hard-coded pixels.
+- Rankings sort by value then city name, so ties never reshuffle between requests.
+- Legend bins and each region's bucket are computed together from the selected values, so the
+  map, legend and cards cannot disagree about a threshold.
+- No repository or database access occurs anywhere in this service.
+
+## Suspect Search Service
+
+`normalize_identifier` in `reported_suspect_service` is the single canonicalization helper,
+used by report creation, public search and correction requests alike, so the three paths can
+never disagree about what a given identifier means. `mask_identifier` produces the only form
+ever returned to a public caller.
+
+Search counts `VERIFIED` reports matching the exact normalized value and returns a bounded
+aggregate. Correction requests persist an HMAC fingerprint of the normalized identifier rather
+than the value itself. `PublicSearchRateLimiter` provides in-process throttling for the public
+endpoint. See `08-SECURITY.md` for the full control set.
+
 ## Authorization
 
 Enforce server-side:

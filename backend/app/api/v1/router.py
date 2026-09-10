@@ -9,6 +9,7 @@ from app.api.v1.cyber_warriors import router as cyber_warriors_router
 from app.api.v1.evidence import router as evidence_router
 from app.api.v1.notifications import router as notifications_router
 from app.api.v1.resume import router as resume_router
+from app.api.v1.secure_india import router as secure_india_router
 from app.api.v1.suspects import router as suspects_router
 from app.api.v1.users import router as users_router
 from app.api.v1.warrior_applications import router as warrior_applications_router
@@ -22,6 +23,7 @@ api_router.include_router(complaints_router)
 api_router.include_router(cyber_saathi_router)
 api_router.include_router(evidence_router)
 api_router.include_router(notifications_router)
+api_router.include_router(secure_india_router)
 api_router.include_router(suspects_router)
 api_router.include_router(cyber_warriors_router)
 api_router.include_router(resume_router)

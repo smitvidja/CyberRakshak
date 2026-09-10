@@ -1,0 +1,30 @@
+{
+  "dataset_id": "secure-india-synthetic-v1",
+  "version": "1.1.0",
+  "source_type": "SYNTHETIC",
+  "source_label": "CyberRakshak synthetic demonstration dataset",
+  "published_at": "2026-09-10T00:00:00Z",
+  "period_end": "2026-08-31",
+  "methodology": "Illustrative city-level counts created for product demonstration. They are not derived from complaints, police systems, government portals, or real people. Period filters apply fixed synthetic scaling factors; per-lakh values use synthetic population figures. Map positions are projected from published city coordinates and carry no complaint-level location data.",
+  "projection": {"lon_min": 67.5, "lon_max": 97.8, "lat_min": 7.6, "lat_max": 36.2},
+  "period_factors": {"7d": 0.24, "30d": 1.0, "1y": 10.8},
+  "categories": [
+    {"id": "financial", "resource_slug": "financial-fraud"},
+    {"id": "commerce", "resource_slug": "e-commerce-fraud"},
+    {"id": "identity", "resource_slug": "identity-theft"},
+    {"id": "harassment", "resource_slug": "online-harassment"},
+    {"id": "other", "resource_slug": "other-cyber-crime"}
+  ],
+  "cities": [
+    {"id": "bengaluru", "city": "Bengaluru", "state": "Karnataka", "lon": 77.59, "lat": 12.97, "synthetic_population_lakh": 136.1, "trend_percent": 12, "counts": {"financial": 2468, "commerce": 1346, "identity": 962, "harassment": 705, "other": 931}, "zone": "Bengaluru Central"},
+    {"id": "mumbai", "city": "Mumbai", "state": "Maharashtra", "lon": 72.88, "lat": 19.08, "synthetic_population_lakh": 209.6, "trend_percent": 6, "counts": {"financial": 2210, "commerce": 1275, "identity": 884, "harassment": 648, "other": 891}, "zone": "South Mumbai"},
+    {"id": "hyderabad", "city": "Hyderabad", "state": "Telangana", "lon": 78.49, "lat": 17.39, "synthetic_population_lakh": 108.0, "trend_percent": -3, "counts": {"financial": 1580, "commerce": 901, "identity": 655, "harassment": 461, "other": 623}, "zone": "HITEC City"},
+    {"id": "new-delhi", "city": "New Delhi", "state": "Delhi", "lon": 77.21, "lat": 28.61, "synthetic_population_lakh": 195.7, "trend_percent": 9, "counts": {"financial": 1440, "commerce": 830, "identity": 612, "harassment": 502, "other": 593}, "zone": "Connaught Place"},
+    {"id": "pune", "city": "Pune", "state": "Maharashtra", "lon": 73.86, "lat": 18.52, "synthetic_population_lakh": 72.1, "trend_percent": 4, "counts": {"financial": 1188, "commerce": 672, "identity": 486, "harassment": 331, "other": 473}, "zone": "Hinjawadi"},
+    {"id": "ahmedabad", "city": "Ahmedabad", "state": "Gujarat", "lon": 72.57, "lat": 23.02, "synthetic_population_lakh": 84.5, "trend_percent": -2, "counts": {"financial": 1004, "commerce": 581, "identity": 405, "harassment": 296, "other": 418}, "zone": "SG Highway"},
+    {"id": "chennai", "city": "Chennai", "state": "Tamil Nadu", "lon": 80.27, "lat": 13.08, "synthetic_population_lakh": 117.8, "trend_percent": 1, "counts": {"financial": 897, "commerce": 512, "identity": 361, "harassment": 275, "other": 366}, "zone": "T. Nagar"},
+    {"id": "kolkata", "city": "Kolkata", "state": "West Bengal", "lon": 88.36, "lat": 22.57, "synthetic_population_lakh": 151.3, "trend_percent": 5, "counts": {"financial": 811, "commerce": 477, "identity": 344, "harassment": 249, "other": 338}, "zone": "Salt Lake"},
+    {"id": "jaipur", "city": "Jaipur", "state": "Rajasthan", "lon": 75.79, "lat": 26.91, "synthetic_population_lakh": 42.8, "trend_percent": -1, "counts": {"financial": 666, "commerce": 382, "identity": 278, "harassment": 199, "other": 287}, "zone": "Malviya Nagar"},
+    {"id": "kochi", "city": "Kochi", "state": "Kerala", "lon": 76.27, "lat": 9.93, "synthetic_population_lakh": 23.4, "trend_percent": 3, "counts": {"financial": 521, "commerce": 298, "identity": 208, "harassment": 154, "other": 219}, "zone": "Kakkanad"}
+  ]
+}

@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import AuditLog, Complaint, ReportedSuspect
+from app.models import AuditLog, Complaint, ReportedSuspect, SuspectCorrectionRequest
 
 
 class AdminRepository:
@@ -16,6 +16,10 @@ class AdminRepository:
                 select(ReportedSuspect).order_by(ReportedSuspect.created_at.desc())
             )
         )
+
+    @staticmethod
+    def list_suspect_corrections(session: Session) -> list[SuspectCorrectionRequest]:
+        return list(session.scalars(select(SuspectCorrectionRequest).order_by(SuspectCorrectionRequest.created_at.desc())))
 
     @staticmethod
     def list_audit_logs(session: Session) -> list[AuditLog]:

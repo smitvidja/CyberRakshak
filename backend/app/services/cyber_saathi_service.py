@@ -1447,13 +1447,13 @@ class CyberSaathiService:
             Intent.CHECK_IDENTIFIER: (
                 HandoffTarget.SEARCH_SUSPECT_REPORTS,
                 "/suspects/search",
-                HandoffImplementationStatus.PLANNED,
+                HandoffImplementationStatus.AVAILABLE,
                 "search_suspect_handoff",
             ),
             Intent.EXPLORE_CYBER_RISK: (
                 HandoffTarget.SECURE_INDIA,
                 "/secure-india",
-                HandoffImplementationStatus.PREVIEW,
+                HandoffImplementationStatus.AVAILABLE,
                 "secure_india_handoff",
             ),
         }
@@ -1465,6 +1465,11 @@ class CyberSaathiService:
                 reporting_mode=state.reporting_mode,
                 route=route,
                 implementation_status=implementation_status,
+                identifier=(
+                    CyberSaathiService._confirmed_suspect_identifier(state)
+                    if target == HandoffTarget.SEARCH_SUSPECT_REPORTS
+                    else None
+                ),
             )
             return RoutedReply(
                 CyberSaathiService._copy(language, copy_key), TurnKind.HANDOFF
@@ -2529,6 +2534,24 @@ class CyberSaathiService:
         return "other"
 
     @staticmethod
+    def _confirmed_suspect_identifier(state: ConversationState) -> dict[str, str] | None:
+        identifier_types = {
+            EntityType.PHONE_NUMBER: "PHONE",
+            EntityType.EMAIL: "EMAIL",
+            EntityType.UPI_ID: "UPI",
+            EntityType.ACCOUNT_ID: "BANK_ACCOUNT",
+            EntityType.URL: "WEBSITE",
+            EntityType.USERNAME: "SOCIAL_MEDIA",
+        }
+        entity = next(
+            (item for item in reversed(state.incident.entities) if item.confirmed and item.type in identifier_types),
+            None,
+        )
+        if entity is None:
+            return None
+        return {"identifier_type": identifier_types[entity.type], "identifier_value": entity.normalized_value or entity.value}
+
+    @staticmethod
     def _report_handoff(state: ConversationState) -> WorkflowHandoff:
         record = CyberSaathiService._active_record(state)
         preparation = record.report_preparation if record is not None else None
@@ -2735,14 +2758,14 @@ class CyberSaathiService:
                 LanguageCode.HINGLISH: "Main aapko practical cyber-safety resources par le ja sakta hoon. Warning signs aur safe actions ke liye wahan topic choose karein.",
             },
             "search_suspect_handoff": {
-                LanguageCode.EN: "Searching prior suspect reports is a planned feature and is not available yet. I have not performed a live lookup, and a prior report by itself would not prove that a person or identifier is criminal.",
-                LanguageCode.HI: "पहले की संदिग्ध रिपोर्ट खोजना एक नियोजित सुविधा है और अभी उपलब्ध नहीं है। मैंने कोई लाइव खोज नहीं की है, और केवल पिछली रिपोर्ट किसी व्यक्ति या पहचानकर्ता को अपराधी साबित नहीं करती।",
-                LanguageCode.HINGLISH: "Purane suspect reports search karna planned feature hai aur abhi available nahi hai. Maine live lookup nahi kiya, aur sirf previous report kisi person ya identifier ko criminal prove nahi karti.",
+                LanguageCode.EN: "I can take you to the exact identifier search. I have not performed a live lookup in this chat, and a reported signal never proves that a person or identifier is criminal.",
+                LanguageCode.HI: "मैं आपको पूरे पहचानकर्ता की खोज पर ले जा सकता हूं। इस चैट में मैंने कोई लाइव lookup नहीं किया है, और रिपोर्टेड संकेत किसी व्यक्ति या पहचानकर्ता को अपराधी साबित नहीं करता।",
+                LanguageCode.HINGLISH: "Main aapko exact identifier search par le ja sakta hoon. Is chat mein maine live lookup nahi kiya hai, aur reported signal kisi person ya identifier ko criminal prove nahi karta.",
             },
             "secure_india_handoff": {
-                LanguageCode.EN: "I can open the Secure India preview. It is an educational prototype and does not show live crime, police, or government data.",
-                LanguageCode.HI: "मैं सिक्योर इंडिया पूर्वावलोकन खोल सकता हूं। यह एक शैक्षिक प्रोटोटाइप है और लाइव अपराध, पुलिस या सरकारी डेटा नहीं दिखाता।",
-                LanguageCode.HINGLISH: "Main Secure India preview open kar sakta hoon. Ye educational prototype hai; ismein live crime, police ya government data nahi hai.",
+                LanguageCode.EN: "I can open the interactive Secure India prototype. It uses a clearly labelled synthetic dataset and does not show live crime, police, government, or complaint data.",
+                LanguageCode.HI: "मैं इंटरैक्टिव सिक्योर इंडिया प्रोटोटाइप खोल सकता हूं। इसमें स्पष्ट रूप से चिह्नित कृत्रिम डेटासेट है और लाइव अपराध, पुलिस, सरकारी या शिकायत डेटा नहीं दिखता।",
+                LanguageCode.HINGLISH: "Main interactive Secure India prototype khol sakta hoon. Isme clearly labelled synthetic dataset hai aur live crime, police, government ya complaint data nahi dikhaya jata.",
             },
             "report": {
                 LanguageCode.EN: "I can open the reporting flow with the incident description prepared. You will review every detail before submission.",

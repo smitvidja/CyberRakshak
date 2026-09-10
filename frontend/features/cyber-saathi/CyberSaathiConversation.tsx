@@ -10,6 +10,7 @@ import {useCyberSaathiVoice} from "@/features/cyber-saathi/useCyberSaathiVoice";
 import {cyberSaathiApi} from "@/lib/api/cyber-saathi";
 import {prepareCyberSaathiReportHandoff} from "@/lib/cyber-saathi/report-handoff";
 import {setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
+import {saveSuspectHandoff} from "@/lib/suspect-handoff";
 import type {ConversationState, ReportingMode, SaathiLanguage} from "@/types/cyber-saathi";
 
 // v2 adds explicit storage consent and server-backed recovery; keep v1 untouched
@@ -286,6 +287,14 @@ export function CyberSaathiConversation() {
     openReportWorkflow(state, handoff);
   }
 
+  function continueToSuspectSearch() {
+    if (!handoff || handoff.target !== "search_suspect_reports") return;
+    if (handoff.identifier) {
+      saveSuspectHandoff({identifierType: handoff.identifier.identifier_type, identifierValue: handoff.identifier.identifier_value});
+    }
+    router.push(`/${locale}${handoff.route}`);
+  }
+
   return (
     <main className="bg-[#f5f8fc] pb-8">
       <div className="shell-container grid gap-5 pb-7 lg:grid-cols-[minmax(0,1fr)_300px]">
@@ -446,7 +455,7 @@ export function CyberSaathiConversation() {
                 {!anonymousAllowed ? <p className="mt-2 text-[11px] leading-4 text-slate-500">{t("anonymousUnavailable")}</p> : null}
               </div>
             ) : null}
-            {canHandoff && handoff ? handoff.target === "report_crime" ? <button className="mt-4 flex min-h-10 w-full items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" onClick={continueToReport} type="button">{t("reviewEditReport")}<ArrowRight size={17} /></button> : handoff.implementation_status === "planned" ? <div className="mt-4 rounded-[6px] border border-amber-200 bg-amber-50 px-3 py-3"><p className="text-sm font-bold text-amber-900">{handoffActionLabel(handoff.target)}</p><p className="mt-1 text-xs leading-5 text-amber-800">{t("plannedWorkflowNote")}</p></div> : <Link className="mt-4 flex min-h-10 items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" href={handoffPath}>{handoffActionLabel(handoff.target)}<ArrowRight size={17} /></Link> : <p className="mt-4 rounded-[6px] bg-[#edf4ff] px-3 py-2.5 text-xs leading-5 text-[#174574]">{pendingEntities.length ? t("confirmBeforeHandoff") : reportPreparation?.packet_ready && !reportPreparation?.draft_prepared ? t("prepareDraftPrompt") : handoff?.target === "report_crime" && !reportPreparation?.ready_for_review ? t("completePacketBeforeHandoff") : handoff?.target === "report_crime" ? t("chooseModeBeforeHandoff") : t("describePrompt")}</p>}
+            {canHandoff && handoff ? handoff.target === "report_crime" ? <button className="mt-4 flex min-h-10 w-full items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" onClick={continueToReport} type="button">{t("reviewEditReport")}<ArrowRight size={17} /></button> : handoff.target === "search_suspect_reports" ? <button className="mt-4 flex min-h-10 w-full items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" onClick={continueToSuspectSearch} type="button">{handoffActionLabel(handoff.target)}<ArrowRight size={17} /></button> : handoff.implementation_status === "planned" ? <div className="mt-4 rounded-[6px] border border-amber-200 bg-amber-50 px-3 py-3"><p className="text-sm font-bold text-amber-900">{handoffActionLabel(handoff.target)}</p><p className="mt-1 text-xs leading-5 text-amber-800">{t("plannedWorkflowNote")}</p></div> : <Link className="mt-4 flex min-h-10 items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" href={handoffPath}>{handoffActionLabel(handoff.target)}<ArrowRight size={17} /></Link> : <p className="mt-4 rounded-[6px] bg-[#edf4ff] px-3 py-2.5 text-xs leading-5 text-[#174574]">{pendingEntities.length ? t("confirmBeforeHandoff") : reportPreparation?.packet_ready && !reportPreparation?.draft_prepared ? t("prepareDraftPrompt") : handoff?.target === "report_crime" && !reportPreparation?.ready_for_review ? t("completePacketBeforeHandoff") : handoff?.target === "report_crime" ? t("chooseModeBeforeHandoff") : t("describePrompt")}</p>}
           </section>
           <section className="rounded-[8px] border border-[#d7e2ef] bg-white p-5">
             <h2 className="font-bold text-[#08245c]">{t("boundariesTitle")}</h2>

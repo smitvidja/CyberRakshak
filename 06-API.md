@@ -132,13 +132,43 @@ Anonymous create/submit must allow no user identity. Identified create/submit mu
 
 Uploads must validate size, type, ownership, and target entity.
 
+## Secure India APIs
+
+- `GET /secure-india/metadata` returns dataset identity, version, source type/label, period end and methodology.
+- `GET /secure-india/summary?crime_type=&state=&city=&period=&view=` returns one aggregate snapshot: source metadata, echoed filters, available states/cities, hero metrics, legend bins, map regions, rankings, hot zones and hot crimes.
+
+Both are public and unauthenticated. `summary` drives every Secure India surface from a
+single response so the metric strip, map, legend, rankings and cards can never disagree.
+Filters are validated against the snapshot and rejected with `422 INVALID_FILTER`; an
+unknown state or a city outside the selected state is a validation error, not an empty
+result. Responses expose aggregate geography only - never complaint rows, reporters,
+evidence or coordinates taken from citizen data. `source_type` is `SYNTHETIC` and must not
+be changed without the source contract described in `08-SECURITY.md`.
+
 ## Suspect APIs
 
 - `POST /suspects/reports`
 - `GET /suspects/reports/{id}`
 - `GET /suspects/reports/my`
+- `POST /suspects/search` exact-match public lookup; body carries `identifier_type` and `identifier_value`.
+- `POST /suspects/corrections` records a false-positive/correction request for admin review.
 
 Language must distinguish reported suspects from legally confirmed criminals.
+
+`POST /suspects/search` takes the identifier in the request body so it never reaches URLs,
+browser history, referrers or access logs. It normalizes the identifier with the same
+server-side helper the report flow uses, matches only exact canonical values, and counts
+only `VERIFIED` reports - `SUBMITTED`, `UNDER_REVIEW` and `REJECTED` records never surface
+publicly. The response is aggregate only: identifier type, masked identifier, match state,
+a bounded count (capped at 5 with `count_capped`) and a disclosure code. No reporter,
+description, evidence, complaint id or row-level timestamp is returned. A no-match result
+states that no eligible reviewed signal exists in this prototype dataset; it never states
+that an identifier is safe, and a match never asserts guilt. The endpoint is rate limited
+per client and returns `429 RATE_LIMITED` when exceeded.
+
+`POST /suspects/corrections` stores only an HMAC fingerprint of the normalized identifier
+plus a masked display form and the stated reason, so a correction request cannot be used to
+recover the raw identifier or to reach the original reporter.
 
 ## Cyber Warrior APIs
 
@@ -165,6 +195,7 @@ Admin APIs remain lightweight:
 
 - list/review complaints
 - review suspect reports
+- list/resolve suspect correction requests (`GET /admin/suspect-corrections`, `PATCH /admin/suspect-corrections/{id}/status`)
 - approve/reject Cyber Warrior applications
 - inspect audit/activity summaries
 

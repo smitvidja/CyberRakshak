@@ -10,6 +10,7 @@ import {SelectField, TextArea, TextInput} from "@/components/ui/FormFields";
 import {StatePanel, StatusChip, SurfaceCard} from "@/components/ui/Surface";
 import {evidenceApi, suspectsApi} from "@/lib/api/complaints";
 import {getAccessToken, getReportMode} from "@/lib/auth/citizen-session";
+import {takeSuspectHandoff} from "@/lib/suspect-handoff";
 
 type FieldErrors = Record<string, string>;
 type SubmittedReport = {id: string; identifierType: string; identifierValue: string};
@@ -23,7 +24,7 @@ function asString(value: unknown) {
 function validateIdentifier(identifierType: string, value: string) {
   const normalized = value.trim();
   if (!normalized) return "required";
-  if (identifierType === "PHONE" && !/^\+?[0-9]{8,15}$/.test(normalized)) return "phone";
+  if (identifierType === "PHONE" && !/^\+?[0-9() .-]{8,22}$/.test(normalized)) return "phone";
   if (identifierType === "EMAIL" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) return "email";
   if (identifierType === "UPI" && !/^[a-zA-Z0-9._-]{2,}@[a-zA-Z]{2,}$/.test(normalized)) return "upi";
   if (identifierType === "WEBSITE" && !/^https?:\/\/\S+$/i.test(normalized)) return "website";
@@ -49,7 +50,15 @@ export function ReportedSuspectForm() {
   const [submitted, setSubmitted] = useState<SubmittedReport | null>(null);
 
   useEffect(() => {
+    // Session token and suspect handoff are both browser-only, read-once values;
+    // see SuspectSearch for why this cannot move into a lazy initializer.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot browser handoff
     if (getReportMode() === "identified") setAccessToken(getAccessToken());
+    const handoff = takeSuspectHandoff();
+    if (handoff) {
+      setIdentifierType(handoff.identifierType);
+      setIdentifierValue(handoff.identifierValue);
+    }
     setSessionReady(true);
   }, []);
 

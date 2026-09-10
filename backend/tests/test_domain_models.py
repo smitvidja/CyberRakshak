@@ -36,6 +36,7 @@ APPROVED_TABLES = {
     "mock_identity_profiles",
     "notifications",
     "reported_suspects",
+    "suspect_correction_requests",
     "resume_parsing_results",
     "skills",
     "users",
@@ -74,7 +75,9 @@ REQUIRED_QUERY_INDEXES = {
         "ix_reported_suspects_identifier_type",
         "ix_reported_suspects_identifier_value",
         "ix_reported_suspects_status",
+        "ix_reported_suspects_normalized_status",
     },
+    "suspect_correction_requests": {"ix_suspect_corrections_fingerprint", "ix_suspect_corrections_status"},
     "users": {"ix_users_role"},
     "warrior_applications": {
         "ix_warrior_applications_status",

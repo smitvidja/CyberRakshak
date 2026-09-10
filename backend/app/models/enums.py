@@ -41,6 +41,13 @@ class ReportedSuspectStatus(str, Enum):
     REJECTED = "REJECTED"
 
 
+class SuspectCorrectionStatus(str, Enum):
+    SUBMITTED = "SUBMITTED"
+    UNDER_REVIEW = "UNDER_REVIEW"
+    RESOLVED = "RESOLVED"
+    REJECTED = "REJECTED"
+
+
 class WarriorVerificationStatus(str, Enum):
     PENDING = "PENDING"
     VERIFIED = "VERIFIED"

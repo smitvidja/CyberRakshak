@@ -11,6 +11,8 @@ from app.schemas.cyber_saathi import (
     ConversationCreate,
     ConversationMessageRequest,
     CrimeDomain,
+    Entity,
+    EntityType,
     GroundingStatus,
     IncidentStatus,
     LanguageCode,
@@ -24,6 +26,17 @@ from app.services import cyber_saathi_service as service_module
 from app.services.cyber_saathi_service import CyberSaathiService
 from app.services.cyber_saathi_knowledge import KnowledgeService
 from app.services.cyber_saathi_understanding import UnderstandingEngine
+
+
+def test_suspect_search_handoff_only_carries_a_confirmed_identifier() -> None:
+    state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.EN)).state
+    state.incident.entities = [
+        Entity(type=EntityType.EMAIL, value="unconfirmed@example.test", confidence=0.95, requires_confirmation=True),
+        Entity(type=EntityType.UPI_ID, value="reviewed@upi", normalized_value="reviewed@upi", confidence=0.98, requires_confirmation=True, confirmed=True),
+    ]
+    assert CyberSaathiService._confirmed_suspect_identifier(state) == {"identifier_type": "UPI", "identifier_value": "reviewed@upi"}
+    state.incident.entities[1].confirmed = False
+    assert CyberSaathiService._confirmed_suspect_identifier(state) is None
 
 
 def prepare_report_draft(state):
@@ -42,8 +55,8 @@ def prepare_report_draft(state):
     [
         ("How can I become a cyber warrior volunteer?", LanguageCode.EN, "cyber_warrior", "/cyber-warrior", "available"),
         ("ऑनलाइन कैसे सुरक्षित रहें?", LanguageCode.HI, "learning_resources", "/resources", "available"),
-        ("Mujhe check UPI ID fraudster@ybl karna hai.", LanguageCode.HINGLISH, "search_suspect_reports", "/suspects/search", "planned"),
-        ("Show cyber risk in my city on Secure India", LanguageCode.EN, "secure_india", "/secure-india", "preview"),
+        ("Mujhe check UPI ID fraudster@ybl karna hai.", LanguageCode.HINGLISH, "search_suspect_reports", "/suspects/search", "available"),
+        ("Show cyber risk in my city on Secure India", LanguageCode.EN, "secure_india", "/secure-india", "available"),
         ("Meri complaint ka status kya hai?", LanguageCode.HINGLISH, "track_complaint", "/complaints/track", "available"),
     ],
 )

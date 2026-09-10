@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.enums import ComplaintStatus, ReportedSuspectStatus, WarriorApplicationStatus
+from app.models.enums import ComplaintStatus, ReportedSuspectStatus, SuspectCorrectionStatus, WarriorApplicationStatus
 
 
 class ComplaintStatusUpdate(BaseModel):
@@ -14,6 +14,11 @@ class ComplaintStatusUpdate(BaseModel):
 
 class ReportedSuspectStatusUpdate(BaseModel):
     status: ReportedSuspectStatus
+
+
+class SuspectCorrectionStatusUpdate(BaseModel):
+    status: SuspectCorrectionStatus
+    resolution_note: str | None = Field(default=None, max_length=1000)
 
 
 class WarriorApplicationStatusUpdate(BaseModel):

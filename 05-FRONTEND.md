@@ -112,6 +112,39 @@ flowchart TD
   F --> I[Profile / leaderboard / badges / resources]
 ```
 
+## Secure India And Suspect Search
+
+`/[locale]/secure-india` renders `SecureIndiaDashboard`, a client component driven by one
+`GET /secure-india/summary` response. Filter state is held in the query string and read with
+`useSyncExternalStore`, whose server snapshot is the documented default view - so the route
+still prerenders, the URL is shareable and restorable, and no hydration mismatch is possible.
+A short debounce coalesces rapid filter changes into a single request.
+
+The metric strip, map, legend, ranked table, hot zones and hot crimes all read from the same
+response, so they cannot disagree. Map markers are proportional symbols positioned from
+server-projected coordinates; the colour ramp is keyed to the `bucket` the API assigns and the
+legend is rendered from the API's `legend` bins. Meaning is never carried by colour alone -
+every region also has a proportional radius, a rank number and an exact value in the table.
+
+Accessibility and responsive behaviour:
+
+- Each marker is a focusable control with an accessible name carrying city, state and value.
+- Hover and keyboard focus surface the same tooltip facts; selection is also reachable from
+  the ranked table, which is the map's non-map equivalent.
+- The ranked table stays present at every breakpoint, so nothing is hover-only or lost on
+  touch; the map simplifies rather than disappearing at 390px.
+- A reset control restores the documented default view, and reduced-motion users get no
+  animated transitions or smooth scrolling.
+- Loading keeps layout stable; a failed load clears the snapshot rather than presenting stale
+  figures as current, and offers retry.
+
+`/[locale]/suspects/search` renders `SuspectSearch` and stays a separate journey from
+`/[locale]/suspects/report`; the navbar keeps a suspect destination pointing at search, and
+both search and report remain reachable without entering Secure India. A confirmed identifier
+is carried between Cyber Saathi, search and report through a one-shot `sessionStorage` handoff
+(`lib/suspect-handoff.ts`) rather than the URL, so identifiers never reach browser history.
+Search prefills the report form for review and never submits a report automatically.
+
 ## State And Forms
 
 - Keep local state simple with React state and hooks.
