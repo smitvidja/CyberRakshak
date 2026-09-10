@@ -15,6 +15,7 @@ class ResumeParsingResultResponse(BaseModel):
     status: ResumeParsingStatus
     extracted_data: dict[str, Any] | None
     error_message: str | None
+    error_code: str | None = None
     processed_at: datetime | None
     confirmed_at: datetime | None
     created_at: datetime

@@ -176,7 +176,8 @@ recover the raw identifier or to reach the original reporter.
 - `GET /cyber-warriors/me`
 - `PATCH /cyber-warriors/me`
 - `GET /cyber-warriors/skills` lists the skill catalog for profile/resume skill selection.
-- `POST /resume/upload`
+- `POST /resume/upload` accepts PDF or DOCX only (10 MB). Returns a `ResumeParsingResult`;
+  a failed attempt is `201` with `status=FAILED` plus a translatable `error_code`, not an error response.
 - `GET /resume/parsing-results/{id}`
 - `POST /resume/parsing-results/{id}/confirm`
 - `POST /warrior-applications`

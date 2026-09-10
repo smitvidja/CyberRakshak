@@ -86,7 +86,30 @@ flowchart TD
 
 ## Resume Parser
 
-The parser service returns untrusted structured suggestions. Save suggestions to `resume_parsing_results`; update final profile tables only after user review and confirmation.
+Real extraction, not a fixture. `get_resume_parser()` returns `DocumentResumeParser`
+unless `resume_parser=mock` is explicitly configured; the mock exists only for tests and
+a labelled demo mode and must never be the runtime default.
+
+Pipeline: upload -> extension check -> object storage -> `resume_extraction` ->
+`resume_structuring` -> persisted `ResumeParsingResult` (untrusted) -> citizen review ->
+explicit confirmation transaction -> profile.
+
+`resume_extraction` treats resume bytes as hostile:
+
+- verifies the file **signature**, not the filename, so a renamed file is rejected;
+- refuses legacy `.doc` outright - there is no safe pure-Python OLE2 extractor in this
+  runtime, so the UI, API and docs advertise PDF/DOCX only rather than mis-parsing it;
+- bounds size (10 MB), pages (15), paragraphs (800), characters (40k) and DOCX
+  decompression ratio, so a bomb or a huge file cannot exhaust the process;
+- maps encrypted, empty, image-only and corrupt files to typed errors carrying a stable
+  `error_code`, which the UI translates - a stored English message cannot be localized.
+
+`resume_structuring` is deterministic and deliberately conservative: a field that cannot be
+read confidently is left empty rather than guessed, and contact details are never emitted
+because name, mobile and email are identity-verified elsewhere.
+
+Any unexpected parser fault is still persisted as a `FAILED` attempt with
+`error_code=RESUME_PARSER_ERROR` rather than surfacing a 500, and never touches the profile.
 
 ## Secure India Service
 

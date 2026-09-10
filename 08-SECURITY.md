@@ -65,6 +65,20 @@ flowchart TD
 - Require user review/edit/confirmation before final profile writes.
 - Do not use parser output to make automated approval decisions in the MVP.
 
+Uploaded resume bytes are hostile input and are handled accordingly:
+
+- the file **signature** is verified rather than the filename, so a renamed or disguised
+  file cannot choose its own parser, and an OLE2 payload is refused whatever it is called;
+- legacy `.doc` is refused rather than guessed at, because no safe pure-Python extractor is
+  available in this runtime;
+- size, page, paragraph, character and DOCX decompression-ratio limits bound every path, so
+  an archive bomb or oversized document cannot exhaust the process;
+- macros, embedded objects and external references are never executed - only text is read;
+- resume text is treated as data, never as instructions: the structured parser is
+  deterministic, so injected wording cannot change the output shape or reach system policy;
+- extracted contact details are dropped, and no raw resume text, file bytes or PII is logged;
+- a parsing failure never mutates the profile.
+
 ## Public Suspect Search
 
 Suspect search is the only public endpoint that reads citizen-submitted report data, so it is

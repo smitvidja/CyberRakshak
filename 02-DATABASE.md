@@ -156,6 +156,17 @@ backfill in migration `a1b2c3d4e5f6` seeds existing rows with `lower(trim(identi
 - there is no foreign key to `reported_suspects` or to any user, so a correction request can
   never be used to identify or contact the original reporter.
 
+## Resume Parsing Columns
+
+`resume_parsing_results.error_code` holds a stable machine code for a failed attempt
+(`RESUME_ENCRYPTED`, `RESUME_NO_TEXT`, `RESUME_SIGNATURE_MISMATCH`, `RESUME_PARSER_ERROR`,
+and so on). The UI translates from this code; `error_message` remains an English
+operator-facing fallback and is not shown when a translation exists.
+
+`extracted_data` stores the citizen-reviewable suggestions only. It never contains the raw
+extracted text, and never contains name, mobile or email: those are identity-verified fields
+that resume content must not be able to reach.
+
 ## Delete Strategy
 
 - Use cascade from users to profile records when appropriate.

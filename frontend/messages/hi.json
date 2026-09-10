@@ -666,7 +666,7 @@
     "resumeNextCopy": "अपलोड, जानकारी निकालने, समीक्षा और जमा करने की प्रक्रिया अगले आवेदन चरण में शुरू होगी।",
     "reviewProfileAction": "प्रोफ़ाइल की समीक्षा करें"
   },
-  "warriorApplication": {
+  "warriorApplication":   {
     "applicationSteps": "आवेदन के चरण",
     "applicationTitle": "साइबर वॉरियर आवेदन",
     "stepUpload": "रिज़्यूमे अपलोड",
@@ -681,13 +681,13 @@
     "uploadEyebrow": "चरण 1 / 3",
     "uploadTitle": "अपना रिज़्यूमे अपलोड करें",
     "uploadCopy": "हम आवेदन पहले से भरने के लिए संपादन योग्य सुझाव निकालते हैं। हर फ़ील्ड जाँचना आवश्यक है।",
-    "resumeTypeError": "PDF, DOC या DOCX रिज़्यूमे चुनें।",
+    "resumeTypeError": "PDF या DOCX रिज़्यूमे चुनें।",
     "resumeSizeError": "रिज़्यूमे 10 MB या छोटा होना चाहिए।",
     "resumeUploadError": "रिज़्यूमे प्रोसेस नहीं हुआ। फिर प्रयास करें।",
     "dropTitle": "रिज़्यूमे यहाँ ड्रैग और ड्रॉप करें",
     "dropOr": "या",
     "browseAction": "फ़ाइल चुनें",
-    "fileRules": "PDF, DOC, DOCX · अधिकतम 10 MB",
+    "fileRules": "PDF, DOCX · अधिकतम 10 MB",
     "uploadComplete": "रिज़्यूमे प्रोसेस हुआ",
     "processingTitle": "रिज़्यूमे से जानकारी निकाली जा रही है",
     "processingCopy": "संपादन योग्य सुझाव तैयार हो रहे हैं।",
@@ -776,7 +776,18 @@
     "helpTitle": "मदद चाहिए?",
     "helpCopy": "संदर्भ के लिए आवेदन ID सुरक्षित रखें।",
     "helpline": "हेल्पलाइन: 1930",
-    "stepsLabel": "आवेदन प्रगति"
+    "stepsLabel": "आवेदन प्रगति",
+    "resumeErrors": {
+      "RESUME_UNSUPPORTED_FORMAT": "PDF या DOCX फ़ाइल अपलोड करें। पुरानी .doc फ़ाइलें समर्थित नहीं हैं।",
+      "RESUME_SIGNATURE_MISMATCH": "इस फ़ाइल की सामग्री उसके नाम से मेल नहीं खाती। मूल PDF या DOCX अपलोड करें।",
+      "RESUME_ENCRYPTED": "यह फ़ाइल पासवर्ड से सुरक्षित है। पासवर्ड हटाकर दोबारा अपलोड करें।",
+      "RESUME_TOO_LARGE": "यह फ़ाइल बहुत बड़ी है। 10 MB से छोटा रिज़्यूमे अपलोड करें।",
+      "RESUME_NO_TEXT": "कोई पढ़ने योग्य टेक्स्ट नहीं मिला। यदि यह स्कैन किया हुआ रिज़्यूमे है, तो टेक्स्ट वाला PDF या DOCX अपलोड करें।",
+      "RESUME_CORRUPT": "यह फ़ाइल खोली नहीं जा सकी। यह अधूरी या क्षतिग्रस्त हो सकती है।",
+      "RESUME_EXTRACTION_FAILED": "यह रिज़्यूमे पढ़ा नहीं जा सका। इसे PDF या DOCX के रूप में दोबारा अपलोड करें।",
+      "RESUME_STORAGE_UNAVAILABLE": "अपलोड किया गया रिज़्यूमे दोबारा पढ़ा नहीं जा सका। कृपया फिर से अपलोड करें।",
+      "RESUME_PARSER_ERROR": "रिज़्यूमे प्रोसेसिंग पूरी नहीं हो सकी। आपकी सहेजी गई प्रोफ़ाइल नहीं बदली गई।"
+    }
   },
   "warriorDashboard": {
     "sidebarLabel": "साइबर वारियर नेविगेशन",

@@ -666,7 +666,7 @@
     "resumeNextCopy": "The upload, extraction, review, and submission flow begins in the next application step.",
     "reviewProfileAction": "Review profile"
   },
-  "warriorApplication": {
+  "warriorApplication":   {
     "applicationSteps": "Application steps",
     "applicationTitle": "Cyber Warrior application",
     "stepUpload": "Upload resume",
@@ -681,13 +681,13 @@
     "uploadEyebrow": "Step 1 of 3",
     "uploadTitle": "Upload your resume",
     "uploadCopy": "We extract editable suggestions to pre-fill the application. You must review every field.",
-    "resumeTypeError": "Choose a PDF, DOC, or DOCX resume.",
+    "resumeTypeError": "Choose a PDF or DOCX resume.",
     "resumeSizeError": "The resume must be 10 MB or smaller.",
     "resumeUploadError": "We could not process this resume. Try again.",
     "dropTitle": "Drag and drop your resume here",
     "dropOr": "or",
     "browseAction": "Choose file",
-    "fileRules": "PDF, DOC, DOCX · maximum 10 MB",
+    "fileRules": "PDF, DOCX · maximum 10 MB",
     "uploadComplete": "Resume processed",
     "processingTitle": "Extracting resume information",
     "processingCopy": "Preparing editable suggestions.",
@@ -776,7 +776,18 @@
     "helpTitle": "Need help?",
     "helpCopy": "Keep your application ID for reference.",
     "helpline": "Helpline: 1930",
-    "stepsLabel": "Application progress"
+    "stepsLabel": "Application progress",
+    "resumeErrors": {
+      "RESUME_UNSUPPORTED_FORMAT": "Upload a PDF or DOCX file. Older .doc files are not supported.",
+      "RESUME_SIGNATURE_MISMATCH": "This file's contents do not match its name. Upload the original PDF or DOCX.",
+      "RESUME_ENCRYPTED": "This file is password protected. Remove the password and upload it again.",
+      "RESUME_TOO_LARGE": "This file is too large to process. Upload a resume under 10 MB.",
+      "RESUME_NO_TEXT": "No readable text was found. If this is a scanned resume, upload a text-based PDF or DOCX.",
+      "RESUME_CORRUPT": "This file could not be opened. It may be incomplete or damaged.",
+      "RESUME_EXTRACTION_FAILED": "This resume could not be read. Try uploading it again as a PDF or DOCX.",
+      "RESUME_STORAGE_UNAVAILABLE": "The uploaded resume could not be read back. Try uploading it again.",
+      "RESUME_PARSER_ERROR": "Resume processing could not be completed. Your saved profile was not changed."
+    }
   },
   "warriorDashboard": {
     "sidebarLabel": "Cyber Warrior navigation",

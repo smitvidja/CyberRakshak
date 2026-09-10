@@ -6,6 +6,7 @@ export type ResumeParsingStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "FAIL
 export type ResumeParsingResult = {
   confirmed_at: string | null;
   created_at: string;
+  error_code: string | null;
   error_message: string | null;
   extracted_data: {
     certifications?: Array<Record<string, unknown>>;

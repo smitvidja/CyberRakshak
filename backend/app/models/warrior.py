@@ -197,6 +197,9 @@ class ResumeParsingResult(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     )
     extracted_data: Mapped[dict[str, object] | None] = mapped_column(JSONB)
     error_message: Mapped[str | None] = mapped_column(Text)
+    # Stable machine code for the failure reason. The UI translates from this;
+    # error_message stays an English operator-facing fallback.
+    error_code: Mapped[str | None] = mapped_column(String(64))
     processed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 

@@ -9,6 +9,31 @@ from app.core.security import hash_password
 from app.models.enums import UserRole
 
 
+def synthetic_resume_pdf() -> bytes:
+    """A real, minimal PDF so uploads exercise the actual extraction pipeline."""
+    from fpdf import FPDF
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Helvetica", size=11)
+    for line in (
+        "Summary",
+        "Cyber safety volunteer supporting community awareness work",
+        "Bengaluru, Karnataka",
+        "Skills",
+        "Network Security, Threat Analysis",
+        "Education",
+        "Bachelor of Technology in Computer Science, Anna University College of Engineering, 2015 - 2019",
+        "Experience",
+        "Security Analyst, Aegis Cyber Solutions Pvt Ltd, 2021 - Present",
+        "Reviewed phishing reports and documented findings.",
+        "Certifications",
+        "Certified Incident Handler - EC-Council",
+    ):
+        pdf.cell(0, 6, line, new_x="LMARGIN", new_y="NEXT")
+    return bytes(pdf.output())
+
+
 def warrior_headers(client: TestClient) -> dict[str, str]:
     suffix = uuid4().hex
     email = f"warrior-{suffix}@example.com"
@@ -32,7 +57,7 @@ def test_resume_data_stays_untrusted_until_explicit_confirmation(api_client: tup
     skill = session.scalar(select(Skill).order_by(Skill.name))
     assert skill is not None
 
-    uploaded = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("resume.pdf", b"%PDF-1.4 synthetic", "application/pdf")})
+    uploaded = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("resume.pdf", synthetic_resume_pdf(), "application/pdf")})
     assert uploaded.status_code == 201
     result = uploaded.json()['data']
     assert result["status"] == "COMPLETED"
@@ -66,7 +91,7 @@ def test_resume_data_stays_untrusted_until_explicit_confirmation(api_client: tup
     parsing_row = session.get(ResumeParsingResult, result['id'])
     assert parsing_row is not None
     assert parsing_row.confirmed_at is not None
-    replacement_upload = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("updated-resume.pdf", b"%PDF-1.4 replacement", "application/pdf")})
+    replacement_upload = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("updated-resume.pdf", synthetic_resume_pdf(), "application/pdf")})
     assert replacement_upload.status_code == 201
     replacement = client.post(f"/api/v1/resume/parsing-results/{replacement_upload.json()['data']['id']}/confirm", headers=headers, json={
         "display_name": "Reviewed Warrior",
@@ -92,7 +117,7 @@ def test_resume_parser_failure_is_persisted_without_profile_changes(api_client: 
 
     from app.services import resume_service
     monkeypatch.setattr(resume_service, "get_resume_parser", lambda: FailingParser())
-    uploaded = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("resume.pdf", b"%PDF-1.4 synthetic", "application/pdf")})
+    uploaded = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("resume.pdf", synthetic_resume_pdf(), "application/pdf")})
 
     assert uploaded.status_code == 201
     assert uploaded.json()['data']["status"] == "FAILED"

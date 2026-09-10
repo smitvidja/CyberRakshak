@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     )
     local_storage_path: str = "storage"
     evidence_max_file_size: int = Field(default=10 * 1024 * 1024, ge=1)
+    # "document" runs the real extractor; "mock" is an explicit demo/test fallback and
+    # must never be the default, or every upload returns the same invented person.
+    resume_parser: str = "document"
     llm_enabled: bool = True
     llm_primary_provider: str = "gemini"
     llm_secondary_provider: str = "grok"

@@ -19,6 +19,7 @@ from app.repositories.warrior_repository import WarriorRepository
 from app.schemas.cyber_warrior import ResumeConfirmationRequest
 from app.services.audit_service import AuditService
 from app.services.notification_service import NotificationService
+from app.services.resume_extraction import ResumeExtractionError
 from app.services.resume_parser_service import get_resume_parser
 from app.services.storage_service import (
     FileTooLargeError,
@@ -41,7 +42,7 @@ class ResumeService:
         try:
             stored = await get_storage_adapter().store(upload_file, prefix="resumes")
         except (UnsupportedFileTypeError, FileTooLargeError):
-            raise APIError(status_code=422, code="INVALID_RESUME_FILE", message="Resume files must be a supported PDF, DOC, or DOCX file.") from None
+            raise APIError(status_code=422, code="INVALID_RESUME_FILE", message="Resume files must be a supported PDF or DOCX file.") from None
         except StorageError:
             raise APIError(status_code=503, code="STORAGE_UNAVAILABLE", message="Resume storage is currently unavailable.") from None
 
@@ -53,16 +54,35 @@ class ResumeService:
         )
         WarriorRepository.add(session, result)
         session.flush()
+        known_skills = [skill.name for skill in WarriorRepository.list_skills(session)]
         try:
+            content = get_storage_adapter().read(stored.storage_key)
             result.extracted_data = await get_resume_parser().parse(
-                storage_key=stored.storage_key,
+                content=content,
                 file_name=result.resume_file_name,
+                known_skills=known_skills,
             )
             result.status = ResumeParsingStatus.COMPLETED
             result.processed_at = datetime.now(timezone.utc)
-        except Exception:
+        except ResumeExtractionError as error:
+            # Expected, reviewable outcomes (encrypted, scanned, corrupt, wrong
+            # signature) get the citizen-facing reason rather than a generic failure.
+            result.status = ResumeParsingStatus.FAILED
+            result.error_message = error.message
+            result.error_code = error.code
+            result.processed_at = datetime.now(timezone.utc)
+        except (StorageError, OSError):
+            result.status = ResumeParsingStatus.FAILED
+            result.error_message = "The uploaded resume could not be read back for processing."
+            result.error_code = "RESUME_STORAGE_UNAVAILABLE"
+            result.processed_at = datetime.now(timezone.utc)
+        except Exception:  # noqa: BLE001
+            # An unexpected parser fault must still leave the citizen with a
+            # reviewable failed attempt rather than a 500, and must never touch the
+            # profile. The distinct code keeps it separable from expected outcomes.
             result.status = ResumeParsingStatus.FAILED
             result.error_message = "Resume processing could not be completed."
+            result.error_code = "RESUME_PARSER_ERROR"
             result.processed_at = datetime.now(timezone.utc)
         AuditService.record(
             session,
@@ -122,5 +142,7 @@ class ResumeService:
     @staticmethod
     def _validate_resume_type(upload_file: UploadFile) -> None:
         extension = Path(upload_file.filename or "").suffix.lower()
-        if extension not in {".pdf", ".doc", ".docx"}:
-            raise APIError(status_code=422, code="INVALID_RESUME_FILE", message="Resume files must be PDF, DOC, or DOCX.")
+        # Legacy .doc is refused rather than accepted and silently mis-parsed: there
+        # is no safe pure-Python extractor for the OLE2 format in this runtime.
+        if extension not in {".pdf", ".docx"}:
+            raise APIError(status_code=422, code="INVALID_RESUME_FILE", message="Resume files must be PDF or DOCX.")

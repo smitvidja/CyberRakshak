@@ -22,6 +22,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from tests.test_warrior_api import synthetic_resume_pdf
 from app.models import Complaint, ComplaintCategory, CyberWarriorProfile, Skill
 
 
@@ -317,7 +318,7 @@ def test_cyber_warrior_journey_from_resume_review_to_a_tracked_report(
     uploaded = client.post(
         "/api/v1/resume/upload",
         headers=headers,
-        files={"file": ("journey-resume.pdf", b"%PDF-1.4 synthetic resume", "application/pdf")},
+        files={"file": ("journey-resume.pdf", synthetic_resume_pdf(), "application/pdf")},
     )
     assert uploaded.status_code == 201
     parsed = uploaded.json()["data"]

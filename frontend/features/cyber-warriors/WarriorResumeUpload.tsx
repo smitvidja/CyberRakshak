@@ -10,7 +10,7 @@ import {resumeApi} from "@/lib/api/cyber-warriors";
 import {getWarriorToken, setWarriorResume} from "@/lib/auth/warrior-session";
 import {ApplicationError, ApplicationHeading, WarriorApplicationFrame} from "./WarriorApplicationShell";
 
-const allowedExtensions = [".pdf", ".doc", ".docx"];
+const allowedExtensions = [".pdf", ".docx"];
 const maximumBytes = 10 * 1024 * 1024;
 
 function extensionOf(name: string) {
@@ -61,7 +61,11 @@ export function WarriorResumeUpload() {
     body.append("file", file);
     const result = await resumeApi.upload(body, {accessToken: token});
     if (!result.ok || result.data.status === "FAILED") {
-      setError(result.ok ? result.data.error_message ?? t("resumeUploadError") : t("resumeUploadError"));
+      // Prefer the machine code so the reason is shown in the citizen's language;
+      // the server's English error_message is only an operator-facing fallback.
+      const code = result.ok ? result.data.error_code : null;
+      const key = code ? `resumeErrors.${code}` : "";
+      setError(code && t.has(key) ? t(key) : result.ok ? result.data.error_message ?? t("resumeUploadError") : t("resumeUploadError"));
       setPhase("failed");
       return;
     }
@@ -85,7 +89,7 @@ export function WarriorResumeUpload() {
             <Button onClick={() => fileInput.current?.click()} type="button" variant="outline">{t("browseAction")}</Button>
             <small>{t("fileRules")}</small>
             <input
-              accept=".pdf,.doc,.docx"
+              accept=".pdf,.docx"
               className="sr-only"
               onChange={(event) => chooseFile(event.target.files?.[0])}
               ref={fileInput}
