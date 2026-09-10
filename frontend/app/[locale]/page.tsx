@@ -3,7 +3,7 @@ import Link from "next/link";
 import {hasLocale} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
-import { BellRing, Bot, BookOpenCheck, ClipboardCheck, FileSearch, GraduationCap, Lightbulb, Megaphone, PhoneCall, ShieldCheck, Siren, UserRoundPlus } from "lucide-react";
+import { BellRing, Bot, BookOpenCheck, ClipboardCheck, GraduationCap, Lightbulb, Megaphone, PhoneCall, ShieldCheck, Siren, UserRoundPlus } from "lucide-react";
 
 import {routing} from "@/lib/i18n/routing";
 
@@ -52,7 +52,6 @@ export default async function LocaleHomePage({params}: Props) {
     {key: "warrior", href: `/${locale}/cyber-warrior`, icon: UserRoundPlus},
     {key: "learn", href: learningHref, icon: BellRing},
     {key: "secure", href: secureIndiaHref, icon: ShieldCheck},
-    {key: "suspects", href: `/${locale}/suspects/search`, icon: FileSearch},
     {key: "track", href: trackHref, icon: ClipboardCheck}
   ] as const;
 

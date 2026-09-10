@@ -66,7 +66,7 @@
       "citizenDashboard": "Citizen Dashboard",
       "report": "Register Complaint",
       "track": "Track Complaint",
-      "suspects": "Report / Check Suspect",
+      "suspects": "Check Suspect",
       "warriors": "Cyber Warriors",
       "learn": "Learning Corner",
       "contact": "Contact"
@@ -139,10 +139,6 @@
       "secure": {
         "title": "Secure India",
         "copy": "Practical steps for safer digital activity."
-      },
-      "suspects": {
-        "title": "Check an identifier",
-        "copy": "See whether a number, UPI ID or link was reported before."
       }
     },
     "categories": {
