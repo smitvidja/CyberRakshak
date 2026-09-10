@@ -236,3 +236,55 @@ def test_warrior_contracts_are_registered_in_openapi(api_client: tuple[TestClien
     paths = client.get("/openapi.json").json()["paths"]
     for path in ("/api/v1/cyber-warriors/profile", "/api/v1/cyber-warriors/skills", "/api/v1/resume/upload", "/api/v1/resume/parsing-results/{result_id}/confirm", "/api/v1/warrior-applications/{application_id}/submit", "/api/v1/warrior-reports/{report_id}/submit", "/api/v1/admin/warrior-applications/{application_id}/status"):
         assert path in paths
+
+
+def test_confirmation_accepts_multiple_reviewed_entries(api_client: tuple[TestClient, Session]) -> None:
+    """The review screen offers every parsed entry, so confirmation must persist them all.
+
+    Guards the replace-all transaction against the case that previously could not
+    arise, because the UI only ever sent the first row of each section.
+    """
+    client, session = api_client
+    headers = warrior_headers(client)
+    profile = create_profile(client, headers)
+    skills = session.scalars(select(Skill).order_by(Skill.name).limit(2)).all()
+    assert len(skills) == 2
+
+    uploaded = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("resume.pdf", synthetic_resume_pdf(), "application/pdf")})
+    assert uploaded.status_code == 201
+    result_id = uploaded.json()["data"]["id"]
+
+    confirmed = client.post(f"/api/v1/resume/parsing-results/{result_id}/confirm", headers=headers, json={
+        "display_name": "Reviewed Warrior",
+        "bio": "Reviewed across several roles and qualifications.",
+        "skills": [
+            {"skill_id": str(skills[0].id), "proficiency_level": "ADVANCED", "years_of_experience": 3},
+            {"skill_id": str(skills[1].id), "proficiency_level": "BEGINNER", "years_of_experience": 1},
+        ],
+        "education": [
+            {"institution": "First Institute", "degree": "BSc", "field_of_study": "Computer Science"},
+            {"institution": "Second University", "degree": "MSc", "field_of_study": "Cyber Forensics"},
+        ],
+        "experience": [
+            {"organization": "Alpha Security Pvt Ltd", "title": "Analyst", "description": "Older role.", "is_current": False},
+            {"organization": "Beta Cyber Labs", "title": "Senior Analyst", "description": "Current role.", "is_current": True},
+        ],
+        "certifications": [
+            {"name": "Incident Handling", "issuing_organization": "EC-Council"},
+            {"name": "Network Defence", "issuing_organization": "Cisco Academy"},
+        ],
+    })
+    assert confirmed.status_code == 200, confirmed.text
+    data = confirmed.json()["data"]
+    assert len(data["education"]) == 2
+    assert len(data["experience"]) == 2
+    assert len(data["certifications"]) == 2
+    assert len(data["skills"]) == 2
+    assert {item["institution"] for item in data["education"]} == {"First Institute", "Second University"}
+    assert {item["is_current"] for item in data["experience"]} == {True, False}
+
+    persisted = session.get(CyberWarriorProfile, profile["id"])
+    assert persisted is not None
+    session.refresh(persisted)
+    assert len(persisted.education) == 2
+    assert len(persisted.experience) == 2

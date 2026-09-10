@@ -486,6 +486,13 @@ button, input, select, textarea { font: inherit; }
 .warrior-skill-row { display: grid; grid-template-columns: minmax(0, 1fr) 160px 140px 42px; align-items: end; gap: 10px; }
 .warrior-remove-skill { display: grid; height: 42px; width: 42px; place-items: center; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--danger); }
 .warrior-remove-skill:hover { background: #fff2f0; }
+
+/* Repeatable resume sections (education, experience, certifications). Each entry
+   is a bordered block so it is obvious where one qualification or role ends. */
+.warrior-repeatable-entry { position: relative; margin-top: 12px; border: 1px solid var(--border); border-radius: 8px; background: #fbfcfe; padding: 14px; }
+.warrior-repeatable-entry:first-of-type { margin-top: 8px; }
+.warrior-remove-entry { display: inline-flex; margin-top: 10px; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; padding: 6px 11px; color: var(--danger); font-size: 12px; font-weight: 700; }
+.warrior-remove-entry:hover, .warrior-remove-entry:focus-visible { background: #fff2f0; }
 .warrior-application-fieldset > .warrior-skill-rows + button { margin-top: 14px; }
 .warrior-review-toolbar { display: flex; margin-top: 18px; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #b8dfc9; border-radius: 7px; background: #f1fbf5; padding: 10px 13px; }
 .warrior-review-toolbar span { display: flex; align-items: center; gap: 7px; color: #117148; font-size: 12px; font-weight: 800; }

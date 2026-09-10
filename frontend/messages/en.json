@@ -793,7 +793,18 @@
       "RESUME_EXTRACTION_FAILED": "This resume could not be read. Try uploading it again as a PDF or DOCX.",
       "RESUME_STORAGE_UNAVAILABLE": "The uploaded resume could not be read back. Try uploading it again.",
       "RESUME_PARSER_ERROR": "Resume processing could not be completed. Your saved profile was not changed."
-    }
+    },
+    "addEducationAction": "Add another qualification",
+    "addExperienceAction": "Add another role",
+    "addCertificationAction": "Add a certification",
+    "removeEducationAction": "Remove this qualification",
+    "removeExperienceAction": "Remove this role",
+    "removeCertificationAction": "Remove this certification",
+    "removeEntryAction": "Remove",
+    "currentRoleLabel": "I currently work here",
+    "noCertificationsAdded": "No certifications were found in your resume. Add one if you have it.",
+    "suggestedFromResume": "Suggested from your resume",
+    "notFoundInResume": "Not found in your resume - add it if it applies to you."
   },
   "warriorDashboard": {
     "sidebarLabel": "Cyber Warrior navigation",

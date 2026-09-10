@@ -25,39 +25,43 @@ import {
 import {ApplicationError, ApplicationHeading, WarriorApplicationFrame} from "./WarriorApplicationShell";
 
 type SkillRow = {proficiencyLevel: string; skillId: string; yearsOfExperience: string};
+type EducationRow = {degree: string; fieldOfStudy: string; institution: string};
+type ExperienceRow = {description: string; isCurrent: boolean; organization: string; title: string};
+type CertificationRow = {issuer: string; name: string};
 
 type ReviewForm = {
   bio: string;
-  certificationIssuer: string;
-  certificationName: string;
-  degree: string;
+  certifications: CertificationRow[];
   displayName: string;
-  experienceDescription: string;
-  experienceOrganization: string;
-  experienceTitle: string;
-  fieldOfStudy: string;
-  institution: string;
+  education: EducationRow[];
+  experience: ExperienceRow[];
   linkedinUrl: string;
   location: string;
   skills: SkillRow[];
   statement: string;
 };
 
-const emptyForm: ReviewForm = {
-  bio: "", certificationIssuer: "", certificationName: "", degree: "", displayName: "",
-  experienceDescription: "", experienceOrganization: "", experienceTitle: "", fieldOfStudy: "",
-  institution: "", linkedinUrl: "", location: "", skills: [], statement: ""
-};
-
 const emptySkillRow: SkillRow = {proficiencyLevel: "INTERMEDIATE", skillId: "", yearsOfExperience: ""};
+const emptyEducationRow: EducationRow = {degree: "", fieldOfStudy: "", institution: ""};
+const emptyExperienceRow: ExperienceRow = {description: "", isCurrent: false, organization: "", title: ""};
+const emptyCertificationRow: CertificationRow = {issuer: "", name: ""};
+
+const emptyForm: ReviewForm = {
+  bio: "", certifications: [], displayName: "", education: [{...emptyEducationRow}],
+  experience: [{...emptyExperienceRow}], linkedinUrl: "", location: "", skills: [], statement: ""
+};
 
 function value(record: Record<string, unknown> | undefined, key: string) {
   const candidate = record?.[key];
   return typeof candidate === "string" ? candidate : "";
 }
 
-function recordAt(items: Array<Record<string, unknown>> | undefined) {
-  return items?.[0];
+function records(items: Array<Record<string, unknown>> | undefined) {
+  return Array.isArray(items) ? items : [];
+}
+
+function flag(record: Record<string, unknown> | undefined, key: string) {
+  return record?.[key] === true;
 }
 
 export function WarriorApplicationReview() {
@@ -98,9 +102,22 @@ export function WarriorApplicationReview() {
       }
       const extracted = parsing.data.extracted_data ?? {};
       const profileData = extracted.profile;
-      const education = recordAt(extracted.education);
-      const experience = recordAt(extracted.experience);
-      const certification = recordAt(extracted.certifications);
+      // Every parsed entry is offered for review. Previously only the first of
+      // each section survived, so extra jobs or degrees were silently dropped.
+      const education = records(extracted.education).map((item) => ({
+        degree: value(item, "degree"),
+        fieldOfStudy: value(item, "field_of_study"),
+        institution: value(item, "institution")
+      }));
+      const experience = records(extracted.experience).map((item) => ({
+        description: value(item, "description"),
+        isCurrent: flag(item, "is_current"),
+        organization: value(item, "organization"),
+        title: value(item, "title")
+      }));
+      const certifications = records(extracted.certifications)
+        .map((item) => ({issuer: value(item, "issuing_organization"), name: value(item, "name")}))
+        .filter((row) => row.name);
       const profileRecord = profile.ok ? profile.data : {};
       const setup = getWarriorProfileSetup();
       const identity = getWarriorIdentity();
@@ -111,15 +128,11 @@ export function WarriorApplicationReview() {
       setSkills(catalogItems);
       setForm({
         bio: value(profileData, "bio"),
-        certificationIssuer: value(certification, "issuing_organization"),
-        certificationName: value(certification, "name"),
-        degree: value(education, "degree"),
+        certifications,
         displayName: typeof profileRecord.display_name === "string" ? profileRecord.display_name : identity?.profile.full_name ?? "",
-        experienceDescription: value(experience, "description"),
-        experienceOrganization: value(experience, "organization"),
-        experienceTitle: value(experience, "title"),
-        fieldOfStudy: value(education, "field_of_study"),
-        institution: value(education, "institution"),
+        // Always leave one editable row so a required section is never blank.
+        education: education.length ? education : [{...emptyEducationRow}],
+        experience: experience.length ? experience : [{...emptyExperienceRow}],
         linkedinUrl: typeof profileRecord.linkedin_url === "string" ? profileRecord.linkedin_url : "",
         location: value(profileData, "location") || [setup?.city, setup?.state].filter(Boolean).join(", "),
         skills: suggestedSkills.map((item) => ({...emptySkillRow, skillId: item.id})),
@@ -146,10 +159,32 @@ export function WarriorApplicationReview() {
     setForm((current) => ({...current, skills: current.skills.filter((_, rowIndex) => rowIndex !== index)}));
   }
 
+  // Repeatable sections all behave the same way, so add/update/remove is shared
+  // rather than duplicated three times.
+  type RowKey = "certifications" | "education" | "experience";
+
+  function addRow(key: RowKey) {
+    const blank = key === "education" ? {...emptyEducationRow} : key === "experience" ? {...emptyExperienceRow} : {...emptyCertificationRow};
+    setForm((current) => ({...current, [key]: [...current[key], blank]} as ReviewForm));
+  }
+
+  function updateRow(key: RowKey, index: number, patch: Record<string, unknown>) {
+    setForm((current) => ({
+      ...current,
+      [key]: current[key].map((row, rowIndex) => (rowIndex === index ? {...row, ...patch} : row))
+    } as ReviewForm));
+  }
+
+  function removeRow(key: RowKey, index: number) {
+    setForm((current) => ({...current, [key]: current[key].filter((_, rowIndex) => rowIndex !== index)} as ReviewForm));
+  }
+
   function validateDetails(event: FormEvent) {
     event.preventDefault();
     setError("");
-    if (!form.displayName.trim() || !form.institution.trim() || !form.degree.trim() || !form.experienceOrganization.trim() || !form.experienceTitle.trim()) {
+    const educationIncomplete = form.education.length === 0 || form.education.some((row) => !row.institution.trim() || !row.degree.trim());
+    const experienceIncomplete = form.experience.length === 0 || form.experience.some((row) => !row.organization.trim() || !row.title.trim());
+    if (!form.displayName.trim() || educationIncomplete || experienceIncomplete) {
       setError(t("requiredDetailsError"));
       return;
     }
@@ -167,22 +202,21 @@ export function WarriorApplicationReview() {
     if (!result.confirmed_at) {
       const confirmed = await resumeApi.confirmParsing(resume.resultId, {
         bio: form.bio || null,
-        certifications: form.certificationName ? [{
-          issuing_organization: form.certificationIssuer || null,
-          name: form.certificationName
-        }] : [],
+        certifications: form.certifications
+          .filter((row) => row.name.trim())
+          .map((row) => ({issuing_organization: row.issuer.trim() || null, name: row.name.trim()})),
         display_name: form.displayName,
-        education: [{
-          degree: form.degree,
-          field_of_study: form.fieldOfStudy || null,
-          institution: form.institution
-        }],
-        experience: [{
-          description: form.experienceDescription || null,
-          is_current: true,
-          organization: form.experienceOrganization,
-          title: form.experienceTitle
-        }],
+        education: form.education.map((row) => ({
+          degree: row.degree.trim(),
+          field_of_study: row.fieldOfStudy.trim() || null,
+          institution: row.institution.trim()
+        })),
+        experience: form.experience.map((row) => ({
+          description: row.description.trim() || null,
+          is_current: row.isCurrent,
+          organization: row.organization.trim(),
+          title: row.title.trim()
+        })),
         github_url: null,
         linkedin_url: form.linkedinUrl || null,
         location: form.location || null,
@@ -253,9 +287,9 @@ export function WarriorApplicationReview() {
         </div>
         <div className="warrior-review-sections">
           <section><h3>{t("personalTitle")}</h3><dl><div><dt>{t("fullName")}</dt><dd>{form.displayName}</dd></div><div><dt>{t("email")}</dt><dd>{identity?.accountEmail}</dd></div><div><dt>{t("location")}</dt><dd>{form.location || t("notProvided")}</dd></div><div className="wide"><dt>{t("skillsLabel")}</dt><dd>{selectedSkillNames.length ? selectedSkillNames.join(", ") : t("notProvided")}</dd></div></dl></section>
-          <section><h3>{t("educationTitle")}</h3><dl><div><dt>{t("institution")}</dt><dd>{form.institution}</dd></div><div><dt>{t("degree")}</dt><dd>{form.degree}</dd></div><div><dt>{t("fieldOfStudy")}</dt><dd>{form.fieldOfStudy || t("notProvided")}</dd></div></dl></section>
-          <section><h3>{t("experienceTitle")}</h3><dl><div><dt>{t("organization")}</dt><dd>{form.experienceOrganization}</dd></div><div><dt>{t("role")}</dt><dd>{form.experienceTitle}</dd></div><div className="wide"><dt>{t("experienceDetails")}</dt><dd>{form.experienceDescription || t("notProvided")}</dd></div></dl></section>
-          <section><h3>{t("certificationTitle")}</h3><dl><div><dt>{t("certificationName")}</dt><dd>{form.certificationName || t("notProvided")}</dd></div><div><dt>{t("issuer")}</dt><dd>{form.certificationIssuer || t("notProvided")}</dd></div></dl></section>
+          <section><h3>{t("educationTitle")}</h3>{form.education.map((row, index) => <dl key={index}><div><dt>{t("institution")}</dt><dd>{row.institution}</dd></div><div><dt>{t("degree")}</dt><dd>{row.degree}</dd></div><div><dt>{t("fieldOfStudy")}</dt><dd>{row.fieldOfStudy || t("notProvided")}</dd></div></dl>)}</section>
+          <section><h3>{t("experienceTitle")}</h3>{form.experience.map((row, index) => <dl key={index}><div><dt>{t("organization")}</dt><dd>{row.organization}</dd></div><div><dt>{t("role")}</dt><dd>{row.title}{row.isCurrent ? " - " + t("currentRoleLabel") : ""}</dd></div><div className="wide"><dt>{t("experienceDetails")}</dt><dd>{row.description || t("notProvided")}</dd></div></dl>)}</section>
+          <section><h3>{t("certificationTitle")}</h3>{form.certifications.length === 0 ? <p className="warrior-skills-empty">{t("notProvided")}</p> : form.certifications.map((row, index) => <dl key={index}><div><dt>{t("certificationName")}</dt><dd>{row.name}</dd></div><div><dt>{t("issuer")}</dt><dd>{row.issuer || t("notProvided")}</dd></div></dl>)}</section>
         </div>
         <TextArea id="warrior-statement" label={t("statement")} maxLength={5000} onChange={(event) => update("statement", event.target.value)} value={form.statement} />
         <div className="warrior-declaration">
@@ -322,9 +356,49 @@ export function WarriorApplicationReview() {
           </div>
           <Button onClick={addSkillRow} size="sm" type="button" variant="outline"><Plus aria-hidden="true" size={16} />{t("addSkillAction")}</Button>
         </fieldset>
-        <fieldset className="warrior-application-fieldset"><legend><GraduationCap size={18} />{t("educationTitle")}</legend><div className="warrior-application-form-grid"><TextInput id="warrior-institution" label={t("institution")} onChange={(event) => update("institution", event.target.value)} required value={form.institution} /><TextInput id="warrior-degree" label={t("degree")} onChange={(event) => update("degree", event.target.value)} required value={form.degree} /><TextInput id="warrior-field" label={t("fieldOfStudy")} onChange={(event) => update("fieldOfStudy", event.target.value)} value={form.fieldOfStudy} /></div></fieldset>
-        <fieldset className="warrior-application-fieldset"><legend>{t("experienceTitle")}</legend><div className="warrior-application-form-grid"><TextInput id="warrior-organization" label={t("organization")} onChange={(event) => update("experienceOrganization", event.target.value)} required value={form.experienceOrganization} /><TextInput id="warrior-role" label={t("role")} onChange={(event) => update("experienceTitle", event.target.value)} required value={form.experienceTitle} /></div><TextArea id="warrior-experience" label={t("experienceDetails")} onChange={(event) => update("experienceDescription", event.target.value)} value={form.experienceDescription} /></fieldset>
-        <fieldset className="warrior-application-fieldset"><legend>{t("certificationTitle")}</legend><div className="warrior-application-form-grid"><TextInput id="warrior-certificate" label={t("certificationName")} onChange={(event) => update("certificationName", event.target.value)} value={form.certificationName} /><TextInput id="warrior-issuer" label={t("issuer")} onChange={(event) => update("certificationIssuer", event.target.value)} value={form.certificationIssuer} /></div></fieldset>
+        <fieldset className="warrior-application-fieldset">
+          <legend><GraduationCap size={18} />{t("educationTitle")}</legend>
+          {form.education.map((row, index) => (
+            <div className="warrior-repeatable-entry" key={index}>
+              <div className="warrior-application-form-grid">
+                <TextInput id={"warrior-institution-" + index} label={t("institution")} onChange={(event) => updateRow("education", index, {institution: event.target.value})} required value={row.institution} />
+                <TextInput id={"warrior-degree-" + index} label={t("degree")} onChange={(event) => updateRow("education", index, {degree: event.target.value})} required value={row.degree} />
+                <TextInput id={"warrior-field-" + index} label={t("fieldOfStudy")} onChange={(event) => updateRow("education", index, {fieldOfStudy: event.target.value})} value={row.fieldOfStudy} />
+              </div>
+              {form.education.length > 1 ? <button className="warrior-remove-entry" onClick={() => removeRow("education", index)} type="button"><Trash2 aria-hidden="true" size={16} />{t("removeEducationAction")}</button> : null}
+            </div>
+          ))}
+          <Button onClick={() => addRow("education")} size="sm" type="button" variant="outline"><Plus aria-hidden="true" size={16} />{t("addEducationAction")}</Button>
+        </fieldset>
+        <fieldset className="warrior-application-fieldset">
+          <legend>{t("experienceTitle")}</legend>
+          {form.experience.map((row, index) => (
+            <div className="warrior-repeatable-entry" key={index}>
+              <div className="warrior-application-form-grid">
+                <TextInput id={"warrior-organization-" + index} label={t("organization")} onChange={(event) => updateRow("experience", index, {organization: event.target.value})} required value={row.organization} />
+                <TextInput id={"warrior-role-" + index} label={t("role")} onChange={(event) => updateRow("experience", index, {title: event.target.value})} required value={row.title} />
+              </div>
+              <TextArea id={"warrior-experience-" + index} label={t("experienceDetails")} onChange={(event) => updateRow("experience", index, {description: event.target.value})} value={row.description} />
+              <CheckboxField checked={row.isCurrent} id={"warrior-current-" + index} label={t("currentRoleLabel")} onCheckedChange={(event) => updateRow("experience", index, {isCurrent: event.target.checked})} />
+              {form.experience.length > 1 ? <button className="warrior-remove-entry" onClick={() => removeRow("experience", index)} type="button"><Trash2 aria-hidden="true" size={16} />{t("removeExperienceAction")}</button> : null}
+            </div>
+          ))}
+          <Button onClick={() => addRow("experience")} size="sm" type="button" variant="outline"><Plus aria-hidden="true" size={16} />{t("addExperienceAction")}</Button>
+        </fieldset>
+        <fieldset className="warrior-application-fieldset">
+          <legend>{t("certificationTitle")}</legend>
+          {form.certifications.length === 0 ? <p className="warrior-skills-empty">{t("noCertificationsAdded")}</p> : null}
+          {form.certifications.map((row, index) => (
+            <div className="warrior-repeatable-entry" key={index}>
+              <div className="warrior-application-form-grid">
+                <TextInput id={"warrior-certificate-" + index} label={t("certificationName")} onChange={(event) => updateRow("certifications", index, {name: event.target.value})} value={row.name} />
+                <TextInput id={"warrior-issuer-" + index} label={t("issuer")} onChange={(event) => updateRow("certifications", index, {issuer: event.target.value})} value={row.issuer} />
+              </div>
+              <button className="warrior-remove-entry" onClick={() => removeRow("certifications", index)} type="button"><Trash2 aria-hidden="true" size={16} />{t("removeCertificationAction")}</button>
+            </div>
+          ))}
+          <Button onClick={() => addRow("certifications")} size="sm" type="button" variant="outline"><Plus aria-hidden="true" size={16} />{t("addCertificationAction")}</Button>
+        </fieldset>
         <ApplicationError message={error} />
         <footer className="warrior-application-actions">
           <Button onClick={() => router.push("/" + locale + "/cyber-warrior/apply/resume")} type="button" variant="outline"><ArrowLeft size={17} />{t("backUpload")}</Button>

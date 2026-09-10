@@ -793,7 +793,18 @@
       "RESUME_EXTRACTION_FAILED": "यह रिज़्यूमे पढ़ा नहीं जा सका। इसे PDF या DOCX के रूप में दोबारा अपलोड करें।",
       "RESUME_STORAGE_UNAVAILABLE": "अपलोड किया गया रिज़्यूमे दोबारा पढ़ा नहीं जा सका। कृपया फिर से अपलोड करें।",
       "RESUME_PARSER_ERROR": "रिज़्यूमे प्रोसेसिंग पूरी नहीं हो सकी। आपकी सहेजी गई प्रोफ़ाइल नहीं बदली गई।"
-    }
+    },
+    "addEducationAction": "एक और योग्यता जोड़ें",
+    "addExperienceAction": "एक और भूमिका जोड़ें",
+    "addCertificationAction": "प्रमाणपत्र जोड़ें",
+    "removeEducationAction": "यह योग्यता हटाएँ",
+    "removeExperienceAction": "यह भूमिका हटाएँ",
+    "removeCertificationAction": "यह प्रमाणपत्र हटाएँ",
+    "removeEntryAction": "हटाएँ",
+    "currentRoleLabel": "मैं वर्तमान में यहाँ कार्यरत हूँ",
+    "noCertificationsAdded": "आपके रिज़्यूमे में कोई प्रमाणपत्र नहीं मिला। यदि आपके पास है तो जोड़ें।",
+    "suggestedFromResume": "आपके रिज़्यूमे से सुझाया गया",
+    "notFoundInResume": "आपके रिज़्यूमे में नहीं मिला - यदि लागू हो तो जोड़ें।"
   },
   "warriorDashboard": {
     "sidebarLabel": "साइबर वारियर नेविगेशन",
