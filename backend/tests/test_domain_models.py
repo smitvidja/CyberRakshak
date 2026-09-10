@@ -27,6 +27,7 @@ APPROVED_TABLES = {
     "citizen_profiles",
     "complaint_categories",
     "complaint_locations",
+    "complaint_access_grants",
     "complaint_status_history",
     "complaint_suspects",
     "complaints",

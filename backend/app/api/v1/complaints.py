@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Header, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db_session
@@ -13,11 +13,14 @@ from app.schemas.complaint import (
     ComplaintDraftCreate,
     ComplaintDraftUpdate,
     ComplaintResponse,
+    ComplaintSubmittedResponse,
     ComplaintStatusHistoryResponse,
     ComplaintSummaryResponse,
     ComplaintTrackingHistoryItem,
     ComplaintTrackingResponse,
 )
+from app.services.complaint_document_service import ComplaintDocumentService
+from app.services.complaint_pdf_renderer import render_complaint_copy
 from app.services.complaint_service import ComplaintService
 
 router = APIRouter(prefix="/complaints", tags=["complaints"])
@@ -71,7 +74,7 @@ def update_complaint_draft(
 
 @router.post(
     "/{complaint_id}/submit",
-    response_model=SuccessResponse[ComplaintResponse],
+    response_model=SuccessResponse[ComplaintSubmittedResponse],
     responses={
         401: {"model": ErrorResponse},
         403: {"model": ErrorResponse},
@@ -84,9 +87,10 @@ def submit_complaint(
     session: Annotated[Session, Depends(get_db_session)],
     current_user: Annotated[User | None, Depends(get_optional_current_user)],
 ) -> dict[str, object]:
-    complaint = ComplaintService.submit(session, complaint_id, current_user)
+    complaint, access_token = ComplaintService.submit(session, complaint_id, current_user)
+    payload = ComplaintSubmittedResponse.model_validate(complaint)
     return success_response(
-        ComplaintResponse.model_validate(complaint),
+        payload.model_copy(update={"access_token": access_token}),
         message="Complaint submitted.",
     )
 
@@ -167,4 +171,41 @@ def get_complaint_status_history(
     history = sorted(complaint.status_history, key=lambda item: item.created_at)
     return success_response(
         [ComplaintStatusHistoryResponse.model_validate(item) for item in history]
+    )
+
+
+@router.get(
+    "/{complaint_id}/copy",
+    responses={
+        200: {"content": {"application/pdf": {}}, "description": "Complaint copy PDF"},
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+    },
+)
+def download_complaint_copy(
+    complaint_id: UUID,
+    session: Annotated[Session, Depends(get_db_session)],
+    current_user: Annotated[User | None, Depends(get_optional_current_user)],
+    x_complaint_access_token: Annotated[str | None, Header()] = None,
+) -> Response:
+    """Return a PDF copy of one submitted complaint.
+
+    Identified complaints authorize through the owner's session; anonymous ones
+    through a scoped capability carried in a header, never in the URL, so the
+    capability cannot leak via history, referrers or access logs.
+    """
+    complaint = ComplaintDocumentService.authorize(session, complaint_id, current_user, x_complaint_access_token)
+    document = ComplaintDocumentService.build(complaint)
+    pdf_bytes = render_complaint_copy(document)
+    # The filename is built from the server-side complaint number only.
+    safe_number = "".join(ch for ch in complaint.complaint_number if ch.isalnum() or ch in "-_")
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="CyberRakshak-Complaint-{safe_number}.pdf"',
+            "Cache-Control": "no-store, private",
+            "X-Content-Type-Options": "nosniff",
+        },
     )

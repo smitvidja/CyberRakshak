@@ -34,6 +34,18 @@ class ComplaintSuspectInput(BaseModel):
     description: str | None = None
 
 
+def strip_control_characters(value: str | None) -> str | None:
+    """Remove control bytes from citizen-supplied text.
+
+    PostgreSQL rejects NUL (0x00) in text columns, so a description containing one
+    used to surface as an unhandled DataError. Control bytes also have no meaning
+    in a complaint and would otherwise flow into generated documents.
+    """
+    if value is None:
+        return None
+    return "".join(ch for ch in value if ch in (chr(10), chr(9)) or ch >= " ")
+
+
 class ComplaintDraftCreate(BaseModel):
     category_id: UUID
     is_anonymous: bool
@@ -52,6 +64,12 @@ class ComplaintDraftCreate(BaseModel):
     def reject_future_incident(cls, value: datetime | None) -> datetime | None:
         return validate_incident_at(value)
 
+    @field_validator("title", "description", "affected_person_name")
+    @classmethod
+    def clean_text(cls, value: str | None) -> str | None:
+        return strip_control_characters(value)
+
+
 
 class ComplaintDraftUpdate(BaseModel):
     category_id: UUID | None = None
@@ -69,6 +87,12 @@ class ComplaintDraftUpdate(BaseModel):
     @classmethod
     def reject_future_incident(cls, value: datetime | None) -> datetime | None:
         return validate_incident_at(value)
+
+    @field_validator("title", "description", "affected_person_name")
+    @classmethod
+    def clean_text(cls, value: str | None) -> str | None:
+        return strip_control_characters(value)
+
 
 
 class ComplaintCategoryResponse(BaseModel):
@@ -125,6 +149,16 @@ class ComplaintStatusHistoryResponse(BaseModel):
     status: ComplaintStatus
     note: str | None
     created_at: datetime
+
+
+class ComplaintSubmittedResponse(ComplaintResponse):
+    """Submission response, plus the one-time anonymous access capability.
+
+    `access_token` is present only for anonymous complaints and is shown exactly
+    once: only its digest is stored server-side.
+    """
+
+    access_token: str | None = None
 
 
 class ComplaintTrackingHistoryItem(BaseModel):

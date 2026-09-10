@@ -157,3 +157,29 @@ class ComplaintStatusHistory(UUIDPrimaryKeyMixin, Base):
     )
 
     complaint: Mapped[Complaint] = relationship(back_populates="status_history")
+
+
+class ComplaintAccessGrant(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    """Scoped capability letting an anonymous reporter retrieve their own copy.
+
+    Deliberately separate from the public complaint number: a complaint number is
+    a tracking reference many people may see, and must never by itself unlock the
+    complaint body. Only a SHA-256 digest of the capability is stored, so the
+    table cannot be read to recover a working token. The row carries no identity
+    column of any kind - granting access must not create a link to a person.
+    """
+
+    __tablename__ = "complaint_access_grants"
+    __table_args__ = (
+        Index("ix_complaint_access_grants_token_hash", "token_hash", unique=True),
+        Index("ix_complaint_access_grants_complaint_id", "complaint_id"),
+    )
+
+    complaint_id: Mapped[UUID] = mapped_column(
+        ForeignKey("complaints.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    token_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

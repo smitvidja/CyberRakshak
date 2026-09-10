@@ -124,7 +124,7 @@ class ComplaintService:
         session: Session,
         complaint_id: UUID,
         current_user: User | None,
-    ) -> Complaint:
+    ) -> tuple[Complaint, str | None]:
         complaint = ComplaintService._get_editable_complaint(
             session, complaint_id, current_user
         )
@@ -155,8 +155,14 @@ class ComplaintService:
                 message="Your complaint has been submitted for review.",
                 data={"complaint_number": complaint.complaint_number},
             )
+        # An anonymous complaint has no owner to authorize a later download, so a
+        # scoped capability is minted here and returned exactly once. Imported
+        # locally because the document service depends on this module.
+        from app.services.complaint_document_service import ComplaintDocumentService
+
+        access_token = ComplaintDocumentService.issue_anonymous_grant(session, complaint)
         session.commit()
-        return ComplaintService._get_details_or_not_found(session, complaint.id)
+        return ComplaintService._get_details_or_not_found(session, complaint.id), access_token
 
     @staticmethod
     def list_my_complaints(session: Session, current_user: User) -> list[Complaint]:

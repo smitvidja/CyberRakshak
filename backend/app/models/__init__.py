@@ -1,6 +1,7 @@
 from app.models.base import Base
 from app.models.complaint import (
     Complaint,
+    ComplaintAccessGrant,
     ComplaintCategory,
     ComplaintLocation,
     ComplaintStatusHistory,
@@ -29,6 +30,7 @@ __all__ = [
     "Base",
     "CitizenProfile",
     "Complaint",
+    "ComplaintAccessGrant",
     "ComplaintCategory",
     "ComplaintLocation",
     "ComplaintStatusHistory",
