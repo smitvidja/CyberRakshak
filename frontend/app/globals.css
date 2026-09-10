@@ -69,13 +69,6 @@ button, input, select, textarea { font: inherit; }
 .resources-public-page h1 { color: var(--navy); font-size: 26px; font-weight: 800; }
 .resources-public-page > p { max-width: 68ch; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-/* Home page "Upcoming Features" panel - amber/gold highlight, deliberately a
-   different color from the blue used everywhere else on the site, so it reads
-   at a glance as "not live yet" rather than blending in with real features. */
-.upcoming-features-badge { display: inline-block; border-radius: 999px; background: #f0a94e; padding: 6px 14px; color: #4a2c00; font-size: 12px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
-.upcoming-feature-tile { text-decoration: none; transition: background-color .15s; }
-
-
 /* Contact / support page */
 .contact-page { padding: 28px 0 44px; display: grid; gap: 26px; }
 .contact-intro h1 { margin-top: 6px; color: var(--navy); font-size: 28px; font-weight: 800; }

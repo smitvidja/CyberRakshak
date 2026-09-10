@@ -184,19 +184,6 @@
         "title": "Cyber security tips",
         "copy": "Simple steps to protect your digital life every day."
       }
-    },
-    "upcomingBadge": "Upcoming feature",
-    "upcomingTitle": "What's coming next",
-    "upcomingCopy": "These two are planned but not built yet. Everything else that used to be listed here is now live and linked above.",
-    "upcoming": {
-      "speechToText": {
-        "title": "Speech-to-text for reports",
-        "copy": "Speak your incident description instead of typing it, for long descriptive fields."
-      },
-      "regionalLanguages": {
-        "title": "More regional languages",
-        "copy": "Gujarati, Assamese, Kannada, Telugu, and more - beyond today's English and Hindi."
-      }
     }
   },
   "validation": {
