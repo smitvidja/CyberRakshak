@@ -199,9 +199,23 @@ class UnderstandingEngine:
     def response_language(
         detected: LanguageCode, preferred_language: LanguageCode | None
     ) -> LanguageCode:
+        """Choose the language to answer in.
+
+        A conversation set to Hindi or Hinglish is answered in that language even
+        when a single message looks like something else. Someone who has selected
+        हिन्दी and then types a romanised line is still asking for Hindi, and
+        silently switching on them was ignoring an explicit instruction.
+
+        English is treated as the interface default rather than a choice, so an
+        English conversation still adopts a citizen who writes in Hindi or
+        Hinglish. This mirrors CyberSaathiService._resolve_response_language, so
+        the two layers can no longer disagree about the answer language.
+        """
+        if preferred_language in {LanguageCode.HI, LanguageCode.HINGLISH}:
+            return preferred_language
         if detected != LanguageCode.MIXED:
             return detected
-        if preferred_language in {LanguageCode.EN, LanguageCode.HI, LanguageCode.HINGLISH}:
+        if preferred_language == LanguageCode.EN:
             return preferred_language
         return LanguageCode.HINGLISH
 

@@ -1,3 +1,4 @@
+import re
 from datetime import date, timedelta
 
 import pytest
@@ -349,3 +350,49 @@ def test_required_taxonomy_routes_are_explicit(
 
     assert result.intent == expected_intent
     assert result.crime_domain == expected_domain
+
+
+def test_explicit_language_selection_is_not_overridden_by_message_style() -> None:
+    """A citizen who selects हिन्दी keeps getting Hindi even if they type romanised.
+
+    Detection used to win outright, so one Hinglish-looking line silently
+    switched the conversation away from the language the citizen had chosen.
+    English is still treated as the interface default, so an English
+    conversation continues to adopt a citizen writing in Hindi or Hinglish.
+    """
+    hi = LanguageCode.HI
+    hinglish = LanguageCode.HINGLISH
+    en = LanguageCode.EN
+
+    # explicit selections stick
+    assert UnderstandingEngine.response_language(hinglish, hi) is hi
+    assert UnderstandingEngine.response_language(en, hi) is hi
+    assert UnderstandingEngine.response_language(hi, hinglish) is hinglish
+
+    # the English default still adapts to the citizen
+    assert UnderstandingEngine.response_language(hinglish, en) is hinglish
+    assert UnderstandingEngine.response_language(hi, en) is hi
+
+    # no stated preference falls back to what was detected
+    assert UnderstandingEngine.response_language(hinglish, None) is hinglish
+
+
+def test_hindi_conversation_answers_in_devanagari_after_a_romanised_message() -> None:
+    client = TestClient(app)
+    started = client.post(
+        "/api/v1/cyber-saathi/conversations",
+        json={"language": "HI", "storage_consent": False, "reporting_mode": "undecided"},
+    )
+    assert started.status_code == 201, started.text
+    state = started.json()["data"]["state"]
+    assert re.search(r"[ऀ-ॿ]", state["turns"][0]["content"]), "welcome must be Hindi"
+
+    replied = client.post(
+        f"/api/v1/cyber-saathi/conversations/{state['id']}/messages",
+        json={"state": state, "message": "mere sath kya hua pata hai"},
+    )
+    assert replied.status_code == 200, replied.text
+    next_state = replied.json()["data"]["state"]
+    assert next_state["language"] == "HI"
+    answer = [turn for turn in next_state["turns"] if turn["role"] == "assistant"][-1]["content"]
+    assert re.search(r"[ऀ-ॿ]", answer), f"expected Hindi, got: {answer}"
