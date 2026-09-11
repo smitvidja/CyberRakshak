@@ -38,9 +38,13 @@ def setup_module() -> None:
 def test_explicit_ingestion_creates_a_persistent_traceable_index(tmp_path) -> None:
     result = rebuild_index(tmp_path / "knowledge_index.json")
 
+    pack = load_source_pack()
     assert result["status"] == "passed"
-    assert result["source_count"] == 14
-    assert result["chunk_count"] == 32
+    # Tied to the source pack rather than pinned numbers: the corpus is meant to
+    # grow, and a magic count turns every genuine addition into a failing test
+    # that says nothing about whether ingestion worked.
+    assert result["source_count"] == len(pack.sources)
+    assert result["chunk_count"] == len(build_index(pack)["chunks"])
     assert result["embedding_dimension"] == 384
     assert result["index_bytes"] < MAX_INDEX_BYTES
     assert INDEX_PATH.exists()
@@ -104,7 +108,9 @@ def test_persisted_index_is_read_by_a_fresh_python_process() -> None:
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert completed.stdout.strip().endswith("2026.09.3.3 False")
+    # index_version tracks the source pack version; no_result False means the
+    # persisted index was actually loaded and searched, not silently empty.
+    assert completed.stdout.strip().endswith(f"{load_source_pack().version} False")
 
 
 def test_stale_or_tampered_index_fails_closed(tmp_path, monkeypatch) -> None:
