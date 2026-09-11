@@ -64,7 +64,7 @@ flowchart TD
 
 ## Handoff
 
-Phase 8 can assume the MVP is functionally complete and focus on deployment, demo data, public-link verification, final polish, and hackathon submission.
+Phase 8 can assume the MVP is functionally complete and focus on deployment, demo data, public-link verification, and final polish.
 
 # SESSION 7.1 — Contract, Migration, and Backend Integration Test Pass
 

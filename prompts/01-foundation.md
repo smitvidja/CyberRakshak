@@ -394,7 +394,7 @@ None. This is a workflow session.
 
 ## Architecture Constraints
 
-- Do not add heavyweight tooling that conflicts with the hackathon scope.
+- Do not add heavyweight tooling that conflicts with the MVP scope.
 - Do not introduce a second package manager without approval.
 - Keep frontend and backend independently runnable.
 

@@ -68,7 +68,7 @@ flowchart TD
 
 ## Handoff
 
-Phase 6 can reuse citizen journey shell/components/API patterns for Cyber Warrior flows. Phase 7 can test the citizen journey end-to-end as a primary hackathon path.
+Phase 6 can reuse citizen journey shell/components/API patterns for Cyber Warrior flows. Phase 7 can test the citizen journey end-to-end as a primary demo path.
 
 # SESSION 5.1 — Report Entry, Identity Branch, and Citizen Dashboard Shell
 

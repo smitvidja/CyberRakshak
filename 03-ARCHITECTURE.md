@@ -1,6 +1,6 @@
 # 03 - Architecture
 
-CyberRakshak is a monorepo-style full-stack MVP with a Next.js frontend, FastAPI backend, PostgreSQL database, object storage, and an optional resume parser / AI adapter. The architecture is production-shaped but hackathon-appropriate.
+CyberRakshak is a monorepo-style full-stack MVP with a Next.js frontend, FastAPI backend, PostgreSQL database, object storage, and an optional resume parser / AI adapter. The architecture is production-shaped and deliberately kept to infrastructure a small team can actually run.
 
 ## System Architecture
 
@@ -154,4 +154,4 @@ Mock or synthetic:
 - Admin review outcomes for demo data.
 - Resume parser responses if no safe parser is available.
 
-Never integrate with live government systems, private government APIs, or real restricted identity/payment data during the hackathon MVP.
+Never integrate with live government systems, private government APIs, or real restricted identity/payment data.

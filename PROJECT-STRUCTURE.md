@@ -36,7 +36,7 @@ CyberRakshak/
 │   ├── 05-victim-citizen-journey.md
 │   ├── 06-cyber-warrior-journey.md
 │   ├── 07-integration-testing.md
-│   └── 08-production-hackathon-readiness.md
+│   └── 08-production-readiness.md
 ├── frontend/
 │   ├── app/
 │   │   ├── [locale]/

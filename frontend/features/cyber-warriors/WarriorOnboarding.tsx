@@ -60,8 +60,8 @@ export function WarriorLanding() {
     title: t(`duty${number}Title`)
   }));
 
-  // Checked client-side only (never during initial render - see hydration rule in
-  // codex-session-time-waste-fixes) so a returning, already-verified warrior sees a
+  // Checked client-side only, after mount (never during initial render - see the
+  // hydration rule), so a returning, already-verified warrior sees a
   // "continue as you" choice here instead of being forced back through identity
   // verification every time they land on this page (that was the routing bug: Home ->
   // Cyber Warriors always re-prompted for the 14-digit demo Aadhaar even mid-session).

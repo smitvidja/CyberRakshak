@@ -62,7 +62,7 @@ export function ReportTypeChoice() {
   }, [locale, router]);
 
   // Checked client-side only, after mount (never during initial render - see the hydration
-  // rule in codex-session-time-waste-fixes), so a returning, already-verified citizen sees a
+  // rule), so a returning, already-verified citizen sees a
   // "continue as you" choice here instead of being forced back through identity verification
   // every time they land on this page.
   const [existingCitizen, setExistingCitizen] = useState<{name: string} | null>(null);

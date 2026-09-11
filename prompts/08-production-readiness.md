@@ -1,8 +1,8 @@
-# PHASE 8 — Production Readiness & Hackathon Submission
+# PHASE 8 — Production Readiness & Release
 
 ## Purpose
 
-Prepare CyberRakshak for hackathon demo/submission: deployment, environment configuration, public URL verification, demo data, final security/product disclosure, performance basics, mobile polish, and a reliable two-minute demo path.
+Prepare CyberRakshak for public demo and release: deployment, environment configuration, public URL verification, demo data, final security/product disclosure, performance basics, mobile polish, and a reliable two-minute demo path.
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ flowchart TD
   Complete --> Docs[README/submission notes]
   PublicURLs --> Smoke[Final smoke tests]
   DemoData --> Smoke
-  Docs --> Submission[Hackathon submission]
+  Docs --> Submission[Release]
 ```
 
 ## Sessions
@@ -65,7 +65,7 @@ flowchart TD
 
 ## Handoff
 
-The project is ready for hackathon submission or final user review.
+The project is ready for release or final user review.
 
 # SESSION 8.1 — Deployment Configuration and Environment Readiness
 
@@ -171,7 +171,7 @@ Session 8.2 can prepare demo data, disclosures, README, and submission materials
 
 ## Objective
 
-Prepare safe demo data, mock credentials, final documentation, and compliance notes for hackathon review.
+Prepare safe demo data, mock credentials, final documentation, and compliance notes for release review.
 
 ## Required Context
 
@@ -372,4 +372,4 @@ flowchart TD
 
 ## Handoff
 
-CyberRakshak is ready for hackathon submission or final user approval.
+CyberRakshak is ready for release or final user approval.

@@ -127,7 +127,7 @@ CyberRakshak is not connected to live police, government, bank, UIDAI, telecom, 
 
 ## 3.6 Performance and resource constraints
 
-- Keep the local architecture lightweight and hackathon-appropriate.
+- Keep the local architecture lightweight and runnable by a small team.
 - Do not add Elasticsearch/OpenSearch, a heavyweight GIS server, a distributed queue, a local LLM, or a large startup-time index.
 - Load map/search datasets through bounded, versioned application APIs or build-time/static assets as appropriate.
 - Lazy-load genuinely heavy map code and avoid blocking the page's useful first render.

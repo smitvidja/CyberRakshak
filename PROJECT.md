@@ -1,6 +1,6 @@
 # CyberRakshak Project
 
-CyberRakshak is a hackathon MVP for a modern cyber-crime reporting and cyber-volunteer experience for Indian users. It must help citizens report cyber incidents clearly, help volunteers submit useful cyber reports, and remain honest about mocked or synthetic dependencies.
+CyberRakshak is a working prototype of a modern cyber-crime reporting and cyber-volunteer experience for Indian users. It must help citizens report cyber incidents clearly, help volunteers submit useful cyber reports, and remain honest about mocked or synthetic dependencies.
 
 ## Problem
 
@@ -104,7 +104,7 @@ Cyber Warriors report suspicious activity. They do not investigate, determine gu
 
 ## Mocked Dependencies
 
-- Identity verification, Aadhaar/eKYC labels, OTP flows, complaint status updates, authority updates, and admin decisions must be mocked for the hackathon unless a safe approved provider is explicitly introduced.
+- Identity verification, Aadhaar/eKYC labels, OTP flows, complaint status updates, authority updates, and admin decisions must be mocked unless a safe approved provider is explicitly introduced.
 - Mocked dependencies must be disclosed in user-facing or submission materials.
 - Do not use real identity documents, real restricted personal information, or private government APIs.
 
