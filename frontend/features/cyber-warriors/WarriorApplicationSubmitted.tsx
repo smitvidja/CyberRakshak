@@ -41,6 +41,7 @@ export function WarriorApplicationSubmitted() {
 
   useEffect(() => {
     const cachedApplication = getWarriorApplication();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only session read; a lazy initializer would disagree with the server snapshot
     if (cachedApplication) setApplication(cachedApplication);
     setIdentityEmail(getWarriorIdentity()?.accountEmail ?? "");
     void refresh();

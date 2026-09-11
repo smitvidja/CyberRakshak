@@ -3,7 +3,7 @@
 import {useEffect, useState, type FormEvent} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useRouter} from "next/navigation";
-import {ArrowLeft, ArrowRight, CheckCircle2, Edit3, GraduationCap, Plus, ShieldCheck, Sparkles, Trash2} from "lucide-react";
+import {ArrowLeft, ArrowRight, CheckCircle2, Edit3, GraduationCap, Plus, Sparkles, Trash2} from "lucide-react";
 
 import {Button} from "@/components/ui/Button";
 import {CheckboxField, SelectField, TextArea, TextInput} from "@/components/ui/FormFields";

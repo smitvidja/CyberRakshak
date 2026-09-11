@@ -33,6 +33,7 @@ export function WarriorReportDetails({reportId}: {reportId: string}) {
       router.replace("/" + locale + "/cyber-warrior/verify");
       return;
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only session read; a lazy initializer would disagree with the server snapshot
     setToken(currentToken);
     let active = true;
     Promise.all([

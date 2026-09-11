@@ -49,7 +49,6 @@ export function WarriorDashboard() {
   const [data, setData] = useState<DashboardData>(emptyData);
   const [loading, setLoading] = useState(true);
   const [failedSources, setFailedSources] = useState<string[]>([]);
-  const [token, setToken] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const currentToken = getWarriorToken();
@@ -57,8 +56,6 @@ export function WarriorDashboard() {
       router.replace("/" + locale + "/cyber-warrior/verify");
       return;
     }
-    setToken(currentToken);
-    setLoading(true);
     const identity = getWarriorIdentity();
     const [profileResult, applicationsResult, reportsResult, notificationsResult] = await Promise.all([
       cyberWarriorsApi.getMine({accessToken: currentToken}),
@@ -86,10 +83,12 @@ export function WarriorDashboard() {
   }, [locale, router, t]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- load() only sets state after an await
     void load();
   }, [load]);
 
   async function markNotificationRead(id: string) {
+    const token = getWarriorToken();
     if (!token) return;
     setData((current) => ({...current, notifications: current.notifications.map((item) => (item.id === id ? {...item, is_read: true} : item))}));
     await notificationsApi.markRead(id, {accessToken: token});
@@ -187,7 +186,7 @@ export function WarriorDashboard() {
           <div className="warrior-load-error-banner" role="alert">
             <TriangleAlert aria-hidden="true" size={18} />
             <span>{t("loadErrorTitle", {sources: failedSources.join(", ")})}</span>
-            <button onClick={() => void load()} type="button"><RefreshCw aria-hidden="true" size={15} />{t("loadErrorRetry")}</button>
+            <button onClick={() => { setLoading(true); void load(); }} type="button"><RefreshCw aria-hidden="true" size={15} />{t("loadErrorRetry")}</button>
           </div>
         ) : null}
 

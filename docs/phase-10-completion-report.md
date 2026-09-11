@@ -136,6 +136,19 @@ Also landed:
 
 Backend suite: **332 passed**.
 
+Finally, two items this report had listed as untouched debt were cleared. The frontend
+lint script only ever covered `app components lib`, so `features/` - where most of the
+product lives - was never linted, which is how eight `react-hooks/set-state-in-effect`
+errors accumulated without the repo lint ever going red. The script now includes
+`features/`, so the debt cannot return silently. One of the eight was a real defect
+(`WarriorDashboard` set state synchronously before its first await); it was fixed rather
+than suppressed. The other seven are cases the rule cannot see through - either state set
+only after an await, or a mount-time read of browser storage that a lazy initializer would
+make disagree with the server snapshot - and each carries a comment saying which it is.
+The app also had no icon, so every page requested `/favicon.ico` and got a 404. It now
+ships `icon.svg`, `favicon.ico` and `apple-icon.png`, drawn as a simplified form of the
+header mark, since the original's thin ring and seven-node iris turn to mush at 16px.
+
 ## Known limitations
 
 - Secure India is a synthetic dataset; `source_type` must stay `SYNTHETIC` until the source
@@ -147,7 +160,6 @@ Backend suite: **332 passed**.
 - The public rate limiter is in-process and keys on the peer address; behind multiple workers
   or a proxy it needs shared state and proxy-aware client resolution.
 - Mumbai and Pune symbols overlap on the map; both remain hoverable, selectable and listed.
-- Pre-existing and untouched: 8 lint errors in `features/cyber-warriors/*`, app-wide favicon 404.
 
 ## Definition of done
 

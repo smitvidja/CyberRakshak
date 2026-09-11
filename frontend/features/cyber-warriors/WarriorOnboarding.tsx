@@ -28,7 +28,7 @@ import {Button} from "@/components/ui/Button";
 import {SelectField, TextInput} from "@/components/ui/FormFields";
 import {StatePanel} from "@/components/ui/Surface";
 import {SessionConflictDialog} from "@/components/ui/SessionConflictDialog";
-import {authApi, type MockIdentityProfile} from "@/lib/api/auth";
+import {authApi} from "@/lib/api/auth";
 import {cyberWarriorsApi, warriorApplicationsApi} from "@/lib/api/cyber-warriors";
 import {clearCitizenSession} from "@/lib/auth/citizen-session";
 import {
@@ -379,6 +379,7 @@ export function WarriorProfileSetup() {
       router.replace(verifyPath(locale));
       return;
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only session read; a lazy initializer would disagree with the server snapshot
     setIdentity(storedIdentity);
     setForm({
       city: storedIdentity.profile.city,

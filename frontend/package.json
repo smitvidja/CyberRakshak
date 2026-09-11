@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test:voice": "tsc -p tsconfig.voice-tests.json && node --test .voice-test-build/tests/voice-lifecycle.test.js",
-    "lint": "eslint app components lib"
+    "lint": "eslint app components features lib"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

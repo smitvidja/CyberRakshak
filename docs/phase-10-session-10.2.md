@@ -107,10 +107,11 @@ failure is persisted without touching the profile. The catch-all was restored wi
 - Anonymous copy access is bound to one browser session. Losing it means the copy cannot be
   recovered - stated plainly to the citizen rather than solved by attaching identity.
 
-## Deliberately unchanged
+## Deliberately unchanged at the time
 
 - 8 pre-existing `react-hooks/set-state-in-effect` errors in `features/cyber-warriors/*` and an
-  app-wide `/favicon.ico` 404. Both predate Phase 10 and are out of scope.
+  app-wide `/favicon.ico` 404. Both predate Phase 10 and were out of scope for this session.
+  Both have since been cleared - see the follow-up section of the phase report.
 
 ## Gate status
 
