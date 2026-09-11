@@ -1,7 +1,10 @@
 from typing import Any, Protocol
 
+from starlette.concurrency import run_in_threadpool
+
 from app.core.config import get_settings
 from app.services.resume_extraction import extract_resume_text
+from app.services.resume_llm import merge_with_deterministic, structure_resume_with_model
 from app.services.resume_structuring import structure_resume
 
 
@@ -19,15 +22,23 @@ class DocumentResumeParser:
     async def parse(self, *, content: bytes, file_name: str, known_skills: list[str]) -> dict[str, Any]:
         extracted = extract_resume_text(content, file_name)
         structured = structure_resume(extracted.text, known_skills)
+
+        # Optional second stage. The provider adapters are synchronous, and this
+        # route is async, so calling one directly would block the event loop for
+        # the whole timeout and stall every other request in the process.
+        outcome = await run_in_threadpool(structure_resume_with_model, extracted.text)
+        suggestions = merge_with_deterministic(structured, outcome.suggestions)
+
         return {
-            "source": "document_parser",
+            "source": "document_parser" if outcome.status != "ok" else "document_parser+model",
             "review_required": True,
             "file_name": file_name,
             # Safe provenance only - never the extracted text itself.
             "extractor": extracted.extractor,
             "unit_count": extracted.unit_count,
             "truncated": extracted.truncated,
-            **structured,
+            "model_stage": outcome.as_metadata(),
+            **suggestions,
         }
 
 

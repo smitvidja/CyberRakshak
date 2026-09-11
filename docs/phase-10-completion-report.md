@@ -155,7 +155,9 @@ header mark, since the original's thin ring and seven-node iris turn to mush at 
   contract in `docs/secure-india-dataset.md` is satisfied.
 - Devanagari in generated PDFs renders correctly but is not selectable (fpdf2 fallback-font
   ToUnicode limitation).
-- Structured resume parsing is deterministic; the optional hosted-model stage was not added.
+- Structured resume parsing is deterministic by default. The optional model stage from
+  section 6.5 has since been added behind `RESUME_LLM_ENABLED`, off unless an operator
+  turns it on, and the deterministic result remains the floor it can only build on.
 - No OCR: an image-only resume returns a controlled error.
 - The public rate limiter is in-process, which is exact for the single-instance deployment
   this project ships and multiplies by the count if workers or instances are added. Proxy

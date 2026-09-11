@@ -98,8 +98,9 @@ failure is persisted without touching the profile. The catch-all was restored wi
   Tested for embedding rather than extraction, and documented rather than hidden.
 - `Content-Disposition` is omitted for cors-mode fetches (see above). Non-browser consumers
   still receive it.
-- Structured parsing is deterministic only. The optional hosted-model stage described in
-  §6.5 was not added; the deterministic path is the required fallback and it is what ships.
+- Structured parsing was deterministic only at the time of this session. The optional
+  hosted-model stage described in §6.5 has since been added behind `RESUME_LLM_ENABLED`
+  (default off); the deterministic path remains the required fallback either way.
 - Resume parsing has no OCR, so an image-only PDF returns a controlled "no readable text"
   error rather than pretending to read it.
 - The parser is tuned for conventional single-column resumes. Heavily designed multi-column

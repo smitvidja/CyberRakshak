@@ -79,6 +79,28 @@ Uploaded resume bytes are hostile input and are handled accordingly:
 - extracted contact details are dropped, and no raw resume text, file bytes or PII is logged;
 - a parsing failure never mutates the profile.
 
+The optional model stage (`RESUME_LLM_ENABLED`, default off) sends resume text to a
+configured provider, so it carries its own rules:
+
+- output is constrained by a strict resume-specific schema - named string fields only, with
+  nowhere for a contact detail or a free-form key to live;
+- every returned value must appear in the uploaded document, compared with punctuation and
+  spacing normalised. An invented employer and an instruction the model obeyed both produce
+  text the document does not contain, so one check covers hallucination and injection alike;
+- values that look like a contact detail are refused **even when the document contains
+  them**, because grounding cannot tell an email from any other genuine span;
+- generation is deterministic (temperature 0) and only a bounded prefix of the document is
+  sent;
+- provider, model, latency and status are recorded; resume text never is;
+- any failure - disabled, unconfigured, timeout, malformed, or an answer the document does
+  not support - falls back to the deterministic result. The model stage can add fields; it
+  cannot remove ones that were already being offered, and it never writes a profile.
+
+The boundary, stated rather than implied: grounding compares against the citizen's *own*
+document, so a claim someone writes into their own resume will be offered back as a
+suggestion for their own profile - the same thing they could type into the form. What the
+guards prevent is text the document never contained, and output in any other shape.
+
 ## Public Suspect Search
 
 Suspect search is the only public endpoint that reads citizen-submitted report data, so it is

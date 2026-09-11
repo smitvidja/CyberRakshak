@@ -11,7 +11,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 import httpx
 from pydantic import SecretStr, ValidationError
@@ -86,9 +86,25 @@ RESPONSE_JSON_SCHEMA = {
 
 # Gemini's generateContent responseSchema dialect rejects additionalProperties.
 # Strict extra-field rejection still happens after generation in LLMStructuredResponse.
-GEMINI_RESPONSE_JSON_SCHEMA = {
-    key: value for key, value in RESPONSE_JSON_SCHEMA.items() if key != "additionalProperties"
-}
+def _strip_additional_properties(schema: dict[str, Any]) -> dict[str, Any]:
+    """Remove additionalProperties everywhere, including nested objects and arrays."""
+    cleaned: dict[str, Any] = {}
+    for key, value in schema.items():
+        if key == "additionalProperties":
+            continue
+        if isinstance(value, dict):
+            cleaned[key] = _strip_additional_properties(value)
+        elif isinstance(value, list):
+            cleaned[key] = [
+                _strip_additional_properties(item) if isinstance(item, dict) else item
+                for item in value
+            ]
+        else:
+            cleaned[key] = value
+    return cleaned
+
+
+GEMINI_RESPONSE_JSON_SCHEMA = _strip_additional_properties(RESPONSE_JSON_SCHEMA)
 
 
 class ProviderFailure(Exception):
@@ -120,6 +136,19 @@ class PromptPackage:
     profile: GenerationProfile
     allowed_source_ids: tuple[str, ...]
     grounding_text: str
+    # Which structured shape the provider must return. Defaults to the Cyber Saathi
+    # reply schema so existing callers are unaffected; a different task (resume
+    # structuring) supplies its own rather than duplicating the provider plumbing.
+    response_schema: dict[str, Any] | None = None
+    schema_name: str = "cyber_saathi_response"
+
+    def schema_for(self, *, gemini: bool) -> dict[str, Any]:
+        schema = self.response_schema or RESPONSE_JSON_SCHEMA
+        if gemini:
+            # Gemini's responseSchema dialect rejects additionalProperties. Strict
+            # extra-field rejection still happens after generation, on our side.
+            return _strip_additional_properties(schema)
+        return schema
 
 
 class ProviderAdapter(Protocol):
@@ -409,7 +438,7 @@ class GeminiAdapter:
                     "topP": package.profile.top_p,
                     "maxOutputTokens": package.profile.max_output_tokens,
                     "responseMimeType": "application/json",
-                    "responseSchema": GEMINI_RESPONSE_JSON_SCHEMA,
+                    "responseSchema": package.schema_for(gemini=True),
                 },
             },
             timeout=timeout_seconds,
@@ -457,9 +486,9 @@ class OpenAICompatibleAdapter:
             response_format = {
                 "type": "json_schema",
                 "json_schema": {
-                    "name": "cyber_saathi_response",
+                    "name": package.schema_name,
                     "strict": True,
-                    "schema": RESPONSE_JSON_SCHEMA,
+                    "schema": package.schema_for(gemini=False),
                 },
             }
         else:

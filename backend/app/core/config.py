@@ -44,6 +44,14 @@ class Settings(BaseSettings):
     # must never be the default, or every upload returns the same invented person.
     resume_parser: str = "document"
     llm_enabled: bool = True
+    # Model-assisted resume structuring (prompt section 6.5). Off by default: it
+    # sends resume text to a configured provider, which is a decision an operator
+    # makes and discloses, not a default. The deterministic parser is unaffected
+    # either way and remains the fallback whenever this stage yields nothing.
+    resume_llm_enabled: bool = False
+    # Longer than a chat turn: a resume is a whole document, and this stage runs
+    # once per upload rather than in a conversation the citizen is waiting through.
+    resume_llm_timeout_seconds: float = Field(default=15.0, ge=1.0, le=60.0)
     llm_primary_provider: str = "gemini"
     llm_secondary_provider: str = "grok"
     llm_tertiary_provider: str = "nvidia"

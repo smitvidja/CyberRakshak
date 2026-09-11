@@ -34,6 +34,8 @@ know each other's public URL.
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `60` | Accepted range 5–1440. |
 | `LOCAL_STORAGE_PATH` | `storage` | Uploaded-file directory. **Read §5 before deploying.** |
 | `EVIDENCE_MAX_FILE_SIZE` | `10485760` (10 MiB) | Per-file upload cap. |
+| `RESUME_LLM_ENABLED` | `false` | Model-assisted resume structuring. **Off by default on purpose**: turning it on sends resume text to the configured provider, which needs operator configuration and citizen-facing disclosure. The deterministic parser runs either way. See §13. |
+| `RESUME_LLM_TIMEOUT_SECONDS` | `15` | Accepted range 1-60. Per provider attempt. |
 
 ### Frontend
 
@@ -372,6 +374,52 @@ Two consequences worth knowing:
   until there is more than one instance.
 - IPv6 is limited per `/64`, not per address, because a single subscriber is
   routinely given a whole `/64` and can move around inside it freely.
+
+## 13. Model-assisted resume structuring
+
+Off unless `RESUME_LLM_ENABLED=true`. When off, nothing about resume handling
+changes and no resume text leaves the server.
+
+When on, the extracted text of an uploaded resume is sent to the same providers
+the rest of the app uses, in the configured order, to map it onto the Cyber
+Warrior schema. It runs **after** the deterministic parser and merges section by
+section: where the model found nothing, the deterministic value stands, so
+enabling it can add fields but cannot remove ones that were already offered.
+Anything the model returns that is not supported by the document is discarded.
+
+**Before turning it on**, note what it means: a citizen's resume is sent to a
+third party. Section 6.4 of the phase prompt requires explicit configuration,
+privacy documentation, and citizen-facing disclosure where required. The flag
+covers the first; the other two are a product decision, not a config change.
+
+What it does not do: no local model, no new parsing service, no raw resume text
+in logs or metrics, and no change to identity fields. Name, mobile and email are
+verified elsewhere in the journey and cannot be written from a resume - values
+that look like contact details are stripped even when the document contains them.
+
+### What actually holds the line
+
+Three things, in order, and it is worth being precise about which covers what:
+
+1. **The schema.** Output is a strict, resume-specific shape: named string
+   fields only, no free-form key, nothing for a contact detail to live in.
+2. **Grounding.** Every returned value must appear in the uploaded document,
+   compared with punctuation and spacing normalised. This catches an invented
+   employer and an instruction the model followed, because both produce text the
+   document does not contain.
+3. **The review screen.** Nothing is written to a profile until the citizen
+   confirms it.
+
+The honest boundary: grounding compares against *that citizen's own document*.
+Someone who writes a grand claim into their own resume will see it offered back
+as a suggestion for their own profile, which is no more than they could achieve
+by typing it into the form. What the guards prevent is text the document never
+contained, and output in any shape other than the schema.
+
+Verified against the live provider with a resume carrying an injected block
+instructing the parser to reveal its system prompt and add a government job
+title: the returned suggestions were byte-identical to the same resume without
+the block.
 
 ## Runtime additions from Phase 10
 
