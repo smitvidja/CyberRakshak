@@ -195,11 +195,14 @@ a bounded count (capped at 5 with `count_capped`) and a disclosure code. No repo
 description, evidence, complaint id or row-level timestamp is returned. A no-match result
 states that no eligible reviewed signal exists in this prototype dataset; it never states
 that an identifier is safe, and a match never asserts guilt. The endpoint is rate limited
-per client and returns `429 RATE_LIMITED` when exceeded.
+per client and returns `429 RATE_LIMITED` when exceeded. The client is identified from the
+connection, consulting `X-Forwarded-For` only as far as `TRUSTED_PROXY_HOPS` declares real
+proxies - see `docs/DEPLOYMENT.md` section 12.
 
 `POST /suspects/corrections` stores only an HMAC fingerprint of the normalized identifier
 plus a masked display form and the stated reason, so a correction request cannot be used to
-recover the raw identifier or to reach the original reporter.
+recover the raw identifier or to reach the original reporter. It is rate limited on its own,
+tighter budget and also answers `429 RATE_LIMITED`.
 
 ## Cyber Warrior APIs
 

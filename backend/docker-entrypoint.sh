@@ -34,4 +34,11 @@ if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
   python ../database/seeds/seed_reference_data.py
 fi
 
-exec python -m uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}"
+# --no-proxy-headers is deliberate. Uvicorn rewrites request.client from
+# X-Forwarded-For by default (for peers in --forwarded-allow-ips, 127.0.0.1 by
+# default), which means two layers would interpret that header with different
+# rules and the app would see an address it cannot tell apart from a real peer.
+# Turning it off leaves request.client as the true peer, so app/core/client_identity.py
+# is the single place that decides who a caller is, governed by TRUSTED_PROXY_HOPS.
+# See docs/DEPLOYMENT.md section 12.
+exec python -m uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}" --no-proxy-headers

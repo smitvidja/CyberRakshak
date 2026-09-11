@@ -19,7 +19,22 @@ os.environ.setdefault("LLM_ENABLED", "false")
 os.environ.setdefault("VOICE_ENABLED", "false")
 
 from app.core.database import SessionLocal, engine, get_db_session
+from app.core.public_rate_limit import (
+    suspect_correction_rate_limiter,
+    suspect_search_rate_limiter,
+)
 from app.main import app
+
+
+@pytest.fixture(autouse=True)
+def _reset_public_rate_limiters() -> None:
+    """Public limiters are process-global and the TestClient has no real address.
+
+    Without this every test in the run shares one bucket, so adding a test that
+    happens to be the 31st public call makes an unrelated test fail with a 429.
+    """
+    suspect_search_rate_limiter.reset()
+    suspect_correction_rate_limiter.reset()
 
 
 @pytest.fixture

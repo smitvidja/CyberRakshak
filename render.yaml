@@ -47,6 +47,15 @@ services:
         # Set to the deployed frontend origin after step 3 above. A wildcard is not
         # usable here because the API sends credentials.
         sync: false
+      - key: TRUSTED_PROXY_HOPS
+        # Render terminates TLS at its router and forwards to the container, so the
+        # only address the app sees on its own is the router's - the same one for
+        # every visitor. Left at the default 0, the public rate limiter would put
+        # the entire internet in one bucket and start refusing citizens who had made
+        # a single search. 1 says exactly one proxy is in front, so the limiter reads
+        # one hop of X-Forwarded-For and no further. Confirm the count against a real
+        # deployment before trusting it - see docs/DEPLOYMENT.md section 12.
+        value: 1
 
   - type: web
     name: cyberrakshak-web

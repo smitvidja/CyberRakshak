@@ -22,6 +22,7 @@ know each other's public URL.
 | `DATABASE_URL` | **Yes** | PostgreSQL only. Must use the `postgresql+psycopg://` scheme (see §4). No default — the app refuses to start without it. |
 | `SECRET_KEY` | **Yes** | Minimum 32 characters, enforced at startup. Generate a fresh one per environment (see §2). |
 | `CORS_ORIGINS` | **Yes in production** | The deployed frontend origin(s). Defaults to localhost only, which will block a deployed frontend. |
+| `TRUSTED_PROXY_HOPS` | **Yes behind a proxy** | Number of reverse proxies in front of the API. Defaults to `0`, which is safe but wrong behind a proxy - the public rate limiter then treats every visitor as one client. `1` on Render. See §12. |
 
 ### Backend — optional (safe defaults)
 
@@ -311,6 +312,66 @@ POSTGRES_PORT=5433 docker compose up --build
 
 Uploads survive local restarts via the `backend_storage` volume. Render has no
 equivalent by default — §5 still applies there.
+
+## 12. Reverse proxies and the public rate limiter
+
+The suspect-search and correction endpoints are unauthenticated, so they are rate
+limited per client. Working out *which* client a request came from is the whole
+problem, and it has two failure modes that are easy to ship and hard to notice.
+
+**Trusting the connection.** Behind a proxy the address the app sees is the
+proxy's, and it is the same for everybody. The limit then applies to all visitors
+at once: 30 searches a minute for the entire audience, after which a citizen who
+has searched once is told to wait a minute. Nothing errors, no log says why, and
+it only appears under real traffic.
+
+**Trusting `X-Forwarded-For`.** Anyone can send that header, so if the app reads
+it without a proxy actually being there, every caller picks its own bucket and
+the limit stops existing.
+
+So the header is read only as far as `TRUSTED_PROXY_HOPS` says there are proxies,
+counting in from the right - the end each proxy appends to. Entries further left
+came from the caller and are ignored. Set it to the number of proxies that will
+actually handle the request:
+
+| Topology | Value |
+|---|---|
+| Container exposed directly (local, `docker compose`) | `0` (default) |
+| Render, Railway, Fly | `1` |
+| Your own nginx in front of one of those | `2` |
+| A CDN (Cloudflare) in front of the platform router | `2`, or `3` with your own nginx too |
+
+**Verify rather than assume.** The count is a property of the deployment, not of
+the platform's name, and setting it too high is what lets a caller forge the
+value. From a machine outside the deployment, request the API and compare what
+the platform reports as the client address with what you actually connected from.
+If they match, one hop is being added; if you need to look further left to find
+your own address, there are more. `render.yaml` ships `1`, which is what a
+standalone Render web service does today.
+
+**Uvicorn does this too, and it has to be turned off.** Uvicorn ships
+`--proxy-headers` **on by default**: for any peer in `--forwarded-allow-ips`
+(`127.0.0.1` unless set) it rewrites `request.client` from `X-Forwarded-For`
+before the application sees it. Two layers interpreting the same caller-supplied
+header under different rules means the app cannot tell a real peer from a
+supplied one, and the `TRUSTED_PROXY_HOPS=0` guarantee quietly stops holding. The
+container entrypoint therefore runs uvicorn with `--no-proxy-headers`, leaving
+`request.client` as the true peer and `app/core/client_identity.py` as the only
+thing that reads the header. If you start uvicorn yourself, pass it too.
+
+This is not visible from the application code or from any test that uses
+`TestClient`, because neither runs the uvicorn middleware. It shows up only
+against a running server.
+
+Two consequences worth knowing:
+
+- The limiter is **per process**. One Render instance running one uvicorn worker
+  is what this project deploys, so the counter is exact. Add workers or instances
+  and the effective limit multiplies by that number. A shared counter would mean
+  a database write on a public endpoint for every request, which is not worth it
+  until there is more than one instance.
+- IPv6 is limited per `/64`, not per address, because a single subscriber is
+  routinely given a whole `/64` and can move around inside it freely.
 
 ## Runtime additions from Phase 10
 

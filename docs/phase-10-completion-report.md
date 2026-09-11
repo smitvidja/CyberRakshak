@@ -157,8 +157,10 @@ header mark, since the original's thin ring and seven-node iris turn to mush at 
   ToUnicode limitation).
 - Structured resume parsing is deterministic; the optional hosted-model stage was not added.
 - No OCR: an image-only resume returns a controlled error.
-- The public rate limiter is in-process and keys on the peer address; behind multiple workers
-  or a proxy it needs shared state and proxy-aware client resolution.
+- The public rate limiter is in-process, which is exact for the single-instance deployment
+  this project ships and multiplies by the count if workers or instances are added. Proxy
+  awareness has since been fixed; a shared counter has not, deliberately - it would put a
+  database write on a public endpoint to solve a problem this topology does not have.
 - Mumbai and Pune symbols overlap on the map; both remain hoverable, selectable and listed.
 
 ## Definition of done

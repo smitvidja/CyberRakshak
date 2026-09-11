@@ -97,7 +97,18 @@ bounded on every axis:
   5 and a disclosure code are returned. Reporter identity, descriptions, evidence, complaint
   ids, storage keys, admin notes and row-level timestamps are never included.
 - **Rate limiting.** `PublicSearchRateLimiter` throttles per client key (hashed before it is
-  used as a bucket key) and returns a controlled `429 RATE_LIMITED`.
+  used as a bucket key) and returns a controlled `429 RATE_LIMITED`. Search and corrections
+  hold separate budgets, so flooding one cannot lock a citizen out of the other, and
+  corrections - an unauthenticated write - is the tighter of the two.
+- **Client attribution.** Who a request is attributed to is part of the control, not a
+  detail of it. `X-Forwarded-For` is caller-supplied, so it is read only as far as
+  `TRUSTED_PROXY_HOPS` declares real proxies and counting in from the right; entries
+  further left are ignored, and a header shorter than the declared hop count falls back to
+  the peer address rather than to a value the caller chose. The default of `0` never reads
+  the header at all. IPv6 is keyed per `/64`, since one subscriber holds the whole prefix.
+- **Bounded state.** The limiter tracks a capped number of clients and evicts finished ones
+  first, so the bucket table cannot be grown without limit by a caller arriving from many
+  addresses.
 - **Language.** A no-match result states only that no eligible reviewed signal exists in this
   prototype dataset; it must never state that an identifier is safe. A match states that the
   identifier appeared in reviewed reports and must never assert guilt or criminality.

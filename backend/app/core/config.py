@@ -32,6 +32,12 @@ class Settings(BaseSettings):
             "http://127.0.0.1:3000",
         ]
     )
+    # How many reverse proxies sit in front of this app. 0 means X-Forwarded-For is
+    # never read, which is the only safe default: the header is caller-supplied, so
+    # trusting it without a proxy actually being there hands the rate-limit key to
+    # whoever is calling. Behind Render's router this must be 1, or every citizen
+    # shares one bucket because the only address the app sees is the router's.
+    trusted_proxy_hops: int = Field(default=0, ge=0, le=8)
     local_storage_path: str = "storage"
     evidence_max_file_size: int = Field(default=10 * 1024 * 1024, ge=1)
     # "document" runs the real extractor; "mock" is an explicit demo/test fallback and

@@ -6,7 +6,9 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db_session
 from app.core.errors import success_response
-from app.core.public_rate_limit import suspect_search_rate_limiter
+from app.core.client_identity import resolve_client_key
+from app.core.config import get_settings
+from app.core.public_rate_limit import suspect_correction_rate_limiter, suspect_search_rate_limiter
 from app.core.security import get_current_user
 from app.models import User
 from app.schemas.common import ErrorResponse, SuccessResponse
@@ -24,7 +26,7 @@ router = APIRouter(prefix="/suspects", tags=["reported-suspects"])
 
 
 def _public_client_key(request: Request) -> str:
-    return request.client.host if request.client else "unknown"
+    return resolve_client_key(request, get_settings().trusted_proxy_hops)
 
 
 @router.post("/search", response_model=SuccessResponse[SuspectSearchResponse], responses={422: {"model": ErrorResponse}, 429: {"model": ErrorResponse}})
@@ -33,8 +35,11 @@ def search_reported_suspects(payload: SuspectSearchRequest, request: Request, se
     return success_response(ReportedSuspectService.search(session, payload))
 
 
-@router.post("/corrections", status_code=status.HTTP_201_CREATED, response_model=SuccessResponse[SuspectCorrectionResponse], responses={422: {"model": ErrorResponse}})
-def create_suspect_correction(payload: SuspectCorrectionCreate, session: Annotated[Session, Depends(get_db_session)]) -> dict[str, object]:
+@router.post("/corrections", status_code=status.HTTP_201_CREATED, response_model=SuccessResponse[SuspectCorrectionResponse], responses={422: {"model": ErrorResponse}, 429: {"model": ErrorResponse}})
+def create_suspect_correction(payload: SuspectCorrectionCreate, request: Request, session: Annotated[Session, Depends(get_db_session)]) -> dict[str, object]:
+    # An unauthenticated write, so it needs its own budget: without one, anyone
+    # could fill the moderation queue faster than it can be read.
+    suspect_correction_rate_limiter.check(_public_client_key(request))
     correction = ReportedSuspectService.create_correction(session, payload)
     return success_response(SuspectCorrectionResponse.model_validate(correction), message="Correction request submitted for review.")
 
