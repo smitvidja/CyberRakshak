@@ -81,7 +81,7 @@ failure is persisted without touching the profile. The catch-all was restored wi
 
 | Gate | Result |
 | --- | --- |
-| Backend suite | **328 passed** (was 294; 34 added) |
+| Backend suite | **328 passed** at the time of writing (was 294; 34 added). Now **332** - see the follow-up section of the phase report. |
 | Mutation checks | every new guard flipped and confirmed to fail |
 | TypeScript / lint / production build | clean |
 | Real-browser complaint copy | **11/11**, cross-origin |

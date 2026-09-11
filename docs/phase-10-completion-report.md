@@ -69,7 +69,7 @@ All three verified up **and** down on a throwaway database. The container entryp
 
 | Gate | Result |
 | --- | --- |
-| Backend suite | 328 passed (from 286 at phase start) |
+| Backend suite | **332 passed** (from 286 at phase start) |
 | Real-browser Secure India | 43/43 at 1280 and 390, both locales |
 | Real-browser complaint copy | 11/11, cross-origin |
 | Frontend lint / TypeScript / build | clean, 58 static pages |
@@ -95,6 +95,46 @@ Worth recording, because in each case the code looked right and the tests passed
 
 The pattern: assert on the property that actually matters, and verify in the environment the
 feature will really run in.
+
+## After this report was written
+
+Nine commits landed after the phase was declared complete. None changed scope; all were defects
+found by using the product, which is recorded here so this stays an accurate history rather
+than a snapshot.
+
+**A deliberate behaviour change, not just a fix.** Cyber Saathi used to re-guess its reply
+language from each message, so a citizen who selected English and typed one Devanagari line was
+answered in Hinglish, and a single chat could hold all three languages. The rule is now simply
+that the selected language is the answer language; detection applies only when nothing has been
+selected. This **removed** an earlier intentional behaviour - an English-default chat adopting a
+citizen who wrote Hinglish. It helped people who never touched the selector but overrode
+everyone who did, and the selector sits directly above the conversation. Two journey tests
+encoded the old behaviour and now start in the language the journey is actually conducted in.
+
+Three separate layers decided that language and disagreed, which is why it took three attempts:
+the understanding engine, the service resolver, and - the one that mattered in practice - the
+message route, which reloads the stored server state for consented conversations and was
+overwriting the language the citizen had just chosen. The stored copy stays authoritative for
+conversation content; only the language is carried over from the request.
+
+Also landed:
+
+- Chat history is never retranslated on a language switch, and now says so inline at the point
+  of the switch. A citizen's own messages become their complaint description, so rewriting them
+  would alter the statement they are about to submit.
+- A conversation that inherited its language from the page follows the page until the citizen
+  picks one in the chat.
+- The home page stopped advertising Secure India, suspect search, resume auto-fill and the
+  complaint copy as "not built yet" - all four had shipped. The upcoming-features panel was then
+  removed entirely.
+- Duplicate navigation removed: the header's Citizen Dashboard label (the navbar already has
+  one) and a suspect-search quick link that duplicated the navbar item, which was renamed to
+  "Check Suspect".
+- `allowedDevOrigins` now lists both loopback spellings. The dev server refuses `/_next/*` from
+  an origin it does not recognise, and `127.0.0.1` is not allowed by default, so the app served
+  HTML while every chunk 403'd and React never hydrated. Production is unaffected.
+
+Backend suite: **332 passed**.
 
 ## Known limitations
 
