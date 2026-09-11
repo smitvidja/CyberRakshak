@@ -107,9 +107,36 @@ def _features(value: str) -> list[tuple[str, float]]:
     return features
 
 
+# A citizen writes "someone morphed my photo and is blackmailing me"; the source
+# document says "morphing" and "blackmail". Without this the two share no tokens
+# at all, the lexical gate rejects the chunk, and a domain with fifteen indexed
+# chunks retrieves nothing. Only ASCII words are stemmed - Devanagari is matched
+# whole, since WORD_PATTERN already keeps those sequences intact.
+_SUFFIXES = ("ingly", "ing", "edly", "ed", "ies", "es", "s")
+_MIN_STEM = 4
+
+
+def _stem(token: str) -> str:
+    if not token.isascii() or len(token) < 5:
+        return token
+    for suffix in _SUFFIXES:
+        if not token.endswith(suffix):
+            continue
+        base = token[: -len(suffix)]
+        if len(base) < _MIN_STEM:
+            continue
+        if suffix == "ies":
+            return base + "y"
+        # "address"/"process" end in "s" but stripping it is wrong.
+        if suffix == "s" and token.endswith("ss"):
+            return token
+        return base
+    return token
+
+
 def _meaningful_tokens(value: str) -> set[str]:
     return {
-        token
+        _stem(token)
         for token in WORD_PATTERN.findall(value.casefold())
         if len(token) >= 3 and token not in STOPWORDS
     }
@@ -163,6 +190,29 @@ def load_source_pack(path: Path = SOURCE_PACK_PATH) -> KnowledgeSourcePack:
     return KnowledgeSourcePack.model_validate_json(path.read_text(encoding="utf-8"))
 
 
+# Ingestion is a one-off command over the whole corpus, so a single transient 503
+# should not throw away the work already done - and the query-time timeout is far
+# too tight for a document-sized embedding.
+INGEST_EMBED_TIMEOUT_SECONDS = 20.0
+INGEST_EMBED_ATTEMPTS = 4
+
+
+def _embed_document_with_retry(provider: Any, text: str) -> list[float]:
+    last_error: Exception | None = None
+    for attempt in range(INGEST_EMBED_ATTEMPTS):
+        try:
+            return provider.embed(
+                text,
+                task_type="RETRIEVAL_DOCUMENT",
+                timeout_seconds=INGEST_EMBED_TIMEOUT_SECONDS,
+            )
+        except SemanticEmbeddingError as error:
+            last_error = error
+            if attempt < INGEST_EMBED_ATTEMPTS - 1:
+                time.sleep(2.0 * (attempt + 1))
+    raise last_error if last_error else SemanticEmbeddingError("embedding failed")
+
+
 def build_index(
     source_pack: KnowledgeSourcePack | None = None,
     *,
@@ -196,9 +246,7 @@ def build_index(
                 embedding_input = " ".join((text, section.title, *section.retrieval_terms))
                 semantic_embedding = None
                 if provider is not None:
-                    semantic_embedding = provider.embed(
-                        embedding_input, task_type="RETRIEVAL_DOCUMENT"
-                    )
+                    semantic_embedding = _embed_document_with_retry(provider, embedding_input)
                 chunks.append(
                     KnowledgeChunk(
                         chunk_id=f"{source.source_id}:{suffix}",
@@ -263,6 +311,20 @@ def rebuild_index(
         "index_version": index["index_version"],
         "index_bytes": index_bytes,
     }
+
+
+def is_refused_query(query: str) -> bool:
+    """Requests to fabricate authority are refused outright, on every path.
+
+    This used to live inside the lexical grounding check, which made it a rule the
+    semantic path could walk straight past: a dense vector does not care that the
+    sentence begins "invent an official government guarantee". Retrieval must have
+    exactly one answer to this, so it is asked before any scoring happens.
+    """
+    lowered = query.casefold()
+    return any(term in lowered for term in ("invent", "fabricate", "make up")) and any(
+        term in lowered for term in ("official", "government", "guarantee")
+    )
 
 
 class KnowledgeService:
@@ -348,11 +410,6 @@ class KnowledgeService:
 
     @staticmethod
     def _has_lexical_grounding(query: str, chunk: KnowledgeChunk) -> bool:
-        lowered = query.casefold()
-        if any(term in lowered for term in ("invent", "fabricate", "make up")) and any(
-            term in lowered for term in ("official", "government", "guarantee")
-        ):
-            return False
         query_tokens = _meaningful_tokens(query)
         if not query_tokens:
             return False
@@ -394,12 +451,52 @@ class KnowledgeService:
         return embedding
 
     @classmethod
+    def _empty_response(
+        cls, request: KnowledgeSearchRequest, started: float, index: dict[str, Any], strategy: str
+    ) -> KnowledgeSearchResponse:
+        return KnowledgeSearchResponse(
+            query=request.query,
+            domain_filter=request.domain,
+            retrieval_latency_ms=round((time.perf_counter() - started) * 1000, 3),
+            index_version=str(index["index_version"]),
+            no_result=True,
+            matches=[],
+            bounded_context="",
+            retrieval_strategy=strategy,
+        )
+
+    @classmethod
     def search(cls, request: KnowledgeSearchRequest) -> KnowledgeSearchResponse:
         started = time.perf_counter()
         index = cls._load_index()
         query_embedding = embed_text(request.query)
         semantic_query_embedding = cls._semantic_query_embedding(index, request.query)
         strategy = "hybrid_dense_sparse_lexical" if semantic_query_embedding is not None else "sparse_lexical"
+        if is_refused_query(request.query):
+            return cls._empty_response(request, started, index, strategy)
+        # Does the requested domain actually agree with what the query is about?
+        # The semantic bypass exists so a paraphrase can be recovered when no words
+        # are shared, but on its own it also lets a question about one crime match
+        # generic guidance filed under another - every chunk here is broadly
+        # "cybercrime advice", so dense similarity alone stays high. Comparing the
+        # best in-domain score against the best score anywhere else settles it
+        # without a hand-tuned cutoff: for a question that belongs to its domain the
+        # in-domain chunk wins, and when another domain wins the filter is being
+        # asked for something the query is not about.
+        domain_agrees = True
+        if semantic_query_embedding is not None and request.domain is not None:
+            best_in_domain = 0.0
+            best_elsewhere = 0.0
+            for raw_chunk in index["chunks"]:
+                vector = raw_chunk.get("semantic_embedding")
+                if not vector:
+                    continue
+                score = cls._cosine(semantic_query_embedding, vector)
+                if request.domain in raw_chunk["domains"]:
+                    best_in_domain = max(best_in_domain, score)
+                else:
+                    best_elsewhere = max(best_elsewhere, score)
+            domain_agrees = best_in_domain >= best_elsewhere
         candidates: list[KnowledgeMatch] = []
         for raw_chunk in index["chunks"]:
             chunk = KnowledgeChunk.model_validate(raw_chunk)
@@ -416,12 +513,27 @@ class KnowledgeService:
             # Domain-filtered semantic retrieval can recover a natural paraphrase.
             # A non-domain query still needs lexical grounding to avoid broad false positives.
             semantic_grounded = bool(
-                request.domain is not None and semantic_score is not None and semantic_score >= 0.55
+                request.domain is not None
+                and semantic_score is not None
+                and semantic_score >= 0.55
+                and domain_agrees
             )
             if not lexical_grounded and not semantic_grounded:
                 continue
             if semantic_score is None:
-                relevance = sparse_score
+                # lexical_score used to be computed and thrown away here, leaving
+                # hashed character n-grams as the only ranking signal. Whole-word
+                # agreement is the stronger evidence of the two, so it is folded in
+                # using the same configured weights, renormalised over the two
+                # signals that actually exist without a dense vector.
+                settings = GeminiSemanticEmbeddingProvider().settings
+                total_weight = settings.rag_sparse_weight + settings.rag_lexical_weight
+                relevance = (
+                    (settings.rag_sparse_weight * sparse_score
+                     + settings.rag_lexical_weight * lexical_score) / total_weight
+                    if total_weight > 0
+                    else sparse_score
+                )
             else:
                 settings = GeminiSemanticEmbeddingProvider().settings
                 relevance = (

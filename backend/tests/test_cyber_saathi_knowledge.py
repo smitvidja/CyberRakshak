@@ -27,11 +27,16 @@ from app.services.cyber_saathi_knowledge_evaluation import evaluate
 
 
 def setup_module() -> None:
-    rebuild_index()
+    # Deliberately does NOT rebuild the shipped index. rebuild_index() with no
+    # arguments writes to the real data file with semantic embeddings off, so
+    # running the suite used to strip the dense vectors out of the index that
+    # ships - silently, and only visibly later as worse retrieval in production.
+    # Tests read the committed index; ingestion is exercised against a temp file.
+    KnowledgeService.clear_cache()
 
 
-def test_explicit_ingestion_creates_a_persistent_traceable_index() -> None:
-    result = rebuild_index()
+def test_explicit_ingestion_creates_a_persistent_traceable_index(tmp_path) -> None:
+    result = rebuild_index(tmp_path / "knowledge_index.json")
 
     assert result["status"] == "passed"
     assert result["source_count"] == 14
@@ -209,9 +214,10 @@ def test_follow_up_retrieval_query_keeps_active_incident_context() -> None:
     query = CyberSaathiService._build_retrieval_query(
         state=state,
         message="haan, same issue",
-        domain_expansion="upi payment qr wallet fraud transaction",
     )
 
     assert "fake upi qr code" in query
     assert "same issue" in query
-    assert "upi payment qr wallet fraud transaction" in query
+    # No fixed per-domain keyword blob is appended any more: it outweighed the
+    # citizen's own words, so every question in a domain retrieved the same chunks.
+    assert "Domain guidance" not in query

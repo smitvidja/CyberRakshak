@@ -13,6 +13,9 @@ def _settings() -> Settings:
         secret_key="semantic-embedding-test-secret-key-32chars",
         gemini_api_key="test-key",
         rag_semantic_embedding_dimensions=128,
+        # Set explicitly: the suite disables this globally so retrieval never
+        # reaches a live provider, but this test is about the provider itself.
+        rag_semantic_embeddings_enabled=True,
     )
 
 
@@ -26,8 +29,8 @@ def test_hosted_embedding_request_is_bounded_and_redacts_direct_identifiers(monk
         def json(self) -> dict[str, object]:
             return {"embedding": {"values": [1.0] + [0.0] * 127}}
 
-    def fake_post(url: str, *, params: dict[str, str], json: dict[str, object], timeout: float) -> Response:
-        captured.update({"url": url, "params": params, "json": json, "timeout": timeout})
+    def fake_post(url: str, *, headers: dict[str, str], json: dict[str, object], timeout: float) -> Response:
+        captured.update({"url": url, "headers": headers, "json": json, "timeout": timeout})
         return Response()
 
     monkeypatch.setattr(httpx, "post", fake_post)
@@ -44,6 +47,13 @@ def test_hosted_embedding_request_is_bounded_and_redacts_direct_identifiers(monk
     assert "[PHONE]" in text and "[EMAIL]" in text and "[UPI]" in text
     assert len(vector) == 128
     assert vector[0] == 1
+
+    # The key travels in a header, never the query string. httpx puts the full URL
+    # into HTTPStatusError, so a `?key=` parameter reaches every traceback and log
+    # line that records a failed embedding call.
+    assert captured["headers"]["x-goog-api-key"] == "test-key"
+    assert "test-key" not in captured["url"]
+    assert "key=" not in captured["url"]
 
 
 def test_embedding_redaction_preserves_general_cyber_context() -> None:

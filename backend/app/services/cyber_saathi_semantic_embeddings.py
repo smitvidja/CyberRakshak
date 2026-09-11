@@ -62,7 +62,7 @@ class GeminiSemanticEmbeddingProvider:
     def dimensions(self) -> int:
         return self.settings.rag_semantic_embedding_dimensions
 
-    def embed(self, text: str, *, task_type: str) -> list[float]:
+    def embed(self, text: str, *, task_type: str, timeout_seconds: float | None = None) -> list[float]:
         if not self.configured:
             raise SemanticEmbeddingError("Gemini semantic embeddings are not configured")
         safe_text = redact_for_embedding(" ".join(text.split()))[:5000]
@@ -70,6 +70,10 @@ class GeminiSemanticEmbeddingProvider:
             raise SemanticEmbeddingError("Cannot embed empty text")
         key = self.settings.gemini_api_key.get_secret_value()
         endpoint = f"{self.settings.gemini_base_url}/models/{self.model}:embedContent"
+        # The key travels in a header, never in the query string. httpx puts the
+        # full URL into HTTPStatusError, so a `?key=` parameter ends up in any
+        # traceback or log line that records the failure. The LLM adapter already
+        # uses this header for the same reason.
         payload = {
             "model": f"models/{self.model}",
             "content": {"parts": [{"text": safe_text}]},
@@ -79,9 +83,9 @@ class GeminiSemanticEmbeddingProvider:
         try:
             response = httpx.post(
                 endpoint,
-                params={"key": key},
+                headers={"x-goog-api-key": key},
                 json=payload,
-                timeout=self.settings.rag_semantic_embedding_timeout_seconds,
+                timeout=timeout_seconds or self.settings.rag_semantic_embedding_timeout_seconds,
             )
             response.raise_for_status()
             values = response.json()["embedding"]["values"]
@@ -94,9 +98,25 @@ class GeminiSemanticEmbeddingProvider:
         except (TypeError, ValueError) as error:
             raise SemanticEmbeddingError("Gemini returned an invalid embedding vector") from error
 
-    @lru_cache(maxsize=256)
-    def embed_query(self, redacted_query: str) -> tuple[float, ...]:
-        return tuple(self.embed(redacted_query, task_type="RETRIEVAL_QUERY"))
-
     def query_embedding(self, text: str) -> list[float]:
-        return list(self.embed_query(redact_for_embedding(text)))
+        # Cached by value, not by instance. The decorator used to sit on a method,
+        # which keys the cache on `self` as well; the retriever builds a new
+        # provider for every search, so the cache never hit once and each message
+        # cost a live embedding call.
+        return list(
+            _cached_query_embedding(
+                redact_for_embedding(text), self.model, self.dimensions, id(self.__class__)
+            )
+        )
+
+
+@lru_cache(maxsize=512)
+def _cached_query_embedding(
+    redacted_query: str, model: str, dimensions: int, _class_key: int
+) -> tuple[float, ...]:
+    provider = GeminiSemanticEmbeddingProvider()
+    return tuple(provider.embed(redacted_query, task_type="RETRIEVAL_QUERY"))
+
+
+def clear_query_embedding_cache() -> None:
+    _cached_query_embedding.cache_clear()

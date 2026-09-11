@@ -36,6 +36,8 @@ know each other's public URL.
 | `EVIDENCE_MAX_FILE_SIZE` | `10485760` (10 MiB) | Per-file upload cap. |
 | `RESUME_LLM_ENABLED` | `false` | Model-assisted resume structuring. **Off by default on purpose**: turning it on sends resume text to the configured provider, which needs operator configuration and citizen-facing disclosure. The deterministic parser runs either way. See §13. |
 | `RESUME_LLM_TIMEOUT_SECONDS` | `15` | Accepted range 1-60. Per provider attempt. |
+| `RAG_SEMANTIC_EMBEDDINGS_ENABLED` | `true` | Cyber Saathi retrieval uses hosted multilingual embeddings. With no Gemini key, or set to `false`, retrieval falls back to word and character matching - it still works, but paraphrases and romanised Hindi retrieve less well. See §14. |
+| `RAG_SEMANTIC_EMBEDDING_TIMEOUT_SECONDS` | `1.5` | Per query embedding. On timeout the search silently uses the sparse path. |
 
 ### Frontend
 
@@ -420,6 +422,38 @@ Verified against the live provider with a resume carrying an injected block
 instructing the parser to reveal its system prompt and add a government job
 title: the returned suggestions were byte-identical to the same resume without
 the block.
+
+## 14. Cyber Saathi retrieval: the knowledge index
+
+The index at `backend/app/data/cyber_saathi/authoritative_knowledge/knowledge_index.json`
+is **committed**, not built at deploy time. It carries two vectors per chunk: a
+hashed character n-gram vector computed offline, and a 768-dimension Gemini
+embedding. Nothing regenerates it on start, so a deploy ships exactly what is in
+the repository.
+
+**Rebuild it only when `sources.json` changes**, and rebuild it *with* embeddings:
+
+```bash
+cd backend
+./.venv/Scripts/python.exe -m app.services.cyber_saathi_knowledge --semantic
+```
+
+Rebuilding without `--semantic` produces a valid index with the dense vectors
+**missing**. Retrieval still works and nothing errors; it just gets noticeably
+worse at paraphrases and at romanised Hindi, which is most of what citizens type.
+The index records the provider and model it was built with, and retrieval only
+uses the dense path when the running configuration matches, so a mismatch
+degrades rather than breaks.
+
+At query time one embedding call is made per distinct question, cached in
+process. If the key is missing, the provider is disabled, or the call times out,
+retrieval falls back to the sparse path for that query.
+
+**The test suite must not be able to rewrite this file.** It used to: a module
+setup hook called the rebuild with no arguments, so running `pytest` quietly
+replaced the committed index with an embedding-free one. Anyone who ran the tests
+before deploying shipped the degraded index without knowing. Ingestion is now
+exercised against a temporary path.
 
 ## Runtime additions from Phase 10
 

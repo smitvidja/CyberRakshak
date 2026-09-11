@@ -1776,23 +1776,16 @@ class CyberSaathiService:
     ) -> KnowledgeSearchResponse:
         normalized_message = normalized_text(message)
         domain = CyberSaathiService._knowledge_domain(normalized_message, understanding)
-        query_expansions = {
-            KnowledgeDomain.FINANCIAL_FRAUD: "unauthorized transaction bank fraud money loss",
-            KnowledgeDomain.UPI_PAYMENT_FRAUD: "upi payment qr wallet fraud transaction",
-            KnowledgeDomain.PHISHING: "phishing suspicious link otp password credential",
-            KnowledgeDomain.ACCOUNT_COMPROMISE: "hacked account access password recovery",
-            KnowledgeDomain.IMPERSONATION: "fake officer profile impersonation digital arrest",
-            KnowledgeDomain.HARASSMENT_ABUSE: "online harassment abuse threats preserve evidence",
-            KnowledgeDomain.WOMEN_CHILD_ONLINE_SAFETY: "image morphing fake profile minor child women harassment blackmail",
-            KnowledgeDomain.CYBERSTALKING: "cyberstalking location tracking threats evidence",
-            KnowledgeDomain.MALWARE_DEVICE_COMPROMISE: "malware apk remote access compromised device",
-            KnowledgeDomain.IDENTITY_THEFT: "identity theft personal information fake profile",
-            KnowledgeDomain.ECOMMERCE_CONSUMER_GRIEVANCE: "online order delivery refund seller website payment proof",
-        }
+        # No keyword expansion is added here. A fixed per-domain keyword blob used
+        # to be appended to every query, and because it was long and on-topic it
+        # dominated the score: within one domain the same chunks came back whatever
+        # the citizen wrote - "banana bread recipe" scored higher than most real
+        # questions. Retrieval now runs on the citizen's own words plus the incident
+        # context, with semantic embeddings carrying the paraphrases the keywords
+        # were compensating for.
         retrieval_query = CyberSaathiService._build_retrieval_query(
             state=state,
             message=normalized_message,
-            domain_expansion=query_expansions.get(domain),
         )
         try:
             response = KnowledgeService.search(
@@ -1803,7 +1796,7 @@ class CyberSaathiService:
                     top_k=2,
                 )
             )
-            return CyberSaathiService._apply_audience_guard(retrieval_query, response)
+            return CyberSaathiService._apply_audience_guard(retrieval_query, response, domain)
         except APIError:
             # Knowledge is an optional grounding layer. A missing, stale, or rejected
             # index must never suppress deterministic urgent-safety instructions.
@@ -1823,7 +1816,6 @@ class CyberSaathiService:
         *,
         state: ConversationState | None,
         message: str,
-        domain_expansion: str | None,
     ) -> str:
         """Anchor short follow-ups to the active incident instead of pronouns alone."""
         parts = [f"Current request: {message}"]
@@ -1848,8 +1840,6 @@ class CyberSaathiService:
             )
             if previous_user_turn:
                 parts.append(f"Previous citizen detail: {previous_user_turn}")
-        if domain_expansion:
-            parts.append(f"Domain guidance: {domain_expansion}")
         return normalized_text(" ".join(parts))[:1000]
 
     @staticmethod
@@ -1898,12 +1888,29 @@ class CyberSaathiService:
 
     @staticmethod
     def _apply_audience_guard(
-        message: str, response: KnowledgeSearchResponse
+        message: str, response: KnowledgeSearchResponse, domain: KnowledgeDomain | None = None
     ) -> KnowledgeSearchResponse:
+        """Keep women/child specific guidance out of unrelated answers.
+
+        The classified domain is the primary signal, not the wording. This used to
+        look only for English words in the retrieval query, which quietly depended
+        on a per-domain keyword blob that was appended to every query and happened
+        to contain "minor child women". With that blob gone, a citizen writing
+        "Meri 15 saal ki cousin ko ... private photos" matched none of the terms,
+        so the CERT-In child-safety sources were stripped from their own answer.
+        A guard on how a distressed person phrases something, in one language, is
+        the wrong guard; the understanding engine has already decided who this is
+        about.
+        """
+        if domain is KnowledgeDomain.WOMEN_CHILD_ONLINE_SAFETY:
+            return response
         lowered = message.casefold()
         audience_terms = (
             "child", "minor", "kid", "teen", "girl", "woman", "women", "mahila",
             "बच्च", "नाबालिग", "महिला", "लड़की", "morphed", "intimate image",
+            # Romanised Hindi: how the same citizens actually type it.
+            "bachch", "bachcha", "bachchi", "ladki", "larki", "beti", "behen",
+            "nabalig", "naabalig", "saal ki", "saal ka",
         )
         if any(term in lowered for term in audience_terms):
             return response
