@@ -13,6 +13,8 @@ from app.schemas.common import SuccessResponse
 from app.schemas.cyber_saathi import (
     ConversationCreate,
     ConversationFeedback,
+    CrimeDomain,
+    GroundingStatus,
     ConversationMessageRequest,
     ConversationResponse,
     ConversationState,
@@ -30,6 +32,7 @@ from app.services.cyber_saathi_attachment import read_and_analyze_attachment
 from app.services.cyber_saathi_knowledge import KnowledgeService
 from app.services.cyber_saathi_persistence import CyberSaathiPersistence
 from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.knowledge_gap_service import UNFILED_CRIME_DOMAINS, KnowledgeGapService
 from app.services.cyber_saathi_voice import SarvamVoiceAdapter, VoiceProviderError
 
 
@@ -83,9 +86,71 @@ def send_message(
         except APIError as error:
             if error.code != "CONVERSATION_NOT_FOUND":
                 raise
+    prior_state = payload.state
     response = CyberSaathiService.reply(conversation_id, payload)
     CyberSaathiPersistence.save(session, response.state)
+    _record_knowledge_gap(session, payload.message, prior_state, response.state)
     return success_response(response)
+
+
+# Retrieval found nothing for a question we had classified into a domain. That is
+# the signal worth keeping: not the answer given, but the fact that the corpus
+# came up short here, so it can be grown against real demand.
+_RETRIEVAL_MISS = {GroundingStatus.NO_RESULT, GroundingStatus.DETERMINISTIC_PLAYBOOK}
+
+
+def _is_citizen_question(message: str, prior_state: ConversationState) -> bool:
+    """Distinguish a question from a reply to our own conversation.
+
+    The gap list is only useful if it holds things citizens asked and did not get
+    an answer to. Two kinds of message are not that, and both were landing in it:
+    an answer to a scripted intake question, and the citizen tapping an action
+    Cyber Saathi itself proposed - "Prepare report draft" arrived three times
+    before this existed.
+    """
+    if prior_state.pending_question is not None:
+        return False
+    previous_assistant = next(
+        (turn.content for turn in reversed(prior_state.turns) if turn.role != "user"), ""
+    )
+    normalised = " ".join(message.split()).casefold()
+    return bool(normalised) and normalised not in previous_assistant.casefold()
+
+
+def _record_knowledge_gap(
+    session: Session, message: str, prior_state: ConversationState, state: ConversationState
+) -> None:
+    # Only for a conversation the citizen agreed to store. Without consent they
+    # were told nothing is kept, and a redacted question is still their question.
+    if not state.storage_consent or not state.turns:
+        return
+    if not _is_citizen_question(message, prior_state):
+        return
+    last = state.turns[-1]
+    crime_domain = state.incident.crime_domain
+    if crime_domain in {CrimeDomain.UNKNOWN, CrimeDomain.OTHER}:
+        # Nothing actionable: a reviewer cannot go and find a source for "unknown".
+        return
+    # Two shapes of gap. The obvious one is retrieval citing nothing. The other is a
+    # crime domain the corpus has no filing for: the search then runs unfiltered,
+    # generic safety chunks match, and the citizen is answered from material that is
+    # not about their crime - which reads as a hit and is the widest gap of all.
+    cited_nothing = last.grounding_status in _RETRIEVAL_MISS or not last.sources
+    unfiled_domain = crime_domain.value in UNFILED_CRIME_DOMAINS
+    if not (cited_nothing or unfiled_domain):
+        return
+    try:
+        KnowledgeGapService.record(
+            session,
+            question=message,
+            crime_domain=crime_domain.value,
+            knowledge_domain=None,
+            language=state.language.value,
+        )
+        session.commit()
+    except Exception:  # noqa: BLE001
+        # Improving the corpus later must never cost a citizen their answer now.
+        session.rollback()
 
 
 @router.post("/conversations/{conversation_id}/feedback", status_code=status.HTTP_204_NO_CONTENT)

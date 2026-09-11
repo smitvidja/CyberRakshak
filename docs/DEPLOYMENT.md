@@ -455,6 +455,39 @@ replaced the committed index with an embedding-free one. Anyone who ran the test
 before deploying shipped the degraded index without knowing. Ingestion is now
 exercised against a temporary path.
 
+## 15. Growing the corpus from what citizens actually ask
+
+Cyber Saathi records questions it could not answer as *knowledge gaps*, aggregated
+so a question asked forty times is one row with `occurrences: 40`. The working
+loop is:
+
+1. `GET /api/v1/admin/knowledge-gaps?status=OPEN&min_occurrences=5` - what has
+   come up often enough to be worth sourcing.
+2. Find real published guidance for it (NCRP, CERT-In, RBI, the relevant
+   regulator). **Do not write the guidance yourself**, and do not paste a
+   citizen's words in: the corpus is authoritative-source-only, and the answer
+   given to the next citizen has to be traceable to a real publication.
+3. Add a source or section to
+   `backend/app/data/cyber_saathi/authoritative_knowledge/sources.json`, bump its
+   `version` and `reviewed_at`.
+4. Rebuild with embeddings - section 14 - and commit the index.
+5. `PATCH /api/v1/admin/knowledge-gaps/{id}/status` to `ACTIONED` with a note
+   saying which source was added.
+
+Not everything a citizen types is recorded. Answers to Cyber Saathi's own scripted
+intake questions and taps on an action it proposed are replies to the product, not
+unanswered questions - "Prepare report draft" reached the list three times before
+that filter existed, and a list full of its own UI strings is not worth reading.
+Short acknowledgements ("ok", "haan") are skipped too.
+
+If a gap keeps arriving after being actioned, it stays visible with `reviewed_at`
+older than `last_seen_at`. That is the signal that the source added did not
+actually answer the question, and it is deliberately not reset.
+
+Migration `d4e5f6a7b8c9` creates the table; the entrypoint applies it like any
+other. Nothing about this is automatic: no endpoint writes to the corpus, and
+there is no job that promotes a signal into retrievable content.
+
 ## Runtime additions from Phase 10
 
 Three dependencies were added for resume parsing and complaint-copy PDFs. All three ship

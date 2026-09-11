@@ -34,6 +34,7 @@ APPROVED_TABLES = {
     "cyber_saathi_conversations",
     "cyber_warrior_profiles",
     "evidence",
+    "knowledge_gap_signals",
     "mock_identity_profiles",
     "notifications",
     "reported_suspects",

@@ -115,6 +115,30 @@ guards prevent is text the document never contained, and output in any other sha
   `--dry-run`, and a failure there does not stop the API from starting.
 - Anything that harvests conversations for later use must run **before** the purge.
 
+## Growing The Knowledge Corpus
+
+Cyber Saathi records what it could not answer so the corpus can be grown against real
+demand. The boundary that makes this safe is what it does **not** do:
+
+- **Citizen text never becomes retrievable knowledge.** A gap signal stores the *question*,
+  never an answer, and nothing promotes it into the index. A pipeline that fed conversation
+  content back into retrieval would let whoever typed it write the guidance the next citizen
+  receives - a poisoning vector with a safety consequence, not a data-quality one. Section
+  0.7 of the Cyber Saathi prompt requires the corpus to stay separately sourced,
+  attributable and versioned; the loop produces a reading list for a person, not knowledge.
+- **Consent-gated.** A signal is recorded only for a conversation the citizen agreed to
+  store. Without consent they were told nothing is kept, and a redacted question is still
+  their question.
+- **Redacted and aggregated.** The stored sample passes through the same redaction as
+  conversation state (email, phone, long identifiers, UPI handles). Repeats are grouped by a
+  SHA-256 digest of the normalised question, so a question asked forty times is one row with
+  a count rather than forty copies of someone's words.
+- **Two shapes of gap are recorded**: retrieval citing nothing, and a crime domain the
+  corpus has no filing for at all. The second matters because an unfiled domain searches
+  unfiltered, generic safety chunks match, and the citizen is answered from material that is
+  not about their crime - which reads as a hit and is the widest gap there is.
+- Harvesting runs before the retention purge, or there would be nothing left to harvest.
+
 ## Public Suspect Search
 
 Suspect search is the only public endpoint that reads citizen-submitted report data, so it is

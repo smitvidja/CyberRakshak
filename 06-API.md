@@ -199,6 +199,16 @@ per client and returns `429 RATE_LIMITED` when exceeded. The client is identifie
 connection, consulting `X-Forwarded-For` only as far as `TRUSTED_PROXY_HOPS` declares real
 proxies - see `docs/DEPLOYMENT.md` section 12.
 
+`GET /admin/knowledge-gaps` lists questions Cyber Saathi could not answer, most-asked
+first, filterable by `status`, `crime_domain` and `min_occurrences`. The ordering is the
+point: it turns "we should cover more topics" into a ranked list of what citizens actually
+asked and did not get an answer to. `PATCH /admin/knowledge-gaps/{id}/status` marks one
+`REVIEWED`, `ACTIONED` or `DISMISSED` with a note. Both require an admin.
+
+Neither endpoint writes to the retrieval corpus. `ACTIONED` records that a human added a
+real source to the authoritative pack and rebuilt the index - see `docs/DEPLOYMENT.md`
+section 14. Citizen text never becomes retrievable content.
+
 `POST /suspects/corrections` stores only an HMAC fingerprint of the normalized identifier
 plus a masked display form and the stated reason, so a correction request cannot be used to
 recover the raw identifier or to reach the original reporter. It is rate limited on its own,

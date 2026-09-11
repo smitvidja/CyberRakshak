@@ -605,3 +605,24 @@ class VoiceTranscription(BaseModel):
 class VoiceSpeechRequest(BaseModel):
     text: str = Field(min_length=1, max_length=3500)
     language: LanguageCode
+
+
+class KnowledgeGapResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    sample_question: str
+    crime_domain: str
+    knowledge_domain: str | None
+    language: str
+    occurrences: int
+    first_seen_at: datetime
+    last_seen_at: datetime
+    status: str
+    resolution_note: str | None
+    reviewed_at: datetime | None
+
+
+class KnowledgeGapStatusUpdate(BaseModel):
+    status: Literal["OPEN", "REVIEWED", "ACTIONED", "DISMISSED"]
+    resolution_note: str | None = Field(default=None, max_length=2000)
