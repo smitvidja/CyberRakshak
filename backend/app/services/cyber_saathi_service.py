@@ -1019,7 +1019,7 @@ class CyberSaathiService:
         return RoutedReply(
             alternatives,
             TurnKind.SAFETY if escalated else TurnKind.MESSAGE,
-            GroundingStatus.GROUNDED if retrieval.matches else GroundingStatus.DETERMINISTIC_PLAYBOOK,
+            GroundingStatus.DETERMINISTIC_GROUNDED if retrieval.matches else GroundingStatus.DETERMINISTIC_PLAYBOOK,
             CyberSaathiService._conversation_sources(retrieval.matches[:1]),
             retrieval.retrieval_latency_ms,
             safety_flags=["blocked_action_alternative"] + (["repeated_failure_escalation"] if escalated else []),
@@ -1339,7 +1339,7 @@ class CyberSaathiService:
         return RoutedReply(
             content,
             TurnKind.MESSAGE,
-            GroundingStatus.GROUNDED if retrieval.matches else GroundingStatus.DETERMINISTIC_PLAYBOOK,
+            GroundingStatus.DETERMINISTIC_GROUNDED if retrieval.matches else GroundingStatus.DETERMINISTIC_PLAYBOOK,
             CyberSaathiService._conversation_sources(retrieval.matches[:1]),
             retrieval_latency_ms=retrieval.retrieval_latency_ms,
         )
@@ -1589,7 +1589,7 @@ class CyberSaathiService:
                 safety,
                 TurnKind.SAFETY,
                 (
-                    GroundingStatus.GROUNDED
+                    GroundingStatus.DETERMINISTIC_GROUNDED
                     if retrieval.matches
                     else GroundingStatus.DETERMINISTIC_PLAYBOOK
                 ),
@@ -1657,7 +1657,7 @@ class CyberSaathiService:
                         ),
                         TurnKind.MESSAGE,
                         (
-                            GroundingStatus.GROUNDED
+                            GroundingStatus.DETERMINISTIC_GROUNDED
                             if retrieval.matches
                             else GroundingStatus.DETERMINISTIC_PLAYBOOK
                         ),
@@ -1703,7 +1703,7 @@ class CyberSaathiService:
                         language, response_understanding.sentiment, answer
                     ),
                     TurnKind.MESSAGE,
-                    GroundingStatus.GROUNDED,
+                    GroundingStatus.DETERMINISTIC_GROUNDED,
                     CyberSaathiService._conversation_sources(retrieval.matches[:1]),
                     retrieval.retrieval_latency_ms,
                     llm_fallback_used=generated.fallback_used,

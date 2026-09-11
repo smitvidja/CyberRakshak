@@ -34,6 +34,12 @@ if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
   python ../database/seeds/seed_reference_data.py
 fi
 
+# A citizen consents to Cyber Saathi storage for thirty days. Expired conversations
+# were already refused on read but never actually deleted, so they accumulated
+# indefinitely. Idempotent, and a failure here must not stop the API from starting -
+# retention hygiene is not worth taking the service down for.
+python -m scripts.purge_expired_conversations ||   echo "conversation purge failed; continuing to start the API" >&2
+
 # --no-proxy-headers is deliberate. Uvicorn rewrites request.client from
 # X-Forwarded-For by default (for peers in --forwarded-allow-ips, 127.0.0.1 by
 # default), which means two layers would interpret that header with different

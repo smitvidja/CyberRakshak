@@ -24,7 +24,7 @@ export type SaathiTurn = {
   content: string;
   language: SaathiLanguage;
   kind: "message" | "safety" | "confirmation" | "handoff" | "error";
-  grounding_status: "not_used" | "grounded" | "no_result" | "deterministic_playbook";
+  grounding_status: "not_used" | "grounded" | "no_result" | "deterministic_playbook" | "deterministic_grounded";
   sources: Array<{
     chunk_id: string;
     source_id: string;

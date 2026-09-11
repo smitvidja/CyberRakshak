@@ -5,6 +5,7 @@ from app.schemas.cyber_saathi import (
     ConversationMessageRequest,
     CrimeDomain,
     GroundingStatus,
+    RETRIEVAL_BACKED_STATUSES,
     LanguageCode,
 )
 from app.services.cyber_saathi_service import CyberSaathiService
@@ -72,11 +73,10 @@ def test_five_domain_frontend_contract(
     assert acknowledged.language == LanguageCode.HINGLISH, label
     # 4. Safety and grounding: no unsupported provider/system claim is emitted.
     first_reply = first.turns[-1]
-    assert first_reply.grounding_status in {
-        GroundingStatus.GROUNDED,
-        GroundingStatus.DETERMINISTIC_PLAYBOOK,
-        GroundingStatus.NO_RESULT,
-    }, label
+    assert first_reply.grounding_status in (
+        RETRIEVAL_BACKED_STATUSES
+        | {GroundingStatus.DETERMINISTIC_PLAYBOOK, GroundingStatus.NO_RESULT}
+    ), label
     forbidden = ("police database access", "bank system access", "guaranteed recovery")
     assert not any(term in first_reply.content.casefold() for term in forbidden), label
     # 5. Entity confirmation: extracted critical values are never silently confirmed.

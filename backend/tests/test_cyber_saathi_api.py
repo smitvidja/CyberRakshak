@@ -15,6 +15,7 @@ from app.schemas.cyber_saathi import (
     Entity,
     EntityType,
     GroundingStatus,
+    RETRIEVAL_BACKED_STATUSES,
     IncidentStatus,
     LanguageCode,
     LLMGenerationResult,
@@ -182,6 +183,7 @@ def test_urgent_financial_route_is_deterministic_and_confirms_amount() -> None:
     assert state["turns"][-1]["kind"] == "safety"
     assert state["turns"][-1]["grounding_status"] in {
         "grounded",
+        "deterministic_grounded",
         "deterministic_playbook",
     }
     assert "OTP/PIN/password" in state["turns"][-1]["content"]
@@ -314,7 +316,7 @@ def test_guidance_turn_is_grounded_and_exposes_traceable_source_metadata() -> No
     )
 
     turn = response.state.turns[-1]
-    assert turn.grounding_status == GroundingStatus.GROUNDED
+    assert turn.grounding_status in RETRIEVAL_BACKED_STATUSES
     assert turn.sources
     assert turn.sources[0].chunk_id
     assert turn.sources[0].source_url.startswith("https://")
@@ -753,10 +755,9 @@ def test_bank_followup_cross_checks_retrieval_and_advances_one_concrete_action()
     assert "CERT" not in reply.content
     assert "1930" not in reply.content
     assert reply.llm_provider is None
-    assert reply.grounding_status in {
-        GroundingStatus.GROUNDED,
-        GroundingStatus.DETERMINISTIC_PLAYBOOK,
-    }
+    assert reply.grounding_status in (
+        RETRIEVAL_BACKED_STATUSES | {GroundingStatus.DETERMINISTIC_PLAYBOOK}
+    )
     assert followed_up.last_turn_purpose.value == "next_step"
     assert "bank_contacted" in followed_up.incidents[0].completed_actions
 
@@ -981,7 +982,7 @@ def test_private_image_threats_receive_grounded_safety_before_report_handoff(
     assert CrimeDomain.ONLINE_HARASSMENT in updated.incident.related_domains
     assert updated.pending_question is not None
     assert updated.pending_question.key == "immediate_danger"
-    assert reply.grounding_status == GroundingStatus.GROUNDED
+    assert reply.grounding_status in RETRIEVAL_BACKED_STATUSES
     assert reply.sources
     assert required_text in reply.content
     assert "1." in reply.content and "2." in reply.content and "3." in reply.content
@@ -1539,7 +1540,7 @@ def test_noisy_women_child_message_gets_domain_specific_grounded_guidance() -> N
     ).state
 
     assert updated.incident.crime_domain == CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY
-    assert updated.turns[-1].grounding_status == GroundingStatus.GROUNDED
+    assert updated.turns[-1].grounding_status in RETRIEVAL_BACKED_STATUSES
     assert updated.turns[-1].sources
 
 

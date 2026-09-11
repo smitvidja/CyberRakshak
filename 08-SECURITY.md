@@ -101,6 +101,20 @@ document, so a claim someone writes into their own resume will be offered back a
 suggestion for their own profile - the same thing they could type into the form. What the
 guards prevent is text the document never contained, and output in any other shape.
 
+## Cyber Saathi Conversation Retention
+
+- A conversation is stored only with explicit `storage_consent`. Without it nothing is
+  persisted at all.
+- Stored state is redacted before it is written: email addresses, phone numbers, long
+  numeric identifiers and UPI handles are replaced with placeholders.
+- Retention is 30 days from the last update. `load()` refuses an expired conversation, and
+  a purge actually deletes it - **refusing to read is not deleting**. Expired rows used to
+  remain in the database indefinitely, holding the conversation state of people who had
+  been told it would be gone. The container entrypoint runs
+  `scripts/purge_expired_conversations.py` on every start; it is idempotent, has a
+  `--dry-run`, and a failure there does not stop the API from starting.
+- Anything that harvests conversations for later use must run **before** the purge.
+
 ## Public Suspect Search
 
 Suspect search is the only public endpoint that reads citizen-submitted report data, so it is

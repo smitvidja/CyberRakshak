@@ -65,6 +65,22 @@ class CyberSaathiPersistence:
         return ConversationState.model_validate(record.state)
 
     @staticmethod
+    def purge_expired(session: Session) -> int:
+        """Delete conversations whose retention window has passed.
+
+        A citizen consented to storage for thirty days. load() already refuses to
+        return an expired conversation, so nothing read these rows - but refusing
+        to read is not deleting, and the rows sat there indefinitely holding the
+        conversation state of people who were told it would be gone. Keeping a
+        promise about retention has to be an actual delete.
+
+        Idempotent, so it is safe to run on every container start.
+        """
+        removed = CyberSaathiRepository.delete_expired(session, datetime.now(timezone.utc))
+        session.commit()
+        return removed
+
+    @staticmethod
     def add_feedback(session: Session, conversation_id, rating: int, comment: str | None) -> None:
         record = CyberSaathiRepository.get(session, conversation_id)
         if record is None:

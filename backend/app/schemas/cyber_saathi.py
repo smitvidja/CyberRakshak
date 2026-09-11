@@ -194,9 +194,23 @@ class ChecklistStatus(str, Enum):
 
 class GroundingStatus(str, Enum):
     NOT_USED = "not_used"
+    # The reply text was written by the model from the cited chunks.
     GROUNDED = "grounded"
     NO_RESULT = "no_result"
     DETERMINISTIC_PLAYBOOK = "deterministic_playbook"
+    # The reply text is deterministic copy or a scripted intake question, and
+    # retrieval also found authoritative sources, which are shown to the citizen
+    # as further reading. Distinct from GROUNDED because no model read those
+    # chunks: reporting both as "grounded" made the logged grounding rate count
+    # turns where the LLM never ran.
+    DETERMINISTIC_GROUNDED = "deterministic_grounded"
+
+
+# Turns whose content is supported by retrieved authoritative sources, whether the
+# model wrote the words or the deterministic playbook did.
+RETRIEVAL_BACKED_STATUSES = frozenset(
+    {GroundingStatus.GROUNDED, GroundingStatus.DETERMINISTIC_GROUNDED}
+)
 
 
 class LLMProvider(str, Enum):
