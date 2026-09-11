@@ -134,7 +134,7 @@ export function CyberSaathiConversation() {
   useEffect(() => {
     if (state) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     endRef.current?.scrollIntoView({behavior: "smooth", block: "nearest"});
-  }, [state, sending]);
+  }, [state, sending, languageNotice]);
 
   async function startConversation(nextLanguage: SaathiLanguage) {
     setLoading(true);
@@ -348,12 +348,6 @@ export function CyberSaathiConversation() {
 
           <div aria-live="polite" className="h-[460px] overflow-y-auto bg-[#fafdff] px-4 py-5 sm:px-6">
             {loading ? <div className="grid h-full place-items-center text-sm text-slate-600"><span className="flex items-center gap-2"><LoaderCircle className="animate-spin" size={18} />{t("loading")}</span></div> : null}
-            {languageNotice ? (
-              <p className="mb-4 flex items-start gap-2 rounded-[6px] border border-[#cddff5] bg-[#eef5ff] px-3 py-2 text-xs leading-5 text-[#174574]">
-                <Languages aria-hidden="true" className="mt-0.5 shrink-0" size={14} />
-                {t("languageChangedNote", {language: t("languageNames." + languageNotice)})}
-              </p>
-            ) : null}
             {!loading && state?.turns.map((turn) => (
               <article className={`mb-4 flex gap-2.5 ${turn.role === "user" ? "justify-end" : "justify-start"}`} key={turn.id}>
                 {turn.role === "assistant" ? <span aria-hidden="true" className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#e5efff] text-[#0b58c7]"><Bot size={17} /></span> : null}
@@ -423,6 +417,17 @@ export function CyberSaathiConversation() {
                 </ol>
                 <div className="mt-3 flex flex-wrap gap-2"><button className="inline-flex h-9 items-center gap-2 rounded-[6px] bg-[#12833b] px-4 text-sm font-bold text-white" onClick={() => void sendMessage(language === "HI" ? "हाँ" : language === "HINGLISH" ? "haan" : "yes")} type="button"><Check size={16} />{t("confirm")}</button><button className="h-9 rounded-[6px] border border-[#b9cbe0] px-4 text-sm font-bold text-[#0b4fb3]" onClick={() => inputRef.current?.focus()} type="button">{t("changeValue")}</button></div>
               </section>
+            ) : null}
+            {languageNotice ? (
+              // Sits after the last turn, at the point the switch happened, and is
+              // centred so it reads as an event in the conversation rather than a
+              // message from either side. At the top of the scroller nobody saw it.
+              <div className="mb-4 flex justify-center" role="status">
+                <p className="flex max-w-[92%] items-start gap-2 rounded-[8px] border border-[#cddff5] bg-[#eef5ff] px-3.5 py-2 text-xs leading-5 text-[#174574]">
+                  <Languages aria-hidden="true" className="mt-0.5 shrink-0" size={14} />
+                  {t("languageChangedNote", {language: t("languageNames." + languageNotice)})}
+                </p>
+              </div>
             ) : null}
             {sending ? <div className="mb-4 ml-10 flex items-center gap-2 text-sm text-slate-500"><LoaderCircle className="animate-spin" size={16} />{t("thinking")}</div> : null}
             <div ref={endRef} />
