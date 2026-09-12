@@ -200,3 +200,74 @@ def test_a_fact_volunteered_while_answering_something_else_is_noticed() -> None:
 
     assert "answered:platform_block_report" in _actions(state)
     assert _pending(state) != "platform_block_report"
+
+
+# ------------------------------------------- take everything the message offers
+
+RICH_FIRST_MESSAGE = (
+    "मुझे एक आदमी WhatsApp पर परेशान कर रहा है, गंदे मैसेज भेजता है। "
+    "मैंने उसे block कर दिया और screenshot भी ले लिए हैं। "
+    "यह 5 सितंबर को हुआ था और मैं मुंबई में हूँ।"
+)
+
+
+def test_one_rich_message_answers_several_questions_at_once() -> None:
+    """A person reads a paragraph and takes all of it in. This used to take one
+    fact per turn even when the first message contained four."""
+    state = _start()
+    state = _say(state, RICH_FIRST_MESSAGE)
+
+    answered = {a.split(":")[1] for a in _actions(state) if a.startswith("answered:")}
+    assert {"platform_and_profile", "platform_block_report", "harassment_evidence_preserved"} <= answered
+
+
+def test_the_date_and_city_in_that_message_are_kept() -> None:
+    state = _start()
+    state = _say(state, RICH_FIRST_MESSAGE)
+    kinds = {entity.type.value for entity in state.incident.entities}
+    assert {"date", "location"} <= kinds
+
+
+def test_only_what_cannot_be_known_from_the_message_is_still_asked() -> None:
+    """Immediate danger and how she wants to be named are genuinely unknowable
+    from the text. Everything else in that paragraph was already taken."""
+    state = _start()
+    state = _say(state, RICH_FIRST_MESSAGE)
+
+    asked = []
+    for answer in ("नहीं कोई खतरा नहीं है", "गुमनाम रहना है", "हाँ", "हाँ"):
+        if state.pending_question is None:
+            break
+        asked.append(state.pending_question.key)
+        state = _say(state, answer)
+
+    assert state.pending_question is None, "intake did not finish"
+    assert len(asked) <= 2, f"still asking for things the message already said: {asked}"
+    assert "immediate_danger" in asked
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        # Hindi inflects for number and gender; one spelling per verb is not enough.
+        "screenshot भी ले लिए हैं",
+        "मैंने स्क्रीनशॉट रख लिए हैं",
+        "screenshot save kar liya",
+        "i have screenshots",
+        "I already saved the proof",
+    ],
+)
+def test_saying_you_have_the_evidence_counts_however_it_is_phrased(message: str) -> None:
+    from app.services.cyber_saathi_service import FLOW_ACTION_SUBJECTS
+
+    assert CyberSaathiService._states_completed_action(
+        message, FLOW_ACTION_SUBJECTS["harassment_evidence_preserved"]
+    ), message
+
+
+def test_wider_verb_coverage_does_not_swallow_a_denial() -> None:
+    from app.services.cyber_saathi_service import FLOW_ACTION_SUBJECTS
+
+    assert not CyberSaathiService._states_completed_action(
+        "मैंने स्क्रीनशॉट नहीं लिए", FLOW_ACTION_SUBJECTS["harassment_evidence_preserved"]
+    )

@@ -2648,10 +2648,16 @@ class CyberSaathiService:
         of those, which is why the flow kept asking about a block the citizen had
         described in their first message.
         """
+        # Hindi inflects the verb for number and gender, so one spelling per verb
+        # is not enough: "screenshot ले लिए हैं" was missed because only "लिया" was
+        # listed, and the citizen was then asked for evidence she had just said she
+        # had.
         completions = {
-            "kiya", "kia", "kar", "kr", "diya", "dia", "liya", "lia", "done",
-            "blocked", "reported", "saved", "have", "already",
-            "किया", "कर", "दिया", "लिया", "दी", "ली",
+            "kiya", "kia", "kar", "kr", "kare", "diya", "dia", "de", "liya", "lia",
+            "le", "liye", "done", "blocked", "reported", "saved", "have", "has",
+            "already", "took", "taken", "got", "kept",
+            "किया", "किए", "किये", "कर", "करके", "दिया", "दिए", "दिये", "दी",
+            "लिया", "लिए", "लिये", "ले", "ली", "रखा", "रखे", "रखी", "हैं", "है",
         }
         # Clause by clause, because one sentence carries two facts:
         # "नहीं कोई खतरा नहीं है, मैंने उसे block भी कर दिया" is "no danger" AND
