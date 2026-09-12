@@ -126,13 +126,21 @@ def blocked_action(message: str) -> str:
 def infer_reporting_for(state: ConversationState) -> tuple[str, str | None]:
     user_text = " ".join(turn.content for turn in state.turns if turn.role == "user")
     lowered = normalized_text(user_text)
+    # Every marker here used to be romanised only, so a citizen writing in
+    # Devanagari - "मुझे एक आदमी परेशान कर रहा है" - was always UNKNOWN and got
+    # asked "did this happen to you, your child, or someone else?" on every turn,
+    # having already said so in their first sentence.
     child_other = (
         "my child", "my daughter", "my son", "meri beti", "mera beta", "mere bacche",
+        "मेरी बेटी", "मेरा बेटा", "मेरे बच्चे", "मेरा बच्चा", "मेरी बच्ची",
     )
     other = (
         "my father", "my mother", "my wife", "my husband", "my brother", "my sister",
         "mere papa", "meri mummy", "meri maa", "mere bhai", "meri behen", "my friend",
         "my cousin", "meri cousin", "mere cousin",
+        "मेरे पिता", "मेरे पापा", "मेरी माँ", "मेरी मां", "मेरी मम्मी", "मेरी पत्नी",
+        "मेरे पति", "मेरा भाई", "मेरी बहन", "मेरा दोस्त", "मेरी सहेली",
+        "मेरी चचेरी", "मेरे चचेरे",
     )
     if any(marker in lowered for marker in child_other) or UnderstandingEngine.has_child_context(
         lowered
@@ -144,11 +152,23 @@ def infer_reporting_for(state: ConversationState) -> tuple[str, str | None]:
         "with me", "happened to me", "mere saath", "mujhe", "my account", "my phone",
         "my image", "my photo", "i ordered", "maine", "mere account", "mere bank",
         "meri account", "mera phone", "meri image", "meri photo", "i am minor", "i'm minor",
+        "मुझे", "मैंने", "मेरे साथ", "मेरा अकाउंट", "मेरे अकाउंट", "मेरा फोन",
+        "मेरी फोटो", "मेरी तस्वीर", "मेरे बैंक", "मेरा बैंक", "मेरी आईडी",
+        # "someone is harassing me" names the victim as clearly as "happened to
+        # me" does. Tied to a verb of harm rather than a bare "me", so "tell me
+        # what to do" is not read as a statement about who was affected.
+        "harassing me", "threatening me", "blackmailing me", "stalking me",
+        "abusing me", "troubling me", "scammed me", "cheated me", "duped me",
+        "sent me", "sending me", "messaging me", "calling me", "hacked my",
+        "stole my", "misusing my", "morphed my", "leaked my",
     )
     if any(marker in lowered for marker in self_markers):
         return "SELF", None
-    if any(owner in lowered.split() for owner in ("my", "mere", "meri", "mera")) and any(
-        subject in lowered for subject in ("bank account", "account", "phone", "profile", "order")
+    if any(
+        owner in lowered.split() for owner in ("my", "mere", "meri", "mera", "मेरे", "मेरी", "मेरा")
+    ) and any(
+        subject in lowered
+        for subject in ("bank account", "account", "phone", "profile", "order", "अकाउंट", "फोन", "प्रोफाइल")
     ):
         return "SELF", None
     return "UNKNOWN", None

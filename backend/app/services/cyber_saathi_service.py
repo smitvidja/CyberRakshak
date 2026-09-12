@@ -61,6 +61,36 @@ UNCERTAIN_MARKERS = {
     "not sure", "don't know", "dont know", "pata nahi", "malum nahi",
     "yaad nahi", "पता नहीं", "मालूम नहीं", "शायद",
 }
+# A citizen answers "no" with a sentence, not the word on its own. Matching whole
+# strings meant "नहीं हम अभी कोई शारीरिक खतरे में नहीं हैं।" was not recognised as
+# an answer at all, so the same question came back. These are matched as tokens,
+# which also keeps "na" out of "karna" and "nahi" out of "nahin bhejaa".
+# Which words name the action each yes/no slot is about, so "block bhi kiya" and
+# "ब्लॉक भी कर दिया" both answer the block question without a phrase list per form.
+FLOW_ACTION_SUBJECTS: dict[str, tuple[str, ...]] = {
+    "platform_block_report": ("block", "blocked", "report", "reported", "ब्लॉक", "रिपोर्ट"),
+    "harassment_evidence_preserved": ("screenshot", "screenshots", "evidence", "proof", "स्क्रीनशॉट", "प्रमाण", "सबूत"),
+    "safe_evidence_preserved": ("screenshot", "screenshots", "evidence", "proof", "स्क्रीनशॉट", "प्रमाण", "सबूत"),
+}
+
+CLAUSE_SPLIT_PATTERN = re.compile(r"[,;।.!?]+|\s+(?:aur|और|lekin|लेकिन|but|and)\s+")
+ANSWER_TOKEN_PATTERN = re.compile(r"[a-zA-Z0-9']+|[ऀ-ॿ]+")
+NEGATIVE_TOKENS = {
+    "no", "nope", "not", "never", "cannot", "cant", "didnt", "havent", "wasnt",
+    "nahi", "nahin", "nhi", "nai", "na",
+    "नहीं", "नही", "नहि", "ना", "ना",
+}
+AFFIRMATIVE_TOKENS = {
+    "yes", "yep", "yeah", "yup", "correct", "confirm", "confirmed", "done",
+    "haan", "ha", "haa", "haan", "ji", "kiya", "kardiya", "liya",
+    "हाँ", "हां", "जी", "सही", "किया", "लिया", "दिया",
+}
+# Checked before negation, because every one of them contains a negation word.
+UNCERTAIN_PHRASES = (
+    "pata nahi", "pata nhi", "malum nahi", "yaad nahi", "sure nahi",
+    "पता नहीं", "मालूम नहीं", "याद नहीं", "शायद", "not sure",
+    "don't know", "dont know", "no idea",
+)
 CONTEXTUAL_YES_MARKERS = YES_MARKERS | {
     "haan bol diya", "ha bol diya", "bol diya", "kar diya", "kr diya",
     "ho gaya", "done", "yes done", "haan kar diya", "हाँ कर दिया",
@@ -2134,9 +2164,13 @@ class CyberSaathiService:
             ),
             CrimeDomain.ONLINE_HARASSMENT: (
                 ("platform_and_profile", ("instagram", "facebook", "whatsapp", "telegram", "snapchat")),
+                ("platform_block_report", ("block kar diya", "block kiya", "block bhi kiya", "block bhi kar diya", "blocked him", "blocked her", "blocked the", "i blocked", "report kar diya", "reported him", "reported it", "ब्लॉक कर दिया", "ब्लॉक किया", "ब्लॉक भी कर दिया", "रिपोर्ट कर दिया", "रिपोर्ट किया")),
+                ("harassment_evidence_preserved", ("screenshot le liya", "screenshot liya", "screenshots hain", "save kar liya", "saved the", "i have screenshots", "स्क्रीनशॉट ले लिया", "स्क्रीनशॉट हैं", "सेव कर लिया", "सुरक्षित कर लिया")),
             ),
             CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY: (
                 ("platform_and_profile", ("instagram", "facebook", "whatsapp", "telegram", "snapchat")),
+                ("platform_block_report", ("block kar diya", "block kiya", "block bhi kiya", "block bhi kar diya", "blocked him", "blocked her", "blocked the", "i blocked", "report kar diya", "reported him", "reported it", "ब्लॉक कर दिया", "ब्लॉक किया", "ब्लॉक भी कर दिया", "रिपोर्ट कर दिया", "रिपोर्ट किया")),
+                ("safe_evidence_preserved", ("screenshot le liya", "screenshot liya", "screenshots hain", "save kar liya", "स्क्रीनशॉट ले लिया", "सेव कर लिया", "सुरक्षित कर लिया")),
             ),
             CrimeDomain.CHILD_SAFETY: (
                 ("platform_and_profile", ("instagram", "facebook", "whatsapp", "telegram", "snapchat")),
@@ -2148,10 +2182,27 @@ class CyberSaathiService:
                 ("claim_and_source", ("post contains", "message claims", "video claims", "viral post")),
             ),
         }
+        # Negation is handled per clause inside _states_completed_action. A flag for
+        # the whole message was wrong in both directions: it read "seller reply nahi
+        # kar raha" as a denial (it is the evidence the seller WAS contacted), and it
+        # threw away the block in "nahi koi khatra nahi hai, maine use block kar diya".
         for key, markers in rules.get(state.incident.crime_domain, ()):
             marker = f"answered:{key}"
-            if marker not in record.completed_actions and any(value in lowered for value in markers):
+            if marker in record.completed_actions:
+                continue
+            stated = any(value in lowered for value in markers)
+            if not stated:
+                subjects = FLOW_ACTION_SUBJECTS.get(key)
+                stated = subjects is not None and CyberSaathiService._states_completed_action(
+                    message, subjects
+                )
+            if stated:
                 record.completed_actions.append(marker)
+                # Record the value too, so the flow knows what was answered and the
+                # report packet does not have to re-derive it.
+                answer_marker = f"answer:{key}:yes"
+                if answer_marker not in record.completed_actions:
+                    record.completed_actions.append(answer_marker)
         if (
             state.incident.crime_domain
             in {CrimeDomain.CHILD_SAFETY, CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY}
@@ -2188,6 +2239,10 @@ class CyberSaathiService:
         pending.attempts += 1
         pending.last_answer = message.strip()[:500]
         answer_class = CyberSaathiService._expected_answer_class(message)
+        # Inference used to run only on the branch that asks the next question, so
+        # a fact volunteered while answering something else was never noticed and
+        # the flow asked for it again a turn later.
+        CyberSaathiService._infer_flow_answers_from_message(state, message)
         if pending.answer_type in {
             ExpectedAnswerType.CONFIRM_ENTITIES,
             ExpectedAnswerType.FINAL_LOSS_AMOUNT,
@@ -2218,6 +2273,22 @@ class CyberSaathiService:
                 TurnKind.MESSAGE,
                 GroundingStatus.DETERMINISTIC_PLAYBOOK,
             )
+        # A yes/no question is only answered by a yes or a no. This used to mark the
+        # question answered whatever the citizen typed, so "ruko main abhi screenshot
+        # kheench leti hoon" was stored as "yes, evidence preserved" - a yes they
+        # never gave - and "yeh 5 September ko hua tha, main Mumbai mein hoon" was
+        # swallowed as an answer with the date and city thrown away. Three attempts,
+        # then it moves on rather than trapping someone in a loop.
+        if (
+            pending.answer_type == ExpectedAnswerType.YES_NO
+            and answer_class == "other"
+            # Exactly one clarification. Asking repeatedly turned a citizen handing
+            # over a suspect's number into two rounds of "haan ya nahi".
+            and pending.attempts < 2
+        ):
+            CyberSaathiService._merge_incident_detail(state, message, understanding)
+            return CyberSaathiService._reask_yes_no(state, pending, message)
+
         marker = f"answered:{pending.key}"
         if marker not in record.completed_actions:
             record.completed_actions.append(marker)
@@ -2532,14 +2603,78 @@ class CyberSaathiService:
         )
 
     @staticmethod
+    def _states_completed_action(message: str, subjects: tuple[str, ...]) -> bool:
+        """Did the citizen say they already did this?
+
+        Token based, because the words drift apart in real writing: "block bhi
+        kiya", "block kar diya", "ब्लॉक भी कर दिया". Substring phrases missed all
+        of those, which is why the flow kept asking about a block the citizen had
+        described in their first message.
+        """
+        completions = {
+            "kiya", "kia", "kar", "kr", "diya", "dia", "liya", "lia", "done",
+            "blocked", "reported", "saved", "have", "already",
+            "किया", "कर", "दिया", "लिया", "दी", "ली",
+        }
+        # Clause by clause, because one sentence carries two facts:
+        # "नहीं कोई खतरा नहीं है, मैंने उसे block भी कर दिया" is "no danger" AND
+        # "I blocked him". A negation flag for the whole message reads the second
+        # half as denied; checking the clause the subject actually sits in does not.
+        for clause in CLAUSE_SPLIT_PATTERN.split(normalized_text(message)):
+            tokens = set(ANSWER_TOKEN_PATTERN.findall(clause))
+            if not tokens & set(subjects):
+                continue
+            if tokens & NEGATIVE_TOKENS:
+                continue
+            if tokens & completions:
+                return True
+        return False
+
+    @staticmethod
+    def _reask_yes_no(state: ConversationState, pending, message: str) -> RoutedReply:
+        """Keep the question open, acknowledge what was actually said, ask plainly."""
+        language = state.language
+        question = CyberSaathiService._question_copy(pending.key, language)
+        lead = {
+            LanguageCode.EN: "Noted. Just so I record it correctly - yes or no:",
+            LanguageCode.HI: "नोट कर लिया। बस सही दर्ज करने के लिए - हाँ या नहीं:",
+            LanguageCode.HINGLISH: "Note kar liya. Bas sahi record karne ke liye - haan ya nahi:",
+        }
+        # If they are in the middle of gathering proof, point at the control that
+        # takes it instead of silently moving on.
+        evidence_hint = {
+            LanguageCode.EN: " You can send it here with Upload evidence whenever it is ready.",
+            LanguageCode.HI: " तैयार हो जाए तो आप उसे यहीं Upload evidence से भेज सकते हैं।",
+            LanguageCode.HINGLISH: " Ready ho jaye to aap use yahin Upload evidence se bhej sakte hain.",
+        }
+        lowered = normalized_text(message)
+        mentions_evidence = any(
+            term in lowered
+            for term in ("screenshot", "स्क्रीनशॉट", "photo", "फोटो", "proof", "प्रमाण", "सबूत", "chat", "recording")
+        )
+        answer = f"{lead.get(language, lead[LanguageCode.EN])} {question}"
+        if mentions_evidence:
+            answer += evidence_hint.get(language, evidence_hint[LanguageCode.EN])
+        return RoutedReply(answer, TurnKind.MESSAGE, GroundingStatus.DETERMINISTIC_PLAYBOOK)
+
+    @staticmethod
     def _expected_answer_class(message: str) -> str:
+        """Classify a yes/no answer written as a sentence, in EN, Hindi or Hinglish.
+
+        Order matters. "pata nahi" contains a negation but means uncertain, and a
+        negation anywhere outranks an affirmation - "haan lekin maine block nahi
+        kiya" is a no to the question that was asked.
+        """
         normalized = normalized_text(message)
+        if normalized in UNCERTAIN_MARKERS or any(p in normalized for p in UNCERTAIN_PHRASES):
+            return "uncertain"
+        tokens = set(ANSWER_TOKEN_PATTERN.findall(normalized))
+        if tokens & NEGATIVE_TOKENS:
+            return "no"
         if CyberSaathiService._is_contextual_confirmation(message):
             return "yes"
-        if normalized in NO_MARKERS:
-            return "no"
-        if normalized in UNCERTAIN_MARKERS:
-            return "uncertain"
+        if tokens & AFFIRMATIVE_TOKENS:
+            return "yes"
         return "other"
 
     @staticmethod
