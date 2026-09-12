@@ -6,6 +6,8 @@ from uuid import UUID
 
 from app.core.errors import APIError
 from app.schemas.cyber_saathi import (
+    ConfidenceBand,
+    confidence_band,
     AttachmentAnalysis,
     ComplaintPrefill,
     ConversationCreate,
@@ -52,6 +54,7 @@ from app.services.cyber_saathi_conversation import (
 )
 from app.services.cyber_saathi_knowledge import KnowledgeService
 from app.services.cyber_saathi_llm import get_llm_gateway
+from app.services.cyber_saathi_domain_classifier import classify_semantically
 from app.services.cyber_saathi_understanding import UnderstandingEngine
 
 
@@ -346,6 +349,7 @@ class CyberSaathiService:
             )
 
         understanding = UnderstandingEngine.analyze(payload.message, state.language)
+        understanding = CyberSaathiService._resolve_crime_domain(state, payload.message, understanding)
         language = CyberSaathiService._resolve_response_language(
             state.language, payload.message, understanding.response_language
         )
@@ -2656,6 +2660,64 @@ class CyberSaathiService:
         if mentions_evidence:
             answer += evidence_hint.get(language, evidence_hint[LanguageCode.EN])
         return RoutedReply(answer, TurnKind.MESSAGE, GroundingStatus.DETERMINISTIC_PLAYBOOK)
+
+    @staticmethod
+    def _resolve_crime_domain(
+        state: ConversationState, message: str, understanding: UnderstandingResult
+    ) -> UnderstandingResult:
+        """Give the keyword pass a second opinion when it cannot see the crime.
+
+        The lexicon answered five of twenty realistic reports; the rest came back
+        unknown, which means no question flow and no retrieval filter, so the
+        citizen was told "मुझे स्पष्ट नहीं है कि क्या हुआ" on every turn forever.
+
+        Only consulted when there is something to gain: the incident has no domain
+        yet, or the lexicon's reading is weak enough to be worth checking. Once an
+        incident has a domain this does nothing, so the cost is about one embedding
+        per conversation. With no provider configured it returns unchanged.
+        """
+        current = state.incident.crime_domain
+        if current not in {CrimeDomain.UNKNOWN, CrimeDomain.OTHER}:
+            return understanding
+
+        lexicon_domain = understanding.crime_domain
+        confident = lexicon_domain not in {CrimeDomain.UNKNOWN, CrimeDomain.OTHER}
+        try:
+            resolved = classify_semantically(message, lexicon_confident=confident)
+        except Exception:  # noqa: BLE001 - classification must never break a reply
+            return understanding
+        if resolved is None or resolved == lexicon_domain:
+            return understanding
+
+        # Rescore exactly as analyze() would have, had the lexicon seen the domain.
+        # Without this the domain is resolved but confidence still reflects
+        # "unknown", so needs_clarification stays true and the citizen is told
+        # "मुझे स्पष्ट नहीं है कि क्या हुआ" about a message we just understood.
+        # The intent lexicon is blind in the same way the domain lexicon is: it
+        # returned unknown for every one of these reports. A message that sits
+        # this close to "someone is sending me filthy messages" is a report of an
+        # incident, so treat it as one. Measured against general questions this
+        # does not misfire - those either carry seek_guidance already, or fail the
+        # similarity floor and never reach here.
+        intent = understanding.intent
+        if intent == Intent.UNKNOWN:
+            intent = Intent.REPORT_INCIDENT
+        confidence = UnderstandingEngine.score_confidence(
+            intent, resolved, understanding.language, understanding.entities
+        )
+        # confidence_band is a stored field on UnderstandingResult, not a computed
+        # property, so it has to be updated too - leaving it stale kept the band at
+        # "low" beside a confidence of 0.96, and the routing reads the band.
+        band = confidence_band(confidence)
+        return understanding.model_copy(
+            update={
+                "crime_domain": resolved,
+                "intent": intent,
+                "confidence": confidence,
+                "confidence_band": band,
+                "needs_clarification": band != ConfidenceBand.HIGH,
+            }
+        )
 
     @staticmethod
     def _expected_answer_class(message: str) -> str:

@@ -1,0 +1,82 @@
+{
+  "version": "2026.09.5.0",
+  "exemplars": {
+    "online_harassment": [
+      "एक आदमी मुझे WhatsApp पर गंदे मैसेज भेज रहा है",
+      "कोई मुझे रोज गाली दे रहा है और परेशान करता है",
+      "ek ladka mujhe baar baar message karke tang kar raha hai",
+      "someone keeps sending me filthy abusive messages and will not stop",
+      "मुझे धमकी भरे मैसेज आ रहे हैं",
+      "a stranger is abusing me in comments every day"
+    ],
+    "women_child_online_safety": [
+      "मेरी फोटो एडिट करके सबको भेज रहा है",
+      "he says he will put my private pictures online unless I pay",
+      "meri private photos ka screenshot leke paise maang raha hai",
+      "किसी ने मेरी तस्वीर से छेड़छाड़ करके अश्लील बना दी",
+      "someone is threatening to leak my intimate images",
+      "मेरी बेटी से कोई ऑनलाइन प्राइवेट फोटो मांग रहा है"
+    ],
+    "child_safety": [
+      "मेरे बच्चे से कोई ऑनलाइन दोस्ती करके प्राइवेट बातें कर रहा है",
+      "an online friend convinced my 14 year old to send photos",
+      "koi mere bete ko game me secret baat karne ke liye keh raha hai",
+      "a stranger is grooming a minor on a gaming app"
+    ],
+    "financial_fraud": [
+      "मेरे खाते से पैसे निकल गए मुझे पता ही नहीं चला",
+      "bank wale bolke call aaya aur account khali ho gaya",
+      "someone took money from my account without permission",
+      "मैंने OTP बता दिया और पैसे कट गए",
+      "unauthorised transaction happened on my card"
+    ],
+    "ecommerce_fraud": [
+      "ऑनलाइन मंगाया था सामान आया ही नहीं",
+      "paisa de diya lekin delivery nahi hui aur seller gayab hai",
+      "the website took my payment and never shipped the order",
+      "रिफंड नहीं मिल रहा और वेबसाइट बंद हो गई"
+    ],
+    "phishing_scam": [
+      "एक लिंक आया था मैंने खोल दिया अब डर लग रहा है",
+      "maine ek link kholke apna detail daal diya",
+      "I clicked a link asking to update my KYC and entered my details",
+      "नौकरी का मैसेज आया था और पैसे मांगे"
+    ],
+    "impersonation": [
+      "कोई मेरे नाम से फेक आईडी चला रहा है",
+      "police ka aadmi bolke video call pe dara raha tha",
+      "someone created a fake profile pretending to be me",
+      "एक आदमी खुद को अधिकारी बताकर डरा रहा था"
+    ],
+    "account_compromise": [
+      "मेरा इंस्टाग्राम किसी और के कब्जे में है",
+      "i cannot get into my email anymore someone changed the password",
+      "mera account hack ho gaya hai aur password badal gaya",
+      "किसी ने मेरे अकाउंट से लॉगिन कर लिया"
+    ],
+    "cyberstalking": [
+      "कोई मेरा पीछा कर रहा है ऑनलाइन हर जगह आ जाता है",
+      "someone keeps tracking where I am and shows up",
+      "wo mere har post pe aa jata hai aur location pooch raha hai"
+    ],
+    "identity_theft": [
+      "मेरे आधार का गलत इस्तेमाल हो रहा है",
+      "someone used my documents to open an account",
+      "mere naam pe koi aur loan le raha hai"
+    ],
+    "malware": [
+      "एक ऐप डाला था अब फोन अजीब चल रहा है",
+      "maine apk install kiya aur ab screen apne aap chal rahi hai",
+      "they made me install an app and now they control my phone"
+    ],
+    "misinformation": [
+      "एक झूठी खबर वायरल हो रही है मेरे बारे में",
+      "a deepfake video is spreading false claims about me",
+      "whatsapp pe fake news phail rahi hai"
+    ],
+    "cyber_terrorism": [
+      "किसी ने ऑनलाइन आतंकी धमकी दी है",
+      "a threat against public infrastructure was posted online"
+    ]
+  }
+}
