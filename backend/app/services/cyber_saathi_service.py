@@ -52,6 +52,7 @@ from app.services.cyber_saathi_conversation import (
     message_fingerprint,
     normalized_text,
 )
+from app.services.cyber_saathi_locations import ResolvedLocation, resolve_answer
 from app.services.cyber_saathi_knowledge import KnowledgeService
 from app.services.cyber_saathi_llm import get_llm_gateway
 from app.services.cyber_saathi_domain_classifier import classify_semantically
@@ -161,16 +162,86 @@ SUSPECT_IDENTIFIER_TYPES = {
     EntityType.ACCOUNT_ID,
 }
 
-CITY_STATE_BY_CITY = {
-    "delhi": "Delhi",
-    "mumbai": "Maharashtra",
-    "ahmedabad": "Gujarat",
-    "bengaluru": "Karnataka",
-    "bangalore": "Karnataka",
-    "kolkata": "West Bengal",
-    "chennai": "Tamil Nadu",
-    "pune": "Maharashtra",
-    "jaipur": "Rajasthan",
+# Nine cities had a state. The gazetteer in india_locations.json now carries the
+# state for every city it knows, so state_for_city replaces this table.
+
+# Asked at the end of every domain flow, after the urgent domain questions are out
+# of the way. Where and when an incident happened are the two things a police
+# complaint always needs and nothing here ever asked for: they were picked up only
+# if the citizen happened to mention them, and were silently blank otherwise. Both
+# are skipped when already known, so a citizen who opened with "kal Mumbai mein"
+# is not asked twice.
+#
+# confirm_summary is last on purpose. Nothing is filed until the citizen has heard
+# back what was understood and agreed with it.
+# One question, not two. Where and when are both needed, both are short, and a
+# person asking would ask for them together - splitting them added a whole turn to
+# an intake that is already seven questions long in some domains. It is skipped
+# entirely when the citizen has already said both.
+UNIVERSAL_QUESTION_TAIL: tuple[tuple[str, ExpectedAnswerType], ...] = (
+    ("incident_where_when", ExpectedAnswerType.FREE_TEXT),
+)
+
+# One line of guidance paired with the question that prompts it, so the intake
+# teaches while it collects instead of reading like a form. Every line is something
+# the citizen can act on while they answer; none of them make a promise about the
+# case. Questions with nothing useful to add carry no line rather than filler.
+QUESTION_GUIDANCE: dict[str, dict[LanguageCode, str]] = {
+    "harassment_evidence_preserved": {
+        LanguageCode.EN: "Take the screenshots before you block - a blocked account often hides the messages.",
+        LanguageCode.HI: "ब्लॉक करने से पहले स्क्रीनशॉट ले लें - ब्लॉक करने पर अक्सर संदेश दिखना बंद हो जाते हैं।",
+        LanguageCode.HINGLISH: "Block karne se pehle screenshot le lein - block karne par aksar messages dikhna band ho jaate hain.",
+    },
+    "stalking_evidence_preserved": {
+        LanguageCode.EN: "Capture the profile URL too, not just the message - that is what identifies the account later.",
+        LanguageCode.HI: "सिर्फ संदेश नहीं, प्रोफाइल का URL भी सुरक्षित रखें - बाद में अकाउंट की पहचान उसी से होती है।",
+        LanguageCode.HINGLISH: "Sirf message nahi, profile ka URL bhi save karein - baad mein account usi se identify hota hai.",
+    },
+    "safe_evidence_preserved": {
+        LanguageCode.EN: "Reporting content to the platform does not destroy it - the rules require the platform to preserve removed material for 180 days for the investigation.",
+        LanguageCode.HI: "प्लेटफॉर्म पर रिपोर्ट करने से सबूत नष्ट नहीं होता - नियमों के अनुसार हटाई गई सामग्री जांच के लिए 180 दिन सुरक्षित रखनी होती है।",
+        LanguageCode.HINGLISH: "Platform par report karne se sabut khatam nahi hota - rules ke hisaab se hataayi gayi content 180 din investigation ke liye preserve hoti hai.",
+    },
+    "password_changed_trusted_device": {
+        LanguageCode.EN: "Change it from a device you trust, and open the app or site yourself rather than through a link.",
+        LanguageCode.HI: "भरोसेमंद डिवाइस से बदलें, और लिंक से नहीं बल्कि ऐप या साइट खुद खोलकर करें।",
+        LanguageCode.HINGLISH: "Trusted device se change karein, aur link se nahi - app ya site khud kholkar karein.",
+    },
+    "sessions_and_mfa_secured": {
+        LanguageCode.EN: "Signing out other sessions matters as much as the new password - otherwise they stay logged in.",
+        LanguageCode.HI: "नया पासवर्ड जितना ही जरूरी है दूसरे सत्र बंद करना - वरना वे लॉग-इन बने रहते हैं।",
+        LanguageCode.HINGLISH: "Naya password jitna hi zaroori hai dusre sessions sign out karna - warna wo logged in rehte hain.",
+    },
+    "remote_access_granted": {
+        LanguageCode.EN: "If a screen-sharing or remote app was installed, uninstall it now - no genuine official asks for one.",
+        LanguageCode.HI: "यदि स्क्रीन शेयरिंग या रिमोट ऐप इंस्टॉल हुआ था तो उसे अभी हटा दें - कोई असली अधिकारी ऐसा ऐप नहीं मंगवाता।",
+        LanguageCode.HINGLISH: "Agar screen sharing ya remote app install hua tha to abhi uninstall karein - koi asli official aisa app nahi mangwata.",
+    },
+    "money_or_sensitive_data_shared": {
+        LanguageCode.EN: "If money moved, the 1930 helpline works best in the first hours - the sooner it is reported, the more can be held.",
+        LanguageCode.HI: "यदि पैसे गए हैं तो 1930 हेल्पलाइन शुरुआती घंटों में सबसे असरदार है - जितनी जल्दी रिपोर्ट, उतना ज्यादा रोका जा सकता है।",
+        LanguageCode.HINGLISH: "Agar paise gaye hain to 1930 helpline pehle kuch ghanton mein sabse effective hai - jitni jaldi report, utna zyada hold ho sakta hai.",
+    },
+    "platform_block_report": {
+        LanguageCode.EN: "Report it inside the app as well - the platform has 24 hours to act on intimate or morphed images, and 72 hours on other takedown requests.",
+        LanguageCode.HI: "ऐप के अंदर भी रिपोर्ट करें - निजी या मॉर्फ की गई तस्वीरों पर प्लेटफॉर्म को 24 घंटे में और अन्य हटाने के अनुरोध पर 72 घंटे में कार्रवाई करनी होती है।",
+        LanguageCode.HINGLISH: "App ke andar bhi report karein - intimate ya morphed images par platform ko 24 ghante mein aur baaki takedown requests par 72 ghante mein act karna hota hai.",
+    },
+    "incident_where_when": {
+        LanguageCode.EN: "The city decides which cybercrime unit takes the case, and an approximate date is enough for the bank and the platform to pull the right records.",
+        LanguageCode.HI: "शहर से तय होता है कि कौन सी साइबर इकाई मामला देखेगी, और अनुमानित तारीख से बैंक व प्लेटफॉर्म सही रिकॉर्ड निकाल पाते हैं।",
+        LanguageCode.HINGLISH: "City se tay hota hai ki kaunsi cyber unit case dekhegi, aur approximate date se bank aur platform sahi records nikaal paate hain.",
+    },
+    "incident_location": {
+        LanguageCode.EN: "This decides which cybercrime unit takes the case, so the city matters even when everything happened online.",
+        LanguageCode.HI: "इसी से तय होता है कि कौन सी साइबर इकाई मामला देखेगी, इसलिए सब कुछ ऑनलाइन होने पर भी शहर मायने रखता है।",
+        LanguageCode.HINGLISH: "Isi se tay hota hai ki kaunsi cyber unit case dekhegi, isliye sab kuch online hone par bhi city maayne rakhti hai.",
+    },
+    "incident_when": {
+        LanguageCode.EN: "An approximate date is enough - it helps the bank and the platform pull the right records.",
+        LanguageCode.HI: "अनुमानित तारीख भी काफी है - इससे बैंक और प्लेटफॉर्म सही रिकॉर्ड निकाल पाते हैं।",
+        LanguageCode.HINGLISH: "Approximate date bhi kaafi hai - isse bank aur platform sahi records nikaal paate hain.",
+    },
 }
 
 DOMAIN_QUESTION_FLOWS: dict[CrimeDomain, tuple[tuple[str, ExpectedAnswerType], ...]] = {
@@ -961,6 +1032,23 @@ class CyberSaathiService:
             state.incident.status = IncidentStatus.AWAITING_USER_INPUT
             return RoutedReply(
                 CyberSaathiService._question_copy("optional_suspect_details", state.language),
+                TurnKind.MESSAGE,
+                GroundingStatus.DETERMINISTIC_PLAYBOOK,
+            )
+        # Everything that will go into the packet has now been collected, including
+        # the optional suspect details. This is the last moment at which the citizen
+        # can still say "no, that is not what I said" - so it is the moment to read
+        # it back, rather than handing them a finished packet to discover it in.
+        if (
+            not prepare_draft
+            and "answered:confirm_summary" not in record.completed_actions
+        ):
+            CyberSaathiService._set_pending_question(
+                state, "confirm_summary", ExpectedAnswerType.YES_NO
+            )
+            state.incident.status = IncidentStatus.AWAITING_USER_INPUT
+            return RoutedReply(
+                CyberSaathiService._confirm_summary_copy(state),
                 TurnKind.MESSAGE,
                 GroundingStatus.DETERMINISTIC_PLAYBOOK,
             )
@@ -2004,6 +2092,26 @@ class CyberSaathiService:
                 LanguageCode.HI: "यदि आपको संदिग्ध व्यक्ति के बारे में कुछ पता है, तो उपलब्ध नाम, उपनाम, फोन नंबर, अकाउंट, प्रोफाइल या लिंक बताएं। यह वैकल्पिक है—नहीं पता हो तो ‘पता नहीं’ कहें; कोई बात नहीं।",
                 LanguageCode.HINGLISH: "Agar suspect ke baare mein kuch pata ho to available name, alias, phone number, account, profile ya link batayein. Ye optional hai—nahi pata ho to ‘pata nahi’ bol dein; koi baat nahi.",
             },
+            "incident_where_when": {
+                LanguageCode.EN: "Which city and state are you in, and roughly when did this happen?",
+                LanguageCode.HI: "आप किस शहर और राज्य में हैं, और यह लगभग कब हुआ?",
+                LanguageCode.HINGLISH: "Aap kis city aur state mein hain, aur ye lagbhag kab hua?",
+            },
+            "incident_location": {
+                LanguageCode.EN: "Which city and state are you in?",
+                LanguageCode.HI: "आप किस शहर और राज्य में हैं?",
+                LanguageCode.HINGLISH: "Aap kis city aur state mein hain?",
+            },
+            "incident_when": {
+                LanguageCode.EN: "Roughly when did this happen - a date, or even just today, yesterday, or last week?",
+                LanguageCode.HI: "यह लगभग कब हुआ - कोई तारीख, या बस आज, कल या पिछले हफ्ते?",
+                LanguageCode.HINGLISH: "Ye lagbhag kab hua - koi date, ya bas aaj, kal ya pichhle hafte?",
+            },
+            "summary_correction": {
+                LanguageCode.EN: "Tell me what is wrong or missing, and I will correct it.",
+                LanguageCode.HI: "बताएं कि क्या गलत है या छूट गया है, मैं उसे ठीक कर दूंगा।",
+                LanguageCode.HINGLISH: "Batayein kya galat hai ya chhut gaya hai, main theek kar dunga.",
+            },
             "seller_contacted": {LanguageCode.EN: "Have you contacted the seller or marketplace through its official support channel?", LanguageCode.HI: "क्या आपने विक्रेता या मार्केटप्लेस से उसके आधिकारिक सहायता माध्यम से संपर्क किया?", LanguageCode.HINGLISH: "Kya seller ya marketplace ko official support channel se contact kiya?"},
             "order_reference": {LanguageCode.EN: "What order number, seller name, or listing URL do you have?", LanguageCode.HI: "आपके पास कौन सा ऑर्डर नंबर, विक्रेता का नाम या लिस्टिंग URL है?", LanguageCode.HINGLISH: "Aapke paas order number, seller name ya listing URL kya hai?"},
             "payment_proof": {LanguageCode.EN: "Do you have the payment receipt, bank entry, or order confirmation?", LanguageCode.HI: "क्या आपके पास भुगतान रसीद, बैंक प्रविष्टि या ऑर्डर पुष्टि है?", LanguageCode.HINGLISH: "Payment receipt, bank entry ya order confirmation available hai?"},
@@ -2239,17 +2347,193 @@ class CyberSaathiService:
             record.completed_actions.append("answered:affected_person_and_age")
 
     @staticmethod
+    def _answer_declines(answer_class: str) -> bool:
+        """Did the citizen say they do not know, or would rather not say?
+
+        Both are legitimate answers to an optional question and must not be met with
+        the same question again.
+        """
+        return answer_class in {"no", "uncertain"}
+
+    @staticmethod
+    def _add_location_entity(state: ConversationState, value: str) -> None:
+        if not value:
+            return
+        if any(
+            entity.type == EntityType.LOCATION and entity.normalized_value == value
+            for entity in state.incident.entities
+        ):
+            return
+        state.incident.entities.append(
+            Entity(
+                type=EntityType.LOCATION,
+                value=value,
+                normalized_value=value,
+                confidence=0.9,
+            )
+        )
+
+    @staticmethod
+    def _entity_value(state: ConversationState, *types: EntityType) -> str | None:
+        """The most recent value the citizen gave for any of these entity types."""
+        for entity in reversed(state.incident.entities):
+            if entity.type in types:
+                return entity.normalized_value or entity.value
+        return None
+
+    @staticmethod
+    def _known_where_when(state: ConversationState) -> tuple[str | None, str | None]:
+        return (
+            CyberSaathiService._entity_value(state, EntityType.LOCATION),
+            CyberSaathiService._entity_value(state, EntityType.DATE, EntityType.DATE_TIME),
+        )
+
+    @staticmethod
+    def _mark_universal_answers(state: ConversationState, record: ConversationIncident) -> None:
+        """Skip the question when the citizen has already answered it in passing.
+
+        Someone who opened with "kal Mumbai mein mere paise gaye" has told us both
+        the day and the city. Asking anyway is the behaviour that made this feel
+        like a form.
+        """
+        where, when = CyberSaathiService._known_where_when(state)
+        marker = "answered:incident_where_when"
+        if where and when and marker not in record.completed_actions:
+            record.completed_actions.append(marker)
+
+    @staticmethod
+    def _summary_readback(state: ConversationState) -> str:
+        """What was understood, in the citizen's own terms, before anything is filed.
+
+        A citizen who has answered six questions has no idea what was actually
+        recorded from them, and the first time they find out should not be when a
+        police complaint is already lodged. Only facts that were genuinely collected
+        are listed - inventing a tidy-looking row for something unknown would be the
+        opposite of the point.
+        """
+        language = state.language
+        labels = {
+            "what": {LanguageCode.EN: "What happened", LanguageCode.HI: "क्या हुआ", LanguageCode.HINGLISH: "Kya hua"},
+            "where": {LanguageCode.EN: "Where", LanguageCode.HI: "कहाँ", LanguageCode.HINGLISH: "Kahan"},
+            "when": {LanguageCode.EN: "When", LanguageCode.HI: "कब", LanguageCode.HINGLISH: "Kab"},
+            "amount": {LanguageCode.EN: "Amount lost", LanguageCode.HI: "गई हुई राशि", LanguageCode.HINGLISH: "Amount gaya"},
+            "suspect": {LanguageCode.EN: "Suspect details", LanguageCode.HI: "संदिग्ध विवरण", LanguageCode.HINGLISH: "Suspect details"},
+            "evidence": {LanguageCode.EN: "Evidence attached", LanguageCode.HI: "संलग्न साक्ष्य", LanguageCode.HINGLISH: "Evidence attached"},
+            "mode": {LanguageCode.EN: "Filing as", LanguageCode.HI: "किस रूप में दर्ज", LanguageCode.HINGLISH: "Kis roop mein file"},
+        }
+        record = CyberSaathiService._active_record(state)
+        rows: list[tuple[str, str]] = []
+
+        # incident.summary accumulates every turn as "first message | Follow-up: ...",
+        # which read back as a transcript of the citizen's own answers truncated
+        # mid-word. What they need to check is what they first reported.
+        summary = (state.incident.summary or "").split("| Follow-up:")[0].strip()
+        if summary:
+            rows.append((labels["what"][language], summary[:220]))
+
+        location = CyberSaathiService._entity_value(state, EntityType.LOCATION)
+        if location:
+            resolved = resolve_answer(location)
+            where = ", ".join(part for part in (resolved.city, resolved.state) if part)
+            if where:
+                rows.append((labels["where"][language], where))
+
+        # The citizen's own phrase, not the resolved ISO date: someone who said
+        # "last week" should see "last week" read back, not a specific day they
+        # never named. The resolved date still goes to the complaint form.
+        when_entity = next(
+            (
+                entity
+                for entity in reversed(state.incident.entities)
+                if entity.type in {EntityType.DATE, EntityType.DATE_TIME}
+            ),
+            None,
+        )
+        if when_entity is not None:
+            rows.append((labels["when"][language], when_entity.value or when_entity.normalized_value))
+
+        amount = CyberSaathiService._entity_value(state, EntityType.AMOUNT)
+        if amount:
+            rows.append((labels["amount"][language], amount))
+
+        identifiers = [
+            entity.normalized_value or entity.value
+            for entity in state.incident.entities
+            if entity.type in SUSPECT_IDENTIFIER_TYPES
+        ]
+        if identifiers:
+            rows.append((labels["suspect"][language], ", ".join(identifiers[:4])))
+
+        attachments = record.report_preparation.attachments if record is not None else []
+        if attachments:
+            rows.append((labels["evidence"][language], str(len(attachments))))
+
+        if state.reporting_mode != ReportingMode.UNDECIDED:
+            mode_copy = {
+                ReportingMode.ANONYMOUS: {
+                    LanguageCode.EN: "anonymously", LanguageCode.HI: "गुमनाम रूप से",
+                    LanguageCode.HINGLISH: "anonymously",
+                },
+                ReportingMode.IDENTIFIED: {
+                    LanguageCode.EN: "with your name", LanguageCode.HI: "अपने नाम से",
+                    LanguageCode.HINGLISH: "apne naam se",
+                },
+            }[state.reporting_mode][language]
+            rows.append((labels["mode"][language], mode_copy))
+
+        return "\n".join(f"- {label}: {value}" for label, value in rows)
+
+    @staticmethod
+    def _confirm_summary_copy(state: ConversationState) -> str:
+        intro = {
+            LanguageCode.EN: "Before I prepare anything, here is what I have understood. Is this correct?",
+            LanguageCode.HI: "कुछ भी तैयार करने से पहले, मैंने जो समझा है वह यह है। क्या यह सही है?",
+            LanguageCode.HINGLISH: "Kuch bhi tayyar karne se pehle, maine jo samjha hai wo ye hai. Kya ye sahi hai?",
+        }[state.language]
+        closing = {
+            LanguageCode.EN: "Say yes to go ahead, or tell me what to correct.",
+            LanguageCode.HI: "आगे बढ़ने के लिए हाँ कहें, या बताएं कि क्या ठीक करना है।",
+            LanguageCode.HINGLISH: "Aage badhne ke liye haan kahein, ya batayein kya theek karna hai.",
+        }[state.language]
+        readback = CyberSaathiService._summary_readback(state)
+        if not readback:
+            return f"{intro}\n{closing}"
+        return f"{intro}\n\n{readback}\n\n{closing}"
+
+    @staticmethod
+    def _where_when_key(state: ConversationState) -> str:
+        """Ask only for the half that is still missing."""
+        where, when = CyberSaathiService._known_where_when(state)
+        if where and not when:
+            return "incident_when"
+        if when and not where:
+            return "incident_location"
+        return "incident_where_when"
+
+    @staticmethod
+    def _question_text(state: ConversationState, key: str) -> str:
+        """The question, with the one line of guidance that belongs with it."""
+        if key == "confirm_summary":
+            return CyberSaathiService._confirm_summary_copy(state)
+        if key == "incident_where_when":
+            key = CyberSaathiService._where_when_key(state)
+        question = CyberSaathiService._question_copy(key, state.language)
+        guidance = QUESTION_GUIDANCE.get(key, {}).get(state.language)
+        return f"{guidance} {question}" if guidance else question
+
+    @staticmethod
     def _next_domain_question(state: ConversationState) -> str | None:
         flow = DOMAIN_QUESTION_FLOWS.get(state.incident.crime_domain)
         record = CyberSaathiService._active_record(state)
         if flow is None or record is None:
             state.pending_question = None
             return None
+        CyberSaathiService._mark_universal_answers(state, record)
         completed = set(record.completed_actions)
-        for key, answer_type in flow:
+        for key, answer_type in (*flow, *UNIVERSAL_QUESTION_TAIL):
             if f"answered:{key}" not in completed:
                 CyberSaathiService._set_pending_question(state, key, answer_type)
-                return CyberSaathiService._question_copy(key, state.language)
+                return CyberSaathiService._question_text(state, key)
         state.pending_question = None
         return None
 
@@ -2316,6 +2600,67 @@ class CyberSaathiService:
             CyberSaathiService._merge_incident_detail(state, message, understanding)
             return CyberSaathiService._reask_yes_no(state, pending, message)
 
+        if pending.key in {"incident_where_when", "incident_location", "incident_when"}:
+            # The date half is picked up by entity extraction in _merge_incident_detail
+            # below; only the place needs resolving here.
+            #
+            # A yes or a no is never a city. "yes correct" reached the free-text
+            # fallback and was written into the complaint as the city of Yes Correct,
+            # so the answer class settles it before the place resolver is consulted.
+            recorded = (
+                ResolvedLocation(None, None)
+                if answer_class in {"yes", "no", "uncertain"}
+                else resolve_answer(message)
+            )
+            if recorded.is_empty and pending.key != "incident_when":
+                # "pata nahi" is a real answer and is accepted; a link or a stray
+                # number is not, and is worth one more ask before moving on.
+                if not CyberSaathiService._answer_declines(answer_class) and pending.attempts < 2:
+                    return RoutedReply(
+                        CyberSaathiService._question_text(state, pending.key),
+                        TurnKind.MESSAGE,
+                        GroundingStatus.DETERMINISTIC_PLAYBOOK,
+                    )
+            else:
+                value = recorded.city or recorded.state or ""
+                CyberSaathiService._add_location_entity(state, value)
+
+        if pending.key == "confirm_summary":
+            if answer_class == "no":
+                # They have found something wrong in the read-back. Ask what, rather
+                # than filing a complaint the citizen has just told us is inaccurate.
+                corrections = sum(
+                    1 for item in record.completed_actions if item == "answered:summary_correction"
+                )
+                if corrections < 2:
+                    record.completed_actions[:] = [
+                        item for item in record.completed_actions
+                        if item not in {"answered:confirm_summary", "answered:summary_correction"}
+                    ]
+                    CyberSaathiService._set_pending_question(
+                        state, "summary_correction", ExpectedAnswerType.FREE_TEXT
+                    )
+                    return RoutedReply(
+                        CyberSaathiService._question_copy("summary_correction", state.language),
+                        TurnKind.MESSAGE,
+                        GroundingStatus.DETERMINISTIC_PLAYBOOK,
+                    )
+
+        if pending.key == "summary_correction":
+            # The correction is merged below with every other answer. Re-ask for
+            # confirmation so the citizen sees what their correction changed.
+            CyberSaathiService._merge_incident_detail(state, message, understanding)
+            record.completed_actions.append("answered:summary_correction")
+            state.pending_question = None
+            CyberSaathiService._set_pending_question(
+                state, "confirm_summary", ExpectedAnswerType.YES_NO
+            )
+            return RoutedReply(
+                CyberSaathiService._confirm_summary_copy(state),
+                TurnKind.MESSAGE,
+                GroundingStatus.DETERMINISTIC_PLAYBOOK,
+            )
+
         if pending.key == "reporting_mode_choice":
             chosen = CyberSaathiService._parse_reporting_mode(message)
             if chosen is None:
@@ -2328,6 +2673,42 @@ class CyberSaathiService:
                         TurnKind.MESSAGE,
                         GroundingStatus.DETERMINISTIC_PLAYBOOK,
                     )
+            elif (
+                chosen == ReportingMode.ANONYMOUS
+                and state.incident.crime_domain
+                not in {CrimeDomain.CHILD_SAFETY, CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY}
+            ):
+                # The question is worth asking here - a harassment victim often is a
+                # woman, and the domain may still be refined - but the portal offers
+                # anonymous filing only for women and child safety complaints. Storing
+                # the choice anyway made the very next message fail the conversation
+                # with a 403, which is how a citizen lost the whole session for
+                # answering the question they were asked.
+                copy = {
+                    LanguageCode.EN: (
+                        "I should be straight with you: anonymous filing is offered only for "
+                        "women and child safety complaints. For this category the complaint "
+                        "needs your details. Would you like to continue with your name?"
+                    ),
+                    LanguageCode.HI: (
+                        "मैं आपको स्पष्ट बता दूं: गुमनाम शिकायत केवल महिला और बाल सुरक्षा मामलों "
+                        "में उपलब्ध है। इस श्रेणी के लिए शिकायत में आपका विवरण देना होगा। "
+                        "क्या आप अपने नाम से आगे बढ़ना चाहेंगे?"
+                    ),
+                    LanguageCode.HINGLISH: (
+                        "Main aapko saaf bata deta hoon: anonymous filing sirf women aur child "
+                        "safety complaints mein available hai. Is category ke liye complaint "
+                        "mein aapke details dene honge. Kya aap apne naam se aage badhna chahenge?"
+                    ),
+                }
+                if pending.attempts < 2:
+                    return RoutedReply(
+                        copy[state.language],
+                        TurnKind.MESSAGE,
+                        GroundingStatus.DETERMINISTIC_PLAYBOOK,
+                    )
+                # Left undecided rather than silently filed under a name they never
+                # agreed to; the report form asks again.
             else:
                 state.reporting_mode = chosen
 
@@ -2834,8 +3215,10 @@ class CyberSaathiService:
             "नाम नहीं", "नाम मत", "पहचान नहीं",
         )
         identified = (
-            "my name", "with name", "with my name", "apna naam", "naam batake",
-            "naam de", "identified", "अपना नाम", "नाम देकर", "नाम बताकर", "नाम बता",
+            "my name", "with name", "with my name", "under my name", "use my name",
+            "apna naam", "apne naam", "naam batake", "naam se", "naam ke saath",
+            "naam de", "identified", "अपना नाम", "अपने नाम", "नाम से", "नाम देकर",
+            "नाम बताकर", "नाम बता", "नाम के साथ",
         )
         # "bina naam" contains "naam", so the anonymous forms are checked first.
         if any(term in lowered for term in anonymous):
@@ -2924,8 +3307,11 @@ class CyberSaathiService:
             ),
             None,
         )
-        city = location.title() if location else None
-        state_name = CITY_STATE_BY_CITY.get(location.casefold()) if location else None
+        # The stored value may be a city or, when only a state was named, a state.
+        # Titling it blindly used to put "Chhattisgarh" in the complaint's city field.
+        recorded = resolve_answer(location) if location else ResolvedLocation(None, None)
+        city = recorded.city
+        state_name = recorded.state
         suspect_details = preparation.suspect_details if preparation is not None else None
         suspect_name, suspect_alias = CyberSaathiService._suspect_name_and_alias(
             suspect_details

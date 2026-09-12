@@ -10,6 +10,7 @@ from __future__ import annotations
 import pytest
 
 from app.schemas.cyber_saathi import (
+    ReportingMode,
     ConversationCreate,
     ConversationMessageRequest,
     ConversationState,
@@ -242,8 +243,36 @@ def test_only_what_cannot_be_known_from_the_message_is_still_asked() -> None:
         state = _say(state, answer)
 
     assert state.pending_question is None, "intake did not finish"
-    assert len(asked) <= 2, f"still asking for things the message already said: {asked}"
+    # Distinct questions, not turns. Without a semantic classifier this message
+    # lands in online_harassment, where anonymous filing is not available, so
+    # reporting_mode_choice legitimately takes a second turn to explain that -
+    # a clarification the citizen needs, not a re-ask of something they told us.
+    # That path has its own test below.
+    assert len(set(asked)) <= 2, f"still asking for things the message already said: {asked}"
+    assert asked.count("immediate_danger") == 1
     assert "immediate_danger" in asked
+
+
+def test_anonymous_is_not_offered_and_then_refused() -> None:
+    """Cyber Saathi asked a harassment victim whether she wanted to file
+    anonymously, stored her answer, and then failed her very next message with a
+    403 - anonymous filing is only available for women and child safety complaints.
+    She lost the conversation for answering the question she was asked."""
+    state = _start()
+    state = _say(state, RICH_FIRST_MESSAGE)
+    state = _say(state, "नहीं कोई खतरा नहीं है")
+
+    assert state.pending_question is not None
+    assert state.pending_question.key == "reporting_mode_choice"
+    state = _say(state, "गुमनाम रहना है")
+
+    # Told plainly, and not recorded as a choice the portal cannot honour.
+    assert state.reporting_mode != ReportingMode.ANONYMOUS
+    assert "महिला" in state.turns[-1].content or "women" in state.turns[-1].content.casefold()
+
+    # And the conversation survives the next message, which is what used to break.
+    state = _say(state, "हाँ अपने नाम से")
+    assert state.reporting_mode == ReportingMode.IDENTIFIED
 
 
 @pytest.mark.parametrize(

@@ -1080,10 +1080,17 @@ def test_each_domain_reaches_packet_then_explicit_draft_handoff(
     state = CyberSaathiService.reply(
         state.id, ConversationMessageRequest(message=message, state=state)
     ).state
-    for _ in range(6):
+    # Long enough for the longest domain flow plus the universal where/when
+    # question, the optional suspect question and the closing read-back.
+    for _ in range(12):
         if state.pending_question is None:
             break
-        answer = "no" if state.pending_question.answer_type.value == "yes_no" else "not provided"
+        if state.pending_question.key == "confirm_summary":
+            answer = "yes"
+        elif state.pending_question.answer_type.value == "yes_no":
+            answer = "no"
+        else:
+            answer = "not provided"
         state = CyberSaathiService.reply(
             state.id, ConversationMessageRequest(message=answer, state=state)
         ).state
@@ -1327,8 +1334,20 @@ def test_exact_financial_journey_reaches_packet_without_repeating_or_escalation_
     state = CyberSaathiService.reply(
         state.id, ConversationMessageRequest(message="pata nahi", state=state)
     ).state
-    assert state.pending_question is None
     assert "answered:optional_suspect_details" in state.incidents[0].completed_actions
+
+    # Nothing is filed until the citizen has heard back what was understood. The
+    # read-back quotes the facts actually collected - not a generic confirmation.
+    assert state.pending_question is not None
+    assert state.pending_question.key == "confirm_summary"
+    readback = state.turns[-1].content
+    assert "Pune" in readback
+    assert "230000" in readback or "2,30,000" in readback
+
+    state = CyberSaathiService.reply(
+        state.id, ConversationMessageRequest(message="haan sahi hai", state=state)
+    ).state
+    assert state.pending_question is None
 
     state = prepare_report_draft(state)
     assert state.handoff is not None

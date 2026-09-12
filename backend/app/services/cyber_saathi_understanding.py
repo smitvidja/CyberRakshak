@@ -17,6 +17,7 @@ from app.schemas.cyber_saathi import (
     Urgency,
     confidence_band,
 )
+from app.services.cyber_saathi_locations import resolve_location
 
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "cyber_saathi"
@@ -107,22 +108,9 @@ PROVIDERS = {
 }
 PLATFORMS = ("instagram", "facebook", "whatsapp", "telegram", "x.com", "twitter", "snapchat", "youtube")
 ACCOUNT_SERVICES = ("bank account", "email account", "social media account", "upi account", "wallet")
-LOCATIONS = (
-    "delhi", "new delhi", "mumbai", "ahmedabad", "bengaluru", "bangalore", "kolkata",
-    "chennai", "pune", "jaipur", "hyderabad", "lucknow", "surat", "kanpur", "nagpur",
-    "indore", "bhopal", "patna", "chandigarh", "noida", "gurugram", "thane", "nashik",
-)
-# Latin only, so "मैं मुंबई में हूँ" produced no location at all and the
-# complaint's city field stayed empty for every citizen writing in Devanagari.
-LOCATIONS_DEVANAGARI = {
-    "नई दिल्ली": "New Delhi", "दिल्ली": "Delhi", "मुंबई": "Mumbai", "मुम्बई": "Mumbai",
-    "अहमदाबाद": "Ahmedabad", "बेंगलुरु": "Bengaluru", "बैंगलोर": "Bengaluru",
-    "कोलकाता": "Kolkata", "चेन्नई": "Chennai", "पुणे": "Pune", "जयपुर": "Jaipur",
-    "हैदराबाद": "Hyderabad", "लखनऊ": "Lucknow", "सूरत": "Surat", "कानपुर": "Kanpur",
-    "नागपुर": "Nagpur", "इंदौर": "Indore", "भोपाल": "Bhopal", "पटना": "Patna",
-    "चंडीगढ़": "Chandigarh", "नोएडा": "Noida", "गुरुग्राम": "Gurugram", "ठाणे": "Thane",
-    "वाराणसी": "Varanasi", "आगरा": "Agra", "नासिक": "Nashik",
-}
+# The city and state lists now live in india_locations.json and are resolved by
+# app.services.cyber_saathi_locations: twenty-three hard-coded cities meant a
+# complaint from anywhere else carried no city at all.
 CRITICAL_TYPES = {EntityType(value) for value in TAXONOMY["critical_entity_types"]}
 
 NOISY_TOKEN_REPLACEMENTS = {
@@ -423,16 +411,43 @@ class UnderstandingEngine:
 
         lowered = message.casefold()
         relative_date: date | None = None
+        spoken_date: str | None = None
         if not any(entity.type == EntityType.DATE for entity in entities):
-            if any(marker in lowered for marker in ("today", "aaj", "आज")):
-                relative_date = date.today()
-            elif any(marker in lowered for marker in ("yesterday", "kal", "कल")):
-                relative_date = date.today() - timedelta(days=1)
-            if relative_date is not None:
+            # The intake question offers "a date, or even just today, yesterday, or
+            # last week". Only the first two were understood, so a citizen who
+            # answered "last week" had their answer silently dropped and the
+            # complaint's date field left empty - after being asked for it.
+            #
+            # The phrase the citizen used is kept as the entity value and shown back
+            # to them; the resolved day is what the complaint form needs. Ranges are
+            # anchored at their start, which is the earliest the incident could have
+            # happened, and the citizen sees the phrase and can correct the date.
+            for markers, days, label in (
+                (("day before yesterday", "parso", "parson", "परसों"), 2, "day before yesterday"),
+                (("today", "aaj", "आज"), 0, "today"),
+                (("yesterday", "kal", "कल"), 1, "yesterday"),
+                (
+                    ("last week", "pichhle hafte", "pichle hafte", "pichhle hafta",
+                     "पिछले हफ्ते", "पिछले सप्ताह"),
+                    7,
+                    "last week",
+                ),
+                (
+                    ("last month", "pichhle mahine", "pichle mahine",
+                     "पिछले महीने", "पिछले माह"),
+                    30,
+                    "last month",
+                ),
+            ):
+                if any(marker in lowered for marker in markers):
+                    relative_date = date.today() - timedelta(days=days)
+                    spoken_date = label
+                    break
+            if relative_date is not None and spoken_date is not None:
                 cls._add_literal_entity(
                     entities,
                     EntityType.DATE,
-                    "today" if relative_date == date.today() else "yesterday",
+                    spoken_date,
                     relative_date.isoformat(),
                     0.88,
                 )
@@ -455,7 +470,7 @@ class UnderstandingEngine:
                     cls._add_literal_entity(
                         entities,
                         EntityType.DATE_TIME,
-                        f"{time_entity.value} {'today' if relative_date == date.today() else 'yesterday'}",
+                        f"{time_entity.value} {spoken_date or 'today'}",
                         f"{relative_date.isoformat()}T{hour:02d}:{minute:02d}:00",
                         0.9,
                     )
@@ -468,18 +483,20 @@ class UnderstandingEngine:
         for service in ACCOUNT_SERVICES:
             if service in lowered:
                 cls._add_literal_entity(entities, EntityType.ACCOUNT_SERVICE, service, service, 0.9)
-        for location in LOCATIONS:
-            if re.search(rf"\b{re.escape(location)}\b", lowered):
-                cls._add_literal_entity(entities, EntityType.LOCATION, location, location.title(), 0.85)
-        # Devanagari has no useful word boundary, so these match as substrings, and
-        # the longest spelling is listed first: "नई दिल्ली" must not also register
-        # "दिल्ली" as a second, different city.
-        for written, canonical in LOCATIONS_DEVANAGARI.items():
-            if written in message:
-                cls._add_literal_entity(
-                    entities, EntityType.LOCATION, written, canonical, 0.85
-                )
-                break
+        # One pass over the message against the full gazetteer, instead of a regex
+        # per city. Both scripts are handled there, and longer names are matched
+        # before shorter ones so "new delhi" does not also register "delhi".
+        resolved = resolve_location(message)
+        if resolved.city:
+            cls._add_literal_entity(
+                entities, EntityType.LOCATION, resolved.city, resolved.city, 0.85
+            )
+        elif resolved.state:
+            # A state alone is worth recording: it still routes the complaint to the
+            # right state cybercrime cell, which is more than a blank field does.
+            cls._add_literal_entity(
+                entities, EntityType.LOCATION, resolved.state, resolved.state, 0.8
+            )
         return entities[:30]
 
     @staticmethod

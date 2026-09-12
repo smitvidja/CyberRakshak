@@ -1,0 +1,3027 @@
+{
+  "cities": {
+    "adilabad": {
+      "canonical": "Adilabad",
+      "state": "Telangana"
+    },
+    "agartala": {
+      "canonical": "Agartala",
+      "state": "Tripura"
+    },
+    "agra": {
+      "canonical": "Agra",
+      "state": "Uttar Pradesh"
+    },
+    "ahmedabad": {
+      "canonical": "Ahmedabad",
+      "state": "Gujarat"
+    },
+    "ahmednagar": {
+      "canonical": "Ahmednagar",
+      "state": "Maharashtra"
+    },
+    "aizawl": {
+      "canonical": "Aizawl",
+      "state": "Mizoram"
+    },
+    "ajmer": {
+      "canonical": "Ajmer",
+      "state": "Rajasthan"
+    },
+    "akola": {
+      "canonical": "Akola",
+      "state": "Maharashtra"
+    },
+    "alappuzha": {
+      "canonical": "Alappuzha",
+      "state": "Kerala"
+    },
+    "aligarh": {
+      "canonical": "Aligarh",
+      "state": "Uttar Pradesh"
+    },
+    "allahabad": {
+      "canonical": "Prayagraj",
+      "state": "Uttar Pradesh"
+    },
+    "alleppey": {
+      "canonical": "Alappuzha",
+      "state": "Kerala"
+    },
+    "almora": {
+      "canonical": "Almora",
+      "state": "Uttarakhand"
+    },
+    "alwar": {
+      "canonical": "Alwar",
+      "state": "Rajasthan"
+    },
+    "amaravati": {
+      "canonical": "Amaravati",
+      "state": "Andhra Pradesh"
+    },
+    "ambala": {
+      "canonical": "Ambala",
+      "state": "Haryana"
+    },
+    "ambikapur": {
+      "canonical": "Ambikapur",
+      "state": "Chhattisgarh"
+    },
+    "amravati": {
+      "canonical": "Amravati",
+      "state": "Maharashtra"
+    },
+    "amreli": {
+      "canonical": "Amreli",
+      "state": "Gujarat"
+    },
+    "amritsar": {
+      "canonical": "Amritsar",
+      "state": "Punjab"
+    },
+    "anand": {
+      "canonical": "Anand",
+      "state": "Gujarat"
+    },
+    "anantapur": {
+      "canonical": "Anantapur",
+      "state": "Andhra Pradesh"
+    },
+    "anantnag": {
+      "canonical": "Anantnag",
+      "state": "Jammu and Kashmir"
+    },
+    "angul": {
+      "canonical": "Angul",
+      "state": "Odisha"
+    },
+    "arrah": {
+      "canonical": "Arrah",
+      "state": "Bihar"
+    },
+    "asansol": {
+      "canonical": "Asansol",
+      "state": "West Bengal"
+    },
+    "aurangabad": {
+      "canonical": "Aurangabad",
+      "state": "Maharashtra"
+    },
+    "ayodhya": {
+      "canonical": "Ayodhya",
+      "state": "Uttar Pradesh"
+    },
+    "azamgarh": {
+      "canonical": "Azamgarh",
+      "state": "Uttar Pradesh"
+    },
+    "baddi": {
+      "canonical": "Baddi",
+      "state": "Himachal Pradesh"
+    },
+    "bahadurgarh": {
+      "canonical": "Bahadurgarh",
+      "state": "Haryana"
+    },
+    "bahraich": {
+      "canonical": "Bahraich",
+      "state": "Uttar Pradesh"
+    },
+    "balasore": {
+      "canonical": "Balasore",
+      "state": "Odisha"
+    },
+    "ballari": {
+      "canonical": "Ballari",
+      "state": "Karnataka"
+    },
+    "banaras": {
+      "canonical": "Varanasi",
+      "state": "Uttar Pradesh"
+    },
+    "banda": {
+      "canonical": "Banda",
+      "state": "Uttar Pradesh"
+    },
+    "bangalore": {
+      "canonical": "Bengaluru",
+      "state": "Karnataka"
+    },
+    "bankura": {
+      "canonical": "Bankura",
+      "state": "West Bengal"
+    },
+    "banswara": {
+      "canonical": "Banswara",
+      "state": "Rajasthan"
+    },
+    "barabanki": {
+      "canonical": "Barabanki",
+      "state": "Uttar Pradesh"
+    },
+    "baramulla": {
+      "canonical": "Baramulla",
+      "state": "Jammu and Kashmir"
+    },
+    "barasat": {
+      "canonical": "Barasat",
+      "state": "West Bengal"
+    },
+    "bardhaman": {
+      "canonical": "Bardhaman",
+      "state": "West Bengal"
+    },
+    "bareilly": {
+      "canonical": "Bareilly",
+      "state": "Uttar Pradesh"
+    },
+    "baripada": {
+      "canonical": "Baripada",
+      "state": "Odisha"
+    },
+    "barmer": {
+      "canonical": "Barmer",
+      "state": "Rajasthan"
+    },
+    "barnala": {
+      "canonical": "Barnala",
+      "state": "Punjab"
+    },
+    "baroda": {
+      "canonical": "Vadodara",
+      "state": "Gujarat"
+    },
+    "basti": {
+      "canonical": "Basti",
+      "state": "Uttar Pradesh"
+    },
+    "bathinda": {
+      "canonical": "Bathinda",
+      "state": "Punjab"
+    },
+    "beed": {
+      "canonical": "Beed",
+      "state": "Maharashtra"
+    },
+    "begusarai": {
+      "canonical": "Begusarai",
+      "state": "Bihar"
+    },
+    "belagavi": {
+      "canonical": "Belagavi",
+      "state": "Karnataka"
+    },
+    "belgaum": {
+      "canonical": "Belagavi",
+      "state": "Karnataka"
+    },
+    "bellary": {
+      "canonical": "Ballari",
+      "state": "Karnataka"
+    },
+    "bengaluru": {
+      "canonical": "Bengaluru",
+      "state": "Karnataka"
+    },
+    "berhampore": {
+      "canonical": "Berhampore",
+      "state": "West Bengal"
+    },
+    "berhampur": {
+      "canonical": "Berhampur",
+      "state": "Odisha"
+    },
+    "bettiah": {
+      "canonical": "Bettiah",
+      "state": "Bihar"
+    },
+    "bhadrak": {
+      "canonical": "Bhadrak",
+      "state": "Odisha"
+    },
+    "bhagalpur": {
+      "canonical": "Bhagalpur",
+      "state": "Bihar"
+    },
+    "bharatpur": {
+      "canonical": "Bharatpur",
+      "state": "Rajasthan"
+    },
+    "bharuch": {
+      "canonical": "Bharuch",
+      "state": "Gujarat"
+    },
+    "bhavnagar": {
+      "canonical": "Bhavnagar",
+      "state": "Gujarat"
+    },
+    "bhilai": {
+      "canonical": "Bhilai",
+      "state": "Chhattisgarh"
+    },
+    "bhilwara": {
+      "canonical": "Bhilwara",
+      "state": "Rajasthan"
+    },
+    "bhiwani": {
+      "canonical": "Bhiwani",
+      "state": "Haryana"
+    },
+    "bhopal": {
+      "canonical": "Bhopal",
+      "state": "Madhya Pradesh"
+    },
+    "bhubaneswar": {
+      "canonical": "Bhubaneswar",
+      "state": "Odisha"
+    },
+    "bhuj": {
+      "canonical": "Bhuj",
+      "state": "Gujarat"
+    },
+    "bidar": {
+      "canonical": "Bidar",
+      "state": "Karnataka"
+    },
+    "bihar sharif": {
+      "canonical": "Bihar Sharif",
+      "state": "Bihar"
+    },
+    "bijapur": {
+      "canonical": "Vijayapura",
+      "state": "Karnataka"
+    },
+    "bikaner": {
+      "canonical": "Bikaner",
+      "state": "Rajasthan"
+    },
+    "bilaspur": {
+      "canonical": "Bilaspur",
+      "state": "Chhattisgarh"
+    },
+    "bokaro": {
+      "canonical": "Bokaro",
+      "state": "Jharkhand"
+    },
+    "bombay": {
+      "canonical": "Mumbai",
+      "state": "Maharashtra"
+    },
+    "bongaigaon": {
+      "canonical": "Bongaigaon",
+      "state": "Assam"
+    },
+    "budaun": {
+      "canonical": "Budaun",
+      "state": "Uttar Pradesh"
+    },
+    "bulandshahr": {
+      "canonical": "Bulandshahr",
+      "state": "Uttar Pradesh"
+    },
+    "burdwan": {
+      "canonical": "Bardhaman",
+      "state": "West Bengal"
+    },
+    "burhanpur": {
+      "canonical": "Burhanpur",
+      "state": "Madhya Pradesh"
+    },
+    "calcutta": {
+      "canonical": "Kolkata",
+      "state": "West Bengal"
+    },
+    "calicut": {
+      "canonical": "Kozhikode",
+      "state": "Kerala"
+    },
+    "chaibasa": {
+      "canonical": "Chaibasa",
+      "state": "Jharkhand"
+    },
+    "chamba": {
+      "canonical": "Chamba",
+      "state": "Himachal Pradesh"
+    },
+    "chandigarh": {
+      "canonical": "Chandigarh",
+      "state": "Chandigarh"
+    },
+    "chandrapur": {
+      "canonical": "Chandrapur",
+      "state": "Maharashtra"
+    },
+    "chennai": {
+      "canonical": "Chennai",
+      "state": "Tamil Nadu"
+    },
+    "chhapra": {
+      "canonical": "Chhapra",
+      "state": "Bihar"
+    },
+    "chhatrapati sambhajinagar": {
+      "canonical": "Aurangabad",
+      "state": "Maharashtra"
+    },
+    "chhindwara": {
+      "canonical": "Chhindwara",
+      "state": "Madhya Pradesh"
+    },
+    "chitradurga": {
+      "canonical": "Chitradurga",
+      "state": "Karnataka"
+    },
+    "chittoor": {
+      "canonical": "Chittoor",
+      "state": "Andhra Pradesh"
+    },
+    "chittorgarh": {
+      "canonical": "Chittorgarh",
+      "state": "Rajasthan"
+    },
+    "churachandpur": {
+      "canonical": "Churachandpur",
+      "state": "Manipur"
+    },
+    "cochin": {
+      "canonical": "Kochi",
+      "state": "Kerala"
+    },
+    "coimbatore": {
+      "canonical": "Coimbatore",
+      "state": "Tamil Nadu"
+    },
+    "cooch behar": {
+      "canonical": "Cooch Behar",
+      "state": "West Bengal"
+    },
+    "cuddalore": {
+      "canonical": "Cuddalore",
+      "state": "Tamil Nadu"
+    },
+    "cuttack": {
+      "canonical": "Cuttack",
+      "state": "Odisha"
+    },
+    "daman": {
+      "canonical": "Daman",
+      "state": "Dadra and Nagar Haveli and Daman and Diu"
+    },
+    "damoh": {
+      "canonical": "Damoh",
+      "state": "Madhya Pradesh"
+    },
+    "darbhanga": {
+      "canonical": "Darbhanga",
+      "state": "Bihar"
+    },
+    "darjeeling": {
+      "canonical": "Darjeeling",
+      "state": "West Bengal"
+    },
+    "dausa": {
+      "canonical": "Dausa",
+      "state": "Rajasthan"
+    },
+    "davanagere": {
+      "canonical": "Davanagere",
+      "state": "Karnataka"
+    },
+    "dehradun": {
+      "canonical": "Dehradun",
+      "state": "Uttarakhand"
+    },
+    "delhi": {
+      "canonical": "Delhi",
+      "state": "Delhi"
+    },
+    "deoghar": {
+      "canonical": "Deoghar",
+      "state": "Jharkhand"
+    },
+    "deoria": {
+      "canonical": "Deoria",
+      "state": "Uttar Pradesh"
+    },
+    "dewas": {
+      "canonical": "Dewas",
+      "state": "Madhya Pradesh"
+    },
+    "dhanbad": {
+      "canonical": "Dhanbad",
+      "state": "Jharkhand"
+    },
+    "dharamshala": {
+      "canonical": "Dharamshala",
+      "state": "Himachal Pradesh"
+    },
+    "dharmanagar": {
+      "canonical": "Dharmanagar",
+      "state": "Tripura"
+    },
+    "dharwad": {
+      "canonical": "Dharwad",
+      "state": "Karnataka"
+    },
+    "dhule": {
+      "canonical": "Dhule",
+      "state": "Maharashtra"
+    },
+    "dibrugarh": {
+      "canonical": "Dibrugarh",
+      "state": "Assam"
+    },
+    "dimapur": {
+      "canonical": "Dimapur",
+      "state": "Nagaland"
+    },
+    "dindigul": {
+      "canonical": "Dindigul",
+      "state": "Tamil Nadu"
+    },
+    "dispur": {
+      "canonical": "Dispur",
+      "state": "Assam"
+    },
+    "diu": {
+      "canonical": "Diu",
+      "state": "Dadra and Nagar Haveli and Daman and Diu"
+    },
+    "dumka": {
+      "canonical": "Dumka",
+      "state": "Jharkhand"
+    },
+    "durg": {
+      "canonical": "Durg",
+      "state": "Chhattisgarh"
+    },
+    "durgapur": {
+      "canonical": "Durgapur",
+      "state": "West Bengal"
+    },
+    "dwarka": {
+      "canonical": "Dwarka",
+      "state": "Delhi"
+    },
+    "eluru": {
+      "canonical": "Eluru",
+      "state": "Andhra Pradesh"
+    },
+    "ernakulam": {
+      "canonical": "Kochi",
+      "state": "Kerala"
+    },
+    "erode": {
+      "canonical": "Erode",
+      "state": "Tamil Nadu"
+    },
+    "etawah": {
+      "canonical": "Etawah",
+      "state": "Uttar Pradesh"
+    },
+    "faizabad": {
+      "canonical": "Ayodhya",
+      "state": "Uttar Pradesh"
+    },
+    "faridabad": {
+      "canonical": "Faridabad",
+      "state": "Haryana"
+    },
+    "farrukhabad": {
+      "canonical": "Farrukhabad",
+      "state": "Uttar Pradesh"
+    },
+    "firozabad": {
+      "canonical": "Firozabad",
+      "state": "Uttar Pradesh"
+    },
+    "firozpur": {
+      "canonical": "Firozpur",
+      "state": "Punjab"
+    },
+    "gandhidham": {
+      "canonical": "Gandhidham",
+      "state": "Gujarat"
+    },
+    "gandhinagar": {
+      "canonical": "Gandhinagar",
+      "state": "Gujarat"
+    },
+    "gangtok": {
+      "canonical": "Gangtok",
+      "state": "Sikkim"
+    },
+    "gaya": {
+      "canonical": "Gaya",
+      "state": "Bihar"
+    },
+    "ghaziabad": {
+      "canonical": "Ghaziabad",
+      "state": "Uttar Pradesh"
+    },
+    "giridih": {
+      "canonical": "Giridih",
+      "state": "Jharkhand"
+    },
+    "gorakhpur": {
+      "canonical": "Gorakhpur",
+      "state": "Uttar Pradesh"
+    },
+    "greater noida": {
+      "canonical": "Greater Noida",
+      "state": "Uttar Pradesh"
+    },
+    "gulbarga": {
+      "canonical": "Kalaburagi",
+      "state": "Karnataka"
+    },
+    "guntur": {
+      "canonical": "Guntur",
+      "state": "Andhra Pradesh"
+    },
+    "gurdaspur": {
+      "canonical": "Gurdaspur",
+      "state": "Punjab"
+    },
+    "gurgaon": {
+      "canonical": "Gurugram",
+      "state": "Haryana"
+    },
+    "gurugram": {
+      "canonical": "Gurugram",
+      "state": "Haryana"
+    },
+    "guwahati": {
+      "canonical": "Guwahati",
+      "state": "Assam"
+    },
+    "gwalior": {
+      "canonical": "Gwalior",
+      "state": "Madhya Pradesh"
+    },
+    "gyalshing": {
+      "canonical": "Gyalshing",
+      "state": "Sikkim"
+    },
+    "hajipur": {
+      "canonical": "Hajipur",
+      "state": "Bihar"
+    },
+    "haldia": {
+      "canonical": "Haldia",
+      "state": "West Bengal"
+    },
+    "haldwani": {
+      "canonical": "Haldwani",
+      "state": "Uttarakhand"
+    },
+    "hanumangarh": {
+      "canonical": "Hanumangarh",
+      "state": "Rajasthan"
+    },
+    "hapur": {
+      "canonical": "Hapur",
+      "state": "Uttar Pradesh"
+    },
+    "hardoi": {
+      "canonical": "Hardoi",
+      "state": "Uttar Pradesh"
+    },
+    "haridwar": {
+      "canonical": "Haridwar",
+      "state": "Uttarakhand"
+    },
+    "hassan": {
+      "canonical": "Hassan",
+      "state": "Karnataka"
+    },
+    "hazaribagh": {
+      "canonical": "Hazaribagh",
+      "state": "Jharkhand"
+    },
+    "hisar": {
+      "canonical": "Hisar",
+      "state": "Haryana"
+    },
+    "hoshangabad": {
+      "canonical": "Hoshangabad",
+      "state": "Madhya Pradesh"
+    },
+    "hoshiarpur": {
+      "canonical": "Hoshiarpur",
+      "state": "Punjab"
+    },
+    "hosur": {
+      "canonical": "Hosur",
+      "state": "Tamil Nadu"
+    },
+    "howrah": {
+      "canonical": "Howrah",
+      "state": "West Bengal"
+    },
+    "hubballi": {
+      "canonical": "Hubballi",
+      "state": "Karnataka"
+    },
+    "hubli": {
+      "canonical": "Hubballi",
+      "state": "Karnataka"
+    },
+    "hyderabad": {
+      "canonical": "Hyderabad",
+      "state": "Telangana"
+    },
+    "idukki": {
+      "canonical": "Idukki",
+      "state": "Kerala"
+    },
+    "imphal": {
+      "canonical": "Imphal",
+      "state": "Manipur"
+    },
+    "indore": {
+      "canonical": "Indore",
+      "state": "Madhya Pradesh"
+    },
+    "itanagar": {
+      "canonical": "Itanagar",
+      "state": "Arunachal Pradesh"
+    },
+    "jabalpur": {
+      "canonical": "Jabalpur",
+      "state": "Madhya Pradesh"
+    },
+    "jagdalpur": {
+      "canonical": "Jagdalpur",
+      "state": "Chhattisgarh"
+    },
+    "jaipur": {
+      "canonical": "Jaipur",
+      "state": "Rajasthan"
+    },
+    "jalandhar": {
+      "canonical": "Jalandhar",
+      "state": "Punjab"
+    },
+    "jalgaon": {
+      "canonical": "Jalgaon",
+      "state": "Maharashtra"
+    },
+    "jalpaiguri": {
+      "canonical": "Jalpaiguri",
+      "state": "West Bengal"
+    },
+    "jammu": {
+      "canonical": "Jammu",
+      "state": "Jammu and Kashmir"
+    },
+    "jamnagar": {
+      "canonical": "Jamnagar",
+      "state": "Gujarat"
+    },
+    "jamshedpur": {
+      "canonical": "Jamshedpur",
+      "state": "Jharkhand"
+    },
+    "jamtara": {
+      "canonical": "Jamtara",
+      "state": "Jharkhand"
+    },
+    "janakpuri": {
+      "canonical": "Janakpuri",
+      "state": "Delhi"
+    },
+    "jaunpur": {
+      "canonical": "Jaunpur",
+      "state": "Uttar Pradesh"
+    },
+    "jhansi": {
+      "canonical": "Jhansi",
+      "state": "Uttar Pradesh"
+    },
+    "jharsuguda": {
+      "canonical": "Jharsuguda",
+      "state": "Odisha"
+    },
+    "jhunjhunu": {
+      "canonical": "Jhunjhunu",
+      "state": "Rajasthan"
+    },
+    "jind": {
+      "canonical": "Jind",
+      "state": "Haryana"
+    },
+    "jodhpur": {
+      "canonical": "Jodhpur",
+      "state": "Rajasthan"
+    },
+    "jorhat": {
+      "canonical": "Jorhat",
+      "state": "Assam"
+    },
+    "jowai": {
+      "canonical": "Jowai",
+      "state": "Meghalaya"
+    },
+    "junagadh": {
+      "canonical": "Junagadh",
+      "state": "Gujarat"
+    },
+    "kadapa": {
+      "canonical": "Kadapa",
+      "state": "Andhra Pradesh"
+    },
+    "kakinada": {
+      "canonical": "Kakinada",
+      "state": "Andhra Pradesh"
+    },
+    "kalaburagi": {
+      "canonical": "Kalaburagi",
+      "state": "Karnataka"
+    },
+    "kalyan-dombivli": {
+      "canonical": "Kalyan-Dombivli",
+      "state": "Maharashtra"
+    },
+    "kanchipuram": {
+      "canonical": "Kanchipuram",
+      "state": "Tamil Nadu"
+    },
+    "kannur": {
+      "canonical": "Kannur",
+      "state": "Kerala"
+    },
+    "kanpur": {
+      "canonical": "Kanpur",
+      "state": "Uttar Pradesh"
+    },
+    "kapurthala": {
+      "canonical": "Kapurthala",
+      "state": "Punjab"
+    },
+    "karaikal": {
+      "canonical": "Karaikal",
+      "state": "Puducherry"
+    },
+    "kargil": {
+      "canonical": "Kargil",
+      "state": "Ladakh"
+    },
+    "karimganj": {
+      "canonical": "Karimganj",
+      "state": "Assam"
+    },
+    "karimnagar": {
+      "canonical": "Karimnagar",
+      "state": "Telangana"
+    },
+    "karnal": {
+      "canonical": "Karnal",
+      "state": "Haryana"
+    },
+    "karol bagh": {
+      "canonical": "Karol Bagh",
+      "state": "Delhi"
+    },
+    "karur": {
+      "canonical": "Karur",
+      "state": "Tamil Nadu"
+    },
+    "kasaragod": {
+      "canonical": "Kasaragod",
+      "state": "Kerala"
+    },
+    "kashipur": {
+      "canonical": "Kashipur",
+      "state": "Uttarakhand"
+    },
+    "kathua": {
+      "canonical": "Kathua",
+      "state": "Jammu and Kashmir"
+    },
+    "katihar": {
+      "canonical": "Katihar",
+      "state": "Bihar"
+    },
+    "katni": {
+      "canonical": "Katni",
+      "state": "Madhya Pradesh"
+    },
+    "kavaratti": {
+      "canonical": "Kavaratti",
+      "state": "Lakshadweep"
+    },
+    "khammam": {
+      "canonical": "Khammam",
+      "state": "Telangana"
+    },
+    "khandwa": {
+      "canonical": "Khandwa",
+      "state": "Madhya Pradesh"
+    },
+    "kharagpur": {
+      "canonical": "Kharagpur",
+      "state": "West Bengal"
+    },
+    "kochi": {
+      "canonical": "Kochi",
+      "state": "Kerala"
+    },
+    "kohima": {
+      "canonical": "Kohima",
+      "state": "Nagaland"
+    },
+    "kolhapur": {
+      "canonical": "Kolhapur",
+      "state": "Maharashtra"
+    },
+    "kolkata": {
+      "canonical": "Kolkata",
+      "state": "West Bengal"
+    },
+    "kollam": {
+      "canonical": "Kollam",
+      "state": "Kerala"
+    },
+    "koraput": {
+      "canonical": "Koraput",
+      "state": "Odisha"
+    },
+    "korba": {
+      "canonical": "Korba",
+      "state": "Chhattisgarh"
+    },
+    "kota": {
+      "canonical": "Kota",
+      "state": "Rajasthan"
+    },
+    "kottayam": {
+      "canonical": "Kottayam",
+      "state": "Kerala"
+    },
+    "kozhikode": {
+      "canonical": "Kozhikode",
+      "state": "Kerala"
+    },
+    "krishnanagar": {
+      "canonical": "Krishnanagar",
+      "state": "West Bengal"
+    },
+    "kullu": {
+      "canonical": "Kullu",
+      "state": "Himachal Pradesh"
+    },
+    "kurnool": {
+      "canonical": "Kurnool",
+      "state": "Andhra Pradesh"
+    },
+    "kurukshetra": {
+      "canonical": "Kurukshetra",
+      "state": "Haryana"
+    },
+    "latur": {
+      "canonical": "Latur",
+      "state": "Maharashtra"
+    },
+    "laxmi nagar": {
+      "canonical": "Laxmi Nagar",
+      "state": "Delhi"
+    },
+    "leh": {
+      "canonical": "Leh",
+      "state": "Ladakh"
+    },
+    "lucknow": {
+      "canonical": "Lucknow",
+      "state": "Uttar Pradesh"
+    },
+    "ludhiana": {
+      "canonical": "Ludhiana",
+      "state": "Punjab"
+    },
+    "lunglei": {
+      "canonical": "Lunglei",
+      "state": "Mizoram"
+    },
+    "madras": {
+      "canonical": "Chennai",
+      "state": "Tamil Nadu"
+    },
+    "madurai": {
+      "canonical": "Madurai",
+      "state": "Tamil Nadu"
+    },
+    "mahbubnagar": {
+      "canonical": "Mahbubnagar",
+      "state": "Telangana"
+    },
+    "mahe": {
+      "canonical": "Mahe",
+      "state": "Puducherry"
+    },
+    "malappuram": {
+      "canonical": "Malappuram",
+      "state": "Kerala"
+    },
+    "malda": {
+      "canonical": "Malda",
+      "state": "West Bengal"
+    },
+    "manali": {
+      "canonical": "Manali",
+      "state": "Himachal Pradesh"
+    },
+    "mandi": {
+      "canonical": "Mandi",
+      "state": "Himachal Pradesh"
+    },
+    "mandsaur": {
+      "canonical": "Mandsaur",
+      "state": "Madhya Pradesh"
+    },
+    "mandya": {
+      "canonical": "Mandya",
+      "state": "Karnataka"
+    },
+    "mangalore": {
+      "canonical": "Mangaluru",
+      "state": "Karnataka"
+    },
+    "mangaluru": {
+      "canonical": "Mangaluru",
+      "state": "Karnataka"
+    },
+    "mapusa": {
+      "canonical": "Mapusa",
+      "state": "Goa"
+    },
+    "margao": {
+      "canonical": "Margao",
+      "state": "Goa"
+    },
+    "mathura": {
+      "canonical": "Mathura",
+      "state": "Uttar Pradesh"
+    },
+    "meerut": {
+      "canonical": "Meerut",
+      "state": "Uttar Pradesh"
+    },
+    "mehsana": {
+      "canonical": "Mehsana",
+      "state": "Gujarat"
+    },
+    "mira-bhayandar": {
+      "canonical": "Mira-Bhayandar",
+      "state": "Maharashtra"
+    },
+    "mirzapur": {
+      "canonical": "Mirzapur",
+      "state": "Uttar Pradesh"
+    },
+    "moga": {
+      "canonical": "Moga",
+      "state": "Punjab"
+    },
+    "mohali": {
+      "canonical": "Mohali",
+      "state": "Punjab"
+    },
+    "mokokchung": {
+      "canonical": "Mokokchung",
+      "state": "Nagaland"
+    },
+    "moradabad": {
+      "canonical": "Moradabad",
+      "state": "Uttar Pradesh"
+    },
+    "morbi": {
+      "canonical": "Morbi",
+      "state": "Gujarat"
+    },
+    "motihari": {
+      "canonical": "Motihari",
+      "state": "Bihar"
+    },
+    "mumbai": {
+      "canonical": "Mumbai",
+      "state": "Maharashtra"
+    },
+    "munger": {
+      "canonical": "Munger",
+      "state": "Bihar"
+    },
+    "muzaffarnagar": {
+      "canonical": "Muzaffarnagar",
+      "state": "Uttar Pradesh"
+    },
+    "muzaffarpur": {
+      "canonical": "Muzaffarpur",
+      "state": "Bihar"
+    },
+    "mysore": {
+      "canonical": "Mysuru",
+      "state": "Karnataka"
+    },
+    "mysuru": {
+      "canonical": "Mysuru",
+      "state": "Karnataka"
+    },
+    "nadiad": {
+      "canonical": "Nadiad",
+      "state": "Gujarat"
+    },
+    "nagaon": {
+      "canonical": "Nagaon",
+      "state": "Assam"
+    },
+    "nagaur": {
+      "canonical": "Nagaur",
+      "state": "Rajasthan"
+    },
+    "nagercoil": {
+      "canonical": "Nagercoil",
+      "state": "Tamil Nadu"
+    },
+    "nagpur": {
+      "canonical": "Nagpur",
+      "state": "Maharashtra"
+    },
+    "naharlagun": {
+      "canonical": "Naharlagun",
+      "state": "Arunachal Pradesh"
+    },
+    "nainital": {
+      "canonical": "Nainital",
+      "state": "Uttarakhand"
+    },
+    "nalanda": {
+      "canonical": "Nalanda",
+      "state": "Bihar"
+    },
+    "nalgonda": {
+      "canonical": "Nalgonda",
+      "state": "Telangana"
+    },
+    "namakkal": {
+      "canonical": "Namakkal",
+      "state": "Tamil Nadu"
+    },
+    "namchi": {
+      "canonical": "Namchi",
+      "state": "Sikkim"
+    },
+    "nanded": {
+      "canonical": "Nanded",
+      "state": "Maharashtra"
+    },
+    "nashik": {
+      "canonical": "Nashik",
+      "state": "Maharashtra"
+    },
+    "navi mumbai": {
+      "canonical": "Navi Mumbai",
+      "state": "Maharashtra"
+    },
+    "navsari": {
+      "canonical": "Navsari",
+      "state": "Gujarat"
+    },
+    "nellore": {
+      "canonical": "Nellore",
+      "state": "Andhra Pradesh"
+    },
+    "new delhi": {
+      "canonical": "New Delhi",
+      "state": "Delhi"
+    },
+    "nizamabad": {
+      "canonical": "Nizamabad",
+      "state": "Telangana"
+    },
+    "noida": {
+      "canonical": "Noida",
+      "state": "Uttar Pradesh"
+    },
+    "ongole": {
+      "canonical": "Ongole",
+      "state": "Andhra Pradesh"
+    },
+    "palakkad": {
+      "canonical": "Palakkad",
+      "state": "Kerala"
+    },
+    "pali": {
+      "canonical": "Pali",
+      "state": "Rajasthan"
+    },
+    "palwal": {
+      "canonical": "Palwal",
+      "state": "Haryana"
+    },
+    "panaji": {
+      "canonical": "Panaji",
+      "state": "Goa"
+    },
+    "panchkula": {
+      "canonical": "Panchkula",
+      "state": "Haryana"
+    },
+    "panipat": {
+      "canonical": "Panipat",
+      "state": "Haryana"
+    },
+    "panjim": {
+      "canonical": "Panaji",
+      "state": "Goa"
+    },
+    "panvel": {
+      "canonical": "Panvel",
+      "state": "Maharashtra"
+    },
+    "parbhani": {
+      "canonical": "Parbhani",
+      "state": "Maharashtra"
+    },
+    "pasighat": {
+      "canonical": "Pasighat",
+      "state": "Arunachal Pradesh"
+    },
+    "patan": {
+      "canonical": "Patan",
+      "state": "Gujarat"
+    },
+    "pathanamthitta": {
+      "canonical": "Pathanamthitta",
+      "state": "Kerala"
+    },
+    "pathankot": {
+      "canonical": "Pathankot",
+      "state": "Punjab"
+    },
+    "patiala": {
+      "canonical": "Patiala",
+      "state": "Punjab"
+    },
+    "patna": {
+      "canonical": "Patna",
+      "state": "Bihar"
+    },
+    "phagwara": {
+      "canonical": "Phagwara",
+      "state": "Punjab"
+    },
+    "pimpri-chinchwad": {
+      "canonical": "Pimpri-Chinchwad",
+      "state": "Maharashtra"
+    },
+    "pitampura": {
+      "canonical": "Pitampura",
+      "state": "Delhi"
+    },
+    "pithoragarh": {
+      "canonical": "Pithoragarh",
+      "state": "Uttarakhand"
+    },
+    "pondicherry": {
+      "canonical": "Puducherry",
+      "state": "Puducherry"
+    },
+    "porbandar": {
+      "canonical": "Porbandar",
+      "state": "Gujarat"
+    },
+    "port blair": {
+      "canonical": "Port Blair",
+      "state": "Andaman and Nicobar Islands"
+    },
+    "prayagraj": {
+      "canonical": "Prayagraj",
+      "state": "Uttar Pradesh"
+    },
+    "puducherry": {
+      "canonical": "Puducherry",
+      "state": "Puducherry"
+    },
+    "pulwama": {
+      "canonical": "Pulwama",
+      "state": "Jammu and Kashmir"
+    },
+    "pune": {
+      "canonical": "Pune",
+      "state": "Maharashtra"
+    },
+    "puri": {
+      "canonical": "Puri",
+      "state": "Odisha"
+    },
+    "purnia": {
+      "canonical": "Purnia",
+      "state": "Bihar"
+    },
+    "raebareli": {
+      "canonical": "Raebareli",
+      "state": "Uttar Pradesh"
+    },
+    "raichur": {
+      "canonical": "Raichur",
+      "state": "Karnataka"
+    },
+    "raigarh": {
+      "canonical": "Raigarh",
+      "state": "Chhattisgarh"
+    },
+    "raipur": {
+      "canonical": "Raipur",
+      "state": "Chhattisgarh"
+    },
+    "rajahmundry": {
+      "canonical": "Rajahmundry",
+      "state": "Andhra Pradesh"
+    },
+    "rajkot": {
+      "canonical": "Rajkot",
+      "state": "Gujarat"
+    },
+    "rajnandgaon": {
+      "canonical": "Rajnandgaon",
+      "state": "Chhattisgarh"
+    },
+    "ramagundam": {
+      "canonical": "Ramagundam",
+      "state": "Telangana"
+    },
+    "ramgarh": {
+      "canonical": "Ramgarh",
+      "state": "Jharkhand"
+    },
+    "rampur": {
+      "canonical": "Rampur",
+      "state": "Uttar Pradesh"
+    },
+    "ranchi": {
+      "canonical": "Ranchi",
+      "state": "Jharkhand"
+    },
+    "ratlam": {
+      "canonical": "Ratlam",
+      "state": "Madhya Pradesh"
+    },
+    "ratnagiri": {
+      "canonical": "Ratnagiri",
+      "state": "Maharashtra"
+    },
+    "rewa": {
+      "canonical": "Rewa",
+      "state": "Madhya Pradesh"
+    },
+    "rewari": {
+      "canonical": "Rewari",
+      "state": "Haryana"
+    },
+    "rishikesh": {
+      "canonical": "Rishikesh",
+      "state": "Uttarakhand"
+    },
+    "rohini": {
+      "canonical": "Rohini",
+      "state": "Delhi"
+    },
+    "rohtak": {
+      "canonical": "Rohtak",
+      "state": "Haryana"
+    },
+    "roorkee": {
+      "canonical": "Roorkee",
+      "state": "Uttarakhand"
+    },
+    "rourkela": {
+      "canonical": "Rourkela",
+      "state": "Odisha"
+    },
+    "rudrapur": {
+      "canonical": "Rudrapur",
+      "state": "Uttarakhand"
+    },
+    "sagar": {
+      "canonical": "Sagar",
+      "state": "Madhya Pradesh"
+    },
+    "saharanpur": {
+      "canonical": "Saharanpur",
+      "state": "Uttar Pradesh"
+    },
+    "saharsa": {
+      "canonical": "Saharsa",
+      "state": "Bihar"
+    },
+    "saket": {
+      "canonical": "Saket",
+      "state": "Delhi"
+    },
+    "salem": {
+      "canonical": "Salem",
+      "state": "Tamil Nadu"
+    },
+    "samastipur": {
+      "canonical": "Samastipur",
+      "state": "Bihar"
+    },
+    "sambalpur": {
+      "canonical": "Sambalpur",
+      "state": "Odisha"
+    },
+    "sangli": {
+      "canonical": "Sangli",
+      "state": "Maharashtra"
+    },
+    "sangrur": {
+      "canonical": "Sangrur",
+      "state": "Punjab"
+    },
+    "sasaram": {
+      "canonical": "Sasaram",
+      "state": "Bihar"
+    },
+    "satara": {
+      "canonical": "Satara",
+      "state": "Maharashtra"
+    },
+    "satna": {
+      "canonical": "Satna",
+      "state": "Madhya Pradesh"
+    },
+    "secunderabad": {
+      "canonical": "Secunderabad",
+      "state": "Telangana"
+    },
+    "sehore": {
+      "canonical": "Sehore",
+      "state": "Madhya Pradesh"
+    },
+    "shahdara": {
+      "canonical": "Shahdara",
+      "state": "Delhi"
+    },
+    "shahjahanpur": {
+      "canonical": "Shahjahanpur",
+      "state": "Uttar Pradesh"
+    },
+    "shillong": {
+      "canonical": "Shillong",
+      "state": "Meghalaya"
+    },
+    "shimla": {
+      "canonical": "Shimla",
+      "state": "Himachal Pradesh"
+    },
+    "shimoga": {
+      "canonical": "Shivamogga",
+      "state": "Karnataka"
+    },
+    "shivamogga": {
+      "canonical": "Shivamogga",
+      "state": "Karnataka"
+    },
+    "shivpuri": {
+      "canonical": "Shivpuri",
+      "state": "Madhya Pradesh"
+    },
+    "siddipet": {
+      "canonical": "Siddipet",
+      "state": "Telangana"
+    },
+    "sikar": {
+      "canonical": "Sikar",
+      "state": "Rajasthan"
+    },
+    "silchar": {
+      "canonical": "Silchar",
+      "state": "Assam"
+    },
+    "siliguri": {
+      "canonical": "Siliguri",
+      "state": "West Bengal"
+    },
+    "silvassa": {
+      "canonical": "Silvassa",
+      "state": "Dadra and Nagar Haveli and Daman and Diu"
+    },
+    "singrauli": {
+      "canonical": "Singrauli",
+      "state": "Madhya Pradesh"
+    },
+    "sirsa": {
+      "canonical": "Sirsa",
+      "state": "Haryana"
+    },
+    "sitapur": {
+      "canonical": "Sitapur",
+      "state": "Uttar Pradesh"
+    },
+    "sivakasi": {
+      "canonical": "Sivakasi",
+      "state": "Tamil Nadu"
+    },
+    "sivasagar": {
+      "canonical": "Sivasagar",
+      "state": "Assam"
+    },
+    "siwan": {
+      "canonical": "Siwan",
+      "state": "Bihar"
+    },
+    "solan": {
+      "canonical": "Solan",
+      "state": "Himachal Pradesh"
+    },
+    "solapur": {
+      "canonical": "Solapur",
+      "state": "Maharashtra"
+    },
+    "sonipat": {
+      "canonical": "Sonipat",
+      "state": "Haryana"
+    },
+    "sopore": {
+      "canonical": "Sopore",
+      "state": "Jammu and Kashmir"
+    },
+    "sri ganganagar": {
+      "canonical": "Sri Ganganagar",
+      "state": "Rajasthan"
+    },
+    "srikakulam": {
+      "canonical": "Srikakulam",
+      "state": "Andhra Pradesh"
+    },
+    "srinagar": {
+      "canonical": "Srinagar",
+      "state": "Jammu and Kashmir"
+    },
+    "sultanpur": {
+      "canonical": "Sultanpur",
+      "state": "Uttar Pradesh"
+    },
+    "surat": {
+      "canonical": "Surat",
+      "state": "Gujarat"
+    },
+    "surendranagar": {
+      "canonical": "Surendranagar",
+      "state": "Gujarat"
+    },
+    "suryapet": {
+      "canonical": "Suryapet",
+      "state": "Telangana"
+    },
+    "tezpur": {
+      "canonical": "Tezpur",
+      "state": "Assam"
+    },
+    "thane": {
+      "canonical": "Thane",
+      "state": "Maharashtra"
+    },
+    "thanjavur": {
+      "canonical": "Thanjavur",
+      "state": "Tamil Nadu"
+    },
+    "thiruvananthapuram": {
+      "canonical": "Thiruvananthapuram",
+      "state": "Kerala"
+    },
+    "thoothukudi": {
+      "canonical": "Thoothukudi",
+      "state": "Tamil Nadu"
+    },
+    "thoubal": {
+      "canonical": "Thoubal",
+      "state": "Manipur"
+    },
+    "thrissur": {
+      "canonical": "Thrissur",
+      "state": "Kerala"
+    },
+    "tinsukia": {
+      "canonical": "Tinsukia",
+      "state": "Assam"
+    },
+    "tiruchirappalli": {
+      "canonical": "Tiruchirappalli",
+      "state": "Tamil Nadu"
+    },
+    "tirunelveli": {
+      "canonical": "Tirunelveli",
+      "state": "Tamil Nadu"
+    },
+    "tirupati": {
+      "canonical": "Tirupati",
+      "state": "Andhra Pradesh"
+    },
+    "tiruppur": {
+      "canonical": "Tiruppur",
+      "state": "Tamil Nadu"
+    },
+    "tonk": {
+      "canonical": "Tonk",
+      "state": "Rajasthan"
+    },
+    "trichy": {
+      "canonical": "Tiruchirappalli",
+      "state": "Tamil Nadu"
+    },
+    "trivandrum": {
+      "canonical": "Thiruvananthapuram",
+      "state": "Kerala"
+    },
+    "tumakuru": {
+      "canonical": "Tumakuru",
+      "state": "Karnataka"
+    },
+    "tumkur": {
+      "canonical": "Tumakuru",
+      "state": "Karnataka"
+    },
+    "tura": {
+      "canonical": "Tura",
+      "state": "Meghalaya"
+    },
+    "tuticorin": {
+      "canonical": "Thoothukudi",
+      "state": "Tamil Nadu"
+    },
+    "udaipur": {
+      "canonical": "Udaipur",
+      "state": "Rajasthan"
+    },
+    "udhampur": {
+      "canonical": "Udhampur",
+      "state": "Jammu and Kashmir"
+    },
+    "udupi": {
+      "canonical": "Udupi",
+      "state": "Karnataka"
+    },
+    "ujjain": {
+      "canonical": "Ujjain",
+      "state": "Madhya Pradesh"
+    },
+    "una": {
+      "canonical": "Una",
+      "state": "Himachal Pradesh"
+    },
+    "unnao": {
+      "canonical": "Unnao",
+      "state": "Uttar Pradesh"
+    },
+    "vadodara": {
+      "canonical": "Vadodara",
+      "state": "Gujarat"
+    },
+    "valsad": {
+      "canonical": "Valsad",
+      "state": "Gujarat"
+    },
+    "vapi": {
+      "canonical": "Vapi",
+      "state": "Gujarat"
+    },
+    "varanasi": {
+      "canonical": "Varanasi",
+      "state": "Uttar Pradesh"
+    },
+    "vasai-virar": {
+      "canonical": "Vasai-Virar",
+      "state": "Maharashtra"
+    },
+    "vasco da gama": {
+      "canonical": "Vasco da Gama",
+      "state": "Goa"
+    },
+    "vellore": {
+      "canonical": "Vellore",
+      "state": "Tamil Nadu"
+    },
+    "vidisha": {
+      "canonical": "Vidisha",
+      "state": "Madhya Pradesh"
+    },
+    "vijayapura": {
+      "canonical": "Vijayapura",
+      "state": "Karnataka"
+    },
+    "vijayawada": {
+      "canonical": "Vijayawada",
+      "state": "Andhra Pradesh"
+    },
+    "visakhapatnam": {
+      "canonical": "Visakhapatnam",
+      "state": "Andhra Pradesh"
+    },
+    "vizag": {
+      "canonical": "Visakhapatnam",
+      "state": "Andhra Pradesh"
+    },
+    "vizianagaram": {
+      "canonical": "Vizianagaram",
+      "state": "Andhra Pradesh"
+    },
+    "warangal": {
+      "canonical": "Warangal",
+      "state": "Telangana"
+    },
+    "wardha": {
+      "canonical": "Wardha",
+      "state": "Maharashtra"
+    },
+    "yamunanagar": {
+      "canonical": "Yamunanagar",
+      "state": "Haryana"
+    },
+    "yanam": {
+      "canonical": "Yanam",
+      "state": "Puducherry"
+    },
+    "अंबाला": {
+      "canonical": "Ambala",
+      "state": "Haryana"
+    },
+    "अंबिकापुर": {
+      "canonical": "Ambikapur",
+      "state": "Chhattisgarh"
+    },
+    "अकोला": {
+      "canonical": "Akola",
+      "state": "Maharashtra"
+    },
+    "अगरतला": {
+      "canonical": "Agartala",
+      "state": "Tripura"
+    },
+    "अजमेर": {
+      "canonical": "Ajmer",
+      "state": "Rajasthan"
+    },
+    "अनंतनाग": {
+      "canonical": "Anantnag",
+      "state": "Jammu and Kashmir"
+    },
+    "अमृतसर": {
+      "canonical": "Amritsar",
+      "state": "Punjab"
+    },
+    "अयोध्या": {
+      "canonical": "Ayodhya",
+      "state": "Uttar Pradesh"
+    },
+    "अलवर": {
+      "canonical": "Alwar",
+      "state": "Rajasthan"
+    },
+    "अलीगढ़": {
+      "canonical": "Aligarh",
+      "state": "Uttar Pradesh"
+    },
+    "अल्मोड़ा": {
+      "canonical": "Almora",
+      "state": "Uttarakhand"
+    },
+    "अहमदनगर": {
+      "canonical": "Ahmednagar",
+      "state": "Maharashtra"
+    },
+    "अहमदाबाद": {
+      "canonical": "Ahmedabad",
+      "state": "Gujarat"
+    },
+    "आइजोल": {
+      "canonical": "Aizawl",
+      "state": "Mizoram"
+    },
+    "आगरा": {
+      "canonical": "Agra",
+      "state": "Uttar Pradesh"
+    },
+    "आजमगढ़": {
+      "canonical": "Azamgarh",
+      "state": "Uttar Pradesh"
+    },
+    "आणंद": {
+      "canonical": "Anand",
+      "state": "Gujarat"
+    },
+    "आरा": {
+      "canonical": "Arrah",
+      "state": "Bihar"
+    },
+    "आसनसोल": {
+      "canonical": "Asansol",
+      "state": "West Bengal"
+    },
+    "इंदौर": {
+      "canonical": "Indore",
+      "state": "Madhya Pradesh"
+    },
+    "इंफाल": {
+      "canonical": "Imphal",
+      "state": "Manipur"
+    },
+    "इटावा": {
+      "canonical": "Etawah",
+      "state": "Uttar Pradesh"
+    },
+    "इलाहाबाद": {
+      "canonical": "Prayagraj",
+      "state": "Uttar Pradesh"
+    },
+    "ईटानगर": {
+      "canonical": "Itanagar",
+      "state": "Arunachal Pradesh"
+    },
+    "उज्जैन": {
+      "canonical": "Ujjain",
+      "state": "Madhya Pradesh"
+    },
+    "उडुपी": {
+      "canonical": "Udupi",
+      "state": "Karnataka"
+    },
+    "उदयपुर": {
+      "canonical": "Udaipur",
+      "state": "Rajasthan"
+    },
+    "उधमपुर": {
+      "canonical": "Udhampur",
+      "state": "Jammu and Kashmir"
+    },
+    "उन्नाव": {
+      "canonical": "Unnao",
+      "state": "Uttar Pradesh"
+    },
+    "ऊना": {
+      "canonical": "Una",
+      "state": "Himachal Pradesh"
+    },
+    "ऋषिकेश": {
+      "canonical": "Rishikesh",
+      "state": "Uttarakhand"
+    },
+    "औरंगाबाद": {
+      "canonical": "Aurangabad",
+      "state": "Maharashtra"
+    },
+    "कटक": {
+      "canonical": "Cuttack",
+      "state": "Odisha"
+    },
+    "कटनी": {
+      "canonical": "Katni",
+      "state": "Madhya Pradesh"
+    },
+    "कटिहार": {
+      "canonical": "Katihar",
+      "state": "Bihar"
+    },
+    "कठुआ": {
+      "canonical": "Kathua",
+      "state": "Jammu and Kashmir"
+    },
+    "कन्नूर": {
+      "canonical": "Kannur",
+      "state": "Kerala"
+    },
+    "कपूरथला": {
+      "canonical": "Kapurthala",
+      "state": "Punjab"
+    },
+    "करनाल": {
+      "canonical": "Karnal",
+      "state": "Haryana"
+    },
+    "करीमनगर": {
+      "canonical": "Karimnagar",
+      "state": "Telangana"
+    },
+    "करोल बाग": {
+      "canonical": "Karol Bagh",
+      "state": "Delhi"
+    },
+    "कल्याण डोंबिवली": {
+      "canonical": "Kalyan-Dombivli",
+      "state": "Maharashtra"
+    },
+    "कवरत्ती": {
+      "canonical": "Kavaratti",
+      "state": "Lakshadweep"
+    },
+    "कांचीपुरम": {
+      "canonical": "Kanchipuram",
+      "state": "Tamil Nadu"
+    },
+    "कानपुर": {
+      "canonical": "Kanpur",
+      "state": "Uttar Pradesh"
+    },
+    "कारगिल": {
+      "canonical": "Kargil",
+      "state": "Ladakh"
+    },
+    "काशीपुर": {
+      "canonical": "Kashipur",
+      "state": "Uttarakhand"
+    },
+    "कुरनूल": {
+      "canonical": "Kurnool",
+      "state": "Andhra Pradesh"
+    },
+    "कुरुक्षेत्र": {
+      "canonical": "Kurukshetra",
+      "state": "Haryana"
+    },
+    "कुल्लू": {
+      "canonical": "Kullu",
+      "state": "Himachal Pradesh"
+    },
+    "कोच्चि": {
+      "canonical": "Kochi",
+      "state": "Kerala"
+    },
+    "कोझिकोड": {
+      "canonical": "Kozhikode",
+      "state": "Kerala"
+    },
+    "कोटा": {
+      "canonical": "Kota",
+      "state": "Rajasthan"
+    },
+    "कोट्टायम": {
+      "canonical": "Kottayam",
+      "state": "Kerala"
+    },
+    "कोयंबटूर": {
+      "canonical": "Coimbatore",
+      "state": "Tamil Nadu"
+    },
+    "कोरबा": {
+      "canonical": "Korba",
+      "state": "Chhattisgarh"
+    },
+    "कोलकाता": {
+      "canonical": "Kolkata",
+      "state": "West Bengal"
+    },
+    "कोल्लम": {
+      "canonical": "Kollam",
+      "state": "Kerala"
+    },
+    "कोल्हापुर": {
+      "canonical": "Kolhapur",
+      "state": "Maharashtra"
+    },
+    "कोहिमा": {
+      "canonical": "Kohima",
+      "state": "Nagaland"
+    },
+    "खंडवा": {
+      "canonical": "Khandwa",
+      "state": "Madhya Pradesh"
+    },
+    "खड़गपुर": {
+      "canonical": "Kharagpur",
+      "state": "West Bengal"
+    },
+    "खम्मम": {
+      "canonical": "Khammam",
+      "state": "Telangana"
+    },
+    "गंगटोक": {
+      "canonical": "Gangtok",
+      "state": "Sikkim"
+    },
+    "गया": {
+      "canonical": "Gaya",
+      "state": "Bihar"
+    },
+    "गांधीधाम": {
+      "canonical": "Gandhidham",
+      "state": "Gujarat"
+    },
+    "गांधीनगर": {
+      "canonical": "Gandhinagar",
+      "state": "Gujarat"
+    },
+    "गाजियाबाद": {
+      "canonical": "Ghaziabad",
+      "state": "Uttar Pradesh"
+    },
+    "गिरिडीह": {
+      "canonical": "Giridih",
+      "state": "Jharkhand"
+    },
+    "गुंटूर": {
+      "canonical": "Guntur",
+      "state": "Andhra Pradesh"
+    },
+    "गुड़गांव": {
+      "canonical": "Gurugram",
+      "state": "Haryana"
+    },
+    "गुरदासपुर": {
+      "canonical": "Gurdaspur",
+      "state": "Punjab"
+    },
+    "गुरुग्राम": {
+      "canonical": "Gurugram",
+      "state": "Haryana"
+    },
+    "गुवाहाटी": {
+      "canonical": "Guwahati",
+      "state": "Assam"
+    },
+    "गोरखपुर": {
+      "canonical": "Gorakhpur",
+      "state": "Uttar Pradesh"
+    },
+    "ग्रेटर नोएडा": {
+      "canonical": "Greater Noida",
+      "state": "Uttar Pradesh"
+    },
+    "ग्वालियर": {
+      "canonical": "Gwalior",
+      "state": "Madhya Pradesh"
+    },
+    "चंडीगढ़": {
+      "canonical": "Chandigarh",
+      "state": "Chandigarh"
+    },
+    "चंद्रपुर": {
+      "canonical": "Chandrapur",
+      "state": "Maharashtra"
+    },
+    "चंबा": {
+      "canonical": "Chamba",
+      "state": "Himachal Pradesh"
+    },
+    "चित्तौड़गढ़": {
+      "canonical": "Chittorgarh",
+      "state": "Rajasthan"
+    },
+    "चेन्नई": {
+      "canonical": "Chennai",
+      "state": "Tamil Nadu"
+    },
+    "छपरा": {
+      "canonical": "Chhapra",
+      "state": "Bihar"
+    },
+    "छिंदवाड़ा": {
+      "canonical": "Chhindwara",
+      "state": "Madhya Pradesh"
+    },
+    "जगदलपुर": {
+      "canonical": "Jagdalpur",
+      "state": "Chhattisgarh"
+    },
+    "जनकपुरी": {
+      "canonical": "Janakpuri",
+      "state": "Delhi"
+    },
+    "जबलपुर": {
+      "canonical": "Jabalpur",
+      "state": "Madhya Pradesh"
+    },
+    "जमशेदपुर": {
+      "canonical": "Jamshedpur",
+      "state": "Jharkhand"
+    },
+    "जम्मू": {
+      "canonical": "Jammu",
+      "state": "Jammu and Kashmir"
+    },
+    "जयपुर": {
+      "canonical": "Jaipur",
+      "state": "Rajasthan"
+    },
+    "जलगांव": {
+      "canonical": "Jalgaon",
+      "state": "Maharashtra"
+    },
+    "जामताड़ा": {
+      "canonical": "Jamtara",
+      "state": "Jharkhand"
+    },
+    "जामनगर": {
+      "canonical": "Jamnagar",
+      "state": "Gujarat"
+    },
+    "जालंधर": {
+      "canonical": "Jalandhar",
+      "state": "Punjab"
+    },
+    "जींद": {
+      "canonical": "Jind",
+      "state": "Haryana"
+    },
+    "जूनागढ़": {
+      "canonical": "Junagadh",
+      "state": "Gujarat"
+    },
+    "जोधपुर": {
+      "canonical": "Jodhpur",
+      "state": "Rajasthan"
+    },
+    "जौनपुर": {
+      "canonical": "Jaunpur",
+      "state": "Uttar Pradesh"
+    },
+    "झांसी": {
+      "canonical": "Jhansi",
+      "state": "Uttar Pradesh"
+    },
+    "झुंझुनूं": {
+      "canonical": "Jhunjhunu",
+      "state": "Rajasthan"
+    },
+    "टोंक": {
+      "canonical": "Tonk",
+      "state": "Rajasthan"
+    },
+    "ठाणे": {
+      "canonical": "Thane",
+      "state": "Maharashtra"
+    },
+    "डिब्रूगढ़": {
+      "canonical": "Dibrugarh",
+      "state": "Assam"
+    },
+    "तंजावुर": {
+      "canonical": "Thanjavur",
+      "state": "Tamil Nadu"
+    },
+    "तिरुपति": {
+      "canonical": "Tirupati",
+      "state": "Andhra Pradesh"
+    },
+    "तिरुवनंतपुरम": {
+      "canonical": "Thiruvananthapuram",
+      "state": "Kerala"
+    },
+    "त्रिशूर": {
+      "canonical": "Thrissur",
+      "state": "Kerala"
+    },
+    "दमन": {
+      "canonical": "Daman",
+      "state": "Dadra and Nagar Haveli and Daman and Diu"
+    },
+    "दमोह": {
+      "canonical": "Damoh",
+      "state": "Madhya Pradesh"
+    },
+    "दरभंगा": {
+      "canonical": "Darbhanga",
+      "state": "Bihar"
+    },
+    "दार्जिलिंग": {
+      "canonical": "Darjeeling",
+      "state": "West Bengal"
+    },
+    "दिल्ली": {
+      "canonical": "Delhi",
+      "state": "Delhi"
+    },
+    "दिसपुर": {
+      "canonical": "Dispur",
+      "state": "Assam"
+    },
+    "दीमापुर": {
+      "canonical": "Dimapur",
+      "state": "Nagaland"
+    },
+    "दीव": {
+      "canonical": "Diu",
+      "state": "Dadra and Nagar Haveli and Daman and Diu"
+    },
+    "दुमका": {
+      "canonical": "Dumka",
+      "state": "Jharkhand"
+    },
+    "दुर्ग": {
+      "canonical": "Durg",
+      "state": "Chhattisgarh"
+    },
+    "दुर्गापुर": {
+      "canonical": "Durgapur",
+      "state": "West Bengal"
+    },
+    "देवघर": {
+      "canonical": "Deoghar",
+      "state": "Jharkhand"
+    },
+    "देवरिया": {
+      "canonical": "Deoria",
+      "state": "Uttar Pradesh"
+    },
+    "देवास": {
+      "canonical": "Dewas",
+      "state": "Madhya Pradesh"
+    },
+    "देहरादून": {
+      "canonical": "Dehradun",
+      "state": "Uttarakhand"
+    },
+    "दौसा": {
+      "canonical": "Dausa",
+      "state": "Rajasthan"
+    },
+    "द्वारका": {
+      "canonical": "Dwarka",
+      "state": "Delhi"
+    },
+    "धनबाद": {
+      "canonical": "Dhanbad",
+      "state": "Jharkhand"
+    },
+    "धर्मशाला": {
+      "canonical": "Dharamshala",
+      "state": "Himachal Pradesh"
+    },
+    "धारवाड़": {
+      "canonical": "Dharwad",
+      "state": "Karnataka"
+    },
+    "धुले": {
+      "canonical": "Dhule",
+      "state": "Maharashtra"
+    },
+    "नई दिल्ली": {
+      "canonical": "New Delhi",
+      "state": "Delhi"
+    },
+    "नडियाद": {
+      "canonical": "Nadiad",
+      "state": "Gujarat"
+    },
+    "नवसारी": {
+      "canonical": "Navsari",
+      "state": "Gujarat"
+    },
+    "नवी मुंबई": {
+      "canonical": "Navi Mumbai",
+      "state": "Maharashtra"
+    },
+    "नांदेड़": {
+      "canonical": "Nanded",
+      "state": "Maharashtra"
+    },
+    "नागपुर": {
+      "canonical": "Nagpur",
+      "state": "Maharashtra"
+    },
+    "नागौर": {
+      "canonical": "Nagaur",
+      "state": "Rajasthan"
+    },
+    "नालंदा": {
+      "canonical": "Nalanda",
+      "state": "Bihar"
+    },
+    "नाशिक": {
+      "canonical": "Nashik",
+      "state": "Maharashtra"
+    },
+    "नासिक": {
+      "canonical": "Nashik",
+      "state": "Maharashtra"
+    },
+    "निजामाबाद": {
+      "canonical": "Nizamabad",
+      "state": "Telangana"
+    },
+    "नेल्लोर": {
+      "canonical": "Nellore",
+      "state": "Andhra Pradesh"
+    },
+    "नैनीताल": {
+      "canonical": "Nainital",
+      "state": "Uttarakhand"
+    },
+    "नोएडा": {
+      "canonical": "Noida",
+      "state": "Uttar Pradesh"
+    },
+    "पंचकूला": {
+      "canonical": "Panchkula",
+      "state": "Haryana"
+    },
+    "पटना": {
+      "canonical": "Patna",
+      "state": "Bihar"
+    },
+    "पटियाला": {
+      "canonical": "Patiala",
+      "state": "Punjab"
+    },
+    "पठानकोट": {
+      "canonical": "Pathankot",
+      "state": "Punjab"
+    },
+    "पणजी": {
+      "canonical": "Panaji",
+      "state": "Goa"
+    },
+    "पनवेल": {
+      "canonical": "Panvel",
+      "state": "Maharashtra"
+    },
+    "परभणी": {
+      "canonical": "Parbhani",
+      "state": "Maharashtra"
+    },
+    "पलक्कड़": {
+      "canonical": "Palakkad",
+      "state": "Kerala"
+    },
+    "पलवल": {
+      "canonical": "Palwal",
+      "state": "Haryana"
+    },
+    "पाटन": {
+      "canonical": "Patan",
+      "state": "Gujarat"
+    },
+    "पानीपत": {
+      "canonical": "Panipat",
+      "state": "Haryana"
+    },
+    "पाली": {
+      "canonical": "Pali",
+      "state": "Rajasthan"
+    },
+    "पिंपरी चिंचवड": {
+      "canonical": "Pimpri-Chinchwad",
+      "state": "Maharashtra"
+    },
+    "पिथौरागढ़": {
+      "canonical": "Pithoragarh",
+      "state": "Uttarakhand"
+    },
+    "पीतमपुरा": {
+      "canonical": "Pitampura",
+      "state": "Delhi"
+    },
+    "पुडुचेरी": {
+      "canonical": "Puducherry",
+      "state": "Puducherry"
+    },
+    "पुणे": {
+      "canonical": "Pune",
+      "state": "Maharashtra"
+    },
+    "पुरी": {
+      "canonical": "Puri",
+      "state": "Odisha"
+    },
+    "पुलवामा": {
+      "canonical": "Pulwama",
+      "state": "Jammu and Kashmir"
+    },
+    "पूर्णिया": {
+      "canonical": "Purnia",
+      "state": "Bihar"
+    },
+    "पोरबंदर": {
+      "canonical": "Porbandar",
+      "state": "Gujarat"
+    },
+    "पोर्ट ब्लेयर": {
+      "canonical": "Port Blair",
+      "state": "Andaman and Nicobar Islands"
+    },
+    "प्रयागराज": {
+      "canonical": "Prayagraj",
+      "state": "Uttar Pradesh"
+    },
+    "फगवाड़ा": {
+      "canonical": "Phagwara",
+      "state": "Punjab"
+    },
+    "फरीदाबाद": {
+      "canonical": "Faridabad",
+      "state": "Haryana"
+    },
+    "फर्रुखाबाद": {
+      "canonical": "Farrukhabad",
+      "state": "Uttar Pradesh"
+    },
+    "फिरोजपुर": {
+      "canonical": "Firozpur",
+      "state": "Punjab"
+    },
+    "फिरोजाबाद": {
+      "canonical": "Firozabad",
+      "state": "Uttar Pradesh"
+    },
+    "बठिंडा": {
+      "canonical": "Bathinda",
+      "state": "Punjab"
+    },
+    "बदायूं": {
+      "canonical": "Budaun",
+      "state": "Uttar Pradesh"
+    },
+    "बद्दी": {
+      "canonical": "Baddi",
+      "state": "Himachal Pradesh"
+    },
+    "बनारस": {
+      "canonical": "Varanasi",
+      "state": "Uttar Pradesh"
+    },
+    "बरनाला": {
+      "canonical": "Barnala",
+      "state": "Punjab"
+    },
+    "बरहमपुर": {
+      "canonical": "Berhampur",
+      "state": "Odisha"
+    },
+    "बरेली": {
+      "canonical": "Bareilly",
+      "state": "Uttar Pradesh"
+    },
+    "बस्ती": {
+      "canonical": "Basti",
+      "state": "Uttar Pradesh"
+    },
+    "बहराइच": {
+      "canonical": "Bahraich",
+      "state": "Uttar Pradesh"
+    },
+    "बहादुरगढ़": {
+      "canonical": "Bahadurgarh",
+      "state": "Haryana"
+    },
+    "बांदा": {
+      "canonical": "Banda",
+      "state": "Uttar Pradesh"
+    },
+    "बांसवाड़ा": {
+      "canonical": "Banswara",
+      "state": "Rajasthan"
+    },
+    "बाड़मेर": {
+      "canonical": "Barmer",
+      "state": "Rajasthan"
+    },
+    "बाराबंकी": {
+      "canonical": "Barabanki",
+      "state": "Uttar Pradesh"
+    },
+    "बारामूला": {
+      "canonical": "Baramulla",
+      "state": "Jammu and Kashmir"
+    },
+    "बालासोर": {
+      "canonical": "Balasore",
+      "state": "Odisha"
+    },
+    "बिलासपुर": {
+      "canonical": "Bilaspur",
+      "state": "Chhattisgarh"
+    },
+    "बीकानेर": {
+      "canonical": "Bikaner",
+      "state": "Rajasthan"
+    },
+    "बीड": {
+      "canonical": "Beed",
+      "state": "Maharashtra"
+    },
+    "बीदर": {
+      "canonical": "Bidar",
+      "state": "Karnataka"
+    },
+    "बुरहानपुर": {
+      "canonical": "Burhanpur",
+      "state": "Madhya Pradesh"
+    },
+    "बुलंदशहर": {
+      "canonical": "Bulandshahr",
+      "state": "Uttar Pradesh"
+    },
+    "बेंगलुरु": {
+      "canonical": "Bengaluru",
+      "state": "Karnataka"
+    },
+    "बेगूसराय": {
+      "canonical": "Begusarai",
+      "state": "Bihar"
+    },
+    "बेतिया": {
+      "canonical": "Bettiah",
+      "state": "Bihar"
+    },
+    "बैंगलोर": {
+      "canonical": "Bengaluru",
+      "state": "Karnataka"
+    },
+    "बोकारो": {
+      "canonical": "Bokaro",
+      "state": "Jharkhand"
+    },
+    "भरतपुर": {
+      "canonical": "Bharatpur",
+      "state": "Rajasthan"
+    },
+    "भरूच": {
+      "canonical": "Bharuch",
+      "state": "Gujarat"
+    },
+    "भागलपुर": {
+      "canonical": "Bhagalpur",
+      "state": "Bihar"
+    },
+    "भावनगर": {
+      "canonical": "Bhavnagar",
+      "state": "Gujarat"
+    },
+    "भिलाई": {
+      "canonical": "Bhilai",
+      "state": "Chhattisgarh"
+    },
+    "भिवानी": {
+      "canonical": "Bhiwani",
+      "state": "Haryana"
+    },
+    "भीलवाड़ा": {
+      "canonical": "Bhilwara",
+      "state": "Rajasthan"
+    },
+    "भुज": {
+      "canonical": "Bhuj",
+      "state": "Gujarat"
+    },
+    "भुवनेश्वर": {
+      "canonical": "Bhubaneswar",
+      "state": "Odisha"
+    },
+    "भोपाल": {
+      "canonical": "Bhopal",
+      "state": "Madhya Pradesh"
+    },
+    "मंगलुरु": {
+      "canonical": "Mangaluru",
+      "state": "Karnataka"
+    },
+    "मंडी": {
+      "canonical": "Mandi",
+      "state": "Himachal Pradesh"
+    },
+    "मंदसौर": {
+      "canonical": "Mandsaur",
+      "state": "Madhya Pradesh"
+    },
+    "मडगांव": {
+      "canonical": "Margao",
+      "state": "Goa"
+    },
+    "मथुरा": {
+      "canonical": "Mathura",
+      "state": "Uttar Pradesh"
+    },
+    "मदुरै": {
+      "canonical": "Madurai",
+      "state": "Tamil Nadu"
+    },
+    "मनाली": {
+      "canonical": "Manali",
+      "state": "Himachal Pradesh"
+    },
+    "मलप्पुरम": {
+      "canonical": "Malappuram",
+      "state": "Kerala"
+    },
+    "मालदा": {
+      "canonical": "Malda",
+      "state": "West Bengal"
+    },
+    "मिर्जापुर": {
+      "canonical": "Mirzapur",
+      "state": "Uttar Pradesh"
+    },
+    "मुंगेर": {
+      "canonical": "Munger",
+      "state": "Bihar"
+    },
+    "मुंबई": {
+      "canonical": "Mumbai",
+      "state": "Maharashtra"
+    },
+    "मुजफ्फरनगर": {
+      "canonical": "Muzaffarnagar",
+      "state": "Uttar Pradesh"
+    },
+    "मुजफ्फरपुर": {
+      "canonical": "Muzaffarpur",
+      "state": "Bihar"
+    },
+    "मुम्बई": {
+      "canonical": "Mumbai",
+      "state": "Maharashtra"
+    },
+    "मुरादाबाद": {
+      "canonical": "Moradabad",
+      "state": "Uttar Pradesh"
+    },
+    "मेरठ": {
+      "canonical": "Meerut",
+      "state": "Uttar Pradesh"
+    },
+    "मेहसाणा": {
+      "canonical": "Mehsana",
+      "state": "Gujarat"
+    },
+    "मैसूर": {
+      "canonical": "Mysuru",
+      "state": "Karnataka"
+    },
+    "मोगा": {
+      "canonical": "Moga",
+      "state": "Punjab"
+    },
+    "मोतिहारी": {
+      "canonical": "Motihari",
+      "state": "Bihar"
+    },
+    "मोरबी": {
+      "canonical": "Morbi",
+      "state": "Gujarat"
+    },
+    "मोहाली": {
+      "canonical": "Mohali",
+      "state": "Punjab"
+    },
+    "यमुनानगर": {
+      "canonical": "Yamunanagar",
+      "state": "Haryana"
+    },
+    "रतलाम": {
+      "canonical": "Ratlam",
+      "state": "Madhya Pradesh"
+    },
+    "रत्नागिरी": {
+      "canonical": "Ratnagiri",
+      "state": "Maharashtra"
+    },
+    "रांची": {
+      "canonical": "Ranchi",
+      "state": "Jharkhand"
+    },
+    "राउरकेला": {
+      "canonical": "Rourkela",
+      "state": "Odisha"
+    },
+    "राजकोट": {
+      "canonical": "Rajkot",
+      "state": "Gujarat"
+    },
+    "राजनांदगांव": {
+      "canonical": "Rajnandgaon",
+      "state": "Chhattisgarh"
+    },
+    "रामगढ़": {
+      "canonical": "Ramgarh",
+      "state": "Jharkhand"
+    },
+    "रामपुर": {
+      "canonical": "Rampur",
+      "state": "Uttar Pradesh"
+    },
+    "रायगढ़": {
+      "canonical": "Raigarh",
+      "state": "Chhattisgarh"
+    },
+    "रायचूर": {
+      "canonical": "Raichur",
+      "state": "Karnataka"
+    },
+    "रायपुर": {
+      "canonical": "Raipur",
+      "state": "Chhattisgarh"
+    },
+    "रायबरेली": {
+      "canonical": "Raebareli",
+      "state": "Uttar Pradesh"
+    },
+    "रीवा": {
+      "canonical": "Rewa",
+      "state": "Madhya Pradesh"
+    },
+    "रुड़की": {
+      "canonical": "Roorkee",
+      "state": "Uttarakhand"
+    },
+    "रुद्रपुर": {
+      "canonical": "Rudrapur",
+      "state": "Uttarakhand"
+    },
+    "रेवाड़ी": {
+      "canonical": "Rewari",
+      "state": "Haryana"
+    },
+    "रोहतक": {
+      "canonical": "Rohtak",
+      "state": "Haryana"
+    },
+    "रोहिणी": {
+      "canonical": "Rohini",
+      "state": "Delhi"
+    },
+    "लक्ष्मी नगर": {
+      "canonical": "Laxmi Nagar",
+      "state": "Delhi"
+    },
+    "लखनऊ": {
+      "canonical": "Lucknow",
+      "state": "Uttar Pradesh"
+    },
+    "लातूर": {
+      "canonical": "Latur",
+      "state": "Maharashtra"
+    },
+    "लुधियाना": {
+      "canonical": "Ludhiana",
+      "state": "Punjab"
+    },
+    "लेह": {
+      "canonical": "Leh",
+      "state": "Ladakh"
+    },
+    "वडोदरा": {
+      "canonical": "Vadodara",
+      "state": "Gujarat"
+    },
+    "वर्धा": {
+      "canonical": "Wardha",
+      "state": "Maharashtra"
+    },
+    "वलसाड": {
+      "canonical": "Valsad",
+      "state": "Gujarat"
+    },
+    "वसई विरार": {
+      "canonical": "Vasai-Virar",
+      "state": "Maharashtra"
+    },
+    "वापी": {
+      "canonical": "Vapi",
+      "state": "Gujarat"
+    },
+    "वारंगल": {
+      "canonical": "Warangal",
+      "state": "Telangana"
+    },
+    "वाराणसी": {
+      "canonical": "Varanasi",
+      "state": "Uttar Pradesh"
+    },
+    "विजयवाड़ा": {
+      "canonical": "Vijayawada",
+      "state": "Andhra Pradesh"
+    },
+    "विदिशा": {
+      "canonical": "Vidisha",
+      "state": "Madhya Pradesh"
+    },
+    "विशाखापत्तनम": {
+      "canonical": "Visakhapatnam",
+      "state": "Andhra Pradesh"
+    },
+    "वेल्लोर": {
+      "canonical": "Vellore",
+      "state": "Tamil Nadu"
+    },
+    "शाहजहांपुर": {
+      "canonical": "Shahjahanpur",
+      "state": "Uttar Pradesh"
+    },
+    "शाहदरा": {
+      "canonical": "Shahdara",
+      "state": "Delhi"
+    },
+    "शिमला": {
+      "canonical": "Shimla",
+      "state": "Himachal Pradesh"
+    },
+    "शिलांग": {
+      "canonical": "Shillong",
+      "state": "Meghalaya"
+    },
+    "शिवपुरी": {
+      "canonical": "Shivpuri",
+      "state": "Madhya Pradesh"
+    },
+    "श्रीगंगानगर": {
+      "canonical": "Sri Ganganagar",
+      "state": "Rajasthan"
+    },
+    "श्रीनगर": {
+      "canonical": "Srinagar",
+      "state": "Jammu and Kashmir"
+    },
+    "संगरूर": {
+      "canonical": "Sangrur",
+      "state": "Punjab"
+    },
+    "संबलपुर": {
+      "canonical": "Sambalpur",
+      "state": "Odisha"
+    },
+    "सतना": {
+      "canonical": "Satna",
+      "state": "Madhya Pradesh"
+    },
+    "समस्तीपुर": {
+      "canonical": "Samastipur",
+      "state": "Bihar"
+    },
+    "सहरसा": {
+      "canonical": "Saharsa",
+      "state": "Bihar"
+    },
+    "सहारनपुर": {
+      "canonical": "Saharanpur",
+      "state": "Uttar Pradesh"
+    },
+    "सांगली": {
+      "canonical": "Sangli",
+      "state": "Maharashtra"
+    },
+    "साकेत": {
+      "canonical": "Saket",
+      "state": "Delhi"
+    },
+    "सागर": {
+      "canonical": "Sagar",
+      "state": "Madhya Pradesh"
+    },
+    "सातारा": {
+      "canonical": "Satara",
+      "state": "Maharashtra"
+    },
+    "सासाराम": {
+      "canonical": "Sasaram",
+      "state": "Bihar"
+    },
+    "सिंगरौली": {
+      "canonical": "Singrauli",
+      "state": "Madhya Pradesh"
+    },
+    "सिकंदराबाद": {
+      "canonical": "Secunderabad",
+      "state": "Telangana"
+    },
+    "सिरसा": {
+      "canonical": "Sirsa",
+      "state": "Haryana"
+    },
+    "सिलचर": {
+      "canonical": "Silchar",
+      "state": "Assam"
+    },
+    "सिलवासा": {
+      "canonical": "Silvassa",
+      "state": "Dadra and Nagar Haveli and Daman and Diu"
+    },
+    "सिलीगुड़ी": {
+      "canonical": "Siliguri",
+      "state": "West Bengal"
+    },
+    "सीकर": {
+      "canonical": "Sikar",
+      "state": "Rajasthan"
+    },
+    "सीतापुर": {
+      "canonical": "Sitapur",
+      "state": "Uttar Pradesh"
+    },
+    "सीवान": {
+      "canonical": "Siwan",
+      "state": "Bihar"
+    },
+    "सीहोर": {
+      "canonical": "Sehore",
+      "state": "Madhya Pradesh"
+    },
+    "सुल्तानपुर": {
+      "canonical": "Sultanpur",
+      "state": "Uttar Pradesh"
+    },
+    "सूरत": {
+      "canonical": "Surat",
+      "state": "Gujarat"
+    },
+    "सेलम": {
+      "canonical": "Salem",
+      "state": "Tamil Nadu"
+    },
+    "सोनीपत": {
+      "canonical": "Sonipat",
+      "state": "Haryana"
+    },
+    "सोलन": {
+      "canonical": "Solan",
+      "state": "Himachal Pradesh"
+    },
+    "सोलापुर": {
+      "canonical": "Solapur",
+      "state": "Maharashtra"
+    },
+    "हजारीबाग": {
+      "canonical": "Hazaribagh",
+      "state": "Jharkhand"
+    },
+    "हनुमानगढ़": {
+      "canonical": "Hanumangarh",
+      "state": "Rajasthan"
+    },
+    "हरदोई": {
+      "canonical": "Hardoi",
+      "state": "Uttar Pradesh"
+    },
+    "हरिद्वार": {
+      "canonical": "Haridwar",
+      "state": "Uttarakhand"
+    },
+    "हल्दिया": {
+      "canonical": "Haldia",
+      "state": "West Bengal"
+    },
+    "हल्द्वानी": {
+      "canonical": "Haldwani",
+      "state": "Uttarakhand"
+    },
+    "हाजीपुर": {
+      "canonical": "Hajipur",
+      "state": "Bihar"
+    },
+    "हापुड़": {
+      "canonical": "Hapur",
+      "state": "Uttar Pradesh"
+    },
+    "हावड़ा": {
+      "canonical": "Howrah",
+      "state": "West Bengal"
+    },
+    "हासन": {
+      "canonical": "Hassan",
+      "state": "Karnataka"
+    },
+    "हिसार": {
+      "canonical": "Hisar",
+      "state": "Haryana"
+    },
+    "हैदराबाद": {
+      "canonical": "Hyderabad",
+      "state": "Telangana"
+    },
+    "होशियारपुर": {
+      "canonical": "Hoshiarpur",
+      "state": "Punjab"
+    },
+    "होसुर": {
+      "canonical": "Hosur",
+      "state": "Tamil Nadu"
+    }
+  },
+  "note": "States and union territories follow the National Cybercrime Reporting Portal's own state list. Cities are grouped by state at generation time so a city cannot be attached to the wrong state. This list is not exhaustive: a city given in answer to the location question is accepted whether or not it appears here.",
+  "states": {
+    "andaman and nicobar islands": "Andaman and Nicobar Islands",
+    "andhra pradesh": "Andhra Pradesh",
+    "arunachal pradesh": "Arunachal Pradesh",
+    "assam": "Assam",
+    "bihar": "Bihar",
+    "chandigarh": "Chandigarh",
+    "chhattisgarh": "Chhattisgarh",
+    "dadra and nagar haveli and daman and diu": "Dadra and Nagar Haveli and Daman and Diu",
+    "delhi": "Delhi",
+    "goa": "Goa",
+    "gujarat": "Gujarat",
+    "haryana": "Haryana",
+    "himachal pradesh": "Himachal Pradesh",
+    "jammu and kashmir": "Jammu and Kashmir",
+    "jharkhand": "Jharkhand",
+    "karnataka": "Karnataka",
+    "kerala": "Kerala",
+    "ladakh": "Ladakh",
+    "lakshadweep": "Lakshadweep",
+    "madhya pradesh": "Madhya Pradesh",
+    "maharashtra": "Maharashtra",
+    "manipur": "Manipur",
+    "meghalaya": "Meghalaya",
+    "mizoram": "Mizoram",
+    "nagaland": "Nagaland",
+    "odisha": "Odisha",
+    "puducherry": "Puducherry",
+    "punjab": "Punjab",
+    "rajasthan": "Rajasthan",
+    "sikkim": "Sikkim",
+    "tamil nadu": "Tamil Nadu",
+    "telangana": "Telangana",
+    "tripura": "Tripura",
+    "uttar pradesh": "Uttar Pradesh",
+    "uttarakhand": "Uttarakhand",
+    "west bengal": "West Bengal",
+    "अंडमान": "Andaman and Nicobar Islands",
+    "अंडमान और निकोबार": "Andaman and Nicobar Islands",
+    "अरुणाचल प्रदेश": "Arunachal Pradesh",
+    "असम": "Assam",
+    "आंध्र प्रदेश": "Andhra Pradesh",
+    "आन्ध्र प्रदेश": "Andhra Pradesh",
+    "आसाम": "Assam",
+    "उड़ीसा": "Odisha",
+    "उत्तर प्रदेश": "Uttar Pradesh",
+    "उत्तरप्रदेश": "Uttar Pradesh",
+    "उत्तराखंड": "Uttarakhand",
+    "ओडिशा": "Odisha",
+    "कर्नाटक": "Karnataka",
+    "केरल": "Kerala",
+    "गुजरात": "Gujarat",
+    "गोवा": "Goa",
+    "चंडीगढ़": "Chandigarh",
+    "छत्तीसगढ़": "Chhattisgarh",
+    "जम्मू और कश्मीर": "Jammu and Kashmir",
+    "जम्मू कश्मीर": "Jammu and Kashmir",
+    "झारखंड": "Jharkhand",
+    "तमिल नाडु": "Tamil Nadu",
+    "तमिलनाडु": "Tamil Nadu",
+    "तेलंगाना": "Telangana",
+    "त्रिपुरा": "Tripura",
+    "दमन और दीव": "Dadra and Nagar Haveli and Daman and Diu",
+    "दादरा और नगर हवेली": "Dadra and Nagar Haveli and Daman and Diu",
+    "दिल्ली": "Delhi",
+    "नागालैंड": "Nagaland",
+    "पंजाब": "Punjab",
+    "पश्चिम बंगाल": "West Bengal",
+    "पांडिचेरी": "Puducherry",
+    "पुडुचेरी": "Puducherry",
+    "बिहार": "Bihar",
+    "मणिपुर": "Manipur",
+    "मध्य प्रदेश": "Madhya Pradesh",
+    "मध्यप्रदेश": "Madhya Pradesh",
+    "महाराष्ट्र": "Maharashtra",
+    "मिजोरम": "Mizoram",
+    "मेघालय": "Meghalaya",
+    "राजस्थान": "Rajasthan",
+    "लक्षद्वीप": "Lakshadweep",
+    "लद्दाख": "Ladakh",
+    "सिक्किम": "Sikkim",
+    "हरियाणा": "Haryana",
+    "हिमाचल": "Himachal Pradesh",
+    "हिमाचल प्रदेश": "Himachal Pradesh"
+  },
+  "version": "2026.09.1"
+}
