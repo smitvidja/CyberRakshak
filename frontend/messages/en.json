@@ -382,7 +382,7 @@
     "noSuspectCopy": "Continue without guessing. You can report only what you know.",
     "saveContinue": "Save and continue"
   },
-  "complaintCompletion":   {
+  "complaintCompletion": {
     "eyebrow": "Complaint review",
     "title": "Review and submit your complaint",
     "intro": "Check the saved details carefully. You can return to any section to make changes before submission.",
@@ -643,7 +643,7 @@
     "resumeNextCopy": "The upload, extraction, review, and submission flow begins in the next application step.",
     "reviewProfileAction": "Review profile"
   },
-  "warriorApplication":   {
+  "warriorApplication": {
     "applicationSteps": "Application steps",
     "applicationTitle": "Cyber Warrior application",
     "stepUpload": "Upload resume",
@@ -1426,10 +1426,21 @@
     "correctionSubmit": "Submit correction request",
     "correctionSubmitted": "Correction request submitted",
     "correctionReference": "Reference: {reference}. This is a review reference, not a tracking or resolution promise.",
-    "identifierTypes": {"PHONE": "Phone number", "EMAIL": "Email address", "UPI": "UPI ID", "BANK_ACCOUNT": "Bank account identifier", "WEBSITE": "Website URL", "SOCIAL_MEDIA": "Social media handle", "OTHER": "Other identifier"},
-    "validation": {"required": "Enter an identifier to search.", "invalid": "Enter a valid complete identifier for the selected type."}
+    "identifierTypes": {
+      "PHONE": "Phone number",
+      "EMAIL": "Email address",
+      "UPI": "UPI ID",
+      "BANK_ACCOUNT": "Bank account identifier",
+      "WEBSITE": "Website URL",
+      "SOCIAL_MEDIA": "Social media handle",
+      "OTHER": "Other identifier"
+    },
+    "validation": {
+      "required": "Enter an identifier to search.",
+      "invalid": "Enter a valid complete identifier for the selected type."
+    }
   },
-  "secureIndia":   {
+  "secureIndia": {
     "title": "Secure India",
     "subtitle": "सुरक्षित भारत — जानिए अपने शहर की स्थिति",
     "kicker": "Secure India · interactive prototype",
@@ -1517,5 +1528,43 @@
     "datasetId": "Dataset ID",
     "datasetVersion": "Version",
     "published": "Published"
+  },
+  "adminKnowledgeGaps": {
+    "eyebrow": "Administration",
+    "title": "Knowledge gaps",
+    "intro": "Questions citizens asked Cyber Saathi that the authoritative corpus could not answer, ranked by how often they were asked. This is the list of what to source next.",
+    "signInTitle": "Administrator sign in",
+    "signInCopy": "This console is restricted to administrator accounts.",
+    "signInHeading": "Sign in",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "signInFailed": "Sign in failed. Check the email and password.",
+    "sessionExpired": "Your session has ended. Please sign in again.",
+    "corpusRuleTitle": "Nothing here writes to the corpus",
+    "corpusRuleCopy": "Marking a gap ACTIONED records that a government source was added to the authoritative pack and the index rebuilt. Citizen questions are never added as source material.",
+    "filtersHeading": "Filters",
+    "statusFilter": "Status",
+    "allStatuses": "All",
+    "minOccurrences": "Asked at least",
+    "refresh": "Refresh",
+    "tableCaption": "Unanswered questions, most asked first",
+    "columnQuestion": "Question",
+    "columnOccurrences": "Times asked",
+    "columnDomain": "Domain",
+    "columnStatus": "Status",
+    "columnAction": "Action",
+    "review": "Review",
+    "cancel": "Cancel",
+    "noteLabel": "Resolution note",
+    "noteHelp": "Which source was added, or why this was dismissed.",
+    "loading": "Loading gaps...",
+    "empty": "No gaps match these filters.",
+    "loadFailed": "Could not load knowledge gaps.",
+    "updateFailed": "Could not update this gap.",
+    "updatedTitle": "Updated",
+    "updated": "Gap marked {status}.",
+    "seenBetween": "First asked {first}, last asked {last}"
   }
 }
