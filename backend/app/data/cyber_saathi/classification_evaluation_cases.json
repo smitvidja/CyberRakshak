@@ -1,0 +1,230 @@
+{
+  "version": "2026.09.5.0",
+  "cases": [
+    {
+      "set": "seed",
+      "expected_domain": "online_harassment",
+      "query": "एक आदमी मुझे WhatsApp पर गंदे मैसेज भेज रहा है"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "online_harassment",
+      "query": "कोई मुझे रोज गाली दे रहा है Instagram पर"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "online_harassment",
+      "query": "ek ladka mujhe baar baar message karke tang kar raha hai"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "online_harassment",
+      "query": "someone keeps sending me filthy messages and won't stop"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "women_child_online_safety",
+      "query": "मेरी फोटो एडिट करके भेज रहा है सबको"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "women_child_online_safety",
+      "query": "he says he will put my private pictures online"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "women_child_online_safety",
+      "query": "meri private photos ka screenshot leke paise maang raha hai"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "financial_fraud",
+      "query": "मेरे खाते से पैसे निकल गए मुझे पता ही नहीं चला"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "financial_fraud",
+      "query": "bank wale bolke call aaya aur account khali ho gaya"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "financial_fraud",
+      "query": "someone took money from my account without permission"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "phishing_scam",
+      "query": "एक लिंक आया था मैंने खोल दिया अब डर लग रहा है"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "phishing_scam",
+      "query": "maine ek link kholke apna detail daal diya"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "impersonation",
+      "query": "कोई मेरे नाम से फेक आईडी चला रहा है"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "impersonation",
+      "query": "police ka aadmi bolke video call pe dara raha tha"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "account_compromise",
+      "query": "मेरा इंस्टाग्राम किसी और के कब्जे में है"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "account_compromise",
+      "query": "i cannot get into my email anymore, someone changed it"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "cyberstalking",
+      "query": "कोई मेरा पीछा कर रहा है ऑनलाइन, हर जगह आ जाता है"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "identity_theft",
+      "query": "मेरे आधार का गलत इस्तेमाल हो रहा है"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "ecommerce_fraud",
+      "query": "ऑनलाइन मंगाया था सामान आया ही नहीं"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "malware",
+      "query": "एक ऐप डाला था अब फोन अजीब चल रहा है"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "online_harassment",
+      "query": "ये बंदा मुझे शांति से जीने नहीं दे रहा, लगातार बुरे शब्द लिखता है"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "online_harassment",
+      "query": "unknown number se roz ganda text aata hai raat ko"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "online_harassment",
+      "query": "this person will not leave me alone online"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "women_child_online_safety",
+      "query": "usne meri tasveer badalke ashleel bana di aur group me daal di"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "women_child_online_safety",
+      "query": "he recorded me on video call and now demands money"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "child_safety",
+      "query": "मेरे 12 साल के बेटे से कोई अजनबी चैट में निजी बातें करवा रहा है"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "financial_fraud",
+      "query": "क्रेडिट कार्ड से बिना बताए दो बार पैसे कट गए"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "financial_fraud",
+      "query": "maine QR scan kiya aur balance zero ho gaya"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "ecommerce_fraud",
+      "query": "seller ne nakli saman bhej diya aur ab jawab nahi de raha"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "phishing_scam",
+      "query": "बिजली बिल का मैसेज आया था, उसमें दिए नंबर पर बात की और ऐप डलवा दी"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "impersonation",
+      "query": "meri photo lagake koi aur logon se paise maang raha hai"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "account_compromise",
+      "query": "facebook me ab mera login accept nahi ho raha, recovery mail bhi badal gaya"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "cyberstalking",
+      "query": "वो मेरे ऑफिस के बाहर आ जाता है और कहता है उसे सब पता है"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "identity_theft",
+      "query": "kisi ne mere pan card se sim nikal liya"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "malware",
+      "query": "unknown file open karne ke baad phone khud se message bhej raha hai"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "misinformation",
+      "query": "मेरे बारे में झूठा वीडियो बनाकर फैलाया जा रहा है"
+    },
+    {
+      "set": "off_topic",
+      "expected_domain": null,
+      "query": "banana bread recipe"
+    },
+    {
+      "set": "off_topic",
+      "expected_domain": null,
+      "query": "what is the capital of France"
+    },
+    {
+      "set": "off_topic",
+      "expected_domain": null,
+      "query": "मुझे नौकरी चाहिए"
+    },
+    {
+      "set": "off_topic",
+      "expected_domain": null,
+      "query": "how do I cook paneer"
+    },
+    {
+      "set": "off_topic",
+      "expected_domain": null,
+      "query": "mera result kab aayega"
+    },
+    {
+      "set": "seed",
+      "expected_domain": "cyber_terrorism",
+      "query": "किसी ने ऑनलाइन आतंकी हमले की धमकी दी है"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "cyber_terrorism",
+      "query": "ek group online railway station udane ki baat kar raha hai"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "misinformation",
+      "query": "chunav ko lekar jhuthi baat whatsapp par phaila rahe hain"
+    },
+    {
+      "set": "holdout",
+      "expected_domain": "child_safety",
+      "query": "a stranger asked my son to keep their chat secret from us"
+    }
+  ]
+}

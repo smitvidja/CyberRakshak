@@ -1,37 +1,320 @@
 {
   "version": "2026.09.3.3",
   "cases": [
-    {"id": "upi_hinglish_urgent", "query": "Mere UPI se paise cut gaye, transaction ID sambhal kar 1930 call karun?", "domain": "upi_payment_fraud", "expected_source_id": "ncrp_financial_fraud", "expected_chunk_id": "ncrp_financial_fraud:1:1"},
-    {"id": "bank_unauthorised", "query": "My bank debit is unauthorised. How quickly should I notify my bank?", "domain": "financial_fraud", "expected_source_id": "rbi_unauthorised_transactions", "expected_chunk_id": "rbi_unauthorised_transactions:1:1"},
-    {"id": "phishing_evidence", "query": "I received a phishing email and fake URL. Which email header evidence should I preserve?", "domain": "phishing", "expected_source_id": "ncrp_citizen_manual", "expected_chunk_id": "ncrp_citizen_manual:1:1"},
-    {"id": "account_compromise", "query": "I clicked a suspicious email attachment and my account credentials may be compromised", "domain": "account_compromise", "expected_source_id": "ncrp_citizen_manual", "expected_chunk_id": "ncrp_citizen_manual:1:1"},
-    {"id": "harassment_evidence", "query": "Instagram par abusive threatening messages hain. Profile ID aur chat evidence kaise preserve karun?", "domain": "harassment_abuse", "expected_source_id": "ncrp_citizen_manual", "expected_chunk_id": "ncrp_citizen_manual:2:1"},
-    {"id": "cyberstalking", "query": "A cyberstalker sends threatening abusive social-media messages; how do I preserve the original chat, profile ID, page URL, and screenshots?", "domain": "cyberstalking", "expected_source_id": "ncrp_citizen_manual", "expected_chunk_id": "ncrp_citizen_manual:2:1"},
-    {"id": "child_hindi", "query": "बच्चे की ऑनलाइन सुरक्षा और शिकायत के लिए चैट और स्क्रीनशॉट साक्ष्य कैसे सुरक्षित रखें?", "domain": "women_child_online_safety", "expected_source_id": "ncrp_hindi_faq", "expected_chunk_id": "ncrp_hindi_faq:1:1"},
-    {"id": "women_child_anonymous", "query": "Can I report women and child related sexually explicit online content anonymously?", "domain": "women_child_online_safety", "expected_source_id": "ncrp_women_child_faq", "expected_chunk_id": "ncrp_women_child_faq:1:1"},
-    {"id": "identity_theft", "query": "Someone stole my identity and used my photo and account details", "domain": "identity_theft", "expected_source_id": "ncrp_citizen_manual", "expected_chunk_id": "ncrp_citizen_manual:3:1"},
-    {"id": "impersonation", "query": "Someone made a fake profile impersonating me; I have the profile URL and screenshots", "domain": "impersonation", "expected_source_id": "ncrp_citizen_manual", "expected_chunk_id": "ncrp_citizen_manual:3:1"},
-    {"id": "suspicious_identifier", "query": "Ye UPI ID aur phone number suspicious hai, suspect identifier check kaise karun?", "domain": "suspicious_identifiers", "expected_source_id": "ncrp_identifier_facilities", "expected_chunk_id": "ncrp_identifier_facilities:1:1"},
-    {"id": "general_safety", "query": "Give me general cyber safety tips about strong passwords, updates, and suspicious links", "domain": "general_cyber_safety", "expected_source_id": "ncrp_cyber_safety_tips", "expected_chunk_id": "ncrp_cyber_safety_tips:1:1"},
-    {"id": "digital_arrest", "query": "A fake police officer says I am under digital arrest and must pay now", "domain": "impersonation", "expected_source_id": "certin_digital_safety_compass", "expected_chunk_id": "certin_digital_safety_compass:2:1"},
-    {"id": "fake_banking_apk", "query": "Someone sent a fake banking APK and wants remote access to my phone", "domain": "malware_device_compromise", "expected_source_id": "certin_digital_safety_compass", "expected_chunk_id": "certin_digital_safety_compass:3:1"},
-    {"id": "fake_job", "query": "I got a work from home job but they demand an upfront fee before employment", "domain": "financial_fraud", "expected_source_id": "certin_digital_safety_compass", "expected_chunk_id": "certin_digital_safety_compass:4:1"},
-    {"id": "fake_trading", "query": "A fake trading app promises guaranteed returns and asks me to add more payment", "domain": "financial_fraud", "expected_source_id": "certin_digital_safety_compass", "expected_chunk_id": "certin_digital_safety_compass:5:1"},
-    {"id": "child_grooming", "query": "An online game friend gives my child compliments, asks for photos, and says keep it secret", "domain": "women_child_online_safety", "expected_source_id": "certin_cyber_smart_kids", "expected_chunk_id": "certin_cyber_smart_kids:4:1"},
-    {"id": "child_location", "query": "How should a child protect live location and social-media privacy from strangers?", "domain": "women_child_online_safety", "expected_source_id": "certin_cyber_smart_kids", "expected_chunk_id": "certin_cyber_smart_kids:2:1"},
-    {"id": "women_hindi_otp", "query": "महिला सुरक्षा के लिए OTP और संदिग्ध लिंक से कैसे बचें?", "domain": "phishing", "expected_source_id": "certin_mahila_raksha_hi", "expected_chunk_id": "certin_mahila_raksha_hi:1:1"},
-    {"id": "mobile_permissions", "query": "An unknown mobile app wants camera, contacts, and location permissions", "domain": "malware_device_compromise", "expected_source_id": "certin_mahila_raksha_en", "expected_chunk_id": "certin_mahila_raksha_en:3:1"},
-    {"id": "vishing", "query": "A fake customer care caller asks for my CVV and UPI PIN to receive money", "domain": "upi_payment_fraud", "expected_source_id": "certin_cyber_awareness_2023", "expected_chunk_id": "certin_cyber_awareness_2023:1:1"},
-    {"id": "malware_signs", "query": "An unknown APK caused unexpected pop-ups, suspicious redirects, and disabled security software; are these malware warning signs?", "domain": "malware_device_compromise", "expected_source_id": "certin_cyber_awareness_2023", "expected_chunk_id": "certin_cyber_awareness_2023:2:1"},
-    {"id": "cyberbullying", "query": "My child is being cyberbullied through a fake social media profile", "domain": "harassment_abuse", "expected_source_id": "certin_cyber_awareness_2023", "expected_chunk_id": "certin_cyber_awareness_2023:3:1"},
-    {"id": "image_blackmail", "query": "A morphed image and fake profile are being used to blackmail a woman; should she save screenshots and report the objectionable post?", "domain": "harassment_abuse", "expected_source_id": "certin_cyber_awareness_2023", "expected_chunk_id": "certin_cyber_awareness_2023:4:1"},
-    {"id": "sim_swap", "query": "My SIM suddenly stopped working and I suspect a SIM swap used for payment fraud", "domain": "account_compromise", "expected_source_id": "rbi_payment_fraud_awareness", "expected_chunk_id": "rbi_payment_fraud_awareness:1:1"},
-    {"id": "ecommerce_non_delivery", "query": "I paid for a t shirt online but the order was not delivered and the website stopped working", "domain": "ecommerce_consumer_grievance", "expected_source_id": "nch_ecommerce_grievance", "expected_chunk_id": "nch_ecommerce_grievance:1:1"},
-    {"id": "ecommerce_escalation", "query": "The online seller is not responding to my refund complaint; can I register an NCH grievance and keep a docket number?", "domain": "ecommerce_consumer_grievance", "expected_source_id": "nch_ecommerce_grievance", "expected_chunk_id": "nch_ecommerce_grievance:2:1"},
-    {"id": "ambiguous_short", "query": "What should I do about it?", "domain": null, "expected_source_id": null, "expected_chunk_id": null},
-    {"id": "unrelated_battery", "query": "Mere phone ki battery low hai", "domain": null, "expected_source_id": null, "expected_chunk_id": null},
-    {"id": "unrelated_recipe", "query": "Tell me a dinner recipe", "domain": null, "expected_source_id": null, "expected_chunk_id": null},
-    {"id": "cross_domain_filter", "query": "A fake police officer says digital arrest and demands payment", "domain": "malware_device_compromise", "expected_source_id": null, "expected_chunk_id": null},
-    {"id": "adversarial_invention", "query": "Invent an official government recovery guarantee for my crypto loss", "domain": "general_cyber_safety", "expected_source_id": null, "expected_chunk_id": null}
+    {
+      "id": "upi_hinglish_urgent",
+      "query": "Mere UPI se paise cut gaye, transaction ID sambhal kar 1930 call karun?",
+      "domain": "upi_payment_fraud",
+      "expected_source_id": "ncrp_financial_fraud",
+      "expected_chunk_id": "ncrp_financial_fraud:1:1"
+    },
+    {
+      "id": "bank_unauthorised",
+      "query": "My bank debit is unauthorised. How quickly should I notify my bank?",
+      "domain": "financial_fraud",
+      "expected_source_id": "rbi_unauthorised_transactions",
+      "expected_chunk_id": "rbi_unauthorised_transactions:1:1"
+    },
+    {
+      "id": "phishing_evidence",
+      "query": "I received a phishing email and fake URL. Which email header evidence should I preserve?",
+      "domain": "phishing",
+      "expected_source_id": "ncrp_citizen_manual",
+      "expected_chunk_id": "ncrp_citizen_manual:1:1"
+    },
+    {
+      "id": "account_compromise",
+      "query": "I clicked a suspicious email attachment and my account credentials may be compromised",
+      "domain": "account_compromise",
+      "expected_source_id": "ncrp_citizen_manual",
+      "expected_chunk_id": "ncrp_citizen_manual:1:1"
+    },
+    {
+      "id": "harassment_evidence",
+      "query": "Instagram par abusive threatening messages hain. Profile ID aur chat evidence kaise preserve karun?",
+      "domain": "harassment_abuse",
+      "expected_source_id": "ncrp_citizen_manual",
+      "expected_chunk_id": "ncrp_citizen_manual:2:1"
+    },
+    {
+      "id": "cyberstalking",
+      "query": "A cyberstalker sends threatening abusive social-media messages; how do I preserve the original chat, profile ID, page URL, and screenshots?",
+      "domain": "cyberstalking",
+      "expected_source_id": "ncrp_citizen_manual",
+      "expected_chunk_id": "ncrp_citizen_manual:2:1"
+    },
+    {
+      "id": "child_hindi",
+      "query": "बच्चे की ऑनलाइन सुरक्षा और शिकायत के लिए चैट और स्क्रीनशॉट साक्ष्य कैसे सुरक्षित रखें?",
+      "domain": "women_child_online_safety",
+      "expected_source_id": "ncrp_hindi_faq",
+      "expected_chunk_id": "ncrp_hindi_faq:1:1"
+    },
+    {
+      "id": "women_child_anonymous",
+      "query": "Can I report women and child related sexually explicit online content anonymously?",
+      "domain": "women_child_online_safety",
+      "expected_source_id": "ncrp_women_child_faq",
+      "expected_chunk_id": "ncrp_women_child_faq:1:1"
+    },
+    {
+      "id": "identity_theft",
+      "query": "Someone stole my identity and used my photo and account details",
+      "domain": "identity_theft",
+      "expected_source_id": "ncrp_citizen_manual",
+      "expected_chunk_id": "ncrp_citizen_manual:3:1"
+    },
+    {
+      "id": "impersonation",
+      "query": "Someone made a fake profile impersonating me; I have the profile URL and screenshots",
+      "domain": "impersonation",
+      "expected_source_id": "ncrp_citizen_manual",
+      "expected_chunk_id": "ncrp_citizen_manual:3:1"
+    },
+    {
+      "id": "suspicious_identifier",
+      "query": "Ye UPI ID aur phone number suspicious hai, suspect identifier check kaise karun?",
+      "domain": "suspicious_identifiers",
+      "expected_source_id": "ncrp_identifier_facilities",
+      "expected_chunk_id": "ncrp_identifier_facilities:1:1"
+    },
+    {
+      "id": "general_safety",
+      "query": "Give me general cyber safety tips about strong passwords, updates, and suspicious links",
+      "domain": "general_cyber_safety",
+      "expected_source_id": "ncrp_cyber_safety_tips",
+      "expected_chunk_id": "ncrp_cyber_safety_tips:1:1"
+    },
+    {
+      "id": "digital_arrest",
+      "query": "A fake police officer says I am under digital arrest and must pay now",
+      "domain": "impersonation",
+      "expected_source_id": "certin_digital_safety_compass",
+      "expected_chunk_id": "certin_digital_safety_compass:2:1"
+    },
+    {
+      "id": "fake_banking_apk",
+      "query": "Someone sent a fake banking APK and wants remote access to my phone",
+      "domain": "malware_device_compromise",
+      "expected_source_id": "certin_digital_safety_compass",
+      "expected_chunk_id": "certin_digital_safety_compass:3:1"
+    },
+    {
+      "id": "fake_job",
+      "query": "I got a work from home job but they demand an upfront fee before employment",
+      "domain": "financial_fraud",
+      "expected_source_id": "certin_digital_safety_compass",
+      "expected_chunk_id": "certin_digital_safety_compass:4:1"
+    },
+    {
+      "id": "fake_trading",
+      "query": "A fake trading app promises guaranteed returns and asks me to add more payment",
+      "domain": "financial_fraud",
+      "expected_source_id": "certin_digital_safety_compass",
+      "expected_chunk_id": "certin_digital_safety_compass:5:1"
+    },
+    {
+      "id": "child_grooming",
+      "query": "An online game friend gives my child compliments, asks for photos, and says keep it secret",
+      "domain": "women_child_online_safety",
+      "expected_source_id": "certin_cyber_smart_kids",
+      "expected_chunk_id": "certin_cyber_smart_kids:4:1"
+    },
+    {
+      "id": "child_location",
+      "query": "How should a child protect live location and social-media privacy from strangers?",
+      "domain": "women_child_online_safety",
+      "expected_source_id": "certin_cyber_smart_kids",
+      "expected_chunk_id": "certin_cyber_smart_kids:2:1"
+    },
+    {
+      "id": "women_hindi_otp",
+      "query": "महिला सुरक्षा के लिए OTP और संदिग्ध लिंक से कैसे बचें?",
+      "domain": "phishing",
+      "expected_source_id": "certin_mahila_raksha_hi",
+      "expected_chunk_id": "certin_mahila_raksha_hi:1:1"
+    },
+    {
+      "id": "mobile_permissions",
+      "query": "An unknown mobile app wants camera, contacts, and location permissions",
+      "domain": "malware_device_compromise",
+      "expected_source_id": "certin_mahila_raksha_en",
+      "expected_chunk_id": "certin_mahila_raksha_en:3:1"
+    },
+    {
+      "id": "vishing",
+      "query": "A fake customer care caller asks for my CVV and UPI PIN to receive money",
+      "domain": "upi_payment_fraud",
+      "expected_source_id": "certin_cyber_awareness_2023",
+      "expected_chunk_id": "certin_cyber_awareness_2023:1:1"
+    },
+    {
+      "id": "malware_signs",
+      "query": "An unknown APK caused unexpected pop-ups, suspicious redirects, and disabled security software; are these malware warning signs?",
+      "domain": "malware_device_compromise",
+      "expected_source_id": "certin_cyber_awareness_2023",
+      "expected_chunk_id": "certin_cyber_awareness_2023:2:1"
+    },
+    {
+      "id": "cyberbullying",
+      "query": "My child is being cyberbullied through a fake social media profile",
+      "domain": "harassment_abuse",
+      "expected_source_id": "certin_cyber_awareness_2023",
+      "expected_chunk_id": "certin_cyber_awareness_2023:3:1"
+    },
+    {
+      "id": "image_blackmail",
+      "query": "A morphed image and fake profile are being used to blackmail a woman; should she save screenshots and report the objectionable post?",
+      "domain": "harassment_abuse",
+      "expected_source_id": "certin_cyber_awareness_2023",
+      "expected_chunk_id": "certin_cyber_awareness_2023:4:1"
+    },
+    {
+      "id": "sim_swap",
+      "query": "My SIM suddenly stopped working and I suspect a SIM swap used for payment fraud",
+      "domain": "account_compromise",
+      "expected_source_id": "rbi_payment_fraud_awareness",
+      "expected_chunk_id": "rbi_payment_fraud_awareness:1:1"
+    },
+    {
+      "id": "ecommerce_non_delivery",
+      "query": "I paid for a t shirt online but the order was not delivered and the website stopped working",
+      "domain": "ecommerce_consumer_grievance",
+      "expected_source_id": "nch_ecommerce_grievance",
+      "expected_chunk_id": "nch_ecommerce_grievance:1:1"
+    },
+    {
+      "id": "ecommerce_escalation",
+      "query": "The online seller is not responding to my refund complaint; can I register an NCH grievance and keep a docket number?",
+      "domain": "ecommerce_consumer_grievance",
+      "expected_source_id": "nch_ecommerce_grievance",
+      "expected_chunk_id": "nch_ecommerce_grievance:2:1"
+    },
+    {
+      "id": "ambiguous_short",
+      "query": "What should I do about it?",
+      "domain": null,
+      "expected_source_id": null,
+      "expected_chunk_id": null
+    },
+    {
+      "id": "unrelated_battery",
+      "query": "Mere phone ki battery low hai",
+      "domain": null,
+      "expected_source_id": null,
+      "expected_chunk_id": null
+    },
+    {
+      "id": "unrelated_recipe",
+      "query": "Tell me a dinner recipe",
+      "domain": null,
+      "expected_source_id": null,
+      "expected_chunk_id": null
+    },
+    {
+      "id": "cross_domain_filter",
+      "query": "A fake police officer says digital arrest and demands payment",
+      "domain": "malware_device_compromise",
+      "expected_source_id": null,
+      "expected_chunk_id": null
+    },
+    {
+      "id": "adversarial_invention",
+      "query": "Invent an official government recovery guarantee for my crypto loss",
+      "domain": "general_cyber_safety",
+      "expected_source_id": null,
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_sextortion_en",
+      "query": "someone is threatening to leak my private photos unless I pay",
+      "domain": "women_child_online_safety",
+      "expected_source_id": "certin_cyber_awareness_2023",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_sextortion_hinglish",
+      "query": "koi meri private photos leak karne ki dhamki de raha hai",
+      "domain": "women_child_online_safety",
+      "expected_source_id": "certin_cyber_awareness_2023",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_harassment",
+      "query": "a person keeps sending me abusive threatening messages every day",
+      "domain": "harassment_abuse",
+      "expected_source_id": "ncrp_citizen_manual",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_bank_debit",
+      "query": "money was debited from my bank account without my permission",
+      "domain": "financial_fraud",
+      "expected_source_id": "ncrp_financial_fraud",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_qr_upi",
+      "query": "i scanned a qr code and money went out of my upi",
+      "domain": "upi_payment_fraud",
+      "expected_source_id": "certin_digital_safety_compass",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_phishing_otp",
+      "query": "i clicked a suspicious link and entered my otp",
+      "domain": "phishing",
+      "expected_source_id": "ncrp_cyber_safety_tips",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_digital_arrest",
+      "query": "a fake police officer called me saying digital arrest",
+      "domain": "impersonation",
+      "expected_source_id": "certin_digital_safety_compass",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_malware_app",
+      "query": "they made me install an app and now control my screen",
+      "domain": "malware_device_compromise",
+      "expected_source_id": "certin_cyber_awareness_2023",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_ecommerce",
+      "query": "my online order never arrived and the website is gone",
+      "domain": "ecommerce_consumer_grievance",
+      "expected_source_id": "nch_ecommerce_grievance",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "realistic_aadhaar_misuse",
+      "query": "someone is misusing my aadhaar documents",
+      "domain": "identity_theft",
+      "expected_source_id": "ncrp_citizen_manual",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "offtopic_recipe",
+      "query": "banana bread recipe please",
+      "domain": "women_child_online_safety",
+      "expected_source_id": null,
+      "expected_chunk_id": null
+    },
+    {
+      "id": "offtopic_cricket",
+      "query": "who won the cricket match yesterday",
+      "domain": "financial_fraud",
+      "expected_source_id": null,
+      "expected_chunk_id": null
+    },
+    {
+      "id": "offtopic_cooking",
+      "query": "how do i cook paneer butter masala",
+      "domain": "harassment_abuse",
+      "expected_source_id": null,
+      "expected_chunk_id": null
+    }
   ]
 }

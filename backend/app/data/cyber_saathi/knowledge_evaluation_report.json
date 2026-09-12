@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-09-09T15:26:18.356461+00:00",
+  "generated_at": "2026-09-12T10:21:41.915448+00:00",
   "evaluation_cases": "C:\\Project\\CyberRakshak\\backend\\app\\data\\cyber_saathi\\knowledge_evaluation_cases.json",
   "status": "passed",
   "metrics": {
-    "case_count": 32,
-    "positive_case_count": 27,
+    "case_count": 45,
+    "positive_case_count": 37,
     "retrieval_relevance": 1.0,
     "source_correctness": 1.0,
-    "no_result_rate": 0.1562,
-    "expected_no_result_rate": 0.1562,
+    "no_result_rate": 0.1778,
+    "expected_no_result_rate": 0.1778,
     "no_result_correctness": 1.0,
     "domain_filter_correctness": 1.0,
     "chunk_correctness": 1.0,
     "false_positive_count": 0,
     "false_negative_count": 0,
-    "latency_mean_ms": 2.502,
-    "latency_p95_ms": 4.562
+    "latency_mean_ms": 536.667,
+    "latency_p95_ms": 608.085
   },
   "failures": []
 }

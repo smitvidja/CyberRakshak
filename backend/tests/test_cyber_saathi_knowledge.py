@@ -167,8 +167,13 @@ def test_knowledge_search_api_has_bounded_results_and_source_metadata() -> None:
 def test_knowledge_gold_set_meets_relevance_source_and_no_result_gates() -> None:
     result = evaluate()
 
+    from app.services.cyber_saathi_knowledge_evaluation import load_cases
+
     assert result["status"] == "passed"
-    assert result["metrics"]["case_count"] == 32
+    # Derived, not pinned: the gold set is meant to grow, and a magic number turns
+    # every added case into a failure that says nothing about retrieval quality.
+    assert result["metrics"]["case_count"] == len(load_cases())
+    assert result["metrics"]["case_count"] >= 32, "cases must not be quietly removed"
     assert result["metrics"]["retrieval_relevance"] == 1
     assert result["metrics"]["source_correctness"] == 1
     assert result["metrics"]["no_result_correctness"] == 1

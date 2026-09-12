@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-09-12T10:20:40.458565+00:00",
+  "evaluation_cases": "C:\\Project\\CyberRakshak\\backend\\app\\data\\cyber_saathi\\classification_evaluation_cases.json",
+  "status": "passed",
+  "metrics": {
+    "case_count": 45,
+    "decided_by": {
+      "semantic": 29,
+      "override": 8,
+      "lexicon": 1,
+      "none": 7
+    },
+    "seed_correct": 1.0,
+    "seed_unresolved": 0.0,
+    "seed_wrong": 0.0,
+    "holdout_correct": 0.8421,
+    "holdout_unresolved": 0.1053,
+    "holdout_wrong": 0.0526,
+    "off_topic_correct": 1.0,
+    "off_topic_unresolved": 0.0,
+    "off_topic_wrong": 0.0
+  },
+  "failures": [
+    {
+      "set": "holdout",
+      "query": "this person will not leave me alone online",
+      "expected": "online_harassment",
+      "actual": "cyberstalking"
+    },
+    {
+      "set": "holdout",
+      "query": "बिजली बिल का मैसेज आया था, उसमें दिए नंबर पर बात की और ऐप डलवा दी",
+      "expected": "phishing_scam",
+      "actual": "unknown"
+    },
+    {
+      "set": "holdout",
+      "query": "ek group online railway station udane ki baat kar raha hai",
+      "expected": "cyber_terrorism",
+      "actual": "unknown"
+    }
+  ]
+}

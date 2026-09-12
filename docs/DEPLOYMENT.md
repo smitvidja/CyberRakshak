@@ -489,6 +489,39 @@ Migration `d4e5f6a7b8c9` creates the table; the entrypoint applies it like any
 other. Nothing about this is automatic: no endpoint writes to the corpus, and
 there is no job that promotes a signal into retrievable content.
 
+## 16. Evaluating Cyber Saathi before you ship a change
+
+Two evaluations guard the parts that fail silently. Both are repeatable commands
+that write a committed report, and the test suite holds those reports to a floor -
+so changing the classifier or the corpus without re-running them fails CI.
+
+```bash
+cd backend
+./.venv/Scripts/python.exe -m app.services.cyber_saathi_classification_evaluation
+./.venv/Scripts/python.exe -m app.services.cyber_saathi_knowledge_evaluation
+```
+
+**Classification** answers "which crime is this?" and reports three sets
+separately. `holdout` is the honest number - phrasings written after the exemplars
+and deliberately worded differently. `seed` shares wording with the exemplars, so
+its score is contaminated and is kept only to catch an outright break. `off_topic`
+must return no domain at all; without it, classifying everything as something
+scores perfectly. Floor: holdout ≥ 0.75 and off_topic_wrong = 0.
+
+This existed because the real answer was **25%** and no number anywhere showed it.
+The lexicon is never loudly wrong - it silently returns unknown - and an unknown
+domain means no question flow, no retrieval filter, and a citizen told "मुझे
+स्पष्ट नहीं है कि क्या हुआ" on every turn. It survived until someone read a
+transcript.
+
+**Retrieval** answers "did we find the right guidance?" over a gold set that now
+includes realistic citizen wording and off-topic queries, not only phrasings close
+to the source documents.
+
+Run both with a provider configured. The classification report records which path
+decided each case, and a test refuses a report generated with no provider, since
+that would show a passing lexicon and hide everything the evaluation measures.
+
 ## Runtime additions from Phase 10
 
 Three dependencies were added for resume parsing and complaint-copy PDFs. All three ship
