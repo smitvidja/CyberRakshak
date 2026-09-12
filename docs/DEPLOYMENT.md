@@ -36,6 +36,7 @@ know each other's public URL.
 | `EVIDENCE_MAX_FILE_SIZE` | `10485760` (10 MiB) | Per-file upload cap. |
 | `RESUME_LLM_ENABLED` | `false` | Model-assisted resume structuring. **Off by default on purpose**: turning it on sends resume text to the configured provider, which needs operator configuration and citizen-facing disclosure. The deterministic parser runs either way. See §13. |
 | `RESUME_LLM_TIMEOUT_SECONDS` | `15` | Accepted range 1-60. Per provider attempt. |
+| `SAATHI_PHRASING_ENABLED` | `false` | Lets a model reword the deterministic intake question so it reads like a person. The script still decides which question and whether an answer counted; only the wording changes, and a rejected or slow rewrite falls back to the deterministic sentence. Off means no per-turn provider call. |
 | `RAG_SEMANTIC_EMBEDDINGS_ENABLED` | `true` | Cyber Saathi retrieval uses hosted multilingual embeddings. With no Gemini key, or set to `false`, retrieval falls back to word and character matching - it still works, but paraphrases and romanised Hindi retrieve less well. See §14. |
 | `RAG_SEMANTIC_EMBEDDING_TIMEOUT_SECONDS` | `1.5` | Per query embedding. On timeout the search silently uses the sparse path. |
 

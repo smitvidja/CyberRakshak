@@ -55,6 +55,7 @@ from app.services.cyber_saathi_conversation import (
 from app.services.cyber_saathi_knowledge import KnowledgeService
 from app.services.cyber_saathi_llm import get_llm_gateway
 from app.services.cyber_saathi_domain_classifier import classify_semantically
+from app.services.cyber_saathi_phrasing import phrase_next_question
 from app.services.cyber_saathi_understanding import UnderstandingEngine
 
 
@@ -202,12 +203,14 @@ DOMAIN_QUESTION_FLOWS: dict[CrimeDomain, tuple[tuple[str, ExpectedAnswerType], .
         ("platform_and_profile", ExpectedAnswerType.FREE_TEXT),
         ("harassment_evidence_preserved", ExpectedAnswerType.YES_NO),
         ("platform_block_report", ExpectedAnswerType.YES_NO),
+        ("reporting_mode_choice", ExpectedAnswerType.FREE_TEXT),
     ),
     CrimeDomain.WOMEN_CHILD_ONLINE_SAFETY: (
         ("immediate_danger", ExpectedAnswerType.YES_NO),
         ("affected_person_and_age", ExpectedAnswerType.FREE_TEXT),
         ("platform_and_profile", ExpectedAnswerType.FREE_TEXT),
         ("safe_evidence_preserved", ExpectedAnswerType.YES_NO),
+        ("reporting_mode_choice", ExpectedAnswerType.FREE_TEXT),
     ),
     CrimeDomain.CYBERSTALKING: (
         ("immediate_danger", ExpectedAnswerType.YES_NO),
@@ -1777,18 +1780,30 @@ class CyberSaathiService:
                     ],
                 )
             state.incident.status = IncidentStatus.AWAITING_USER_INPUT
+            # Retrieval found nothing and no provider answered. That is our problem,
+            # not the citizen's, and telling a frightened person "मुझे पर्याप्त
+            # आधिकारिक मार्गदर्शन नहीं मिला" leaves them with nothing at the moment
+            # they most need something. The domain playbook is reviewed guidance we
+            # already hold, so answer from it; where the domain is genuinely unknown
+            # it degrades to asking what happened, which is useful rather than empty.
+            # The retrieval miss is still recorded in the flags for telemetry.
+            fallback_domain = state.incident.crime_domain
             return RoutedReply(
                 CyberSaathiService._with_sentiment_strategy(
                     language,
                     response_understanding.sentiment,
-                    CyberSaathiService._copy(language, "knowledge_no_result"),
+                    CyberSaathiService._ensure_focused_question(
+                        CyberSaathiService._domain_safety_copy(fallback_domain, language),
+                        fallback_domain,
+                        language,
+                    ),
                 ),
                 TurnKind.MESSAGE,
-                GroundingStatus.NO_RESULT,
+                GroundingStatus.DETERMINISTIC_PLAYBOOK,
                 retrieval_latency_ms=retrieval.retrieval_latency_ms,
                 llm_fallback_used=generated.fallback_used,
                 llm_latency_ms=generated.latency_ms,
-                safety_flags=["deterministic_no_result_fallback"],
+                safety_flags=["retrieval_no_result", "deterministic_playbook_fallback"],
             )
 
         state.incident.status = IncidentStatus.AWAITING_USER_INPUT
@@ -2010,6 +2025,7 @@ class CyberSaathiService:
             "platform_and_profile": {LanguageCode.EN: "Which platform and profile, username, phone number, or URL are involved?", LanguageCode.HI: "कौन सा प्लेटफॉर्म और प्रोफाइल, यूजरनेम, फोन नंबर या URL शामिल है?", LanguageCode.HINGLISH: "Kaunsa platform aur profile, username, phone number ya URL involved hai?"},
             "harassment_evidence_preserved": {LanguageCode.EN: "Have you preserved the original messages, dates, profile URL, and screenshots before blocking?", LanguageCode.HI: "क्या आपने ब्लॉक करने से पहले मूल संदेश, तारीखें, प्रोफाइल URL और स्क्रीनशॉट सुरक्षित किए?", LanguageCode.HINGLISH: "Block karne se pehle original messages, dates, profile URL aur screenshots preserve kiye?"},
             "platform_block_report": {LanguageCode.EN: "After preserving evidence, have you blocked and reported the account through the platform?", LanguageCode.HI: "प्रमाण सुरक्षित करने के बाद क्या आपने प्लेटफॉर्म पर अकाउंट ब्लॉक और रिपोर्ट किया?", LanguageCode.HINGLISH: "Evidence preserve karne ke baad platform par account block aur report kiya?"},
+            "reporting_mode_choice": {LanguageCode.EN: "One thing before I prepare the report: would you like to file this without giving your name, or with your name? Both are accepted here. Without a name, nothing identifying you is stored.", LanguageCode.HI: "रिपोर्ट तैयार करने से पहले एक बात: इसे बिना नाम के दर्ज करना है, या अपना नाम देकर? दोनों विकल्प यहाँ उपलब्ध हैं। बिना नाम के आपकी पहचान से जुड़ी कोई जानकारी दर्ज नहीं होती।", LanguageCode.HINGLISH: "Report taiyaar karne se pehle ek baat: ise bina naam ke file karna hai, ya apna naam dekar? Dono option yahan available hain. Bina naam ke aapki pehchan se judi koi jaankari store nahi hoti."},
             "affected_person_and_age": {LanguageCode.EN: "Is the affected person you, your child, or someone else, and what is their age group?", LanguageCode.HI: "प्रभावित व्यक्ति आप, आपका बच्चा या कोई और है, और उनका आयु वर्ग क्या है?", LanguageCode.HINGLISH: "Affected person aap, aapka child ya koi aur hai, aur age group kya hai?"},
             "safe_evidence_preserved": {LanguageCode.EN: "Without downloading or forwarding harmful content, have you safely preserved the profile URL, message details, and available screenshots?", LanguageCode.HI: "हानिकारक सामग्री डाउनलोड या आगे भेजे बिना क्या आपने प्रोफाइल URL, संदेश विवरण और उपलब्ध स्क्रीनशॉट सुरक्षित रखे?", LanguageCode.HINGLISH: "Harmful content download/forward kiye bina profile URL, message details aur available screenshots safely preserve kiye?"},
             "stalker_knows_location": {LanguageCode.EN: "Does the person know your live location, home, workplace, school, or daily route?", LanguageCode.HI: "क्या उस व्यक्ति को आपका लाइव स्थान, घर, कार्यस्थल, स्कूल या रोज का रास्ता पता है?", LanguageCode.HINGLISH: "Kya us person ko live location, home, workplace, school ya daily route pata hai?"},
@@ -2186,6 +2202,13 @@ class CyberSaathiService:
                 ("claim_and_source", ("post contains", "message claims", "video claims", "viral post")),
             ),
         }
+        # The side panel can already have set this, in which case asking would be
+        # re-asking something the citizen has answered by other means.
+        if state.reporting_mode != ReportingMode.UNDECIDED:
+            marker = "answered:reporting_mode_choice"
+            if marker not in record.completed_actions:
+                record.completed_actions.append(marker)
+
         # Negation is handled per clause inside _states_completed_action. A flag for
         # the whole message was wrong in both directions: it read "seller reply nahi
         # kar raha" as a denial (it is the evidence the seller WAS contacted), and it
@@ -2293,6 +2316,21 @@ class CyberSaathiService:
             CyberSaathiService._merge_incident_detail(state, message, understanding)
             return CyberSaathiService._reask_yes_no(state, pending, message)
 
+        if pending.key == "reporting_mode_choice":
+            chosen = CyberSaathiService._parse_reporting_mode(message)
+            if chosen is None:
+                # An unclear answer here must not silently pick one for them. Which
+                # name a victim of harassment puts on a complaint is theirs to
+                # decide, so ask once more rather than guessing.
+                if pending.attempts < 2:
+                    return RoutedReply(
+                        CyberSaathiService._question_copy("reporting_mode_choice", state.language),
+                        TurnKind.MESSAGE,
+                        GroundingStatus.DETERMINISTIC_PLAYBOOK,
+                    )
+            else:
+                state.reporting_mode = chosen
+
         marker = f"answered:{pending.key}"
         if marker not in record.completed_actions:
             record.completed_actions.append(marker)
@@ -2311,15 +2349,10 @@ class CyberSaathiService:
         if next_question is None:
             state.incident.intent = Intent.REPORT_INCIDENT
             return CyberSaathiService._prepare_report(state)
-        acknowledgements = {
-            LanguageCode.EN: "I recorded that for this incident. Next:",
-            LanguageCode.HI: "मैंने इसे इस घटना में दर्ज कर लिया है। अगला सवाल:",
-            LanguageCode.HINGLISH: "Ye detail current incident mein record ho gayi. Agla sawal:",
-        }
         return RoutedReply(
-            acknowledgements.get(state.language, acknowledgements[LanguageCode.EN])
-            + " "
-            + next_question,
+            CyberSaathiService._acknowledge_and_ask(
+                state, pending.key, answer_class, next_question
+            ),
             TurnKind.MESSAGE,
             GroundingStatus.DETERMINISTIC_PLAYBOOK,
         )
@@ -2718,6 +2751,92 @@ class CyberSaathiService:
                 "needs_clarification": band != ConfidenceBand.HIGH,
             }
         )
+
+    @staticmethod
+    def _acknowledge_and_ask(
+        state: ConversationState, answered_key: str, answer_class: str, next_question: str
+    ) -> str:
+        """Respond to what was said, then ask the next thing.
+
+        Every intake turn used to open with the same sentence and the words "अगला
+        सवाल:" - "Next question:". Nobody narrates their own bookkeeping like that,
+        and after four turns it reads like a form rather than a person. What a
+        person does is react to the answer they were just given.
+        """
+        language = state.language
+        # Several of each, rotated by how far into the intake we are. One fixed
+        # sentence per category still reads like a machine when it lands three
+        # turns running - which is the same complaint as "अगला सवाल:", just quieter.
+        relief = {
+            LanguageCode.EN: ("That is good to hear.", "Good - that helps.", "I am glad."),
+            LanguageCode.HI: ("यह सुनकर राहत हुई।", "अच्छा, यह ठीक है।", "चलिए, यह अच्छी बात है।"),
+            LanguageCode.HINGLISH: ("Ye sunkar raahat hui.", "Achha, ye theek hai.", "Chaliye, ye achhi baat hai."),
+        }
+        concern = {
+            LanguageCode.EN: ("Thank you for telling me.", "I understand.", "Thank you for saying so."),
+            LanguageCode.HI: ("बताने के लिए धन्यवाद।", "मैं समझ रहा हूँ।", "यह बताना ज़रूरी था, धन्यवाद।"),
+            LanguageCode.HINGLISH: ("Batane ke liye dhanyavaad.", "Main samajh raha hoon.", "Ye batana zaroori tha, shukriya."),
+        }
+        noted = {
+            LanguageCode.EN: ("Noted.", "Alright.", "Understood."),
+            LanguageCode.HI: ("ठीक है।", "समझ गया।", "अच्छा।"),
+            LanguageCode.HINGLISH: ("Theek hai.", "Samajh gaya.", "Achha."),
+        }
+        # Safety questions invert: "no danger" is the relief, "yes" needs care.
+        if answered_key in {"immediate_danger"}:
+            lead = relief if answer_class == "no" else concern
+        elif answer_class == "yes":
+            lead = relief
+        elif answer_class == "no":
+            lead = noted
+        else:
+            lead = noted
+        options = lead.get(language, lead[LanguageCode.EN])
+        record = CyberSaathiService._active_record(state)
+        answered = (
+            sum(1 for item in record.completed_actions if item.startswith("answered:"))
+            if record
+            else 0
+        )
+        opening = options[answered % len(options)]
+
+        try:
+            phrased = phrase_next_question(
+                question=next_question,
+                language=language.value,
+                opening=opening,
+                crime_domain=state.incident.crime_domain.value,
+            )
+        except Exception:  # noqa: BLE001
+            # Wording is never worth failing a reply for. The deterministic
+            # sentence below is always available and needs nothing external.
+            phrased = None
+        return phrased or f"{opening} {next_question}"
+
+    @staticmethod
+    def _parse_reporting_mode(message: str) -> ReportingMode | None:
+        """Read "anonymous or with my name" in either script.
+
+        The product has supported anonymous reporting all along and the side panel
+        offers it; the conversation simply never asked, so a woman reporting
+        harassment was never told she had the choice.
+        """
+        lowered = normalized_text(message)
+        anonymous = (
+            "anonymous", "anonymously", "no name", "without name", "without my name",
+            "naam nahi", "naam mat", "bina naam", "gumnaam", "गुमनाम", "बिना नाम",
+            "नाम नहीं", "नाम मत", "पहचान नहीं",
+        )
+        identified = (
+            "my name", "with name", "with my name", "apna naam", "naam batake",
+            "naam de", "identified", "अपना नाम", "नाम देकर", "नाम बताकर", "नाम बता",
+        )
+        # "bina naam" contains "naam", so the anonymous forms are checked first.
+        if any(term in lowered for term in anonymous):
+            return ReportingMode.ANONYMOUS
+        if any(term in lowered for term in identified):
+            return ReportingMode.IDENTIFIED
+        return None
 
     @staticmethod
     def _expected_answer_class(message: str) -> str:

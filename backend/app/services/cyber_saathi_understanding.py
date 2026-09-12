@@ -53,6 +53,13 @@ COMPOSITE_AMOUNT_PATTERN = re.compile(
     re.IGNORECASE,
 )
 DATE_PATTERN = re.compile(r"\b(?:[0-2]?\d|3[01])[-/]?(?:0?\d|1[0-2])[-/]?(?:20)?\d{2}\b")
+# "12 August" and "5 सितंबर" are how people date an incident; only numeric forms
+# were recognised, so a citizen who volunteered the date had it silently dropped
+# and the complaint's incident_at stayed empty.
+MONTH_DATE_PATTERN = re.compile(
+    r"(?:[0-2]?\d|3[01])\s*(?:जनवरी|फरवरी|मार्च|अप्रैल|मई|जून|जुलाई|अगस्त|सितंबर|सितम्बर|अक्टूबर|नवंबर|नवम्बर|दिसंबर|दिसम्बर|january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec)",
+    re.IGNORECASE,
+)
 TIME_PATTERN = re.compile(
     r"\b(?:(?:[01]?\d|2[0-3]):[0-5]\d\s*(?:am|pm)?|(?:0?[1-9]|1[0-2])\s*(?:am|pm))\b",
     re.IGNORECASE,
@@ -100,7 +107,22 @@ PROVIDERS = {
 }
 PLATFORMS = ("instagram", "facebook", "whatsapp", "telegram", "x.com", "twitter", "snapchat", "youtube")
 ACCOUNT_SERVICES = ("bank account", "email account", "social media account", "upi account", "wallet")
-LOCATIONS = ("delhi", "mumbai", "ahmedabad", "bengaluru", "bangalore", "kolkata", "chennai", "pune", "jaipur")
+LOCATIONS = (
+    "delhi", "new delhi", "mumbai", "ahmedabad", "bengaluru", "bangalore", "kolkata",
+    "chennai", "pune", "jaipur", "hyderabad", "lucknow", "surat", "kanpur", "nagpur",
+    "indore", "bhopal", "patna", "chandigarh", "noida", "gurugram", "thane", "nashik",
+)
+# Latin only, so "मैं मुंबई में हूँ" produced no location at all and the
+# complaint's city field stayed empty for every citizen writing in Devanagari.
+LOCATIONS_DEVANAGARI = {
+    "नई दिल्ली": "New Delhi", "दिल्ली": "Delhi", "मुंबई": "Mumbai", "मुम्बई": "Mumbai",
+    "अहमदाबाद": "Ahmedabad", "बेंगलुरु": "Bengaluru", "बैंगलोर": "Bengaluru",
+    "कोलकाता": "Kolkata", "चेन्नई": "Chennai", "पुणे": "Pune", "जयपुर": "Jaipur",
+    "हैदराबाद": "Hyderabad", "लखनऊ": "Lucknow", "सूरत": "Surat", "कानपुर": "Kanpur",
+    "नागपुर": "Nagpur", "इंदौर": "Indore", "भोपाल": "Bhopal", "पटना": "Patna",
+    "चंडीगढ़": "Chandigarh", "नोएडा": "Noida", "गुरुग्राम": "Gurugram", "ठाणे": "Thane",
+    "वाराणसी": "Varanasi", "आगरा": "Agra", "नासिक": "Nashik",
+}
 CRITICAL_TYPES = {EntityType(value) for value in TAXONOMY["critical_entity_types"]}
 
 NOISY_TOKEN_REPLACEMENTS = {
@@ -395,6 +417,7 @@ class UnderstandingEngine:
         )
         add_matches(EntityType.AMOUNT, AMOUNT_PATTERN.finditer(message), 0.95, cls._normalize_amount)
         add_matches(EntityType.DATE, DATE_PATTERN.finditer(message), 0.9)
+        add_matches(EntityType.DATE, MONTH_DATE_PATTERN.finditer(message), 0.88)
         add_matches(EntityType.TIME, TIME_PATTERN.finditer(message), 0.88)
         add_matches(EntityType.USERNAME, USERNAME_PATTERN.finditer(message), 0.9, lambda m: m.group(0).casefold())
 
@@ -448,6 +471,15 @@ class UnderstandingEngine:
         for location in LOCATIONS:
             if re.search(rf"\b{re.escape(location)}\b", lowered):
                 cls._add_literal_entity(entities, EntityType.LOCATION, location, location.title(), 0.85)
+        # Devanagari has no useful word boundary, so these match as substrings, and
+        # the longest spelling is listed first: "नई दिल्ली" must not also register
+        # "दिल्ली" as a second, different city.
+        for written, canonical in LOCATIONS_DEVANAGARI.items():
+            if written in message:
+                cls._add_literal_entity(
+                    entities, EntityType.LOCATION, written, canonical, 0.85
+                )
+                break
         return entities[:30]
 
     @staticmethod

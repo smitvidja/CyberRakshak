@@ -44,6 +44,13 @@ class Settings(BaseSettings):
     # must never be the default, or every upload returns the same invented person.
     resume_parser: str = "document"
     llm_enabled: bool = True
+    # Lets a model reword the deterministic intake question so it reads like a
+    # person rather than a form. The script still decides WHICH question and
+    # whether the answer counted; only the wording is model-chosen, and a
+    # rejected or slow rewrite falls back to the deterministic sentence. Off
+    # makes every intake turn deterministic again, which is the safe default for
+    # a deployment that wants no per-turn provider dependency.
+    saathi_phrasing_enabled: bool = False
     # Model-assisted resume structuring (prompt section 6.5). Off by default: it
     # sends resume text to a configured provider, which is a decision an operator
     # makes and discloses, not a default. The deterministic parser is unaffected
