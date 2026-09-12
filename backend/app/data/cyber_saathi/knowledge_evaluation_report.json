@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T10:21:41.915448+00:00",
+  "generated_at": "2026-09-12T10:35:47.454114+00:00",
   "evaluation_cases": "C:\\Project\\CyberRakshak\\backend\\app\\data\\cyber_saathi\\knowledge_evaluation_cases.json",
   "status": "passed",
   "metrics": {
@@ -14,8 +14,8 @@
     "chunk_correctness": 1.0,
     "false_positive_count": 0,
     "false_negative_count": 0,
-    "latency_mean_ms": 536.667,
-    "latency_p95_ms": 608.085
+    "latency_mean_ms": 519.978,
+    "latency_p95_ms": 569.887
   },
   "failures": []
 }

@@ -1,6 +1,6 @@
 {
-  "version": "2026.09.4.0",
-  "reviewed_at": "2026-09-11",
+  "version": "2026.09.6.3",
+  "reviewed_at": "2026-09-12",
   "sources": [
     {
       "source_id": "nch_ecommerce_grievance",
@@ -359,7 +359,17 @@
             "OTP",
             "password",
             "unknown link",
-            "general cyber safety"
+            "general cyber safety",
+            "already clicked",
+            "maine click kar diya",
+            "otp daal diya",
+            "otp entered",
+            "what to do now",
+            "ab kya karun",
+            "अब क्या करूं",
+            "मैंने क्लिक कर दिया",
+            "ओटीपी डाल दिया",
+            "after clicking"
           ]
         },
         {
@@ -572,7 +582,22 @@
             "check in",
             "privacy",
             "impersonation",
-            "tracking"
+            "tracking",
+            "my child",
+            "my son",
+            "my daughter",
+            "child privacy",
+            "kid location",
+            "minor",
+            "teenager",
+            "school child",
+            "मेरा बच्चा",
+            "मेरी बेटी",
+            "बच्चे की प्राइवेसी",
+            "नाबालिग",
+            "bachche ki privacy",
+            "mera beta",
+            "meri beti"
           ]
         },
         {
@@ -921,6 +946,403 @@
             "24x7 bank report",
             "electronic banking",
             "bank policy"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "certin_mahila_suraksha_2025",
+      "source_title": "CERT-In Cyber Security Handbook for Women (Mahila Suraksha), March 2025",
+      "source_type": "official_public_guidance",
+      "source_url": "https://www.cert-in.org.in/PDF/Mahila_Suraksha_Booklet25.pdf",
+      "jurisdiction": "India",
+      "domains": [
+        "women_child_online_safety",
+        "harassment_abuse",
+        "cyberstalking",
+        "impersonation"
+      ],
+      "language": "EN",
+      "version": "booklet dated 8 March 2025, reviewed 2026-09-12",
+      "published_at": "2025-03-08",
+      "sections": [
+        {
+          "title": "Video calls from strangers, and intimate images",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse",
+            "impersonation"
+          ],
+          "text": "CERT-In advises never merging with or responding to calls and video calls from unknown people, and verifying a caller identity first. It states that intimate pictures should never be shared over online video calls or social media with anybody, and warns that malicious mobile apps granted gallery or storage permission can read your photos, which can then be used to blackmail you. A PIN or OTP is never to be shared on a call or online.",
+          "retrieval_terms": [
+            "video call scam",
+            "unknown video call",
+            "intimate pictures",
+            "private photos",
+            "blackmail",
+            "gallery permission",
+            "sextortion",
+            "अनजान वीडियो कॉल",
+            "निजी तस्वीरें"
+          ]
+        },
+        {
+          "title": "Morphing: what it is, and what to do",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse",
+            "identity_theft"
+          ],
+          "text": "CERT-In defines morphing as altering or changing the pictures of a person in photos or videos. Its guidance is to enable security and privacy features on social media, never post personal pictures publicly, and use multi-factor authentication with strong passwords. If it happens, save the evidence and screenshots for referring to the incident later, report a fake profile or objectionable post to that platform help centre, and do not suffer in silence - reach out to trusted family and friends.",
+          "retrieval_terms": [
+            "morphing",
+            "morphed photo",
+            "photo edit",
+            "fake profile",
+            "objectionable post",
+            "save screenshots",
+            "मॉर्फिंग",
+            "फोटो बदलकर",
+            "अश्लील बना दी"
+          ]
+        },
+        {
+          "title": "Cyberstalking: evidence and settings",
+          "domains": [
+            "cyberstalking",
+            "harassment_abuse",
+            "women_child_online_safety"
+          ],
+          "text": "CERT-In advises taking screenshots of online messages, comments and conversations as proof, and noting down the mobile number and any available details of the person. Report the incident at cybercrime.gov.in or call 1930. To reduce exposure: do not accept friend requests from strangers, restrict social-media privacy to family and known friends, never post your home address or phone number, turn off location services on social platforms, and enable multi-factor authentication.",
+          "retrieval_terms": [
+            "cyberstalking",
+            "stalking",
+            "screenshot proof",
+            "location services",
+            "friend request",
+            "1930",
+            "पीछा",
+            "लोकेशन बंद"
+          ]
+        },
+        {
+          "title": "Digital arrest scam",
+          "domains": [
+            "impersonation",
+            "financial_fraud"
+          ],
+          "text": "CERT-In warns that cybercriminals pose as investigation officers and create fear through fake calls. Never agree to join an online video call for any investigation or arrest from a stranger, avoid answering video calls from unknown contacts even when they claim to know you, and never make a payment to anyone claiming to be an investigating officer on a call. Keep social-media privacy at the most restricted level. If you receive a call about an arrest or investigation, visit the nearest police station.",
+          "retrieval_terms": [
+            "digital arrest",
+            "fake police",
+            "investigation officer",
+            "arrest call",
+            "डिजिटल अरेस्ट",
+            "नकली पुलिस",
+            "जांच अधिकारी"
+          ]
+        },
+        {
+          "title": "Malicious APK files sent in chats",
+          "domains": [
+            "malware_device_compromise",
+            "phishing",
+            "financial_fraud"
+          ],
+          "text": "CERT-In warns that fraudsters send malicious APK files through social-media messaging, and that clicking such links or installing files received in chats can lead to financial loss and theft of sensitive information. Malicious APKs target banking apps and steal financial data. Do not respond to messages asking for personal information or asking you to download an APK from a third-party website, install apps only from trusted sources rather than links sent in messages, and report fraud on 1930 or at cybercrime.gov.in.",
+          "retrieval_terms": [
+            "apk",
+            "apk file",
+            "malicious app",
+            "chat link",
+            "banking app",
+            "एपीके",
+            "ऐप डलवा",
+            "फाइल भेजी"
+          ]
+        },
+        {
+          "title": "Instant loan app scams",
+          "domains": [
+            "financial_fraud",
+            "malware_device_compromise"
+          ],
+          "text": "CERT-In advises availing loans only from RBI regulated entities and checking whether the lender is approved by RBI or associated with a financial institution. Download apps only from official websites and app stores, never enter a PIN or password anywhere in order to receive money, and check the terms of lending, the genuineness of the website, physical office location, Company Identification Number and Certificate of Registration. Check URLs and domain names in emails for spelling errors, and apply only through an authorised bank or NBFC application.",
+          "retrieval_terms": [
+            "loan app",
+            "instant loan",
+            "RBI regulated",
+            "NBFC",
+            "loan scam",
+            "लोन ऐप",
+            "तुरंत लोन",
+            "कर्ज ऐप"
+          ]
+        },
+        {
+          "title": "Social media practice for women",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse"
+          ],
+          "text": "CERT-In advises blocking and reporting anyone causing trouble, both to the platform and to the concerned agencies. Set privacy so unauthorised people cannot view, chat with, or tag your content; be cautious accepting friend requests or replying to strangers; restrict visibility of posts and profile information; avoid sharing personal or sensitive details in posts or chats; and disable automatic addition to unknown groups. Keep a record of every online discomfort. If you become a victim of cyber fraud or cyber harassment, report at the nearest police station, at cybercrime.gov.in, or call 1930.",
+          "retrieval_terms": [
+            "block and report",
+            "privacy settings",
+            "friend request",
+            "unknown group",
+            "tagging",
+            "women safety",
+            "ब्लॉक करें",
+            "प्राइवेसी सेटिंग"
+          ]
+        },
+        {
+          "title": "Public Wi-Fi",
+          "domains": [
+            "general_cyber_safety",
+            "account_compromise"
+          ],
+          "text": "CERT-In advises confirming the network name and login procedure with staff before joining, and not conducting sensitive activity such as online shopping or banking over a public wireless network. Use public Wi-Fi only when required, switch Wi-Fi off when not in use, and be cautious connecting at airports, hotels, stations and cafes.",
+          "retrieval_terms": [
+            "public wifi",
+            "free wifi",
+            "airport wifi",
+            "hotel wifi",
+            "पब्लिक वाईफाई",
+            "मुफ्त वाईफाई"
+          ]
+        },
+        {
+          "title": "Mobile app permissions",
+          "domains": [
+            "malware_device_compromise",
+            "account_compromise",
+            "women_child_online_safety"
+          ],
+          "text": "CERT-In advises downloading apps only from official app stores and never from advertisements or third-party websites, keeping the operating system and applications updated, reading reviews of the app and developer first, and reviewing permission requests to check they relate to the purpose of the app. Remove apps with excessive permissions, uninstall apps no longer used, and restrict permissions to social media and banking accounts. Report unauthorised activity to the concerned authorities immediately.",
+          "retrieval_terms": [
+            "app permissions",
+            "official app store",
+            "third party app",
+            "uninstall app",
+            "excessive permissions",
+            "ऐप अनुमति",
+            "ऐप स्टोर"
+          ]
+        },
+        {
+          "title": "Reporting a cyber security incident to CERT-In",
+          "domains": [
+            "general_cyber_safety",
+            "malware_device_compromise"
+          ],
+          "text": "Separately from a police complaint, CERT-In is the national agency for incident response under Section 70B of the Information Technology Act, 2000. Cyber security incidents can be reported to CERT-In by email at incident@cert-in.org.in, through its website cert-in.org.in, or on the toll-free number 1800-11-4949. This is a technical incident-response channel and does not replace a complaint on the National Cybercrime Reporting Portal or the 1930 helpline.",
+          "retrieval_terms": [
+            "CERT-In",
+            "incident report",
+            "1800 11 4949",
+            "section 70B",
+            "report incident",
+            "सर्ट इन"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "certin_internet_safety_2024",
+      "source_title": "CERT-In Internet Safety Awareness Booklet for Digital Nagriks",
+      "source_type": "official_public_guidance",
+      "source_url": "https://www.cert-in.org.in/PDF/ISA_Booklet.pdf",
+      "jurisdiction": "India",
+      "domains": [
+        "general_cyber_safety",
+        "phishing",
+        "identity_theft",
+        "ecommerce_consumer_grievance"
+      ],
+      "language": "EN",
+      "version": "Safer Internet Day booklet, 6 February 2024, reviewed 2026-09-12",
+      "published_at": "2024-02-06",
+      "sections": [
+        {
+          "title": "Aadhaar: locking biometrics and using a Virtual ID",
+          "domains": [
+            "identity_theft",
+            "general_cyber_safety"
+          ],
+          "text": "CERT-In advises locking your biometrics through the m-Aadhaar app or the UIDAI portal to prevent unauthorised access to your account details, and using a Virtual ID or Masked Aadhaar so the Aadhaar number itself is not disclosed. Link Aadhaar to your mobile number so you are alerted to activity, keep digital copies secure, never share Aadhaar details or an OTP with strangers, and avoid saving a digital Aadhaar on a public computer - delete any copies from a public machine once your work is done.",
+          "retrieval_terms": [
+            "aadhaar",
+            "aadhar",
+            "biometric lock",
+            "m-aadhaar",
+            "UIDAI",
+            "virtual id",
+            "masked aadhaar",
+            "आधार",
+            "बायोमेट्रिक लॉक",
+            "आधार दुरुपयोग"
+          ]
+        },
+        {
+          "title": "Online shopping safety",
+          "domains": [
+            "ecommerce_consumer_grievance",
+            "financial_fraud",
+            "phishing"
+          ],
+          "text": "CERT-In advises shopping only on trusted websites and verifying the genuineness of the brand and the e-commerce site, and verifying genuineness before paying by card. Check that the site is secured - https or a padlock in the address bar - keep track of your digital payments, and check you are paying for the right product. Never respond to emails asking for personal information or account details, avoid public Wi-Fi for financial transactions, and do not click suspicious links offering discounts or prizes that seem too good to be true.",
+          "retrieval_terms": [
+            "online shopping",
+            "fake website",
+            "https padlock",
+            "discount offer",
+            "prize offer",
+            "card payment",
+            "ऑनलाइन खरीदारी",
+            "नकली वेबसाइट"
+          ]
+        },
+        {
+          "title": "Social media exposure",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse",
+            "identity_theft",
+            "cyberstalking"
+          ],
+          "text": "CERT-In advises against sharing an address, mobile number, personal email or other identity information on social media, and against posting personal pictures publicly. Never accept friend requests without verification, never click a suspicious link or download an app received in a message until the source is verified, use different passwords for different accounts, enable multi-factor authentication, disable profile visibility from public searches, and log out after each session. Criminals can collect enough information about someone from their posts and profile alone.",
+          "retrieval_terms": [
+            "social media privacy",
+            "profile visibility",
+            "friend request",
+            "personal information",
+            "public search",
+            "सोशल मीडिया प्राइवेसी",
+            "प्रोफाइल छिपाएं"
+          ]
+        },
+        {
+          "title": "Mobile phone safety",
+          "domains": [
+            "malware_device_compromise",
+            "account_compromise",
+            "phishing"
+          ],
+          "text": "CERT-In advises downloading apps only from the Play Store or App Store and never from third-party websites or links received in messages or chats, enabling only the permissions an app actually needs, and never sharing an OTP received for any application with anyone. Keep the operating system and anti-malware software updated, keep the phone locked when not in use, do not click suspicious links from strangers, and avoid USB charging in public places.",
+          "retrieval_terms": [
+            "mobile safety",
+            "app permissions",
+            "otp share",
+            "usb charging",
+            "phone lock",
+            "मोबाइल सुरक्षा",
+            "ओटीपी शेयर"
+          ]
+        },
+        {
+          "title": "Recognising a suspicious email or message",
+          "domains": [
+            "phishing",
+            "account_compromise"
+          ],
+          "text": "CERT-In advises avoiding links and attachments from unknown sources, not filling in forms that arrive by unsolicited email, and not clicking links in emails from untrusted sources. It names urgency as a warning sign in itself: an email or message that creates a sense of urgency should be treated with suspicion. Scan the system regularly with updated anti-malware software.",
+          "retrieval_terms": [
+            "suspicious email",
+            "urgency",
+            "unknown attachment",
+            "unsolicited email",
+            "संदिग्ध ईमेल",
+            "जल्दबाजी",
+            "अनजान अटैचमेंट"
+          ]
+        },
+        {
+          "title": "Checking a link before opening it",
+          "domains": [
+            "phishing",
+            "malware_device_compromise"
+          ],
+          "text": "CERT-In advises expanding shortened URLs and verifying them before clicking, checking that a website address carries https or a padlock icon, disabling pop-up windows, clearing browser cookies and cache regularly, turning Safe Search on, and disabling the browser option that remembers logins and passwords.",
+          "retrieval_terms": [
+            "short url",
+            "shortened link",
+            "expand url",
+            "padlock",
+            "https",
+            "pop up",
+            "छोटा लिंक",
+            "लिंक जांचें"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "certin_cyber_security_handbook_2024",
+      "source_title": "CERT-In Cyber Security Handbook, National Cyber Security Awareness Month 2024",
+      "source_type": "official_public_guidance",
+      "source_url": "https://www.cert-in.org.in/PDF/CSH_Booklet.pdf",
+      "jurisdiction": "India",
+      "domains": [
+        "phishing",
+        "account_compromise",
+        "general_cyber_safety"
+      ],
+      "language": "EN",
+      "version": "NCSAM booklet, October 2024, reviewed 2026-09-12",
+      "published_at": "2024-10-01",
+      "sections": [
+        {
+          "title": "Verifying the sender of an email",
+          "domains": [
+            "phishing",
+            "impersonation",
+            "account_compromise"
+          ],
+          "text": "CERT-In advises verifying the sender before clicking any link or attachment, and checking the domain name in the sender address for misspellings or typos - a near-identical domain is the common trick. Do not click links or attachments in suspicious emails from strangers, do not use an official email account for online shopping or ticket booking, do not open shortened URLs from email or chat without expanding them first, and never store usernames and passwords on a public system.",
+          "retrieval_terms": [
+            "sender verify",
+            "domain spelling",
+            "typo domain",
+            "lookalike domain",
+            "email header",
+            "ईमेल भेजने वाला",
+            "गलत स्पेलिंग"
+          ]
+        },
+        {
+          "title": "Passwords after a compromise",
+          "domains": [
+            "account_compromise",
+            "identity_theft",
+            "general_cyber_safety"
+          ],
+          "text": "CERT-In advises long passwords, because short ones are easy to crack, and warns that dictionary words are vulnerable to brute-force attack. Mix uppercase, lowercase, numerals and special characters, avoid guessable patterns, change passwords periodically, never reuse a password across accounts, and enable multi-factor authentication so a stolen password alone is not enough.",
+          "retrieval_terms": [
+            "password",
+            "strong password",
+            "reuse password",
+            "dictionary word",
+            "multi factor",
+            "पासवर्ड बदलें",
+            "मजबूत पासवर्ड"
+          ]
+        },
+        {
+          "title": "Backups before and after an incident",
+          "domains": [
+            "malware_device_compromise",
+            "general_cyber_safety"
+          ],
+          "text": "CERT-In advises taking regular backups of important files and data, because after hardware failure or a cyberattack a backup is what allows information to be restored. Keep multiple copies in different locations so one disaster cannot take them all, and periodically test and verify the backups so they are known to work when they are actually needed.",
+          "retrieval_terms": [
+            "backup",
+            "restore",
+            "ransomware",
+            "data loss",
+            "बैकअप",
+            "डेटा वापस"
           ]
         }
       ]

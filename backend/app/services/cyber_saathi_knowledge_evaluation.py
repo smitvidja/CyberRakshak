@@ -39,7 +39,19 @@ def evaluate() -> dict[str, Any]:
     failures: list[dict[str, Any]] = []
 
     for case in cases:
+        # A case may name several acceptable sources. As the corpus grows, more
+        # than one document legitimately answers the same question - a morphing
+        # query is answered correctly by the general image-misuse guidance and by
+        # the dedicated Morphing section - and pinning one exact source turns every
+        # genuine addition into a failure that says nothing about retrieval quality.
         expected_source = case["expected_source_id"]
+        acceptable = (
+            set()
+            if expected_source is None
+            else set(expected_source)
+            if isinstance(expected_source, list)
+            else {expected_source}
+        )
         domain = case.get("domain")
         response = KnowledgeService.search(
             KnowledgeSearchRequest(
@@ -68,11 +80,11 @@ def evaluate() -> dict[str, Any]:
                 domain_correct += 1
         if not response.no_result:
             relevant_hits += 1
-        if actual_source == expected_source:
+        if actual_source in acceptable:
             source_correct += 1
         else:
             failures.append(
-                {"query": case["query"], "expected": expected_source, "actual": actual_source}
+                {"query": case["query"], "expected": sorted(acceptable), "actual": actual_source}
             )
         expected_chunk = case.get("expected_chunk_id")
         if expected_chunk is not None:

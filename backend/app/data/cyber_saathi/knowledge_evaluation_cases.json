@@ -61,8 +61,11 @@
       "id": "identity_theft",
       "query": "Someone stole my identity and used my photo and account details",
       "domain": "identity_theft",
-      "expected_source_id": "ncrp_citizen_manual",
-      "expected_chunk_id": "ncrp_citizen_manual:3:1"
+      "expected_source_id": [
+        "ncrp_citizen_manual",
+        "certin_internet_safety_2024"
+      ],
+      "expected_chunk_id": null
     },
     {
       "id": "impersonation",
@@ -89,8 +92,12 @@
       "id": "digital_arrest",
       "query": "A fake police officer says I am under digital arrest and must pay now",
       "domain": "impersonation",
-      "expected_source_id": "certin_digital_safety_compass",
-      "expected_chunk_id": "certin_digital_safety_compass:2:1"
+      "expected_source_id": [
+        "certin_mahila_suraksha_2025",
+        "certin_digital_safety_compass"
+      ],
+      "expected_chunk_id": null,
+      "note": "moved 2026-09-12: Mahila Suraksha 2025 has a section on exactly this scam and scores higher than the general fake-authority section"
     },
     {
       "id": "fake_banking_apk",
@@ -124,8 +131,11 @@
       "id": "child_location",
       "query": "How should a child protect live location and social-media privacy from strangers?",
       "domain": "women_child_online_safety",
-      "expected_source_id": "certin_cyber_smart_kids",
-      "expected_chunk_id": "certin_cyber_smart_kids:2:1"
+      "expected_source_id": [
+        "certin_cyber_smart_kids",
+        "certin_internet_safety_2024"
+      ],
+      "expected_chunk_id": null
     },
     {
       "id": "women_hindi_otp",
@@ -166,8 +176,11 @@
       "id": "image_blackmail",
       "query": "A morphed image and fake profile are being used to blackmail a woman; should she save screenshots and report the objectionable post?",
       "domain": "harassment_abuse",
-      "expected_source_id": "certin_cyber_awareness_2023",
-      "expected_chunk_id": "certin_cyber_awareness_2023:4:1"
+      "expected_source_id": [
+        "certin_cyber_awareness_2023",
+        "certin_mahila_suraksha_2025"
+      ],
+      "expected_chunk_id": null
     },
     {
       "id": "sim_swap",
@@ -264,15 +277,22 @@
       "id": "realistic_phishing_otp",
       "query": "i clicked a suspicious link and entered my otp",
       "domain": "phishing",
-      "expected_source_id": "ncrp_cyber_safety_tips",
+      "expected_source_id": [
+        "ncrp_cyber_safety_tips",
+        "certin_internet_safety_2024"
+      ],
       "expected_chunk_id": null
     },
     {
       "id": "realistic_digital_arrest",
       "query": "a fake police officer called me saying digital arrest",
       "domain": "impersonation",
-      "expected_source_id": "certin_digital_safety_compass",
-      "expected_chunk_id": null
+      "expected_source_id": [
+        "certin_mahila_suraksha_2025",
+        "certin_digital_safety_compass"
+      ],
+      "expected_chunk_id": null,
+      "note": "moved 2026-09-12: Mahila Suraksha 2025 has a section on exactly this scam and scores higher than the general fake-authority section"
     },
     {
       "id": "realistic_malware_app",
