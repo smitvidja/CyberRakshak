@@ -1,0 +1,22 @@
+# Without this file git rewrites text files to CRLF on checkout on Windows, and
+# two things in this repo depend on exact bytes:
+#
+#   - knowledge_index.json stores a SHA-256 of sources.json. A CRLF rewrite changes
+#     every line while changing no content, the hash stops matching, and the index
+#     is rejected as stale - so a fresh clone answered every Cyber Saathi question
+#     with 503 KNOWLEDGE_INDEX_INVALID.
+#   - the Devanagari message catalogues are compared key-for-key between locales.
+#
+# The hashing side is also defended in code (see _source_pack_hash), because a
+# checkout is not the only thing that can rewrite a newline.
+* text=auto eol=lf
+
+# Never normalise these - they are not text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

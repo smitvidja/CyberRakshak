@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import httpx
 from pydantic import BaseModel, Field
 
 from app.core.errors import APIError
@@ -186,6 +187,22 @@ def _semantic_chunks(text: str) -> list[str]:
     return chunks
 
 
+def _source_pack_hash(payload: bytes) -> str:
+    """Hash the corpus by its content, not by how the checkout wrote its newlines.
+
+    The index stores this hash and refuses to load when it stops matching, which is
+    the right instinct - a stale index must never be served. But it was hashing the
+    raw bytes of sources.json, and there is no .gitattributes in this repo, so on
+    Windows git rewrites the file to CRLF on checkout. Every byte of content is
+    identical and the hash is completely different, so a fresh clone got
+    KNOWLEDGE_INDEX_INVALID and Cyber Saathi answered 503 to every question.
+
+    Normalising the line endings first is a no-op for a file already stored with LF,
+    so the committed hash does not change; it only stops a checkout from breaking it.
+    """
+    return hashlib.sha256(payload.replace(b"\r\n", b"\n")).hexdigest()
+
+
 def load_source_pack(path: Path = SOURCE_PACK_PATH) -> KnowledgeSourcePack:
     return KnowledgeSourcePack.model_validate_json(path.read_text(encoding="utf-8"))
 
@@ -194,7 +211,34 @@ def load_source_pack(path: Path = SOURCE_PACK_PATH) -> KnowledgeSourcePack:
 # should not throw away the work already done - and the query-time timeout is far
 # too tight for a document-sized embedding.
 INGEST_EMBED_TIMEOUT_SECONDS = 20.0
-INGEST_EMBED_ATTEMPTS = 4
+INGEST_EMBED_ATTEMPTS = 6
+# A rate limit is not a transient error, it is an instruction to wait, and the old
+# 2/4/6 second backoff was shorter than the window it was waiting out. Rebuilding a
+# corpus of a hundred sections sends a hundred requests as fast as the network
+# allows, so the per-minute quota is reached every time; the build then failed after
+# twelve seconds of backoff and discarded every embedding it had already paid for.
+INGEST_RATE_LIMIT_PAUSE_SECONDS = 30.0
+INGEST_MAX_PAUSE_SECONDS = 90.0
+
+
+def _retry_after_seconds(error: BaseException) -> float | None:
+    """The pause the server itself asked for, if this was a rate limit."""
+    cause = error.__cause__
+    if not isinstance(cause, httpx.HTTPStatusError) or cause.response.status_code != 429:
+        return None
+    try:
+        details = cause.response.json()["error"]["details"]
+    except Exception:  # noqa: BLE001 - a 429 without a parseable body is still a 429
+        return INGEST_RATE_LIMIT_PAUSE_SECONDS
+    for detail in details:
+        delay = detail.get("retryDelay") if isinstance(detail, dict) else None
+        if isinstance(delay, str) and delay.endswith("s"):
+            try:
+                # A margin, because the quota window is measured on the server clock.
+                return min(float(delay[:-1]) + 2.0, INGEST_MAX_PAUSE_SECONDS)
+            except ValueError:
+                break
+    return INGEST_RATE_LIMIT_PAUSE_SECONDS
 
 
 def _embed_document_with_retry(provider: Any, text: str) -> list[float]:
@@ -208,9 +252,49 @@ def _embed_document_with_retry(provider: Any, text: str) -> list[float]:
             )
         except SemanticEmbeddingError as error:
             last_error = error
-            if attempt < INGEST_EMBED_ATTEMPTS - 1:
-                time.sleep(2.0 * (attempt + 1))
+            if attempt >= INGEST_EMBED_ATTEMPTS - 1:
+                break
+            pause = _retry_after_seconds(error)
+            time.sleep(pause if pause is not None else 2.0 * (attempt + 1))
     raise last_error if last_error else SemanticEmbeddingError("embedding failed")
+
+
+def _reusable_semantic_embeddings(
+    provider: GeminiSemanticEmbeddingProvider | None,
+    index_path: Path,
+) -> dict[str, list[float]]:
+    """Dense vectors from the existing index that this build can keep.
+
+    An embedding depends only on the text that was sent to the model, and
+    ``content_hash`` already covers exactly that text - the section body, its title
+    and its retrieval terms. Domains, source metadata and section ordering are not
+    part of it, so a chunk whose hash is unchanged would receive a byte-identical
+    vector if it were re-embedded.
+
+    Re-sending it anyway is what made a two-tag correction cost a hundred embedding
+    calls and exhaust a daily quota, taking the whole rebuild down with it. Matching
+    on the hash makes a retag free and makes corpus growth cost only what was added.
+    """
+    if provider is None or not index_path.exists():
+        return {}
+    try:
+        existing = json.loads(index_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    # A different model or width produces vectors that are not comparable with the
+    # ones this build will generate, so nothing may be carried across.
+    if (
+        existing.get("semantic_embedding_model") != provider.model
+        or existing.get("semantic_embedding_dimension") != provider.dimensions
+    ):
+        return {}
+    reusable: dict[str, list[float]] = {}
+    for raw_chunk in existing.get("chunks", []):
+        vector = raw_chunk.get("semantic_embedding")
+        content_hash = raw_chunk.get("content_hash")
+        if content_hash and isinstance(vector, list) and len(vector) == provider.dimensions:
+            reusable[content_hash] = vector
+    return reusable
 
 
 def build_index(
@@ -218,17 +302,24 @@ def build_index(
     *,
     semantic_embeddings: bool = False,
     semantic_provider: GeminiSemanticEmbeddingProvider | None = None,
+    reuse_from: Path | None = INDEX_PATH,
 ) -> dict[str, Any]:
     """Build the persisted index.
 
     Sparse vectors are always present. Dense multilingual vectors are opt-in so
     tests and ordinary ingestion remain offline unless the operator explicitly
     requests the configured hosted embedding provider.
+
+    Dense vectors for unchanged chunks are carried over from ``reuse_from``; pass
+    ``None`` to re-embed the whole corpus from scratch.
     """
     pack = source_pack or load_source_pack()
     provider = semantic_provider or (GeminiSemanticEmbeddingProvider() if semantic_embeddings else None)
     if provider is not None and not provider.configured:
         raise ValueError("Semantic ingestion was requested but Gemini embeddings are not configured")
+    reusable = _reusable_semantic_embeddings(provider, reuse_from) if reuse_from else {}
+    reused = 0
+    embedded = 0
     chunks: list[KnowledgeChunk] = []
     seen_hashes: set[str] = set()
     for source in pack.sources:
@@ -246,7 +337,12 @@ def build_index(
                 embedding_input = " ".join((text, section.title, *section.retrieval_terms))
                 semantic_embedding = None
                 if provider is not None:
-                    semantic_embedding = _embed_document_with_retry(provider, embedding_input)
+                    semantic_embedding = reusable.get(content_hash)
+                    if semantic_embedding is None:
+                        semantic_embedding = _embed_document_with_retry(provider, embedding_input)
+                        embedded += 1
+                    else:
+                        reused += 1
                 chunks.append(
                     KnowledgeChunk(
                         chunk_id=f"{source.source_id}:{suffix}",
@@ -264,9 +360,9 @@ def build_index(
         raise ValueError("Authoritative knowledge source pack produced no chunks")
     if len(chunks) > MAX_INDEX_CHUNKS:
         raise ValueError(f"Knowledge index exceeds the {MAX_INDEX_CHUNKS}-chunk runtime limit")
-    source_hash = hashlib.sha256(
+    source_hash = _source_pack_hash(
         SOURCE_PACK_PATH.read_bytes() if source_pack is None else pack.model_dump_json().encode("utf-8")
-    ).hexdigest()
+    )
     return {
         "schema_version": INDEX_SCHEMA_VERSION,
         "index_version": pack.version,
@@ -277,6 +373,8 @@ def build_index(
         "semantic_embedding_dimension": provider.dimensions if provider is not None else None,
         "source_pack_hash": source_hash,
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "semantic_embeddings_reused": reused,
+        "semantic_embeddings_generated": embedded,
         "chunks": [chunk.model_dump(mode="json") for chunk in chunks],
     }
 
@@ -286,11 +384,13 @@ def rebuild_index(
     *,
     semantic_embeddings: bool = False,
     semantic_provider: GeminiSemanticEmbeddingProvider | None = None,
+    reuse_existing: bool = True,
 ) -> dict[str, Any]:
     """Explicitly build the persisted index; never call this from application startup."""
     index = build_index(
         semantic_embeddings=semantic_embeddings,
         semantic_provider=semantic_provider,
+        reuse_from=output_path if reuse_existing else None,
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
@@ -310,6 +410,8 @@ def rebuild_index(
         "semantic_embedding_dimension": index["semantic_embedding_dimension"],
         "index_version": index["index_version"],
         "index_bytes": index_bytes,
+        "semantic_embeddings_reused": index["semantic_embeddings_reused"],
+        "semantic_embeddings_generated": index["semantic_embeddings_generated"],
     }
 
 
@@ -330,11 +432,19 @@ def is_refused_query(query: str) -> bool:
 class KnowledgeService:
     _cached_mtime_ns: int | None = None
     _cached_index: dict[str, Any] | None = None
+    # Corpus-wide token statistics for lexical ranking. Derived from the index, so
+    # they are rebuilt whenever a different index version is loaded.
+    _document_frequency_cache: dict[str, int] | None = None
+    _document_frequency_version: str | None = None
+    _document_frequency_total: int = 0
 
     @classmethod
     def clear_cache(cls) -> None:
         cls._cached_mtime_ns = None
         cls._cached_index = None
+        cls._document_frequency_cache = None
+        cls._document_frequency_version = None
+        cls._document_frequency_total = 0
 
     @classmethod
     def _load_index(cls) -> dict[str, Any]:
@@ -355,7 +465,7 @@ class KnowledgeService:
             return cls._cached_index
         try:
             index = json.loads(INDEX_PATH.read_text(encoding="utf-8"))
-            current_source_hash = hashlib.sha256(SOURCE_PACK_PATH.read_bytes()).hexdigest()
+            current_source_hash = _source_pack_hash(SOURCE_PACK_PATH.read_bytes())
             chunks = [KnowledgeChunk.model_validate(raw) for raw in index.get("chunks", [])]
         except (OSError, ValueError, TypeError, json.JSONDecodeError) as error:
             raise APIError(
@@ -419,8 +529,46 @@ class KnowledgeService:
         overlap = query_tokens.intersection(source_tokens)
         return len(overlap) >= 2 or bool(overlap.intersection(HIGH_SIGNAL_TERMS))
 
+    @classmethod
+    def _document_frequency(cls, index: dict[str, Any]) -> tuple[dict[str, int], int]:
+        """How many chunks each token appears in, computed once per loaded index."""
+        version = str(index.get("index_version"))
+        if cls._document_frequency_cache is None or cls._document_frequency_version != version:
+            frequency: dict[str, int] = {}
+            for raw_chunk in index["chunks"]:
+                tokens = _meaningful_tokens(
+                    " ".join(
+                        (
+                            raw_chunk["section_title"],
+                            raw_chunk["text"],
+                            *raw_chunk.get("retrieval_terms", []),
+                        )
+                    )
+                )
+                for token in tokens:
+                    frequency[token] = frequency.get(token, 0) + 1
+            cls._document_frequency_cache = frequency
+            cls._document_frequency_version = version
+            cls._document_frequency_total = len(index["chunks"])
+        return cls._document_frequency_cache, cls._document_frequency_total
+
     @staticmethod
-    def _lexical_score(query: str, chunk: KnowledgeChunk) -> float:
+    def _token_weight(frequency: dict[str, int], total: int, token: str) -> float:
+        """Rarer words say more about what the citizen asked."""
+        return math.log((total + 1) / (frequency.get(token, 0) + 1)) + 1.0
+
+    @classmethod
+    def _lexical_score(cls, query: str, chunk: KnowledgeChunk, index: dict[str, Any]) -> float:
+        # Counting matched tokens and dividing by the query length made every long
+        # chunk a good match for every question in its domain: "money", "bank" and
+        # "account" appear in most of the financial corpus, so a section on fake job
+        # offers scored 0.83 against "money was debited without my permission". The
+        # score was fine while the corpus was small and degraded as it grew, which is
+        # the wrong direction for adding sources to push.
+        #
+        # Weighting each token by how rare it is across the corpus fixes the cause:
+        # the common words still count, but "debited" and "permission" now decide the
+        # ranking instead of being drowned out by them.
         query_tokens = _meaningful_tokens(query)
         if not query_tokens:
             return 0.0
@@ -430,10 +578,14 @@ class KnowledgeService:
         overlap = query_tokens.intersection(source_tokens)
         if not overlap:
             return 0.0
+        frequency, total = cls._document_frequency(index)
+        matched = sum(cls._token_weight(frequency, total, token) for token in overlap)
+        asked = sum(cls._token_weight(frequency, total, token) for token in query_tokens)
+        coverage = matched / asked if asked else 0.0
         term_matches = sum(
             1 for term in chunk.retrieval_terms if term.casefold() in query.casefold()
         )
-        return min(1.0, len(overlap) / min(6, len(query_tokens)) + min(0.25, term_matches * 0.08))
+        return min(1.0, coverage + min(0.25, term_matches * 0.08))
 
     @classmethod
     def _semantic_query_embedding(cls, index: dict[str, Any], query: str) -> list[float] | None:
@@ -503,7 +655,7 @@ class KnowledgeService:
             if request.domain is not None and request.domain not in chunk.domains:
                 continue
             lexical_grounded = cls._has_lexical_grounding(request.query, chunk)
-            lexical_score = cls._lexical_score(request.query, chunk)
+            lexical_score = cls._lexical_score(request.query, chunk, index)
             sparse_score = cls._cosine(query_embedding, chunk.embedding)
             semantic_score = (
                 cls._cosine(semantic_query_embedding, chunk.semantic_embedding)
@@ -594,8 +746,26 @@ def main() -> None:
         action="store_true",
         help="Generate hosted multilingual document vectors using the configured Gemini key.",
     )
+    parser.add_argument(
+        "--reembed-all",
+        action="store_true",
+        help=(
+            "Re-embed every chunk instead of reusing the unchanged vectors already "
+            "in the index. Only needed when the embedding model or its configured "
+            "width changes; an ordinary corpus edit does not need it."
+        ),
+    )
     args = parser.parse_args()
-    print(json.dumps(rebuild_index(args.output, semantic_embeddings=args.semantic), ensure_ascii=False))
+    print(
+        json.dumps(
+            rebuild_index(
+                args.output,
+                semantic_embeddings=args.semantic,
+                reuse_existing=not args.reembed_all,
+            ),
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":
