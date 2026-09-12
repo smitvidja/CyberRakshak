@@ -419,7 +419,8 @@ generation with Devanagari shaping, bilingual UI, authentication and authorisati
 
 Stated plainly, because a prototype that pretends otherwise is worse than one that doesn't:
 
-- **Admin is API-only.** The endpoints exist and are authorised; there is no admin UI yet.
+- **Admin is mostly API-only.** The knowledge-gap review console has a screen; complaints,
+  suspect reports and warrior applications are authorised endpoints with no UI yet.
 - **The knowledge corpus is small** — 34 chunks, roughly four pages. Retrieval quality is now
   ahead of coverage, which makes the corpus the binding constraint.
 - **The rate limiter is per process.** Exact for a single instance; it multiplies if you add
