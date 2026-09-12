@@ -396,7 +396,18 @@ export function useCyberSaathiVoice({
   const stopSpeech = useCallback(() => {
     speechAbortRef.current?.abort();
     speechAbortRef.current = null;
-    audioRef.current?.pause();
+    const audio = audioRef.current;
+    if (audio) {
+      // Detach first. pause() fires its event on a queued task, not synchronously,
+      // so onpause used to run *after* this function had already dropped the
+      // element and set the status to "ready" - overwriting it with "paused" for a
+      // clip that no longer exists and whose object URL had just been revoked. The
+      // citizen was then shown a resume button with nothing behind it.
+      audio.onplay = null;
+      audio.onpause = null;
+      audio.onended = null;
+      audio.pause();
+    }
     audioRef.current = null;
     if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
     audioUrlRef.current = null;
@@ -477,10 +488,24 @@ export function useCyberSaathiVoice({
 
   const toggleSpeech = useCallback(() => {
     const audio = audioRef.current;
-    if (!audio) return;
-    if (audio.paused) void audio.play();
-    else audio.pause();
-  }, []);
+    if (!audio) {
+      // Nothing left to resume. Returning silently left the citizen pressing a
+      // button that did nothing and gave no reason, so leave the paused state
+      // instead of sitting in it.
+      updateStatus(capabilities?.configured ? "ready" : "unavailable");
+      return;
+    }
+    if (audio.paused) {
+      // play() rejects on autoplay policy or a revoked source; swallowing that
+      // left the UI claiming "paused" forever.
+      void audio.play().catch(() => {
+        setErrorCode("VOICE_PLAYBACK_FAILED");
+        updateStatus(capabilities?.configured ? "ready" : "unavailable");
+      });
+    } else {
+      audio.pause();
+    }
+  }, [capabilities, updateStatus]);
 
   const recordConversationLatency = useCallback((values: Partial<VoiceLatency>) => {
     setLatency((current) => ({...current, ...values}));
