@@ -110,8 +110,12 @@
       "id": "fake_job",
       "query": "I got a work from home job but they demand an upfront fee before employment",
       "domain": "financial_fraud",
-      "expected_source_id": "certin_digital_safety_compass",
-      "expected_chunk_id": "certin_digital_safety_compass:4:1"
+      "expected_source_id": [
+        "isea_meity_cdac_topics",
+        "certin_digital_safety_compass"
+      ],
+      "expected_chunk_id": null,
+      "note": "moved 2026-09-12: ISEA's fake-job-offer section is about money demanded before and after an offer letter, which is the question. The digital safety compass section covers fake jobs alongside prizes and emotional manipulation and is the broader answer; both are accepted."
     },
     {
       "id": "fake_trading",
@@ -270,8 +274,12 @@
       "id": "realistic_qr_upi",
       "query": "i scanned a qr code and money went out of my upi",
       "domain": "upi_payment_fraud",
-      "expected_source_id": "certin_digital_safety_compass",
-      "expected_chunk_id": null
+      "expected_source_id": [
+        "certin_senior_citizens_2025",
+        "certin_digital_safety_compass"
+      ],
+      "expected_chunk_id": null,
+      "note": "moved 2026-09-12: CERT-In's quishing section is specifically about fake and altered payment QR codes, which is what this citizen scanned. It now outranks the general UPI and payment-app sections, which is the right order for this question."
     },
     {
       "id": "realistic_phishing_otp",
@@ -334,6 +342,207 @@
       "query": "how do i cook paneer butter masala",
       "domain": "harassment_abuse",
       "expected_source_id": null,
+      "expected_chunk_id": null
+    },
+    {
+      "id": "sim_cards_on_my_name",
+      "query": "how do I check how many sim cards are registered on my name",
+      "domain": "identity_theft",
+      "expected_source_id": "dot_sanchar_saathi",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "report_the_fraud_number",
+      "query": "where do I report the number that called me and tried to defraud me",
+      "domain": "suspicious_identifiers",
+      "expected_source_id": "dot_sanchar_saathi",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "phone_stolen_block",
+      "query": "mera phone chori ho gaya usme banking apps hain kya karu",
+      "domain": "identity_theft",
+      "expected_source_id": "dot_ceir_lost_phone",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "platform_refused_takedown",
+      "query": "instagram rejected my report and the photo is still there, what next",
+      "domain": "harassment_abuse",
+      "expected_source_id": [
+        "meity_grievance_appellate_committee",
+        "meity_it_rules_2021"
+      ],
+      "expected_chunk_id": null
+    },
+    {
+      "id": "morphed_photo_deadline",
+      "query": "how long does the platform legally have to remove my morphed photo",
+      "domain": "women_child_online_safety",
+      "expected_source_id": "meity_it_rules_2021",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "evidence_lost_if_removed",
+      "query": "if they delete the post will the proof be lost for my police case",
+      "domain": "harassment_abuse",
+      "expected_source_id": "meity_it_rules_2021",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "bank_not_refunding",
+      "query": "bank is not refunding my money and has not replied for a month",
+      "domain": "financial_fraud",
+      "expected_source_id": "rbi_fame_financial_awareness",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "how_soon_zero_liability",
+      "query": "if I report the fraud quickly do I still lose the money",
+      "domain": "financial_fraud",
+      "expected_source_id": "rbi_fame_financial_awareness",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "atm_money_not_dispensed",
+      "query": "atm se paise nahi nikle lekin account se kat gaye",
+      "domain": "financial_fraud",
+      "expected_source_id": "rbi_fame_financial_awareness",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "child_helpline",
+      "query": "is there a helpline for a child who is being abused online",
+      "domain": "women_child_online_safety",
+      "expected_source_id": "isea_meity_cdac_topics",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "police_refused_complaint",
+      "query": "the police station refused to take my cyber crime complaint",
+      "domain": "general_cyber_safety",
+      "expected_source_id": "isea_meity_cdac_topics",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "women_helpline",
+      "query": "मुझे महिला आयोग की हेल्पलाइन चाहिए",
+      "domain": "harassment_abuse",
+      "expected_source_id": "ncw_women_complaint",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "clean_infected_phone",
+      "query": "I installed an apk and now I need to clean my phone, is there a free tool",
+      "domain": "malware_device_compromise",
+      "expected_source_id": "csk_meity_cert_in_tools",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "digital_arrest_is_not_real",
+      "query": "cbi officer on video call says I am under digital arrest, is that a real thing",
+      "domain": "impersonation",
+      "expected_source_id": [
+        "i4c_mha_advisories",
+        "certin_mahila_suraksha_2025",
+        "certin_digital_safety_compass"
+      ],
+      "expected_chunk_id": null
+    },
+    {
+      "id": "call_forwarding_code",
+      "query": "delivery boy made me dial a code and now my calls are going somewhere else",
+      "domain": "account_compromise",
+      "expected_source_id": "i4c_mha_advisories",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "captcha_task_job",
+      "query": "maine captcha filling task job ke liye registration fee di aur ab paise nahi nikal rahe",
+      "domain": "financial_fraud",
+      "expected_source_id": "i4c_mha_advisories",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "matrimonial_investment",
+      "query": "met him on a matrimony site and he asked me to invest in crypto",
+      "domain": "financial_fraud",
+      "expected_source_id": [
+        "i4c_mha_advisories",
+        "isea_meity_cdac_topics"
+      ],
+      "expected_chunk_id": null
+    },
+    {
+      "id": "job_abroad_trafficking",
+      "query": "my brother took a job offer abroad through social media and is now stuck there",
+      "domain": "financial_fraud",
+      "expected_source_id": "i4c_mha_advisories",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "sim_swap_no_signal",
+      "query": "my phone suddenly has no network and money went from my account",
+      "domain": "identity_theft",
+      "expected_source_id": "isea_meity_cdac_topics",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "remote_access_app",
+      "query": "he told me to install anydesk to fix my refund",
+      "domain": "malware_device_compromise",
+      "expected_source_id": [
+        "isea_meity_cdac_topics",
+        "certin_mahila_suraksha_2025"
+      ],
+      "expected_chunk_id": null
+    },
+    {
+      "id": "sextortion_threat",
+      "query": "video call pe record kar liya aur ab paise maang raha hai",
+      "domain": "women_child_online_safety",
+      "expected_source_id": [
+        "isea_meity_cdac_topics",
+        "certin_mahila_suraksha_2025"
+      ],
+      "expected_chunk_id": null
+    },
+    {
+      "id": "fake_profile_my_name",
+      "query": "someone made a fake instagram account using my name and photos",
+      "domain": "impersonation",
+      "expected_source_id": "isea_meity_cdac_topics",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "marketplace_courier_scam",
+      "query": "I was selling on olx and the buyer sent a courier agent to collect shipping charges",
+      "domain": "ecommerce_consumer_grievance",
+      "expected_source_id": "isea_meity_cdac_topics",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "kyc_update_call",
+      "query": "bank se call aaya ki kyc update karo warna account band ho jayega",
+      "domain": "phishing",
+      "expected_source_id": [
+        "isea_meity_cdac_topics",
+        "certin_senior_citizens_2025"
+      ],
+      "expected_chunk_id": null
+    },
+    {
+      "id": "aeps_biometric_withdrawal",
+      "query": "money was taken using my fingerprint and I got no otp at all",
+      "domain": "financial_fraud",
+      "expected_source_id": "isea_meity_cdac_topics",
+      "expected_chunk_id": null
+    },
+    {
+      "id": "anonymous_or_named",
+      "query": "should I give my name or file anonymously",
+      "domain": "women_child_online_safety",
+      "expected_source_id": "ncrp_women_child_faq",
       "expected_chunk_id": null
     }
   ]

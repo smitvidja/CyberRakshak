@@ -437,6 +437,8 @@ class KnowledgeService:
     _document_frequency_cache: dict[str, int] | None = None
     _document_frequency_version: str | None = None
     _document_frequency_total: int = 0
+    _informative_df_cache: int | None = None
+    _informative_df_version: str | None = None
 
     @classmethod
     def clear_cache(cls) -> None:
@@ -518,8 +520,28 @@ class KnowledgeService:
     def _cosine(left: list[float], right: list[float]) -> float:
         return max(0.0, min(1.0, sum(a * b for a, b in zip(left, right))))
 
-    @staticmethod
-    def _has_lexical_grounding(query: str, chunk: KnowledgeChunk) -> bool:
+    @classmethod
+    def _has_lexical_grounding(
+        cls, query: str, chunk: KnowledgeChunk, index: dict[str, Any] | None = None
+    ) -> bool:
+        """Does this chunk share anything with the question that actually means something?
+
+        This used to be "two overlapping words is enough". At 34 chunks that was
+        fine. At 128 it stopped filtering: "A fake police officer says digital
+        arrest and demands payment" grounded on I4C's tampered-QR section through
+        {digital, payment} and on its banking-trojan section through {fake,
+        payment} - among the most common words in a cyber-safety corpus, and
+        neither section has anything to do with a fake police officer. That is how
+        an unrelated-domain answer leaked past the cross-domain guard.
+
+        Counting overlap treats every word as equally telling. Weighing it does
+        not: at least one shared word now has to be rarer than the corpus's most
+        common decile, measured from the same document frequencies the ranking
+        already computes. In this corpus the median token appears in 2 chunks and
+        the 90th percentile in 8, so "impersonation" (7) grounds a chunk while
+        "digital" (13), "payment" (20) and "fake" (42) do not on their own. A
+        high-signal term still grounds by itself; the two-word minimum still holds.
+        """
         query_tokens = _meaningful_tokens(query)
         if not query_tokens:
             return False
@@ -527,7 +549,34 @@ class KnowledgeService:
             " ".join((chunk.section_title, chunk.text, *chunk.retrieval_terms))
         )
         overlap = query_tokens.intersection(source_tokens)
-        return len(overlap) >= 2 or bool(overlap.intersection(HIGH_SIGNAL_TERMS))
+        if overlap.intersection(HIGH_SIGNAL_TERMS):
+            return True
+        if len(overlap) < 2:
+            return False
+        if index is None:
+            return True
+        frequency, _total = cls._document_frequency(index)
+        ceiling = cls._informative_document_frequency(index)
+        return any(frequency.get(token, 0) <= ceiling for token in overlap)
+
+    @classmethod
+    def _informative_document_frequency(cls, index: dict[str, Any]) -> int:
+        """The frequency above which a word stops distinguishing anything.
+
+        Derived from the corpus, not hardcoded, so it keeps meaning the same thing
+        as the corpus grows: the 90th percentile of how often tokens appear.
+        """
+        version = str(index.get("index_version"))
+        if cls._informative_df_cache is None or cls._informative_df_version != version:
+            frequency, _total = cls._document_frequency(index)
+            values = sorted(frequency.values())
+            if not values:
+                cls._informative_df_cache = 1
+            else:
+                position = min(len(values) - 1, int(len(values) * 0.9))
+                cls._informative_df_cache = max(1, values[position])
+            cls._informative_df_version = version
+        return cls._informative_df_cache
 
     @classmethod
     def _document_frequency(cls, index: dict[str, Any]) -> tuple[dict[str, int], int]:
@@ -654,7 +703,7 @@ class KnowledgeService:
             chunk = KnowledgeChunk.model_validate(raw_chunk)
             if request.domain is not None and request.domain not in chunk.domains:
                 continue
-            lexical_grounded = cls._has_lexical_grounding(request.query, chunk)
+            lexical_grounded = cls._has_lexical_grounding(request.query, chunk, index)
             lexical_score = cls._lexical_score(request.query, chunk, index)
             sparse_score = cls._cosine(query_embedding, chunk.embedding)
             semantic_score = (

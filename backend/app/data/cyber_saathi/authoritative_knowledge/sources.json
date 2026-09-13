@@ -1,5 +1,5 @@
 {
-  "version": "2026.09.6.3",
+  "version": "2026.09.7.7",
   "reviewed_at": "2026-09-12",
   "sources": [
     {
@@ -77,7 +77,15 @@
             "paise cut gaye",
             "1930",
             "unauthorized transaction",
-            "wallet payment"
+            "wallet payment",
+            "money debited without permission",
+            "money gone from account",
+            "unauthorised debit",
+            "account se paise kat gaye",
+            "paise nikal gaye",
+            "पैसे कट गए",
+            "खाते से पैसे निकल गए",
+            "बिना अनुमति के पैसे"
           ]
         },
         {
@@ -184,7 +192,14 @@
             "KYC misuse",
             "identity misuse",
             "documents misused",
-            "pan card misuse"
+            "pan card misuse",
+            "impersonating me",
+            "profile url",
+            "profile link",
+            "report fake profile",
+            "someone using my photo",
+            "stole my identity",
+            "used my account details"
           ]
         }
       ]
@@ -250,6 +265,32 @@
             "proof kya chahiye",
             "evidence preserve",
             "suspect number screenshot"
+          ]
+        },
+        {
+          "title": "Reporting anonymously, or with your name: what changes",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse",
+            "cyberstalking"
+          ],
+          "text": "The National Cybercrime Reporting Portal offers two routes for a women- or child-related cybercrime, and only for that category. Report Anonymously lets you file without giving any personal information at all - the portal states this explicitly for online rape and gang-rape content - while the information about the incident itself must still be accurate and complete. Report and Track asks for your name, phone number and email address, and in return you receive an SMS and email with a complaint reference number, and you can log in and follow the progress of the complaint. That reference number and the ability to follow the case come with the Report and Track route. Neither route is the braver or the more correct one: a person who is afraid of being identified can still report, and a person who wants the case followed through can give their details. Both go to the police.",
+          "retrieval_terms": [
+            "anonymous complaint",
+            "report anonymously",
+            "without name",
+            "bina naam",
+            "gumnaam",
+            "should i give my name",
+            "will my name be public",
+            "track complaint",
+            "complaint number",
+            "गुमनाम",
+            "बिना नाम",
+            "नाम बताना जरूरी है",
+            "नाम गुप्त",
+            "शिकायत नंबर",
+            "पहचान छुपाना"
           ]
         }
       ]
@@ -597,7 +638,12 @@
             "नाबालिग",
             "bachche ki privacy",
             "mera beta",
-            "meri beti"
+            "meri beti",
+            "child live location",
+            "protect live location",
+            "child social media privacy",
+            "kids location sharing",
+            "बच्चे की लोकेशन"
           ]
         },
         {
@@ -841,7 +887,12 @@
             "save chat",
             "block user",
             "friend request",
-            "social media password"
+            "social media password",
+            "child cyberbullied",
+            "my child is being bullied online",
+            "cyberbullying fake profile",
+            "bullying on social media child",
+            "बच्चे को ऑनलाइन परेशान"
           ]
         },
         {
@@ -1220,7 +1271,11 @@
             "personal information",
             "public search",
             "सोशल मीडिया प्राइवेसी",
-            "प्रोफाइल छिपाएं"
+            "प्रोफाइल छिपाएं",
+            "stole my identity",
+            "used my photo",
+            "account details misused",
+            "identity theft social media"
           ]
         },
         {
@@ -1343,6 +1398,1496 @@
             "data loss",
             "बैकअप",
             "डेटा वापस"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "dot_sanchar_saathi",
+      "source_title": "Sanchar Saathi, Department of Telecommunications citizen-centric services",
+      "source_type": "official_public_service",
+      "source_url": "https://sancharsaathi.gov.in/",
+      "jurisdiction": "India",
+      "domains": [
+        "identity_theft",
+        "financial_fraud",
+        "impersonation",
+        "suspicious_identifiers"
+      ],
+      "language": "EN",
+      "version": "portal services as published, reviewed 2026-09-12",
+      "published_at": "2023-05-16",
+      "sections": [
+        {
+          "title": "Chakshu: report the number that called or messaged you",
+          "domains": [
+            "suspicious_identifiers",
+            "financial_fraud",
+            "phishing",
+            "impersonation"
+          ],
+          "text": "Chakshu on the Department of Telecommunications Sanchar Saathi portal is where a citizen reports a suspected fraud communication - a call, SMS or WhatsApp message sent with the intention of cyber-crime, financial fraud or impersonation. Go to sancharsaathi.gov.in, open Citizen Centric Services, choose Chakshu, select the medium the message arrived on and the category of fraud, enter the details of the communication, verify your own mobile number by OTP, and submit. Chakshu acts on the telecom connection itself, which is a different remedy from a police complaint: if money was lost or a crime has occurred, that is still reported on 1930 or at cybercrime.gov.in.",
+          "retrieval_terms": [
+            "chakshu",
+            "sanchar saathi",
+            "report number",
+            "fraud call",
+            "fraud sms",
+            "report whatsapp number",
+            "suspicious number",
+            "चक्षु",
+            "संचार साथी",
+            "नंबर की शिकायत",
+            "फ्रॉड कॉल",
+            "जिस नंबर से कॉल आया",
+            "report the number that called me",
+            "report fraud number",
+            "where do I report a number",
+            "number se fraud hua",
+            "किस नंबर की शिकायत",
+            "tried to defraud me",
+            "defrauded me",
+            "defraud"
+          ]
+        },
+        {
+          "title": "TAFCOP: how many SIM cards are registered on your name",
+          "domains": [
+            "identity_theft",
+            "impersonation",
+            "account_compromise"
+          ],
+          "text": "A mobile connection taken on someone else identity documents is how many frauds are run, and the person whose name it is on usually never finds out. The Department of Telecommunications publishes this at tafcop.sancharsaathi.gov.in: log in with your mobile number and an OTP and the portal lists every mobile connection issued against your name. Any connection you do not recognise can be marked as not your number, and one you no longer want as not required. On a reported connection outgoing services are suspended within 30 days and the connection is disconnected within 60 days.",
+          "retrieval_terms": [
+            "tafcop",
+            "sim on my name",
+            "how many sim",
+            "sim connections in my name",
+            "fake sim",
+            "unknown sim card",
+            "sim taken on my aadhaar",
+            "मेरे नाम पर सिम",
+            "कितने सिम",
+            "फर्जी सिम",
+            "मेरी आईडी पर सिम"
+          ]
+        },
+        {
+          "title": "Calls from abroad showing an Indian number, and unwanted commercial calls",
+          "domains": [
+            "impersonation",
+            "financial_fraud",
+            "general_cyber_safety"
+          ],
+          "text": "Many fraud calls originate outside India but are made to display a +91 Indian number. The Department of Telecommunications takes these reports through the Report Incoming International Call with Indian Number service on Sanchar Saathi - enter the number you received the call from with the date and time and verify by OTP - or on the helplines 1963 and 1800-110-420. Unwanted promotional calls and SMS are a separate matter and are reported as Unsolicited Commercial Communication, either through Chakshu or to 1909 by call or SMS, or on the TRAI DND app.",
+          "retrieval_terms": [
+            "international call",
+            "foreign call indian number",
+            "spoofed number",
+            "1963",
+            "1909",
+            "dnd",
+            "promotional calls",
+            "spam calls",
+            "विदेशी कॉल",
+            "स्पैम कॉल",
+            "प्रमोशनल मैसेज"
+          ]
+        },
+        {
+          "title": "Checking whether the caller really is your bank or a government office",
+          "domains": [
+            "impersonation",
+            "phishing",
+            "financial_fraud"
+          ],
+          "text": "Sanchar Saathi publishes a Trusted Contact Details directory: the authentic phone numbers and websites of banks, financial institutions and government agencies, searchable by the name of the institution, by a phone number, or by a website address. If someone has called claiming to be from your bank or from a government department, the number they called from can be checked against this directory before you act on anything they said. A number that does not appear there is not proof of fraud by itself, but a caller pressing you to pay or to share an OTP is.",
+          "retrieval_terms": [
+            "trusted contact",
+            "is this number real",
+            "bank number verify",
+            "fake customer care",
+            "customer care number",
+            "असली नंबर",
+            "बैंक का नंबर",
+            "नकली कस्टमर केयर"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "dot_ceir_lost_phone",
+      "source_title": "CEIR - Central Equipment Identity Register, blocking a lost or stolen mobile",
+      "source_type": "official_public_service",
+      "source_url": "https://www.ceir.gov.in/",
+      "jurisdiction": "India",
+      "domains": [
+        "identity_theft",
+        "account_compromise",
+        "malware_device_compromise"
+      ],
+      "language": "EN",
+      "version": "service description as published, reviewed 2026-09-12",
+      "published_at": "2023-05-16",
+      "sections": [
+        {
+          "title": "Phone lost or stolen: blocking the handset itself",
+          "domains": [
+            "identity_theft",
+            "account_compromise",
+            "general_cyber_safety"
+          ],
+          "text": "A lost or stolen phone carries the banking apps, the OTPs and the logged-in accounts, so blocking the handset matters as much as blocking the SIM. The Department of Telecommunications CEIR service at ceir.gov.in blocks the handset by its IMEI across every network in India, so it cannot be used with another SIM. The order is: file a police report and keep a copy, get a duplicate SIM for the lost number from your operator because the request is verified by OTP on that number - SMS works about 24 hours after the new SIM is activated - then submit the blocking request on ceir.gov.in with the police report and an identity proof, and keep the Request ID it returns. The handset is blocked within 24 hours. If the phone is later recovered, report the recovery to the police and submit the un-blocking form; if the block was registered through the State Police, the un-blocking is done through them.",
+          "retrieval_terms": [
+            "phone lost",
+            "phone stolen",
+            "mobile chori",
+            "block imei",
+            "ceir",
+            "imei block",
+            "lost handset",
+            "फोन चोरी",
+            "मोबाइल खो गया",
+            "फोन गुम",
+            "आईएमईआई ब्लॉक",
+            "phone chori ho gaya",
+            "phone kho gaya",
+            "banking apps on stolen phone",
+            "फोन चोरी हो गया"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "meity_grievance_appellate_committee",
+      "source_title": "Grievance Appellate Committee, Ministry of Electronics and Information Technology",
+      "source_type": "official_public_service",
+      "source_url": "https://gac.gov.in/",
+      "jurisdiction": "India",
+      "domains": [
+        "harassment_abuse",
+        "women_child_online_safety",
+        "impersonation"
+      ],
+      "language": "EN",
+      "version": "constituted under the IT Rules 2021, reviewed 2026-09-12",
+      "published_at": "2023-01-27",
+      "sections": [
+        {
+          "title": "The platform refused to remove the content: appealing that decision",
+          "domains": [
+            "harassment_abuse",
+            "women_child_online_safety",
+            "impersonation",
+            "cyberstalking"
+          ],
+          "text": "When a social media platform rejects a report, or simply never replies, that is not the end of it. The Grievance Appellate Committee, set up by the Ministry of Electronics and Information Technology under the Information Technology Rules, 2021, hears appeals from users against the decision of a platform Grievance Officer. The appeal is filed online at gac.gov.in, and the whole process from filing to decision is digital. There is one precondition and one deadline: you must have complained to the platform own Grievance Officer first, and the appeal must be filed within 30 days of their reply - or within 30 days of the date you should have received a reply and did not.",
+          "retrieval_terms": [
+            "platform not removing",
+            "instagram not removing",
+            "facebook complaint rejected",
+            "appeal against platform",
+            "grievance officer",
+            "content not removed",
+            "gac",
+            "grievance appellate committee",
+            "शिकायत नहीं मानी",
+            "पोस्ट नहीं हटाई",
+            "प्लेटफॉर्म ने मना कर दिया",
+            "अपील"
+          ]
+        },
+        {
+          "title": "What the Grievance Appellate Committee does not handle",
+          "domains": [
+            "general_cyber_safety",
+            "financial_fraud"
+          ],
+          "text": "The Grievance Appellate Committee decides complaints about a platform handling of content and about the computer resources it makes available. It does not handle financial fraud or cybercrime: those are directed to the National Cybercrime Reporting Portal at cybercrime.gov.in or to the 1930 helpline. The two paths run in parallel and one does not replace the other - a person whose morphed photograph is still online after the platform refused to act can have a police complaint on NCRP and an appeal before the Committee at the same time.",
+          "retrieval_terms": [
+            "gac scope",
+            "where to appeal",
+            "not cybercrime",
+            "parallel complaint",
+            "किस बात की अपील",
+            "कहां शिकायत"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "rbi_fame_financial_awareness",
+      "source_title": "RBI Financial Awareness Messages (FAME), Financial Inclusion and Development Department",
+      "source_type": "official_public_guidance",
+      "source_url": "https://www.rbi.org.in/FinancialEducation/content/FAME.pdf",
+      "jurisdiction": "India",
+      "domains": [
+        "financial_fraud",
+        "upi_payment_fraud",
+        "phishing",
+        "account_compromise"
+      ],
+      "language": "EN",
+      "version": "FAME booklet, reviewed 2026-09-12",
+      "published_at": "2024-01-01",
+      "sections": [
+        {
+          "title": "What the bank owes you after an unauthorised transaction",
+          "domains": [
+            "financial_fraud",
+            "upi_payment_fraud",
+            "account_compromise"
+          ],
+          "text": "RBI states that whoever is at fault, you must notify your bank immediately when you find a fraudulent or unauthorised electronic banking transaction on your account or card, because the longer you take the larger the loss. The bank has to give you an acknowledgement for that complaint. It must credit the disputed amount back to your account within 10 working days of your notification, and it must resolve the complaint within 90 days. If fraudulent transactions continue after you informed the bank, the bank bears that loss.",
+          "retrieval_terms": [
+            "bank not returning money",
+            "bank complaint",
+            "money not refunded",
+            "10 working days",
+            "90 days",
+            "acknowledgement",
+            "unauthorised transaction",
+            "chargeback",
+            "बैंक पैसा वापस",
+            "बैंक शिकायत",
+            "पैसे वापस नहीं",
+            "अनधिकृत लेनदेन"
+          ]
+        },
+        {
+          "title": "Zero liability: why reporting within three days matters so much",
+          "domains": [
+            "financial_fraud",
+            "upi_payment_fraud",
+            "account_compromise"
+          ],
+          "text": "RBI sets out when the customer bears nothing at all. If there is no negligence by you and you inform the bank within 3 working days of the unauthorised transaction, you have zero liability. You also have zero liability where the fault was the bank - a deficiency in the bank system - whether or not you reported it. In a third-party breach, where the fault is neither yours nor the bank but elsewhere in the system, reporting within 3 working days again means zero liability. If the loss was due to your own negligence, such as sharing a password, PIN or OTP, you bear the loss only up to the point you inform the bank - which is why reporting late is the expensive mistake, not reporting at all.",
+          "retrieval_terms": [
+            "zero liability",
+            "3 working days",
+            "three days",
+            "report immediately",
+            "negligence",
+            "shared otp",
+            "my fault",
+            "liability",
+            "शून्य देनदारी",
+            "तीन दिन",
+            "तुरंत बताएं",
+            "मेरी गलती",
+            "ओटीपी बता दिया",
+            "report quickly",
+            "do I still lose the money",
+            "will I get my money back",
+            "reported same day",
+            "jaldi report kiya",
+            "पैसे वापस मिलेंगे"
+          ]
+        },
+        {
+          "title": "If you report late: the capped amounts",
+          "domains": [
+            "financial_fraud",
+            "account_compromise"
+          ],
+          "text": "RBI caps the customer loss even when the report is delayed. Where the fault lies neither with the bank nor with the customer but elsewhere in the system, and the customer takes four to seven working days after the bank communication to notify it, the liability per transaction is the transaction value or the cap below, whichever is lower. The cap is Rs 5,000 for BSBD (basic savings) accounts. It is Rs 10,000 for all other savings accounts, for pre-paid payment instruments and gift cards, for current, cash-credit and overdraft accounts of MSMEs, for such accounts of individuals with an annual average balance up to Rs 25 lakh, and for credit cards with a limit up to Rs 5 lakh. It is Rs 25,000 for all other current, cash-credit and overdraft accounts and for credit cards with a limit above Rs 5 lakh.",
+          "retrieval_terms": [
+            "liability limit",
+            "how much will i lose",
+            "5000",
+            "10000",
+            "25000",
+            "late report",
+            "delay reporting",
+            "capped loss",
+            "कितना नुकसान",
+            "देर से बताया",
+            "सीमा"
+          ]
+        },
+        {
+          "title": "When the bank does not resolve it: the RBI Ombudsman, free of cost",
+          "domains": [
+            "financial_fraud",
+            "ecommerce_consumer_grievance",
+            "account_compromise"
+          ],
+          "text": "RBI runs a cost-free escalation above the bank. You must complain to the bank, NBFC, payment system participant or credit information company first. If that complaint is not redressed within 30 days, or no reply comes, or the reply does not satisfy you, you can then lodge a complaint with the RBI Ombudsman - online at cms.rbi.org.in, or by post to the Centralised Receipt and Processing Centre, 4th Floor, Reserve Bank of India, Sector-17, Central Vista, Chandigarh-160017. There is no fee, and no third party or agency is needed; filing on the CMS portal gives an instant acknowledgement and a complaint number. The complaint must include evidence that you approached the bank and did not get a satisfactory response, and it cannot be one already pending in a court or already settled by the Ombudsman. A complaint cannot be filed through an advocate.",
+          "retrieval_terms": [
+            "ombudsman",
+            "rbi ombudsman",
+            "cms.rbi.org.in",
+            "bank ignored",
+            "30 days no reply",
+            "escalate bank",
+            "banking ombudsman",
+            "free complaint",
+            "लोकपाल",
+            "आरबीआई शिकायत",
+            "बैंक ने जवाब नहीं दिया",
+            "आगे शिकायत"
+          ]
+        },
+        {
+          "title": "UPI: safe use and the two rules that stop most UPI losses",
+          "domains": [
+            "upi_payment_fraud",
+            "financial_fraud"
+          ],
+          "text": "RBI describes UPI as transfer between two bank accounts from a smartphone, set up once using the debit card linked to the account, and used thereafter with a UPI PIN. Its stated Dos are to keep the UPI app updated, to always review a merchant or person collect request before accepting it, and to recheck and reconfirm the amount and the beneficiary before transferring. Its Don'ts are two: never share your PIN with anyone, and do not transfer money without verifying and reconfirming the recipient first. A UPI PIN is needed to send money, never to receive it - a collect request accepted carelessly takes money out.",
+          "retrieval_terms": [
+            "upi",
+            "upi pin",
+            "collect request",
+            "upi fraud",
+            "wrong transfer",
+            "bhim",
+            "receive money pin",
+            "यूपीआई",
+            "पिन",
+            "पैसे भेज दिए",
+            "कलेक्ट रिक्वेस्ट"
+          ]
+        },
+        {
+          "title": "Online and mobile banking: what RBI tells customers to do",
+          "domains": [
+            "financial_fraud",
+            "phishing",
+            "account_compromise"
+          ],
+          "text": "RBI advises typing the bank URL yourself using only verified and trusted browsers and HTTPS secured sites, and never reaching your bank website through an online search. Use passwords that are hard to guess with alphanumeric and special characters and change them frequently, keep payment apps updated, and link your mobile number and email to the account with SMS and email alerts switched on so an unusual transaction is visible at once. Never store login credentials on your phone or enter them on untrusted portals, avoid transacting from public devices, cyber cafes and open or free public Wi-Fi, and never share a mobile banking PIN, internet banking ID, password or OTP. Inform the bank immediately about any unusual or unauthorised transaction.",
+          "retrieval_terms": [
+            "net banking",
+            "mobile banking",
+            "search bank website",
+            "fake bank site",
+            "sms alert",
+            "cyber cafe",
+            "public wifi banking",
+            "नेट बैंकिंग",
+            "बैंक की वेबसाइट",
+            "अलर्ट"
+          ]
+        },
+        {
+          "title": "ATM and card: skimming, and a failed ATM transaction",
+          "domains": [
+            "financial_fraud",
+            "account_compromise"
+          ],
+          "text": "RBI advises using an EMV chip-and-PIN debit card rather than a magnetic strip card, checking for unauthorised cameras or skimming devices near the ATM, covering the keypad with one hand while entering the PIN, counting the notes dispensed, and collecting the card afterwards. Register your phone number with the card-issuing bank for transaction alerts, and contact the bank immediately to block the card if it is lost or stolen or you believe it is compromised. Never share card number, expiry, CVV, PIN or OTP, never leave the card in the machine, and never write the PIN on the card. A failed ATM transaction - money debited but not dispensed - must be raised with the card-issuing bank immediately: banks must resolve it within T+5 days or pay you compensation of Rs 100 per day of delay.",
+          "retrieval_terms": [
+            "atm",
+            "skimming",
+            "card cloned",
+            "money debited not dispensed",
+            "failed transaction",
+            "atm compensation",
+            "100 per day",
+            "block card",
+            "एटीएम",
+            "कार्ड ब्लॉक",
+            "पैसे कट गए",
+            "मशीन से पैसे नहीं निकले",
+            "atm se paise nahi nikle",
+            "paise kat gaye",
+            "failed atm transaction",
+            "cash not dispensed",
+            "atm transaction failed but debited",
+            "एटीएम से पैसे नहीं निकले",
+            "खाते से कट गए"
+          ]
+        },
+        {
+          "title": "Loan apps and investment schemes: checking before, reporting after",
+          "domains": [
+            "financial_fraud"
+          ],
+          "text": "RBI states that a digital lending app must be associated with an RBI-regulated bank or NBFC, and that you can check this on that bank or NBFC own website before installing. Do not download a loan app from a link received over SMS or social media. Read the Key Fact Statement, sanction letter and privacy policy, confirm the documents are digitally signed and on the letterhead of the bank or NBFC, and check what permissions the app demands before installing. A suspicious loan app, whether on an app store or arriving as a link, should be reported to law enforcement agencies. For deposits and investments, RBI says to place money only with entities registered with or regulated by RBI, SEBI, IRDAI, PFRDA or the Government, and to report any entity that has defaulted on repayment at sachet.rbi.org.in.",
+          "retrieval_terms": [
+            "loan app",
+            "instant loan",
+            "sachet",
+            "investment scheme",
+            "high returns",
+            "ponzi",
+            "chit fund",
+            "nbfc check",
+            "लोन ऐप",
+            "निवेश",
+            "ज्यादा रिटर्न",
+            "स्कीम"
+          ]
+        },
+        {
+          "title": "Lottery, prize and fake-RBI messages",
+          "domains": [
+            "phishing",
+            "financial_fraud",
+            "impersonation"
+          ],
+          "text": "RBI states plainly that RBI and banks never ask for your bank account, credit card or debit card details, PIN or OTP through email, SMS or phone calls, and that RBI does not open savings, current or fixed deposit accounts for individuals, does not issue credit or debit cards, and does not transact with any individual. So a message saying you have won a lottery whose money is deposited with RBI, or asking for account details to release a prize, is fraudulent on its face. If someone promises free money or a prize for a ticket you never bought, pause and ask why. RBI sends its own awareness SMS from the sender ID RBISAY, and its public awareness line is 14440.",
+          "retrieval_terms": [
+            "lottery",
+            "prize",
+            "you have won",
+            "rbi message",
+            "fake rbi",
+            "free money",
+            "14440",
+            "rbisay",
+            "लॉटरी",
+            "इनाम",
+            "आरबीआई का मैसेज",
+            "मुफ्त पैसा"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "certin_senior_citizens_2025",
+      "source_title": "CERT-In Cyber Security Best Practices for Senior Citizens, October 2025",
+      "source_type": "official_public_guidance",
+      "source_url": "https://www.cert-in.org.in/PDF/Sr_Citizen_Cyber_Security_booklet.pdf",
+      "jurisdiction": "India",
+      "domains": [
+        "financial_fraud",
+        "phishing",
+        "impersonation",
+        "general_cyber_safety"
+      ],
+      "language": "EN",
+      "version": "National Cyber Security Awareness Month 2025 booklet, reviewed 2026-09-12",
+      "published_at": "2025-10-01",
+      "sections": [
+        {
+          "title": "Vishing: the fraud call that sounds like your bank",
+          "domains": [
+            "phishing",
+            "impersonation",
+            "financial_fraud"
+          ],
+          "text": "CERT-In uses the word vishing for a scam call, where the caller pretends to be a bank official. Its guidance: never share an OTP, PIN, CVV or debit and credit card details with anyone, and do not respond to any call asking for bank account or card details or other sensitive information. Do not give personal information in order to receive a prize, lottery, gift or KYC update. Use only the customer-care numbers published on the authorised website of the bank or organisation, not a number given to you on the call. Hang up immediately if the caller pressures you or creates panic, and report the suspicious call to your bank and to the authorities.",
+          "retrieval_terms": [
+            "vishing",
+            "fraud call",
+            "fake bank call",
+            "kyc update call",
+            "caller asked otp",
+            "pressure call",
+            "विशिंग",
+            "फर्जी कॉल",
+            "बैंक वाला बोल रहा",
+            "केवाईसी कॉल"
+          ]
+        },
+        {
+          "title": "Smishing: the fraud SMS",
+          "domains": [
+            "phishing",
+            "financial_fraud",
+            "malware_device_compromise"
+          ],
+          "text": "CERT-In uses the word smishing for fraud by SMS - fake bank alerts, lottery and prize messages, KYC update requests, government impersonation, and messages carrying malicious links or attachments. Its guidance: avoid clicking unfamiliar links received in messages because they can steal personal data from the phone, always verify the message is authentic, and never share an OTP, PIN or password over SMS. Banks and government bodies do not ask for sensitive information by SMS. Spelling mistakes and poor grammar are signs of a fraudulent message. Do not reply to unknown numbers or engage with prize and lottery claims - check any account or service update in the official app or website instead.",
+          "retrieval_terms": [
+            "smishing",
+            "fraud sms",
+            "fake message",
+            "link in sms",
+            "kyc sms",
+            "bank alert sms",
+            "स्मिशिंग",
+            "फर्जी मैसेज",
+            "एसएमएस लिंक",
+            "मैसेज आया"
+          ]
+        },
+        {
+          "title": "Quishing: fraud through a QR code",
+          "domains": [
+            "phishing",
+            "financial_fraud",
+            "upi_payment_fraud"
+          ],
+          "text": "CERT-In uses the word quishing for fraud through QR codes - fake payment QR codes, phishing via QR codes, malware downloads, and scams run from QR codes on public posters. Its guidance: do not scan QR codes sent by strangers in chats or emails. Before scanning, check that the code is legitimate and has not been altered or covered with a fraudulent sticker - a sticker pasted over a shop genuine code is the common trick. Do not enter personal or banking details on a website opened through a QR code, avoid scanning codes on public posters or flyers unless verified, and examine the URL the scanner shows before opening it.",
+          "retrieval_terms": [
+            "quishing",
+            "qr code",
+            "qr scam",
+            "fake qr",
+            "sticker qr",
+            "payment qr",
+            "scanned qr",
+            "qr upi",
+            "upi qr code",
+            "scan karke paise kat gaye",
+            "क्यूआर कोड",
+            "स्कैन",
+            "क्यूआर से पैसे कट गए",
+            "क्यूआर स्कैन किया"
+          ]
+        },
+        {
+          "title": "Safe online banking for people who bank on a phone",
+          "domains": [
+            "financial_fraud",
+            "account_compromise",
+            "phishing"
+          ],
+          "text": "CERT-In lists the threats to online banking as phishing websites that steal login credentials, fraudulent apps that mimic real banking apps, vishing calls and smishing messages. Its practices: use only verified and trusted browsers and HTTPS secured sites for payments, never share an online banking PIN or OTP, enable multi-factor authentication, log out after every banking session, change the password regularly, keep payment apps updated to the latest version, and avoid banking over public Wi-Fi. Keep a regular check on every message the bank sends, and if something looks wrong contact the bank immediately on its official customer-care number.",
+          "retrieval_terms": [
+            "online banking safety",
+            "fake banking app",
+            "logout",
+            "mfa",
+            "banking password",
+            "ऑनलाइन बैंकिंग",
+            "नकली ऐप",
+            "लॉगआउट"
+          ]
+        },
+        {
+          "title": "Threats aimed at older people, and what to do if it happens",
+          "domains": [
+            "financial_fraud",
+            "impersonation",
+            "general_cyber_safety"
+          ],
+          "text": "CERT-In names the threats older people meet most often as phishing messages, courier fraud, financial frauds and emotional manipulation. Its mobile practices are a strong screen lock, never sharing OTPs, PINs or passwords with strangers, keeping software updated, downloading apps only from official app stores, verifying the source before clicking a link, reviewing app permissions, avoiding public Wi-Fi, turning Bluetooth and location off when unused, and treating fake update alerts and pop-ups with suspicion. If you do become a victim, CERT-In says to call 1930 immediately and report the fraud at cybercrime.gov.in.",
+          "retrieval_terms": [
+            "senior citizen",
+            "elderly",
+            "courier fraud",
+            "parcel scam",
+            "emotional manipulation",
+            "old people scam",
+            "बुजुर्ग",
+            "कूरियर फ्रॉड",
+            "पार्सल",
+            "माता पिता के साथ धोखा"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "meity_it_rules_2021",
+      "source_title": "Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021",
+      "source_type": "official_legal_instrument",
+      "source_url": "https://www.meity.gov.in/static/uploads/2024/02/Information-Technology-Intermediary-Guidelines-and-Digital-Media-Ethics-Code-Rules-2021-updated-06.04.2023-.pdf",
+      "jurisdiction": "India",
+      "domains": [
+        "harassment_abuse",
+        "women_child_online_safety",
+        "impersonation",
+        "cyberstalking"
+      ],
+      "language": "EN",
+      "version": "consolidated rules as updated 06.04.2023, reviewed 2026-09-12",
+      "published_at": "2021-02-25",
+      "sections": [
+        {
+          "title": "The law gives the platform 24 hours to remove an intimate or morphed image",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse",
+            "impersonation",
+            "cyberstalking"
+          ],
+          "text": "Rule 3(2)(b) of the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021 requires an intermediary - a social media platform, a messaging service, a website that hosts user content - to act within twenty-four hours of receiving a complaint about content that, on the face of it, exposes a person's private area, shows them in full or partial nudity, shows or depicts them in a sexual act or conduct, or is impersonation in electronic form including an artificially morphed image of that person. Within that twenty-four hours the platform must take all reasonable and practicable measures to remove the content or disable access to it. The complaint can be made by the individual concerned or by any person on their behalf, so a parent, a friend or a helpline can file it. Rule 3(2)(c) requires the platform to provide a mechanism for making exactly this kind of complaint.",
+          "retrieval_terms": [
+            "24 hours removal",
+            "twenty four hours",
+            "morphed image",
+            "nude photo online",
+            "intimate photo",
+            "remove my photo",
+            "rule 3(2)(b)",
+            "it rules 2021",
+            "deepfake",
+            "obscene photo",
+            "मेरी फोटो हटाओ",
+            "मॉर्फ फोटो",
+            "24 घंटे",
+            "अश्लील तस्वीर",
+            "नियम",
+            "कानून क्या कहता है"
+          ]
+        },
+        {
+          "title": "The platform's Grievance Officer, and the clock they are on",
+          "domains": [
+            "harassment_abuse",
+            "impersonation",
+            "general_cyber_safety",
+            "cyberstalking"
+          ],
+          "text": "Rule 3(2)(a) requires every intermediary to prominently publish the name and contact details of its Grievance Officer, and the mechanism by which a user or a victim can complain - on the home page or home screen, or on a page directly reachable from it. That officer must acknowledge a complaint within twenty-four hours and resolve it within fifteen days. Where the complaint is a request to remove content or a communication link falling under rule 3(1)(b), it must be acted on as expeditiously as possible and resolved within seventy-two hours. So a report that goes unanswered past these deadlines is not just ignored, it is a breach of the rule - and that is what makes an appeal available.",
+          "retrieval_terms": [
+            "grievance officer",
+            "platform complaint",
+            "no reply from platform",
+            "15 days",
+            "72 hours",
+            "acknowledge complaint",
+            "report not answered",
+            "शिकायत अधिकारी",
+            "जवाब नहीं आया",
+            "कितने दिन"
+          ]
+        },
+        {
+          "title": "Evidence the platform must keep after it removes something",
+          "domains": [
+            "harassment_abuse",
+            "women_child_online_safety",
+            "general_cyber_safety"
+          ],
+          "text": "A common fear is that getting content taken down destroys the proof needed for the police case. Rule 3(1)(g) answers it: where an intermediary has removed information or disabled access to it, it must preserve that information and the associated records for one hundred and eighty days for investigation purposes, without vitiating the evidence in any manner, and longer if a court or a lawfully authorised government agency requires. Rule 3(1)(j) requires the intermediary to provide information in its control, or assistance, to a lawfully authorised government agency within seventy-two hours of receiving an order. Reporting content for removal and preserving evidence are therefore not in conflict - but your own screenshots are still worth keeping, because they are what you can produce yourself.",
+          "retrieval_terms": [
+            "evidence deleted",
+            "proof will be lost",
+            "180 days",
+            "preserve evidence",
+            "screenshot before deleting",
+            "police evidence platform",
+            "सबूत मिट जाएगा",
+            "सबूत रखना",
+            "स्क्रीनशॉट"
+          ]
+        },
+        {
+          "title": "Appealing to the Grievance Appellate Committee: the rule and the deadlines",
+          "domains": [
+            "harassment_abuse",
+            "women_child_online_safety",
+            "impersonation"
+          ],
+          "text": "Rule 3A establishes the Grievance Appellate Committees. Under rule 3A(3), a person aggrieved by a decision of a platform's Grievance Officer - or whose grievance was not resolved within the period rule 3(2) allows - may appeal within thirty days of receiving the Grievance Officer's communication. The Committee is to try to decide the appeal within thirty calendar days of receiving it, and under rule 3A(6) the entire process from filing to decision is conducted online. Rule 3A(7) is the part that gives the decision teeth: every order passed by the Committee must be complied with by the intermediary, and a report to that effect uploaded on its website. Appeals are filed at gac.gov.in.",
+          "retrieval_terms": [
+            "appeal 30 days",
+            "grievance appellate committee",
+            "rule 3A",
+            "appeal platform decision",
+            "gac appeal",
+            "order binding",
+            "अपील",
+            "तीस दिन",
+            "आगे क्या करें"
+          ]
+        },
+        {
+          "title": "Large platforms carry extra duties, including a 24x7 police contact",
+          "domains": [
+            "harassment_abuse",
+            "impersonation",
+            "general_cyber_safety"
+          ],
+          "text": "Rule 4(1) places additional duties on a significant social media intermediary - the large platforms. It must appoint a Chief Compliance Officer resident in India who is responsible for compliance with the Act and these rules and can be held liable for a failure of due diligence; a nodal contact person resident in India for 24x7 coordination with law enforcement agencies, to ensure their lawful orders and requisitions are complied with; and a Resident Grievance Officer, who performs the grievance functions under rule 3(2). This is why a police complaint on the National Cybercrime Reporting Portal can move faster than a user report alone: the investigating officer has a named, round-the-clock channel into the platform that a member of the public does not.",
+          "retrieval_terms": [
+            "significant social media",
+            "chief compliance officer",
+            "nodal officer",
+            "24x7 police",
+            "resident grievance officer",
+            "why police faster",
+            "पुलिस शिकायत क्यों",
+            "बड़े प्लेटफॉर्म"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "isea_meity_cdac_topics",
+      "source_title": "Information Security Education and Awareness (ISEA), MeitY and C-DAC",
+      "source_type": "official_public_guidance",
+      "source_url": "https://www.infosecawareness.in/topics",
+      "jurisdiction": "India",
+      "domains": [
+        "financial_fraud",
+        "harassment_abuse",
+        "women_child_online_safety",
+        "identity_theft",
+        "phishing"
+      ],
+      "language": "EN",
+      "version": "ISEA topic pages, reviewed 2026-09-12",
+      "published_at": "2024-01-01",
+      "sections": [
+        {
+          "title": "Romance scam: befriended online, then asked for money",
+          "domains": [
+            "financial_fraud",
+            "impersonation",
+            "harassment_abuse"
+          ],
+          "text": "ISEA describes an online romance scam as a fraudster using a fake profile to build a relationship and then persuading the victim to part with money on some pretext - an emergency, an accident or hospitalisation, a bogus scheme, or an investment opportunity presented with urgency. The money is asked for through gift cards, UPI, bank transfer or reloadable cards, and once enough has been extracted the person disappears. The warning signs it lists: affection expressed very early, being unusually empathetic and obliging, always avoiding meeting in person, details that do not match when checked, and requests for money or gifts. Intimate pictures shared during the relationship may later be used to extort more. ISEA advises never sending money to someone met online, never sharing banking details or identity documents, keeping a neutral person informed who can assess the interaction, ending the relationship if you suspect a scam, reporting the profile on the platform, approaching the bank if any banking details were shared, and filing at cybercrime.gov.in or the nearest cybercrime cell.",
+          "retrieval_terms": [
+            "romance scam",
+            "online love",
+            "dating app fraud",
+            "girlfriend asked money",
+            "boyfriend asked money",
+            "met online",
+            "sent money to stranger",
+            "प्यार में धोखा",
+            "ऑनलाइन दोस्ती",
+            "पैसे मांगे",
+            "शादी का झांसा",
+            "डेटिंग ऐप"
+          ]
+        },
+        {
+          "title": "Matrimonial fraud: a profile that looked respectable",
+          "domains": [
+            "financial_fraud",
+            "impersonation"
+          ],
+          "text": "ISEA treats fraud through matrimonial sites as a distinct pattern: a profile claiming a respectable position and family, pursued with the family's approval, followed some time later by a request for money in dire need - after which the person becomes untraceable. Its guidance is to check the authenticity of the matrimonial site before registering and to use a separate email address for it; not to publish your mobile number or residential address openly on the profile; never to share private pictures, bank account details or identity documents with someone recently met; to take ample time over a thorough background check, with professional help if needed; to be especially cautious with an overseas profile; and to meet in person in a public place and ask enough questions before proceeding.",
+          "retrieval_terms": [
+            "matrimonial fraud",
+            "shaadi site",
+            "marriage scam",
+            "rishta fraud",
+            "nri groom",
+            "fake groom",
+            "शादी की साइट",
+            "रिश्ता",
+            "शादी में धोखा",
+            "दूल्हा फर्जी"
+          ]
+        },
+        {
+          "title": "SIM swap: the phone goes dead and then the account is emptied",
+          "domains": [
+            "identity_theft",
+            "financial_fraud",
+            "account_compromise"
+          ],
+          "text": "ISEA explains SIM swapping - also called SIM splitting, SIM jacking or SIM hijacking - as a fraudster getting your mobile number registered on a SIM card they hold, which hands them your OTPs, PINs and authentication SMS, and through those your bank and social accounts even without your passwords. It happens in three ways: the fraudster impersonates you to the operator and requests a port to a new SIM claiming the phone was lost, stolen or broken; or uses a fake ID to get the existing SIM blocked and the number reissued; or calls you posing as a service-provider executive offering a better plan or coverage, gets you to read out the 20-digit number printed on your SIM, and then has you press 1 to authorise the swap. The signs that matter, because they arrive before the money goes: being unable to make calls or send messages, no mobile signal for an extended period, being unable to log in to your apps, and social accounts being hacked. Treat a sudden unexplained loss of signal as urgent - contact the operator at once rather than waiting for it to come back.",
+          "retrieval_terms": [
+            "sim swap",
+            "sim cloning",
+            "no signal",
+            "network gone",
+            "phone band ho gaya",
+            "sim block ho gaya",
+            "20 digit sim number",
+            "press 1",
+            "सिम स्वैप",
+            "नेटवर्क नहीं आ रहा",
+            "सिम बंद",
+            "फोन में सिग्नल नहीं"
+          ]
+        },
+        {
+          "title": "Fake tech support and remote-access apps",
+          "domains": [
+            "financial_fraud",
+            "malware_device_compromise",
+            "impersonation"
+          ],
+          "text": "ISEA describes tech support fraud as criminals posing as customer, security or technical support staff. A pop-up or blue screen warns that the device is infected, sometimes with alarming audio and a list of supposedly dangerous files, and will not close; it urges you to call a toll-free number or click a link. The aim is to frighten you into paying for repairs or software, and to get remote access to your device. Its warning signs: an unsolicited call or email from someone claiming to be a well-known technology company, since those companies do not contact customers unless the customer started it; a warning that urges you to call a number immediately; bad grammar; and being asked to pay by gift card, cash-reload card or wire transfer. Do not grant remote access to your computer or phone. Searching online for a toll-free support number is itself risky, because the results can lead to another fraudster - go to the website of the company or the retailer you bought from instead.",
+          "retrieval_terms": [
+            "tech support scam",
+            "anydesk",
+            "teamviewer",
+            "quick support",
+            "screen share",
+            "remote access",
+            "virus popup",
+            "computer infected",
+            "toll free number",
+            "टेक सपोर्ट",
+            "स्क्रीन शेयर",
+            "रिमोट एक्सेस",
+            "वायरस का मैसेज",
+            "fix my refund",
+            "refund ke liye app install",
+            "install app for refund",
+            "asked me to install app",
+            "refund process app",
+            "रिफंड के लिए ऐप"
+          ]
+        },
+        {
+          "title": "How OTP frauds are actually run",
+          "domains": [
+            "financial_fraud",
+            "phishing",
+            "account_compromise"
+          ],
+          "text": "ISEA sets out the pretexts used to get an OTP out of someone: free gifts, offers and discounts, easy loans, a call from a supposed online shopping executive, KYC updation, a credit limit enhancement, or a food delivery executive. One common script: the caller says an order is out for delivery, and when you say you did not place it, sends a link to cancel it and asks for the OTP to confirm the cancellation - the OTP then authorises a payment. ISEA advises that no genuine service provider ever asks a customer for an OTP, CVV or PIN; not clicking links in messages from unknown sources; not filling forms reached from such links; checking your messages so that an OTP generated without your knowledge is noticed immediately; never installing screen-sharing apps at anyone's suggestion; not using contact numbers found through a search engine; and disposing of old passbooks, cheque books and Aadhaar copies properly rather than handing photocopies to strangers. If it happens, inform the service provider, block the card, and report at cybercrime.gov.in or on 1930.",
+          "retrieval_terms": [
+            "otp fraud",
+            "otp share kar diya",
+            "cancel order otp",
+            "delivery otp",
+            "otp scam",
+            "gift offer",
+            "credit limit",
+            "ओटीपी फ्रॉड",
+            "ओटीपी बता दिया",
+            "ऑर्डर कैंसिल"
+          ]
+        },
+        {
+          "title": "KYC fraud: the message or call saying your account will be blocked",
+          "domains": [
+            "phishing",
+            "financial_fraud",
+            "impersonation"
+          ],
+          "text": "ISEA describes KYC fraud in two forms. On a call, the fraudster poses as a bank or e-wallet representative, warns that the account will be blocked or suspended unless KYC is updated immediately, has you download an app, asks you to share a code and grant permissions - which gives them your device - and then asks you to transfer a small amount, which lets them see the OTP and the credentials they need to empty the account. By message, a phishing link leads to a spoofed bank site asking for username, password and OTP, or a 10-digit mobile number is given to call. Its warning signs: a request for confidential information, a request to install an app, manufactured urgency, poor grammar and odd capitalisation, and a message from a plain mobile number rather than a registered bank sender ID. Two rules it states plainly: banks and wallet companies never do KYC over a call or by sending links, and a genuine customer-care number is never a 10-digit mobile number.",
+          "retrieval_terms": [
+            "kyc fraud",
+            "kyc update",
+            "account block ho jayega",
+            "kyc sms",
+            "kyc call",
+            "10 digit number",
+            "wallet kyc",
+            "केवाईसी",
+            "खाता बंद हो जाएगा",
+            "केवाईसी अपडेट"
+          ]
+        },
+        {
+          "title": "AePS: money taken using a fingerprint, without any OTP",
+          "domains": [
+            "financial_fraud",
+            "identity_theft"
+          ],
+          "text": "The Aadhaar Enabled Payment System lets a person withdraw or deposit cash, check a balance and transfer funds through a banking correspondent using their Aadhaar number and a fingerprint, at a micro-ATM or Aadhaar-enabled POS machine. ISEA notes the point that matters after a fraud: AePS requires no OTP and no PIN, so a victim may see money leave the account with no message asking them to approve anything. It names the risks - a fingerprint can be copied with glue in what is called the gummy-finger method, far more easily than a card can be cloned, and a merchant's device or phone may retain the biometric data captured. Its practices: verify the Aadhaar number before any transfer, use Aadhaar only at a proper POS and biometric capture device, and check that the device is certified and has not been tampered with. The transaction limit is Rs 50,000 per account per day.",
+          "retrieval_terms": [
+            "aeps",
+            "aadhaar payment",
+            "fingerprint se paise",
+            "biometric fraud",
+            "micro atm",
+            "no otp money gone",
+            "बायोमेट्रिक",
+            "अंगूठे से पैसे",
+            "आधार से पैसे निकले"
+          ]
+        },
+        {
+          "title": "Buying or selling on a classified marketplace",
+          "domains": [
+            "ecommerce_consumer_grievance",
+            "financial_fraud",
+            "impersonation"
+          ],
+          "text": "ISEA describes the scams run on online classified marketplaces from both sides. Against a seller: a supposed buyer claims to be far away or abroad, promises to cover shipping, and sends a representative from a courier service who is part of the scam to collect the item and the shipping charges; fake courier paperwork and a fake email, sometimes appearing to come from a bank asking for courier details before releasing the money, keep the seller believing the deal is real, and neither the payment nor the shipping money ever arrives. Against a buyer: fake ads copy the pictures and details of a genuine listing and price the item far below comparable ones to create a hurry. Common to both: the other party refuses to meet or speak on the phone and communicates only by message, pushes payment by prepaid card, UPI, net banking, cryptocurrency or a money transfer service, asks for personal and financial details to prove you are genuine, or proposes meeting alone in a secluded place.",
+          "retrieval_terms": [
+            "olx",
+            "quikr",
+            "classified",
+            "marketplace fraud",
+            "buyer scam",
+            "seller scam",
+            "army officer scam",
+            "courier agent",
+            "advance payment",
+            "sell online fraud",
+            "ओएलएक्स",
+            "सामान बेचा",
+            "एडवांस पैसे",
+            "कूरियर वाला"
+          ]
+        },
+        {
+          "title": "Sextortion: threatened with an intimate video or photo",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse",
+            "impersonation"
+          ],
+          "text": "ISEA describes online sextortion as a fraudster threatening to circulate your private material unless you provide more images, sexual favours or money, sometimes also threatening your friends or relatives using information taken from your devices. The approach comes through messaging apps, dating apps, social platforms or adult sites; the fraudster records the video call, takes screenshots, or morphs pictures that were sent, and then begins blackmailing. Warning signs of an attempt: repeated messages or video calls from unknown numbers, repeated friend requests, repeated requests for intimate pictures or video chats, conversation steered toward intimate topics, and a rush to build intimacy. ISEA's guidance if it has happened: save the evidence and screenshots, use the platform's Report User option, do not suffer in silence but reach out to trusted family and friends, and file a complaint at a cybercrime cell or online - noting explicitly that such a complaint can be filed anonymously on the national cybercrime reporting portal. It also names the signs of a victim in distress: fear, anxiety, depression, withdrawal, and suicidal or self-harming thoughts.",
+          "retrieval_terms": [
+            "sextortion",
+            "blackmail video",
+            "video call recording",
+            "nude video threat",
+            "paise mang raha hai",
+            "video viral karne ki dhamki",
+            "सेक्सटॉर्शन",
+            "वीडियो वायरल",
+            "ब्लैकमेल",
+            "धमकी दे रहा है",
+            "न्यूड वीडियो"
+          ]
+        },
+        {
+          "title": "Intimate images shared after a relationship ended",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse",
+            "cyberstalking"
+          ],
+          "text": "ISEA covers the case where private images or videos are published by someone who was trusted with them. Its guidance before it happens: be cautious about sharing or allowing intimate pictures because relationships may turn sour, do not continue with anyone who pressures you to share them, and do not forward anyone else's - forwarding is a breach of trust and can itself be a serious crime. After it happens: register a complaint online at cybercrime.gov.in, where such crimes can be registered anonymously, or at the nearest cybercrime police station. On the law, ISEA identifies the Information Technology Act provisions that apply - section 66E on violation of privacy, sections 67 and 67A on publishing or transmitting obscene and sexually explicit material in electronic form, and section 72 on breach of confidentiality and privacy - together with the Indecent Representation of Women (Prohibition) Act, 1986, which prohibits publishing indecent representation of women.",
+          "retrieval_terms": [
+            "revenge porn",
+            "ex boyfriend photos",
+            "private video leaked",
+            "photos share kar diye",
+            "breakup photos",
+            "66E",
+            "67A",
+            "पुरानी तस्वीरें",
+            "एक्स ने वीडियो डाल दी",
+            "निजी वीडियो लीक"
+          ]
+        },
+        {
+          "title": "Doxxing: your address and number posted to invite harassment",
+          "domains": [
+            "harassment_abuse",
+            "cyberstalking"
+          ],
+          "text": "ISEA defines doxxing as someone publishing your personal information - address, telephone number and the like - online, openly inviting others to harass you with it, often alongside false accusations. Its effect is an invasion of privacy and a humiliating, socially damaging experience, and the signs in a person affected are anxiety, depression, strong reactions and mood swings, anxiety on checking the phone, and withdrawing or becoming secretive. Its guidance: do not publish your address, mobile number or personal email openly, use two-factor authentication with different strong passwords on each account, and save the evidence and screenshots for referring to the incident later. Action: register a complaint at the nearest cybercrime police station or online at cybercrime.gov.in, which can be done anonymously, and report it to the platform's help centre.",
+          "retrieval_terms": [
+            "doxxing",
+            "my number posted",
+            "address shared online",
+            "details leak",
+            "phone number public",
+            "मेरा नंबर डाल दिया",
+            "पता डाल दिया",
+            "जानकारी लीक"
+          ]
+        },
+        {
+          "title": "Online trolling, and the evidence a social-media complaint needs",
+          "domains": [
+            "harassment_abuse",
+            "cyberstalking"
+          ],
+          "text": "ISEA describes trolling as posting inflammatory, abusive or offensive messages meant to provoke an emotional reaction, and warns it can lead to depression and self-harm. Its guidance: stay calm and block rather than reacting, complain to the platform's help centre immediately, restrict your privacy settings, and share videos privately. It then lists what a social-media complaint should have ready, which applies to online abuse generally: a copy or screenshot of the content, pictures, comments, messages and profile; a screenshot of the URL of that content; the material in both hard and soft form; and a copy of the complaint you made to the platform's help centre. Note the mobile number and any other details of the person. Always save screenshots as proof before anything is deleted.",
+          "retrieval_terms": [
+            "trolling",
+            "abusive comments",
+            "gaali",
+            "online abuse",
+            "evidence for complaint",
+            "screenshot url",
+            "what documents",
+            "ट्रोलिंग",
+            "गाली",
+            "कमेंट",
+            "सबूत क्या चाहिए",
+            "स्क्रीनशॉट कैसे"
+          ]
+        },
+        {
+          "title": "Cyber flashing: obscene images sent by a stranger",
+          "domains": [
+            "harassment_abuse",
+            "women_child_online_safety"
+          ],
+          "text": "ISEA describes cyber flashing as a form of online harassment in which unsolicited sexual or obscene images are sent over a messaging app or by a phone's nearby-sharing feature - and notes that nearby-sharing means the sender may be physically close to you. Its practical steps: turn the nearby-sharing or AirDrop receiving setting off; do not accept video calls from unknown numbers; do not open images or videos received from unknown numbers; turn off automatic media download in your messaging app so such content is not saved to your phone; set a screen lock and enable the phone's privacy features; and disable location services, including location permission for individual apps, when posting online. Save a screenshot as evidence first. A complaint can be filed at the nearest cybercrime police station or online at cybercrime.gov.in, anonymously if you prefer.",
+          "retrieval_terms": [
+            "cyber flashing",
+            "obscene photo sent",
+            "dirty picture",
+            "unknown number photo",
+            "airdrop",
+            "auto download off",
+            "गंदी तस्वीर",
+            "अनजान नंबर से फोटो",
+            "अश्लील मैसेज"
+          ]
+        },
+        {
+          "title": "Online grooming: how a child is drawn in, stage by stage",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse"
+          ],
+          "text": "ISEA sets out grooming as a slow, deliberate process rather than a single incident, which is why parents often miss it. The stages it names: the perpetrator targets a child, choosing one who seems emotionally needy, isolated, neglected or without much parental oversight, and gives them special attention; gains trust, including the parents' trust, by learning what the child needs and providing it; fills that need with gifts, money, flattery and affection; isolates the child by creating situations where they are alone and by cultivating the sense that only the groomer truly understands them, more than the parents do; then progressively sexualises the relationship through talk, pictures and situations involving nakedness; and finally maintains control through secrecy, blame and threats to keep the child silent. Groomers use fake accounts and photos and often pose as a child of the same age with the same hobbies, and may move the conversation off a game or platform somewhere more private. They may also use help inside a game to obtain a family member's card details. A child often does not understand they are being groomed.",
+          "retrieval_terms": [
+            "grooming",
+            "online friend of child",
+            "child talking to stranger",
+            "game friend",
+            "gifts to child",
+            "secret chat",
+            "ग्रूमिंग",
+            "बच्चा",
+            "अनजान दोस्त",
+            "गेम में दोस्ती",
+            "बच्ची से बात"
+          ]
+        },
+        {
+          "title": "Fake job offers",
+          "domains": [
+            "financial_fraud",
+            "impersonation",
+            "phishing"
+          ],
+          "text": "ISEA describes fake job offers reaching people who have applied for jobs online: the fraudster collects the details posted on job sites and sends emails that appear to come from genuine companies through fake mailer services, sometimes conducting an interview and sending an offer letter, and spoofing calls in the name of a large company. Money is demanded before and after the offer letter, deposited into various bank accounts and withdrawn at once. Its precautions: do not respond to such mail without verifying where it came from, do not deposit money unless the candidate has been interviewed in person by the company, check the company's own website for any such job opening before proceeding, and do not try to obtain a job by paying for it.",
+          "retrieval_terms": [
+            "job fraud",
+            "fake job offer",
+            "naukri scam",
+            "registration fee job",
+            "offer letter fake",
+            "work from home scam",
+            "नौकरी का झांसा",
+            "जॉब फ्रॉड",
+            "फीस मांगी",
+            "ऑफर लेटर"
+          ]
+        },
+        {
+          "title": "Where you can file, and what to do if the police will not take it",
+          "domains": [
+            "general_cyber_safety",
+            "harassment_abuse",
+            "financial_fraud"
+          ],
+          "text": "ISEA states that under the Information Technology Act a cyber crime comes under global jurisdiction, which means a cyber crime complaint can be registered with any cyber cell in India regardless of where the offence was actually committed - you are not sent back to the city where the fraudster was. Most cities now have a dedicated cyber crime cell. The written complaint is addressed to the Head of the Cyber Crime Cell of the city you are in, and carries your name, contact details and address for mailing. If you cannot reach a cyber cell, a First Information Report can be filed at the local police station. And if the complaint is not accepted there, ISEA says you can approach the Commissioner of Police or the city's Judicial Magistrate - refusal at the counter is not the end of the road. Separately, a cyber security incident can be reported to CERT-In, the national nodal agency under section 70B of the IT Act.",
+          "retrieval_terms": [
+            "police not taking complaint",
+            "fir refused",
+            "which police station",
+            "any cyber cell",
+            "jurisdiction",
+            "different city fraud",
+            "complaint kahan kare",
+            "magistrate",
+            "commissioner",
+            "पुलिस शिकायत नहीं ले रही",
+            "कौन से थाने",
+            "एफआईआर",
+            "दूसरे शहर से फ्रॉड",
+            "शिकायत कहां करें"
+          ]
+        },
+        {
+          "title": "1098: the child helpline, and reporting child sexual abuse material",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse"
+          ],
+          "text": "ISEA defines online child pornography as the abuse or exploitation of a minor under 18 in a sexually explicit act or conduct online, through images or videos, and describes predators using social media, gaming sites and chat rooms to lure children into such situations. Its guidance to a child or young person: if an online contact is unusually attentive, claims all the same interests, and pushes to meet in person, that is a warning sign; never agree to meet someone befriended online without telling your parents; and if anything makes you uncomfortable, cut off contact, tell your parents and report it. Such content can be reported to the platform and at cybercrime.gov.in, and the child helpline 1098, run under the Ministry of Women and Child Development, can be contacted. The signs in a child who has been affected are guilt, shame, distress, withdrawal and depression.",
+          "retrieval_terms": [
+            "1098",
+            "child helpline",
+            "child porn",
+            "csam",
+            "child sexual abuse material",
+            "minor video",
+            "bacche ka video",
+            "child exploitation",
+            "बच्चों की हेल्पलाइन",
+            "बच्चे का अश्लील",
+            "नाबालिग",
+            "बच्चे के साथ"
+          ]
+        },
+        {
+          "title": "What the law guarantees a child victim under POCSO",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse"
+          ],
+          "text": "Families often do not report abuse of a child because they fear the child being exposed, and the Protection of Children from Sexual Offences Act, 2012 is written against exactly that fear. ISEA sets out its protections: the Act is gender neutral, applying to girls and boys alike; penetrative and non-penetrative sexual assault are each defined; the trial is held in camera and in special courts; disclosing the identity of a victim is itself an offence punishable with imprisonment; the child's statement is to be recorded by a woman police officer at the child's residence or another place of the child's convenience, rather than at a police station; and compensation to the child victim can be awarded from the assets of the accused. Child pornography and cyber bullying of children also attract sections 66 and 67 of the Information Technology Act.",
+          "retrieval_terms": [
+            "pocso",
+            "child law",
+            "in camera",
+            "identity of child",
+            "woman police officer",
+            "will my child be exposed",
+            "child compensation",
+            "पॉक्सो",
+            "बच्चे का नाम",
+            "बच्चे को थाने",
+            "महिला पुलिस",
+            "कानून बच्चों के लिए"
+          ]
+        },
+        {
+          "title": "Cyberbullying, and the signs in a child who is being bullied",
+          "domains": [
+            "harassment_abuse",
+            "women_child_online_safety",
+            "cyberstalking"
+          ],
+          "text": "ISEA describes cyber bullying as intimidating online behaviour on a public platform - threatening, humiliating, embarrassing or harassing posts, teasing, rumours spread by email or on social networks, unwanted messages, defamation, and embarrassing pictures, videos or fake profiles. It happens through phones, computers and tablets and through social media, text messages, email, chat rooms and discussion groups. Its warning that matters most to a parent is what a bullied child looks like rather than what the bullying looks like: recurrent health complaints and eating poorly, avoiding school or college, isolating themselves, appearing depressed, sad, worried or agitated, and losing interest in activities. It notes that the harm runs to social isolation, mental stress and suicidal attempts, so these signs are not something to wait out.",
+          "retrieval_terms": [
+            "cyberbullying",
+            "bullying",
+            "school bullying online",
+            "child sad",
+            "school nahi ja raha",
+            "bacche ko tang",
+            "child depressed",
+            "साइबर बुलिंग",
+            "बच्चा परेशान",
+            "स्कूल नहीं जा रहा",
+            "बच्चे को चिढ़ा"
+          ]
+        },
+        {
+          "title": "Sexting between teenagers, and why forwarding it is serious",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse"
+          ],
+          "text": "ISEA describes sexting as sharing sexually explicit images or videos over the internet or through phones, and notes it is not a one-sided phenomenon - girls and boys take part about equally, which matters because the assumption that boys ask and girls send shapes how families react. The consequences it names are real: images forwarded to people they were never meant for cause serious emotional distress, and sexting between a minor under 18 and an adult falls under child pornography law whether or not the images were shared willingly - for the person sending and the person receiving. Its advice to parents is to raise it early and repeatedly, not to turn it into a conversation about morals, to discuss the unwanted distribution and the legal consequences plainly, and to make clear that no one has to prove love this way.",
+          "retrieval_terms": [
+            "sexting",
+            "teen photos",
+            "shared photo with boyfriend",
+            "minor photo",
+            "बच्चों ने फोटो भेजी",
+            "टीनएजर",
+            "प्रेमी को फोटो"
+          ]
+        },
+        {
+          "title": "Someone made a fake profile in your name",
+          "domains": [
+            "impersonation",
+            "identity_theft",
+            "harassment_abuse"
+          ],
+          "text": "ISEA describes fake profile creation as a fraudster building a social media profile from your identity details - name, address, email, photograph - without your knowledge, in order to harm you. What they do with it: spread false information, damage your reputation, send friend requests to your actual friends and family so those people can be phished or defrauded in turn, lure children and teenagers behind your identity, and ask your contacts for money or gifts. Profiles of army personnel, well-known people and professionals working abroad are common templates. Its guidance: do not publish high-resolution personal pictures publicly, prefer group photographs over individual ones, keep address, mobile number and personal email off the profile, use a different password for each account with two-factor authentication, and be alert to anyone asking you about online activity you do not recognise - that is often the first sign. Report the fake profile both to the platform and at cybercrime.gov.in.",
+          "retrieval_terms": [
+            "fake profile",
+            "fake account my name",
+            "someone using my photo",
+            "duplicate account",
+            "impersonating me",
+            "friends got message",
+            "फर्जी प्रोफाइल",
+            "मेरे नाम से अकाउंट",
+            "मेरी फोटो लगाकर",
+            "दोस्तों को मैसेज"
+          ]
+        },
+        {
+          "title": "Fake government subsidy and scheme messages",
+          "domains": [
+            "phishing",
+            "financial_fraud",
+            "malware_device_compromise"
+          ],
+          "text": "ISEA warns about messages and links spread through instant messaging apps and social media offering government subsidies, schemes, grants and cash offers. The pattern: you receive the link, you are prompted to click it, register, or take a survey, and you are redirected to a malicious site - which leads to a data leak, malware, siphoned money or a hacked account. Its warning signs are a tweaked website address, a generic message that does not use your name, a request for personal details unrelated to the supposed scheme, and an offer that sounds too good to be true. Verify any such announcement on the official government website itself rather than through the link, do not forward the message on to others before verifying it, never share login credentials or card details, and block and report the number.",
+          "retrieval_terms": [
+            "government scheme message",
+            "subsidy sms",
+            "yojana link",
+            "free money government",
+            "sarkari scheme",
+            "सरकारी योजना",
+            "सब्सिडी",
+            "योजना का मैसेज",
+            "मुफ्त में पैसे"
+          ]
+        },
+        {
+          "title": "Social engineering: how they knew enough to sound real",
+          "domains": [
+            "phishing",
+            "impersonation",
+            "identity_theft"
+          ],
+          "text": "ISEA describes social engineering as the step that usually comes before the attack: manipulating a person into giving up information without them realising a breach is happening, through impersonation by telephone, in person, or by email. It is why a fraud call can sound informed and legitimate. The routes it names are ordinary ones - conversations overheard in cafes, restaurants and offices; casual talk about yourself or about someone else; and details volunteered out of pride in an achievement or a job. Its guidance is correspondingly ordinary: avoid careless talk about personal or workplace details in public places, do not discuss other people's details with strangers, and be cautious about what a stranger asking business-sounding questions is actually collecting.",
+          "retrieval_terms": [
+            "social engineering",
+            "how did they know",
+            "caller knew my details",
+            "information leak",
+            "unhe kaise pata",
+            "उन्हें कैसे पता",
+            "मेरी जानकारी कहां से",
+            "सब पता था"
+          ]
+        },
+        {
+          "title": "E-wallet takeover, and the SIM swap behind it",
+          "domains": [
+            "financial_fraud",
+            "account_compromise",
+            "identity_theft"
+          ],
+          "text": "ISEA explains that an e-wallet permanently stores personally identifiable information - name, mobile number - along with protected details such as card numbers, a secret PIN and net-banking credentials, with only a final authorisation by OTP or biometric standing between a fraudster and a payment. Impersonation is where a fraudster uses stolen details to transact as you. The SIM swap route is the more complete takeover: the fraudster collects your information, gets your SIM blocked, walks into the operator's retail outlet with a fake identity proof, obtains a duplicate SIM, and then generates the one-time passwords themselves. Its prevention rule is a single sentence worth remembering: financial service providers and their support staff never ask a customer to share passwords or payment account numbers over an email request or a phone enquiry.",
+          "retrieval_terms": [
+            "e wallet",
+            "wallet hacked",
+            "paytm account",
+            "wallet se paise",
+            "duplicate sim",
+            "otp kisi aur ko",
+            "ई वॉलेट",
+            "वॉलेट हैक",
+            "वॉलेट से पैसे"
+          ]
+        },
+        {
+          "title": "Digital parenting: supervision that a child will still talk to you about",
+          "domains": [
+            "women_child_online_safety",
+            "general_cyber_safety"
+          ],
+          "text": "ISEA frames digital parenting as supervising a child's online activity while still leaving them the independence they need, and is explicit that the balance between those two is the difficult part. Its point is that supervision only works if the child will still come to you: the goal is that they have the confidence to confide a digital problem, which means open discussion about what the apps, games and platforms are and how they are properly used, rather than rules handed down about technology the parent has not looked at. Parents are the child's first teachers and the ones the child copies, so their own habits online are part of the lesson.",
+          "retrieval_terms": [
+            "digital parenting",
+            "parental control",
+            "child phone",
+            "screen time",
+            "kids online",
+            "बच्चों की निगरानी",
+            "बच्चे का फोन",
+            "पैरेंटिंग"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "ncw_women_complaint",
+      "source_title": "National Commission for Women - helpline and online complaint portal",
+      "source_type": "official_public_service",
+      "source_url": "https://ncw.gov.in/",
+      "jurisdiction": "India",
+      "domains": [
+        "women_child_online_safety",
+        "harassment_abuse"
+      ],
+      "language": "EN",
+      "version": "portal and helpline as published, reviewed 2026-09-12",
+      "published_at": "2024-01-01",
+      "sections": [
+        {
+          "title": "The National Commission for Women: 14490, and a complaint that is not a police case",
+          "domains": [
+            "women_child_online_safety",
+            "harassment_abuse",
+            "cyberstalking"
+          ],
+          "text": "Not everything a woman needs is a police case, and not every woman is ready to file one. The National Commission for Women runs a 24x7 helpline on 14490 for immediate assistance and support, and accepts complaints online through its portal at ncwapps.nic.in. It takes up complaints of discrimination and atrocities against women across the range of their rights and entitlements, including matters such as domestic violence, so a woman facing online abuse that is entangled with what is happening at home has somewhere to go that handles both. This runs alongside a cybercrime complaint rather than replacing it: 1930 and cybercrime.gov.in remain the route for the cyber offence itself.",
+          "retrieval_terms": [
+            "ncw",
+            "women commission",
+            "14490",
+            "women helpline",
+            "mahila aayog",
+            "domestic",
+            "help for women",
+            "महिला आयोग",
+            "महिला हेल्पलाइन",
+            "औरत के लिए मदद",
+            "घरेलू"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "csk_meity_cert_in_tools",
+      "source_title": "Cyber Swachhta Kendra - Botnet Cleaning and Malware Analysis Centre, MeitY and CERT-In",
+      "source_type": "official_public_service",
+      "source_url": "https://www.csk.gov.in/security-tools.html",
+      "jurisdiction": "India",
+      "domains": [
+        "malware_device_compromise",
+        "general_cyber_safety"
+      ],
+      "language": "EN",
+      "version": "security tools listing as published, reviewed 2026-09-12",
+      "published_at": "2017-02-21",
+      "sections": [
+        {
+          "title": "Free government-provided tools to clean an infected phone or computer",
+          "domains": [
+            "malware_device_compromise",
+            "account_compromise",
+            "general_cyber_safety"
+          ],
+          "text": "After an APK was installed from a chat, a remote-access app was allowed, or a device is behaving strangely, the next step is actually cleaning it - and that does not have to be paid for. Cyber Swachhta Kendra, the Botnet Cleaning and Malware Analysis Centre run by CERT-In under the Ministry of Electronics and Information Technology, publishes free tools at csk.gov.in. For Windows it lists free bot removal tools provided by K7 Security and by Quick Heal. For Android it lists the eScan Smartphone Safety Toolkit, and M-Kavach 2, a mobile security application developed by C-DAC Hyderabad with the support of MeitY. Download them from csk.gov.in itself rather than from a search result or a link in a message - fake security apps are one of the ways devices get infected in the first place.",
+          "retrieval_terms": [
+            "csk",
+            "cyber swachhta kendra",
+            "free antivirus",
+            "bot removal",
+            "m-kavach",
+            "clean my phone",
+            "virus hatao",
+            "malware removal",
+            "phone hack ho gaya",
+            "मुफ्त एंटीवायरस",
+            "फोन साफ",
+            "वायरस हटाएं",
+            "मोबाइल हैक"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "i4c_mha_advisories",
+      "source_title": "I4C advisories, National Cybercrime Threat Analytics Unit, Ministry of Home Affairs",
+      "source_type": "official_public_guidance",
+      "source_url": "https://i4c.mha.gov.in/advisories.aspx",
+      "jurisdiction": "India",
+      "domains": [
+        "financial_fraud",
+        "impersonation",
+        "phishing",
+        "malware_device_compromise"
+      ],
+      "language": "EN",
+      "version": "public advisories as listed, reviewed 2026-09-12",
+      "published_at": "2025-03-06",
+      "sections": [
+        {
+          "title": "Digital arrest: there is no such thing in Indian law",
+          "domains": [
+            "impersonation",
+            "financial_fraud",
+            "harassment_abuse"
+          ],
+          "text": "I4C states it plainly, and it is the one thing a frightened person needs to hear first: there is no concept of Digital Arrest under any Indian law, and real law enforcement will not arrest you digitally. The pattern it describes: a call, often from a spoofed number, from someone posing as Mumbai or Delhi Police, the CBI, the Narcotics Department, RBI, the Telecom Department or the Enforcement Directorate. They allege you are involved in something serious - contraband, drugs, fake passports or SIM cards sent through a courier company, your Aadhaar or mobile number used in illegal activity, money from a drug dealer deposited in your account, money laundering, terrorism - or that a family member has been caught. Some victims are then held in 'digital confinement', kept on a video call over Skype or WhatsApp, sometimes against a fake police-station backdrop, until they pay to make the invented case go away. I4C's precautions: never share personal or financial information on a call without verifying it, verify the caller by contacting the nearest police station yourself, and speak to a relative or friend before transferring any money. Report on 1930 or at cybercrime.gov.in.",
+          "retrieval_terms": [
+            "digital arrest",
+            "cbi called",
+            "ed notice call",
+            "police video call",
+            "skype police",
+            "customs parcel drugs",
+            "aadhaar misuse call",
+            "arrest warrant call",
+            "डिजिटल अरेस्ट",
+            "सीबीआई",
+            "पुलिस का वीडियो कॉल",
+            "गिरफ्तारी की धमकी",
+            "पार्सल में ड्रग्स"
+          ]
+        },
+        {
+          "title": "Calls being forwarded to a fraudster, and the code that stops it",
+          "domains": [
+            "account_compromise",
+            "financial_fraud",
+            "identity_theft"
+          ],
+          "text": "I4C describes a scam where criminals pose as delivery or courier agents, calling to confirm or reschedule a delivery, and then get the victim to dial a code sent by SMS beginning with *21* followed by the fraudster's mobile number. Dialling it activates call forwarding on the victim's phone, so calls from banks and the voice verification of OTPs and authentication codes for WhatsApp and Telegram go to the fraudster instead - leading to unauthorised transactions and account takeovers. The remedy is immediate and you can do it yourself: dial ##002# and all call forwarding is cancelled at once, including busy, unreachable and no-answer forwarding. Never dial a code beginning with *21*, *61* or *67* given to you by an unknown caller, do not click courier or delivery links arriving by SMS or WhatsApp, and confirm any delivery through the courier company's own website or customer-care number.",
+          "retrieval_terms": [
+            "call forwarding",
+            "*21*",
+            "##002#",
+            "ussd code",
+            "delivery agent call",
+            "courier ne code diya",
+            "calls not coming",
+            "whatsapp hacked otp",
+            "कॉल फॉरवर्ड",
+            "कोड डायल",
+            "कूरियर वाले ने",
+            "कॉल नहीं आ रहे"
+          ]
+        },
+        {
+          "title": "Captcha filling and task-based 'jobs' that ask you to pay first",
+          "domains": [
+            "financial_fraud",
+            "impersonation"
+          ],
+          "text": "I4C reports a significant rise in fraudulent captcha-filling job scams promoted on social media, job portals and messaging apps, promising high earnings for minimal effort. The sequence: you are asked to pay a registration fee, training fee or software charge to start - sometimes with a fabricated agreement to look legitimate - then given access to a fake platform with thousands of captchas to solve under strict deadlines. After some weeks the payout is refused on the grounds that your work contained inaccuracies, withdrawals are delayed or never processed, and further money is demanded for taxes, processing charges, commission or a membership upgrade, before the scammers disappear with your deposits. The red flags I4C names are: an upfront payment, unrealistic earning promises, delayed or denied withdrawals, and heavy emphasis on referring others to earn more.",
+          "retrieval_terms": [
+            "captcha job",
+            "task fraud",
+            "part time job",
+            "registration fee job",
+            "withdrawal not processing",
+            "typing job",
+            "data entry job",
+            "task complete karo",
+            "टास्क",
+            "पार्ट टाइम जॉब",
+            "रजिस्ट्रेशन फीस",
+            "पैसे नहीं निकल रहे"
+          ]
+        },
+        {
+          "title": "Matrimonial and dating profiles that turn into an investment pitch",
+          "domains": [
+            "financial_fraud",
+            "impersonation"
+          ],
+          "text": "I4C's 2025 analysis of NCRP complaints found fraudsters creating fake profiles on matrimonial and dating platforms, using stolen or morphed photographs and false names, ages, professions and incomes, and presenting themselves as well-settled - working abroad, in the armed forces, or at a reputed company. They use the platform's own age and income filters to pick out people who are financially well off. Trust is built over calls, chats and video calls, sometimes with fake or edited backgrounds. Then comes the turn that distinguishes this from an ordinary romance scam: rather than asking for money directly, they create an urgent or emotional situation and steer the victim into a fraudulent investment scheme or cryptocurrency promising high returns. I4C's precautions: do a background check and a reverse image search on the photographs, share no private or financial details with anyone you have not met in person, and never transfer money for an investment on the word of someone you met online - particularly one promising unrealistic returns quickly.",
+          "retrieval_terms": [
+            "matrimonial investment",
+            "shaadi site crypto",
+            "dating investment",
+            "trading scam",
+            "crypto returns",
+            "met on shaadi app",
+            "army officer profile",
+            "शादी की साइट निवेश",
+            "क्रिप्टो",
+            "ट्रेडिंग में पैसे"
+          ]
+        },
+        {
+          "title": "Tampered QR codes: check the address after you scan",
+          "domains": [
+            "phishing",
+            "financial_fraud",
+            "upi_payment_fraud",
+            "malware_device_compromise"
+          ],
+          "text": "I4C warns that criminals tamper with both physical and digital QR codes, replacing a legitimate code with a malicious one. The victim scans what looks like the real code and is taken to a malicious site that asks for login and financial details; a malicious code may instead carry embedded malware that gives the criminal access to the device and its location along with personal and financial information. The stolen details are then used to withdraw funds or to induce fraudulent payments. The practical defence I4C gives is a habit worth forming: after scanning a QR code, look at the address that opened and check it is the site you intended and looks authentic, before entering anything.",
+          "retrieval_terms": [
+            "tampered qr",
+            "qr sticker",
+            "scanned qr wrong site",
+            "qr code malware",
+            "shop qr code",
+            "क्यूआर बदल दिया",
+            "स्कैन करने पर गलत साइट"
+          ]
+        },
+        {
+          "title": "Banking trojans: a fake banking app that came from a real app store",
+          "domains": [
+            "malware_device_compromise",
+            "account_compromise",
+            "financial_fraud"
+          ],
+          "text": "I4C describes banking trojans as malware that steals banking credentials from people using internet or mobile banking, disguised as innocent applications or web pages and built to avoid detection by staying dormant, hiding inside other files or using heavy obfuscation. The point most worth knowing: criminals mask malicious apps as legitimate ones - mobile banking and payment apps especially - and these can often be downloaded from official app stores, so 'I got it from the Play Store' is not by itself proof an app is safe. Infection also arrives through email attachments and links, drive-by downloads and deceptive pop-up windows. Once installed, the malware opens a backdoor into the device or copies credentials by spoofing the bank's login page, so what the victim types goes to the criminal's server rather than the bank.",
+          "retrieval_terms": [
+            "banking trojan",
+            "fake banking app",
+            "app store fake app",
+            "bank app malware",
+            "credentials stolen",
+            "बैंकिंग ऐप नकली",
+            "ऐप से पैसे गए"
+          ]
+        },
+        {
+          "title": "Overseas job offers that end in a scam compound",
+          "domains": [
+            "financial_fraud",
+            "impersonation",
+            "harassment_abuse"
+          ],
+          "text": "The Indian Embassy in Yangon has issued repeated advisories about Indian nationals falling victim to international crime syndicates operating in the Myawaddy region on the Myanmar-Thailand border, and a newer location in the Hpa Lu area south of Myawaddy. Indians are recruited in India - and from Malaysia, the UAE and elsewhere - through job offers floated on social media and other unverified sources, then trafficked in via Thailand. The Embassy's advice is unambiguous: do not accept such job offers without consulting the Indian Embassy in the country concerned, verify the credentials of a foreign employer through that Embassy, and establish the antecedents of the recruiting agent and the company before taking up any job abroad. This is not only a financial fraud - people are held and forced to work - so a family worried about a relative who left for such a job should treat it as urgent.",
+          "retrieval_terms": [
+            "job abroad",
+            "myanmar job",
+            "thailand job",
+            "foreign job offer",
+            "scam compound",
+            "trafficked",
+            "relative stuck abroad",
+            "विदेश में नौकरी",
+            "म्यांमार",
+            "बाहर नौकरी का ऑफर",
+            "रिश्तेदार फंस गया"
           ]
         }
       ]

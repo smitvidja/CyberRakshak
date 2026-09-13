@@ -74,7 +74,8 @@ recovery, and never tells you an identifier is "safe".
 <img src="docs/screenshots/02-cyber-saathi.png" alt="Cyber Saathi answering a sextortion question with an official source" width="860">
 
 A citizen types a sextortion threat in plain English. Cyber Saathi classifies the domain,
-retrieves from a corpus of **34 chunks drawn from 14 reviewed sources** (NCRP, CERT-In, RBI),
+retrieves from a corpus of **128 chunks drawn from 27 reviewed sources** (NCRP, CERT-In, RBI,
+I4C, ISEA, DoT Sanchar Saathi and CEIR),
 and answers with a numbered, immediately actionable sequence — *don't pay, preserve the
 evidence, then block and report* — with the official source attached and one focused
 follow-up question.
@@ -421,8 +422,9 @@ Stated plainly, because a prototype that pretends otherwise is worse than one th
 
 - **Admin is mostly API-only.** The knowledge-gap review console has a screen; complaints,
   suspect reports and warrior applications are authorised endpoints with no UI yet.
-- **The knowledge corpus is small** — 34 chunks, roughly four pages. Retrieval quality is now
-  ahead of coverage, which makes the corpus the binding constraint.
+- **The knowledge corpus is bounded by the index format** — 128 chunks from 27 government
+  sources, against a hard ceiling of 500 chunks / 8 MB in a single JSON index. Growing much
+  past this is an architecture change (a real vector store), not more crawling.
 - **The rate limiter is per process.** Exact for a single instance; it multiplies if you add
   workers or instances.
 - **No OCR.** An image-only résumé returns a controlled error rather than pretending to read it.
