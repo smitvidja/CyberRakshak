@@ -21,6 +21,13 @@ backend/htmlcov/
 # Dev-only code: tests and one-off asset/demo scripts have no place in the runtime image.
 backend/tests/
 backend/scripts/
+# ...except the retention purge, which docker-entrypoint.sh runs on every start.
+# Excluding the whole directory meant `python -m scripts.purge_expired_conversations`
+# raised ModuleNotFoundError in every container, and the entrypoint swallows that
+# failure by design - so expired Cyber Saathi conversations were never deleted, and
+# nothing said so. A citizen is told their conversation is kept for thirty days.
+!backend/scripts/__init__.py
+!backend/scripts/purge_expired_conversations.py
 
 # Secrets never enter an image layer
 **/.env
