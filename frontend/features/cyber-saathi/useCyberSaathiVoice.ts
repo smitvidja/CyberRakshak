@@ -279,7 +279,19 @@ export function useCyberSaathiVoice({
     session.streaming = false;
     if (session.socket?.readyState === WebSocket.OPEN) session.socket.send(JSON.stringify({event: "speech_end"}));
     await stopCapture(session);
-    session.fallbackTimer = setTimeout(() => void runRestFallback(session), 4000);
+    // How long to wait for the realtime provider's final transcript before
+    // retrying over the batch endpoint.
+    //
+    // This was a flat 4 seconds, which is why a 60-second recording behaved like
+    // a 30-second one. Sarvam's batch endpoint refuses anything longer than
+    // REST_FALLBACK_MAX_DURATION_MS, so for a long capture the retry cannot
+    // succeed - yet after four quiet seconds the session was pulled off the
+    // realtime path anyway, and the citizen was left with whatever partial text
+    // had arrived. A longer capture takes longer to finalise, so it is given the
+    // time instead of being abandoned in favour of a call that will be refused.
+    const capturedMs = session.streamStartedAt ? performance.now() - session.streamStartedAt : 0;
+    const fallbackDelayMs = capturedMs > REST_FALLBACK_MAX_DURATION_MS ? 15_000 : 4_000;
+    session.fallbackTimer = setTimeout(() => void runRestFallback(session), fallbackDelayMs);
   }, [runRestFallback, stopCapture, updateStatus]);
 
   const finishAndSend = useCallback(() => stopListening("send"), [stopListening]);

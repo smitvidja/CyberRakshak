@@ -179,6 +179,18 @@ export function CyberSaathiConversation() {
     setSending(false);
   }
 
+  // Enter sends; Shift+Enter starts a new line. The isComposing guard is not
+  // optional here: typing Devanagari goes through an IME, and an IME uses Enter
+  // to commit the character being composed. Without the guard, a citizen writing
+  // in Hindi would send a half-finished word every time they completed a letter.
+  const handleComposerKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key !== "Enter" || event.shiftKey) return;
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return;
+    event.preventDefault();
+    if (!message.trim() || loading || sending) return;
+    void sendMessage(message);
+  };
+
   directVoiceSendRef.current = (transcript) => {
     void sendMessage(transcript, undefined, false, true);
   };
@@ -476,7 +488,7 @@ export function CyberSaathiConversation() {
             <label className="sr-only" htmlFor="saathi-message">{t("inputLabel")}</label>
             <div className="flex items-end gap-2 rounded-[8px] border border-[#aebfd3] bg-white p-2 focus-within:border-[#0b58c7] focus-within:ring-2 focus-within:ring-blue-100">
               <input accept=".pdf,.png,.jpg,.jpeg" className="sr-only" disabled={loading || sending || attaching} onChange={(event) => { const file = event.target.files?.[0]; if (file) void analyzeAttachment(file); }} ref={attachmentInputRef} type="file" />
-              <textarea className="min-h-11 max-h-60 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-500" disabled={loading || sending} id="saathi-message" maxLength={4000} onChange={(event) => setMessage(event.target.value)} placeholder={t("placeholder")} ref={inputRef} rows={1} value={message} />
+              <textarea className="min-h-11 max-h-60 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-500" disabled={loading || sending} id="saathi-message" maxLength={4000} onChange={(event) => setMessage(event.target.value)} onKeyDown={handleComposerKeyDown} placeholder={t("placeholder")} ref={inputRef} rows={1} value={message} />
               <button aria-label={t("attachEvidence")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] border border-[#c6d4e4] text-[#0b58c7] hover:bg-blue-50 disabled:opacity-50" disabled={loading || sending || attaching || !state?.incident.summary} onClick={() => attachmentInputRef.current?.click()} title={t("attachEvidence")} type="button">{attaching ? <LoaderCircle className="animate-spin" size={18} /> : <Paperclip size={18} />}</button>
               {inputMode === "text" ? <button aria-label={t("voiceButton")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] border border-[#c6d4e4] text-[#0b58c7] hover:bg-blue-50 active:scale-[0.98]" disabled={loading || sending} onClick={() => { setInputMode("voice"); void voice.startListening(); }} title={t("voiceButton")} type="button"><Mic size={18} /></button> : null}
               <button aria-label={t("send")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] bg-[#0b4fb3] text-white disabled:cursor-not-allowed disabled:opacity-50" disabled={!message.trim() || loading || sending} title={t("send")} type="submit"><Send size={18} /></button>
