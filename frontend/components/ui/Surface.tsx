@@ -6,10 +6,18 @@ type SurfaceCardProps = {
   heading?: ReactNode;
 };
 
+// The blue top stripe every card used to wear is a government-template tic: it
+// reads as decoration applied to a box rather than as a surface. Depth now comes
+// from a layered shadow and a warm hairline, which is what separates a card from
+// the paper without drawing a line across the top of it.
 export function SurfaceCard({children, className = "", heading}: SurfaceCardProps) {
   return (
-    <section className={["portal-surface rounded-[var(--radius)] border border-[var(--border)] border-t-2 border-t-[#8dbde9] bg-white p-5 shadow-[0_3px_12px_rgb(15_42_74_/_0.08)] sm:p-6", className].join(" ")}>
-      {heading ? <div className="mb-4 flex min-h-8 items-center border-b border-[var(--border)] pb-3 text-lg font-bold text-[var(--navy)]">{heading}</div> : null}
+    <section className={["portal-surface rounded-[var(--radius)] border border-[var(--border)] bg-white p-6 shadow-[var(--shadow)] sm:p-7", className].join(" ")}>
+      {heading ? (
+        <div className="mb-5 flex min-h-8 items-center border-b border-[var(--border)] pb-4 text-[17px] font-bold tracking-[-0.01em] text-[var(--navy)]">
+          {heading}
+        </div>
+      ) : null}
       {children}
     </section>
   );
@@ -26,7 +34,7 @@ const statusToneClasses: Record<StatusTone, string> = {
 };
 
 export function StatusChip({label, tone = "neutral"}: {label: string; tone?: StatusTone}) {
-  return <span className={["inline-flex min-h-7 items-center rounded-full border px-3 py-1 text-xs font-bold leading-4", statusToneClasses[tone]].join(" ")}>{label}</span>;
+  return <span className={["inline-flex min-h-7 items-center rounded-full border px-3 py-1 text-[12.5px] font-semibold uppercase leading-4 tracking-[0.03em]", statusToneClasses[tone]].join(" ")}>{label}</span>;
 }
 
 type StateTone = "loading" | "error" | "empty" | "success" | "info" | "warning";
@@ -42,8 +50,8 @@ const stateToneClasses: Record<StateTone, string> = {
 
 export function StatePanel({action, children, title, tone}: {action?: ReactNode; children: ReactNode; title: string; tone: StateTone}) {
   return (
-    <section className={["flex flex-col items-start gap-3 portal-state-panel rounded-[var(--radius)] border p-5 sm:flex-row sm:items-center sm:justify-between", stateToneClasses[tone]].join(" ")}>
-      <div><h2 className="font-bold">{title}</h2><div className="mt-1 text-sm leading-6">{children}</div></div>
+    <section className={["mt-5 flex flex-col items-start gap-3 portal-state-panel rounded-[var(--radius)] border p-5 sm:flex-row sm:items-center sm:justify-between", stateToneClasses[tone]].join(" ")}>
+      <div><h2 className="text-[15px] font-bold">{title}</h2><div className="mt-1 text-sm leading-6">{children}</div></div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </section>
   );

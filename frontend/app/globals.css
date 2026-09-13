@@ -13,9 +13,18 @@
      at a background-appropriate strength. Used almost everywhere via html/body and the
      header (.primary-nav, .utility-bar already read this token), so retuning it here is
      one change that reaches the whole site consistently, not a piecemeal per-page tweak. */
-  --canvas: #f1fafc;
-  --canvas-top: #f5fdff;
-  --border: #d6e1ed;
+  /* Warm paper rather than cold cyan. The old canvas (#f1fafc) sat only a shade
+     away from the white of every card, so nothing looked raised - the page read as
+     one flat sheet with faint outlines drawn on it. A slightly warm off-white gives
+     white cards something to sit on, and warm paper against a cool blue is what
+     makes a restrained palette feel considered instead of plain. Kept very washed:
+     at this strength it reads as "soft white", not beige. */
+  --canvas: #f3f2ee;
+  --canvas-top: #faf9f6;
+  /* Warm-grey rather than blue-grey, so hairlines sit on the paper instead of
+     glowing slightly blue against it. */
+  --border: #e2e0da;
+  --border-strong: #cfccc4;
   --success: #14785b;
   --warning: #9d5900;
   --danger: #b42318;
@@ -23,8 +32,33 @@
      spots (see page.tsx "Stay Alert") - not a wholesale recolor. */
   --teal: #1f9a86;
   --teal-soft: #e6f6f2;
-  --radius: 7px;
-  --shadow: 0 2px 10px rgb(15 42 74 / 0.08);
+  /* 7px was the awkward middle distance - too round to look deliberate, too square
+     to look soft. 12px reads as a considered surface at card size, with a smaller
+     step for controls so buttons and inputs do not look like little pills. */
+  --radius: 12px;
+  --radius-sm: 9px;
+  --radius-lg: 18px;
+  /* --- THE TYPE SYSTEM, LOCKED -------------------------------------------
+     Three roles and nothing else. Anything that is not one of these three is a
+     bug, not a variation.
+
+       --type-display  one place only: the hero headline.
+       --type-title    EVERY title, heading, label, tag, number and nav item.
+       --type-body     every sentence a citizen actually reads.
+
+     The Latin face is listed first in all three. Listing Devanagari first - as
+     this file used to - hands Latin text to Noto's own Latin and silently
+     cancels the choice; Hindi still resolves either way, because the Latin
+     faces carry no Devanagari glyphs and fall through on their own. */
+  --type-display: var(--font-poster), var(--font-devanagari), Georgia, serif;
+  --type-title: var(--font-condensed), var(--font-devanagari), var(--font-sans), sans-serif;
+  --type-body: var(--font-devanagari), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Two layers, not one. A single 10px blur is a grey halo; a tight contact shadow
+     plus a wider soft one is how a real surface sits above paper. Kept low-opacity
+     because the page must stay calm. */
+  --shadow: 0 1px 2px rgb(24 33 48 / 0.05), 0 4px 14px rgb(24 33 48 / 0.06);
+  --shadow-lift: 0 1px 2px rgb(24 33 48 / 0.05), 0 10px 26px rgb(24 33 48 / 0.10);
+  --shadow-inset-top: inset 0 1px 0 rgb(255 255 255 / 0.6);
   /* Retro-future/circuit decorative watermark: a 6-fold-symmetric hexagon with PCB-trace
      lines to via-pads at each edge (technical-pen line art, no fills), tiled at 140px.
      Base64 so the raw SVG's own quote characters never collide with the CSS url("...")
@@ -44,10 +78,36 @@
 }
 
 * { box-sizing: border-box; }
-html, body { min-height: 100%; margin: 0; background: linear-gradient(180deg, var(--canvas-top) 0%, var(--canvas) 100%) fixed; color: var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+html, body {
+  min-height: 100%;
+  margin: 0;
+  background: linear-gradient(180deg, var(--canvas-top) 0%, var(--canvas) 100%) fixed;
+  color: var(--ink);
+  /* Devanagari first so Hindi glyphs come from the family that actually has them;
+     Latin characters are not in that subset, so they fall through to Inter. */
+  font-family: var(--font-devanagari), var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* 16px and a generous line height, because the people reading this are often
+     older and often frightened, and 14px body text is where a portal starts asking
+     for effort. */
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+/* Headings tighten up: at display sizes Inter's default spacing looks loose and
+   the line gaps look accidental. */
+/* Headings only - body stays in Inter, where the reading actually happens. */
+/* Latin face FIRST. This rule used to list Noto Sans Devanagari first, which
+   meant every English heading on the site quietly rendered in Noto's Latin and
+   the chosen display face never appeared at all. Hindi still resolves: the
+   condensed face carries no Devanagari, so it falls through on its own. */
+h1, h2, h3, h4 { font-family: var(--type-title); line-height: 1.2; letter-spacing: .005em; }
+h1 { letter-spacing: -0.021em; }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
-:focus-visible { outline: 3px solid #f3b413; outline-offset: 3px; }
+/* Kept deliberately loud. This is the one place where a calmer choice would cost a
+   keyboard-only or low-vision citizen something real. */
+:focus-visible { outline: 3px solid #f3b413; outline-offset: 3px; border-radius: 4px; }
 
 .shell-container { width: min(1180px, calc(100% - 32px)); margin: auto; }
 /* Utility bar redesign: was a solid dark-navy band (#06295b) - now a quiet strip on the
@@ -55,7 +115,7 @@ button, input, select, textarea { font: inherit; }
    Only the color/tone changed here; the A-/A+ text-size control's actual functionality is
    untouched, just restyled as a light pill (plus a real "A" reset-to-default button, not a
    decorative middle segment - it's disabled exactly when already at 100%). */
-.utility-bar { background-color: var(--canvas); background-image: var(--bg-pattern); background-repeat: repeat; background-size: 140px 140px; color: var(--muted); font-size: 12px; }
+.utility-bar { background-color: transparent; color: var(--muted); font-size: 13.5px; }
 .utility-notice { display: inline-flex; align-items: center; gap: 6px; }
 .utility-bar a:hover, .utility-bar a:focus-visible { color: var(--navy); }
 .utility-content, .brand-content, .footer-content, .support-band > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
@@ -86,7 +146,7 @@ button, input, select, textarea { font: inherit; }
 .contact-route-card:hover, .contact-route-card:focus-visible { box-shadow: 0 6px 16px rgb(15 42 74 / .12); transform: translateY(-2px); }
 .contact-route-card > span { display: grid; height: 40px; width: 40px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
 .contact-route-card strong { display: block; margin-top: 10px; color: var(--navy); font-size: 14px; }
-.contact-route-card small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.contact-route-card small { display: block; margin-top: 4px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 .contact-disclosure { border-left: 3px solid var(--blue); border-radius: 0 8px 8px 0; background: #f7fafd; padding: 16px 18px; }
 .contact-disclosure h2 { color: var(--navy); font-size: 15px; font-weight: 800; }
 .contact-disclosure p { max-width: 78ch; margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.6; }
@@ -96,12 +156,12 @@ button, input, select, textarea { font: inherit; }
 }
 
 .text-size-control { display: inline-flex; align-items: center; gap: 2px; border: 1px solid #dbe7f3; border-radius: 999px; background: #fff; padding: 3px; }
-.text-size-control button { border: 0; border-radius: 999px; background: transparent; padding: 3px 9px; color: var(--muted); font-family: inherit; font-size: 11px; font-weight: 700; line-height: 1.5; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; }
+.text-size-control button { border: 0; border-radius: 999px; background: transparent; padding: 3px 9px; color: var(--muted); font-family: inherit; font-size: 13px; font-weight: 700; line-height: 1.5; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; }
 .text-size-control button:hover:not(:disabled), .text-size-control button:focus-visible { background: var(--blue-soft); color: var(--blue); }
 .text-size-control button:disabled { opacity: .45; cursor: not-allowed; }
 .text-size-control button.is-active:disabled { opacity: 1; cursor: default; background: var(--blue); color: #fff; }
 .language-current { font-weight: 800; color: var(--blue); }
-.brand-header { border-bottom: 1px solid var(--border); background: #fff; }
+.brand-header { background: #fff; }
 .brand-content { min-height: 72px; }
 /* Higher specificity than the shared .brand-content flex rule above (kept for
    .utility-content/.footer-content/.support-band > div, which still need it) - the brand
@@ -112,7 +172,7 @@ button, input, select, textarea { font: inherit; }
 .brand-mark { display: grid; height: 44px; width: 44px; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 800; }
 .brand-lockup strong, .brand-lockup small { display: block; }
 .brand-lockup strong { font-size: 19px; }
-.brand-lockup small { margin-top: 3px; color: var(--muted); font-size: 12px; }
+.brand-lockup small { margin-top: 3px; color: var(--muted); font-size: 13.5px; }
 /* The helpline number is a tel: link, not decoration - it must be tappable on a
    phone and readable at a glance, so it is larger than the label above it. */
 .brand-support { text-align: right; color: var(--muted); font-size: 13px; text-decoration: none; }
@@ -143,21 +203,29 @@ button, input, select, textarea { font: inherit; }
 /* Was a flat, full-bleed solid-blue bar with no "current page" state at all (only a hover
    effect existed). Now a floating white rounded card on the page canvas, with a real active-
    item highlight (isNavItemActive in ProductShell.tsx) instead of none. */
-.primary-nav { background-color: var(--canvas); background-image: var(--bg-pattern); background-repeat: repeat; background-size: 140px 140px; padding: 10px 0; }
-.nav-list { display: flex; align-items: center; gap: 2px; overflow-x: auto; border: 1px solid #e3ecf6; border-radius: 14px; background: #fff; padding: 6px 10px; box-shadow: 0 6px 20px -6px rgb(11 74 158 / .14); }
-.nav-list a { display: inline-flex; align-items: center; gap: 6px; border-radius: 10px; padding: 9px 14px; color: #41577a; font-size: 13px; font-weight: 700; transition: background-color 150ms ease, color 150ms ease; white-space: nowrap; }
-.nav-list a:hover { background: #f2f6fb; color: var(--navy); }
-.nav-list a.is-active { background: var(--blue-soft); color: var(--blue); font-weight: 800; }
-.breadcrumbs { border-bottom: 1px solid var(--border); background-color: #fff; background-image: var(--bg-pattern); background-repeat: repeat; background-size: 140px 140px; color: var(--muted); font-size: 13px; }
+/* The header used to be three separate slabs stacked up - a white brand bar, a warm
+   strip, then a white rounded pill floating on it, then warm again. That reads as
+   parts that arrived separately. The nav now shares the brand bar's white surface
+   and closes it with one hairline, so the whole header is a single piece of chrome
+   and the page starts cleanly beneath it. */
+.primary-nav { background-color: #fff; border-bottom: 1px solid var(--border); padding: 0; }
+.nav-list { display: flex; align-items: center; gap: 2px; overflow-x: auto; border: 0; border-radius: 0; background: transparent; padding: 0; box-shadow: none; }
+.nav-list a { position: relative; display: inline-flex; align-items: center; gap: 7px; border-radius: 0; padding: 14px 15px; color: var(--muted); font-size: 14px; font-weight: 500; transition: color 150ms ease; white-space: nowrap; }
+.nav-list a:hover { color: var(--navy); }
+/* The active item is marked by an underline on the header's own bottom edge rather
+   than a filled pill: quieter, and it points at the page you are on. */
+.nav-list a.is-active { color: var(--blue); font-weight: 650; }
+.nav-list a.is-active::after { content: ""; position: absolute; left: 15px; right: 15px; bottom: -1px; height: 2.5px; border-radius: 2px 2px 0 0; background: var(--blue); }
+.breadcrumbs { background-color: transparent; color: var(--muted); font-size: 13px; }
 .breadcrumbs > ol { display: flex; flex-wrap: wrap; gap: 8px; padding: 9px 0; }
 .breadcrumbs a { color: var(--blue); font-weight: 700; }
-.support-band { border-top: 1px solid #c5dff8; background: var(--blue-soft); }
+.support-band { border-top: 1px solid var(--border); background: rgb(255 255 255 / 0.5); }
 .support-band > div { padding: 16px 0; }
 .support-band span { flex: 1; color: var(--muted); }
 .public-footer { background: #092a58; color: #dbeafe; font-size: 13px; }
 .footer-content { padding: 18px 0; }
 .footer-content nav { display: flex; gap: 16px; }
-.eyebrow { color: var(--blue); font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.eyebrow { color: var(--blue); font-size: 13.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
 
 .portal-primary-link, .portal-secondary-link, .portal-outline-link, .report-card-action {
   display: inline-flex;
@@ -179,15 +247,20 @@ button, input, select, textarea { font: inherit; }
 
 .home-portal .home-hero { box-shadow: 0 7px 18px rgb(11 42 92 / .10); }
 .home-portal .portal-action-card, .report-category-card, .portal-updates { transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease; }
-.home-portal .portal-action-card:hover, .report-category-card:hover { transform: translateY(-2px); border-color: #91bfe9; box-shadow: 0 8px 18px rgb(15 42 74 / .11); }
+.home-portal .portal-action-card:hover, .report-category-card:hover { transform: translateY(-1px); border-color: #bcd8f4; box-shadow: var(--shadow-lift); }
 .home-portal .support-action { transition: background-color 160ms ease; }
 .home-portal .support-action:hover { background: #0a4c9f; }
-.portal-section-heading { display: grid; grid-template-columns: minmax(24px, 1fr) auto minmax(24px, 1fr); align-items: center; gap: 14px; }
-.portal-section-heading > span { height: 1px; background: #bcd9f5; }
-.portal-section-heading h2 { color: #063d86; font-size: 20px; font-weight: 800; }
-.report-category-card { min-height: 308px; }
+/* The rule-either-side-of-a-centred-title treatment is a decade out of date and it
+   centres a heading above a left-aligned grid, so nothing lines up with anything.
+   Left-aligned with a short accent underneath reads as deliberate and gives the
+   grid below it an edge to start from. */
+.portal-section-heading { display: flex; align-items: center; gap: 12px; }
+.portal-section-heading > span:first-child { display: none; }
+.portal-section-heading > span:last-child { flex: 1; height: 1px; background: linear-gradient(90deg, var(--border) 0%, transparent 100%); }
+.portal-section-heading h2 { color: var(--navy); font-size: 21px; font-weight: 700; letter-spacing: -0.014em; }
+.report-category-card { min-height: 296px; }
 .category-media { background: #f7fbff; }
-.report-card-action { min-height: 39px; padding: 8px 8px; font-size: 12px; text-align: center; }
+.report-card-action { min-height: 39px; padding: 8px 8px; font-size: 13.5px; text-align: center; }
 .report-card-action-secondary { border: 1px solid var(--blue); background: #fff; color: var(--blue); }
 .report-card-action-secondary:hover { background: var(--blue-soft); box-shadow: none; }
 .home-portal .portal-updates { min-height: 100%; }
@@ -196,15 +269,15 @@ button, input, select, textarea { font: inherit; }
 .portal-surface:hover { border-top-color: var(--blue); box-shadow: 0 7px 16px rgb(15 42 74 / .10); }
 .portal-state-panel { box-shadow: 0 2px 8px rgb(15 42 74 / .05); }
 .workflow-steps { position: relative; }
-.workflow-step { min-height: 66px; box-shadow: 0 1px 5px rgb(15 42 74 / .05); transition: background-color 160ms ease, border-color 160ms ease; }
-.workflow-step:hover { border-color: #9dc8ef; background: #fbfdff; }
+.workflow-step { min-height: 66px; border-radius: var(--radius-sm); box-shadow: 0 1px 2px rgb(24 33 48 / .05); transition: background-color 160ms ease, border-color 160ms ease; }
+.workflow-step:hover { border-color: #bcd8f4; background: #fcfdff; }
 
 .citizen-page { position: relative; }
 .citizen-page h1 { letter-spacing: 0; }
 .citizen-page > div > .eyebrow:first-child { margin-bottom: 5px; }
 .citizen-page .portal-state-panel { margin-top: 22px; }
 .citizen-entry-page .citizen-page-heading { position: relative; overflow: hidden; }
-.citizen-entry-page .citizen-page-heading::after { content: ""; position: absolute; right: -46px; top: -74px; height: 180px; width: 180px; border: 26px solid #edf6ff; border-radius: 50%; }
+.citizen-entry-page .citizen-page-heading::after { content: ""; position: absolute; right: -56px; top: -84px; height: 200px; width: 200px; border: 28px solid #f0f6fd; border-radius: 50%; }
 .citizen-entry-page .citizen-page-heading > * { position: relative; z-index: 1; }
 .citizen-safety-note { border-left: 4px solid #7ab5e8; }
 .citizen-route-card { min-height: 280px; transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
@@ -214,24 +287,27 @@ button, input, select, textarea { font: inherit; }
 .citizen-route-card li::before { content: ""; position: absolute; top: 9px; left: 0; height: 6px; width: 6px; border-radius: 50%; background: var(--blue); }
 .citizen-form-layout > section { min-width: 0; }
 .citizen-progress-rail { position: sticky; top: 18px; }
-.citizen-progress-rail li > span { display: grid; height: 30px; width: 30px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #eaf4ff; color: var(--blue); font-size: 12px; font-weight: 800; }
+.citizen-progress-rail li > span { display: grid; height: 30px; width: 30px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #eaf4ff; color: var(--blue); font-size: 13.5px; font-weight: 800; }
 .citizen-progress-rail strong { display: block; color: var(--navy); font-size: 14px; }
-.citizen-progress-rail p { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.citizen-progress-rail p { margin-top: 3px; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
 .citizen-dashboard-intro { display: flex; align-items: end; justify-content: space-between; gap: 20px; border-bottom: 1px solid #d6e5f3; padding-bottom: 22px; }
 .citizen-dashboard-card { min-height: 160px; }
-.citizen-page .workflow-steps { border-left: 3px solid #c8e0f6; padding-left: 12px; }
+.citizen-page .workflow-steps { border-left: 0; padding-left: 0; }
 .citizen-page .portal-surface > div:first-child { min-height: 38px; }
-.citizen-page .portal-surface + .portal-surface { margin-top: 2px; }
-.citizen-page form > .portal-surface, .citizen-page form > div > .portal-surface { box-shadow: 0 3px 11px rgb(15 42 74 / .07); }
-.citizen-page input, .citizen-page select, .citizen-page textarea { border-color: #cfddea; }
+.citizen-page .portal-surface + .portal-surface { margin-top: 14px; }
+.citizen-page form > .portal-surface, .citizen-page form > div > .portal-surface { box-shadow: var(--shadow); }
+.citizen-page input, .citizen-page select, .citizen-page textarea { border-color: var(--border); }
 .citizen-page input:focus, .citizen-page select:focus, .citizen-page textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgb(7 95 185 / .13); outline: none; }
 .citizen-page table tbody tr { transition: background-color 140ms ease; }
 .citizen-page table tbody tr:hover { background: #f8fbff; }
 
 @media (min-width: 1280px) {
   .report-category-card { min-height: 300px; }
+  /* A hairline once ran down the left of the reporting page, floating 14px outside
+     the content with nothing attached to either end. It was drawn in cool blue and
+     now sits on warm paper, which makes it read as a rendering artefact rather than
+     a device. The cards carry their own edges; the page does not need a rule. */
   .citizen-page > div { position: relative; }
-  .citizen-page > div::before { position: absolute; top: 0; bottom: 0; left: -14px; width: 1px; background: #dce8f4; content: ""; }
 }
 
 @media (max-width: 1279px) {
@@ -245,11 +321,10 @@ button, input, select, textarea { font: inherit; }
   .brand-reassurance { display: none; }
   .brand-header-actions { width: 100%; justify-content: space-between; gap: 12px; }
   .citizen-dashboard-entry { padding-right: 12px; }
-  .citizen-dashboard-entry strong { font-size: 12px; }
+  .citizen-dashboard-entry strong { font-size: 13.5px; }
   .brand-support { text-align: left; }
   .brand-support span { justify-content: flex-start; }
-  .nav-list { border-radius: 12px; padding: 5px 8px; }
-  .nav-list a { padding: 10px 12px; }
+  .nav-list a { padding: 12px 12px; font-size: 13.5px; }
   .support-band > div { gap: 8px; }
   .footer-content { gap: 10px; }
   .footer-content nav { flex-wrap: wrap; }
@@ -320,7 +395,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-landing-media { position: relative; min-height: 450px; overflow: hidden; border: 1px solid #bfd7ec; border-radius: 8px; background: #06295b; box-shadow: 0 10px 24px rgb(15 42 74 / .13); }
 .warrior-landing-image { object-fit: cover; object-position: center; }
 .warrior-media-shade { position: absolute; inset: 0; background: rgb(4 38 82 / .30); }
-.warrior-media-callout { position: absolute; display: flex; max-width: 180px; align-items: center; gap: 10px; border: 1px solid rgb(255 255 255 / .65); border-radius: 7px; background: rgb(255 255 255 / .94); padding: 11px 13px; color: #073a7c; box-shadow: 0 5px 14px rgb(2 29 68 / .18); font-size: 12px; font-weight: 800; line-height: 1.35; }
+.warrior-media-callout { position: absolute; display: flex; max-width: 180px; align-items: center; gap: 10px; border: 1px solid rgb(255 255 255 / .65); border-radius: 7px; background: rgb(255 255 255 / .94); padding: 11px 13px; color: #073a7c; box-shadow: 0 5px 14px rgb(2 29 68 / .18); font-size: 13.5px; font-weight: 800; line-height: 1.35; }
 .warrior-media-callout-top { top: 22px; left: 22px; }
 .warrior-media-callout-bottom { right: 22px; bottom: 22px; }
 .warrior-media-caption { position: absolute; right: 22px; bottom: 92px; left: 22px; display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; border-left: 4px solid #7cc4ff; background: rgb(4 38 82 / .88); padding: 16px; color: #fff; }
@@ -341,7 +416,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-important-note { display: flex; margin-top: 18px; align-items: center; gap: 12px; border: 1px solid #b8d7f1; border-left: 4px solid var(--blue); border-radius: 7px; background: #edf6ff; padding: 14px 16px; color: #173e70; font-size: 13px; line-height: 1.55; }
 .warrior-identity-layout { display: grid; overflow: hidden; border: 1px solid #c8dcec; border-radius: 8px; background: #fff; box-shadow: 0 8px 22px rgb(15 42 74 / .09); grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); }
 .warrior-identity-form-panel { padding: 34px; }
-.warrior-step-label { display: inline-flex; min-height: 26px; align-items: center; border-radius: 5px; background: #eaf4ff; padding: 5px 9px; color: var(--blue); font-size: 12px; font-weight: 850; text-transform: uppercase; }
+.warrior-step-label { display: inline-flex; min-height: 26px; align-items: center; border-radius: 5px; background: #eaf4ff; padding: 5px 9px; color: var(--blue); font-size: 13.5px; font-weight: 850; text-transform: uppercase; }
 .warrior-identity-form-panel h1 { margin-top: 13px; font-size: clamp(28px, 3vw, 40px); font-weight: 800; line-height: 1.15; }
 .warrior-form-intro { margin-top: 10px; max-width: 50ch; color: var(--muted); line-height: 1.65; }
 .warrior-data-note { display: flex; align-items: flex-start; gap: 10px; border-radius: 7px; background: #eef6ff; padding: 14px; color: #174a83; font-size: 13px; line-height: 1.55; }
@@ -369,7 +444,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-profile-rail > p:not(.warrior-step-label) { margin-top: 9px; color: var(--muted); font-size: 14px; line-height: 1.6; }
 .warrior-profile-rail ol { display: grid; margin-top: 26px; gap: 14px; }
 .warrior-profile-rail li { display: flex; align-items: center; gap: 9px; color: #0d7451; font-size: 13px; font-weight: 800; }
-.warrior-locked-note { display: flex; margin-top: 26px; align-items: flex-start; gap: 10px; border: 1px solid #c7dcec; border-radius: 7px; background: #edf6ff; padding: 14px; color: #174a83; font-size: 12px; line-height: 1.6; }
+.warrior-locked-note { display: flex; margin-top: 26px; align-items: flex-start; gap: 10px; border: 1px solid #c7dcec; border-radius: 7px; background: #edf6ff; padding: 14px; color: #174a83; font-size: 13.5px; line-height: 1.6; }
 .warrior-locked-note svg { flex: 0 0 auto; }
 .warrior-profile-form { min-width: 0; padding: 30px; }
 .warrior-profile-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
@@ -428,14 +503,14 @@ button, input, select, textarea { font: inherit; }
 .warrior-application-rail li > span { display: grid; height: 34px; width: 34px; place-items: center; border: 1px solid #c8dcec; border-radius: 50%; background: #fff; color: #46617f; }
 .warrior-application-rail li strong, .warrior-application-rail li small { display: block; }
 .warrior-application-rail li strong { color: var(--navy); font-size: 13px; }
-.warrior-application-rail li small { margin-top: 3px; font-size: 11px; line-height: 1.45; }
+.warrior-application-rail li small { margin-top: 3px; font-size: 13px; line-height: 1.45; }
 .warrior-application-rail li.is-active { border-left-color: var(--blue); background: #edf6ff; }
 .warrior-application-rail li.is-active > span { border-color: var(--blue); background: var(--blue); color: #fff; }
 .warrior-application-rail li.is-complete > span { border-color: #2ca56e; background: #e5f7ed; color: #16835d; }
-.warrior-application-rail-note { display: flex; margin-top: 20px; gap: 9px; border: 1px solid #b8d7f1; border-radius: 7px; background: #f0f7fd; padding: 13px; color: #174a83; font-size: 11px; line-height: 1.55; }
+.warrior-application-rail-note { display: flex; margin-top: 20px; gap: 9px; border: 1px solid #b8d7f1; border-radius: 7px; background: #f0f7fd; padding: 13px; color: #174a83; font-size: 13px; line-height: 1.55; }
 .warrior-application-rail-note svg { flex: 0 0 auto; }
 .warrior-application-workspace { min-width: 0; padding: 26px; }
-.warrior-application-heading > span { color: var(--blue); font-size: 12px; font-weight: 850; text-transform: uppercase; }
+.warrior-application-heading > span { color: var(--blue); font-size: 13.5px; font-weight: 850; text-transform: uppercase; }
 .warrior-application-heading h2 { margin-top: 7px; font-size: clamp(24px, 2.5vw, 32px); font-weight: 800; }
 .warrior-application-heading p { margin-top: 7px; max-width: 72ch; color: var(--muted); font-size: 14px; line-height: 1.6; }
 .warrior-upload-grid { display: grid; margin-top: 24px; grid-template-columns: minmax(0, 1fr) 260px; gap: 18px; }
@@ -449,31 +524,31 @@ button, input, select, textarea { font: inherit; }
 .warrior-uploaded-file strong, .warrior-uploaded-file small { display: block; }
 .warrior-uploaded-file small { margin-top: 2px; color: var(--muted); }
 .warrior-processing { margin-top: 12px; border: 1px solid #b8d7f1; border-radius: 7px; background: #f0f7fd; padding: 13px; }
-.warrior-processing div { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
+.warrior-processing div { display: flex; justify-content: space-between; gap: 12px; font-size: 13.5px; }
 .warrior-processing div span { color: var(--muted); }
 .warrior-processing-track { display: block; height: 6px; margin-top: 10px; overflow: hidden; border-radius: 3px; background: #d8e7f5; }
 .warrior-processing-track i { display: block; height: 100%; width: 72%; background: var(--blue); animation: warrior-progress 1.1s ease-in-out infinite alternate; }
 @keyframes warrior-progress { from { width: 34%; } to { width: 88%; } }
 .warrior-extraction-summary { border: 1px solid var(--border); border-radius: 8px; background: #f8fbfe; padding: 18px; }
 .warrior-extraction-summary h3 { font-size: 16px; font-weight: 800; }
-.warrior-extraction-summary p { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.warrior-extraction-summary p { margin-top: 6px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 .warrior-extraction-summary ul { display: grid; margin-top: 15px; gap: 10px; }
 .warrior-extraction-summary li { position: relative; padding-left: 18px; color: #274664; font-size: 13px; }
 .warrior-extraction-summary li::before { position: absolute; top: 7px; left: 2px; height: 6px; width: 6px; border-radius: 50%; background: var(--blue); content: ""; }
 .warrior-application-actions { display: flex; margin-top: 24px; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--border); padding-top: 18px; }
 .warrior-application-error { margin-top: 14px; border-left: 4px solid var(--danger); background: #fff2f0; padding: 11px 13px; color: var(--danger); font-size: 13px; font-weight: 750; }
-.warrior-session-notice, .warrior-help-strip { display: flex; margin-top: 16px; min-height: 58px; align-items: center; gap: 10px; border: 1px solid #b8d7f1; border-radius: 7px; background: #edf6ff; padding: 13px 17px; color: #174a83; font-size: 12px; }
+.warrior-session-notice, .warrior-help-strip { display: flex; margin-top: 16px; min-height: 58px; align-items: center; gap: 10px; border: 1px solid #b8d7f1; border-radius: 7px; background: #edf6ff; padding: 13px 17px; color: #174a83; font-size: 13.5px; }
 .warrior-session-notice span { color: #415a76; }
 .warrior-ai-review-note { display: flex; margin: 20px 0; gap: 11px; border: 1px solid #f0bd66; border-radius: 7px; background: #fff9ed; padding: 13px; color: #785012; }
 .warrior-ai-review-note svg { flex: 0 0 auto; }
 .warrior-ai-review-note strong { font-size: 13px; }
-.warrior-ai-review-note p { margin-top: 3px; font-size: 12px; line-height: 1.5; }
+.warrior-ai-review-note p { margin-top: 3px; font-size: 13.5px; line-height: 1.5; }
 .warrior-application-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
 .warrior-application-workspace form > label { margin-top: 15px; }
 .warrior-application-fieldset { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
 .warrior-application-fieldset legend { display: flex; align-items: center; gap: 7px; padding-right: 10px; color: var(--navy); font-size: 15px; font-weight: 800; }
 .warrior-application-fieldset > label { margin-top: 14px; }
-.warrior-skills-empty { margin-top: 10px; color: var(--muted); font-size: 12px; }
+.warrior-skills-empty { margin-top: 10px; color: var(--muted); font-size: 13.5px; }
 .warrior-skill-rows { display: grid; margin-top: 14px; gap: 12px; }
 .warrior-skill-row { display: grid; grid-template-columns: minmax(0, 1fr) 160px 140px 42px; align-items: end; gap: 10px; }
 .warrior-remove-skill { display: grid; height: 42px; width: 42px; place-items: center; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--danger); }
@@ -483,16 +558,16 @@ button, input, select, textarea { font: inherit; }
    is a bordered block so it is obvious where one qualification or role ends. */
 .warrior-repeatable-entry { position: relative; margin-top: 12px; border: 1px solid var(--border); border-radius: 8px; background: #fbfcfe; padding: 14px; }
 .warrior-repeatable-entry:first-of-type { margin-top: 8px; }
-.warrior-remove-entry { display: inline-flex; margin-top: 10px; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; padding: 6px 11px; color: var(--danger); font-size: 12px; font-weight: 700; }
+.warrior-remove-entry { display: inline-flex; margin-top: 10px; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; padding: 6px 11px; color: var(--danger); font-size: 13.5px; font-weight: 700; }
 .warrior-remove-entry:hover, .warrior-remove-entry:focus-visible { background: #fff2f0; }
 .warrior-application-fieldset > .warrior-skill-rows + button { margin-top: 14px; }
 .warrior-review-toolbar { display: flex; margin-top: 18px; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #b8dfc9; border-radius: 7px; background: #f1fbf5; padding: 10px 13px; }
-.warrior-review-toolbar span { display: flex; align-items: center; gap: 7px; color: #117148; font-size: 12px; font-weight: 800; }
+.warrior-review-toolbar span { display: flex; align-items: center; gap: 7px; color: #117148; font-size: 13.5px; font-weight: 800; }
 .warrior-review-sections { display: grid; margin-top: 14px; gap: 12px; }
 .warrior-review-sections section { border: 1px solid var(--border); border-radius: 7px; padding: 15px; }
 .warrior-review-sections h3 { color: var(--navy); font-size: 15px; font-weight: 800; }
 .warrior-review-sections dl { display: grid; margin-top: 11px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.warrior-review-sections dt { color: var(--muted); font-size: 11px; }
+.warrior-review-sections dt { color: var(--muted); font-size: 13px; }
 .warrior-review-sections dd { margin-top: 3px; overflow-wrap: anywhere; font-size: 13px; font-weight: 700; }
 .warrior-review-sections .wide { grid-column: span 2; }
 .warrior-declaration { margin-top: 17px; border: 1px solid #b8d7f1; border-radius: 7px; background: #f3f8fd; padding: 13px; }
@@ -511,9 +586,9 @@ button, input, select, textarea { font: inherit; }
 .warrior-status-card > p { margin-top: 13px; color: var(--muted); font-size: 13px; line-height: 1.6; }
 .warrior-status-card dl { margin-top: 17px; }
 .warrior-status-card dl > div { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border); padding: 12px 0; }
-.warrior-status-card dt { display: flex; align-items: center; gap: 7px; color: #3e5875; font-size: 12px; }
-.warrior-status-card dd { text-align: right; font-size: 12px; font-weight: 750; }
-.warrior-status-note { margin-top: 12px; border-radius: 7px; background: #edf6ff; padding: 12px; color: #174a83; font-size: 11px; line-height: 1.5; }
+.warrior-status-card dt { display: flex; align-items: center; gap: 7px; color: #3e5875; font-size: 13.5px; }
+.warrior-status-card dd { text-align: right; font-size: 13.5px; font-weight: 750; }
+.warrior-status-note { margin-top: 12px; border-radius: 7px; background: #edf6ff; padding: 12px; color: #174a83; font-size: 13px; line-height: 1.5; }
 .warrior-help-strip a { margin-left: auto; color: var(--blue); font-weight: 800; }
 @media (max-width: 960px) {
   .warrior-application-layout, .warrior-submitted-layout { grid-template-columns: 1fr; }
@@ -546,8 +621,8 @@ button, input, select, textarea { font: inherit; }
 .warrior-sidebar-identity { display: flex; align-items: flex-start; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
 .warrior-sidebar-identity > span { display: grid; height: 38px; width: 38px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
 .warrior-sidebar-identity strong { display: block; font-size: 13px; }
-.warrior-sidebar-identity small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
-.warrior-verified-pill { display: inline-flex; margin-top: 4px; align-items: center; gap: 4px; border-radius: 12px; background: #dcf6e8; padding: 2px 8px; color: #0b754b; font-size: 11px; font-weight: 800; }
+.warrior-sidebar-identity small { display: block; margin-top: 3px; color: var(--muted); font-size: 13.5px; }
+.warrior-verified-pill { display: inline-flex; margin-top: 4px; align-items: center; gap: 4px; border-radius: 12px; background: #dcf6e8; padding: 2px 8px; color: #0b754b; font-size: 13px; font-weight: 800; }
 .warrior-sidebar ol { display: grid; gap: 2px; border-top: 1px solid var(--border); padding-top: 10px; }
 .warrior-sidebar ol:first-of-type { border-top: 0; padding-top: 0; }
 .warrior-sidebar li a, .warrior-sidebar li button { display: flex; width: 100%; align-items: center; gap: 10px; border-radius: 6px; padding: 9px 10px; color: #3e5875; font-size: 13px; font-weight: 700; text-align: left; transition: background-color 140ms ease, color 140ms ease; }
@@ -561,7 +636,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-dashboard-header-row h1 { font-size: clamp(22px, 2.4vw, 28px); font-weight: 800; }
 .warrior-dashboard-header-row > div:first-child > p { margin-top: 6px; color: var(--muted); font-size: 14px; }
 .warrior-dashboard-header-right { display: grid; justify-items: end; gap: 10px; }
-.warrior-dashboard-meta { display: grid; justify-items: end; gap: 2px; color: var(--muted); font-size: 12px; }
+.warrior-dashboard-meta { display: grid; justify-items: end; gap: 2px; color: var(--muted); font-size: 13.5px; }
 .warrior-topbar { display: flex; align-items: center; gap: 12px; }
 .warrior-topbar-menu { position: relative; }
 .warrior-topbar-bell { position: relative; display: grid; height: 38px; width: 38px; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: #fff; color: var(--navy); }
@@ -570,18 +645,18 @@ button, input, select, textarea { font: inherit; }
 .warrior-topbar-identity:hover { background: var(--blue-soft); }
 .warrior-topbar-avatar { display: grid; height: 34px; width: 34px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; }
 .warrior-topbar-identity strong { display: block; text-align: left; font-size: 13px; }
-.warrior-topbar-identity small { display: block; margin-top: 2px; color: #16835d; font-size: 11px; font-weight: 700; }
+.warrior-topbar-identity small { display: block; margin-top: 2px; color: #16835d; font-size: 13px; font-weight: 700; }
 .warrior-topbar-identity > svg { color: var(--muted); }
 .warrior-dropdown-panel { position: absolute; top: calc(100% + 8px); right: 0; z-index: 20; width: max(280px, 100%); border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 14px; box-shadow: 0 10px 24px rgb(15 42 74 / .14); }
 .warrior-dropdown-panel h3 { font-size: 13px; font-weight: 800; color: var(--navy); }
-.warrior-dropdown-empty { margin-top: 8px; color: var(--muted); font-size: 12px; }
+.warrior-dropdown-empty { margin-top: 8px; color: var(--muted); font-size: 13.5px; }
 .warrior-notification-panel ul { display: grid; margin-top: 10px; gap: 2px; max-height: 320px; overflow-y: auto; }
 .warrior-notification-panel li { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; border-radius: 6px; padding: 9px 8px; }
 .warrior-notification-panel li.is-unread { background: var(--blue-soft); }
 .warrior-notification-panel li div { min-width: 0; }
-.warrior-notification-panel li strong { display: block; font-size: 12px; color: var(--navy); }
-.warrior-notification-panel li span { display: block; margin-top: 2px; color: #415a76; font-size: 12px; line-height: 1.4; }
-.warrior-notification-panel li small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+.warrior-notification-panel li strong { display: block; font-size: 13.5px; color: var(--navy); }
+.warrior-notification-panel li span { display: block; margin-top: 2px; color: #415a76; font-size: 13.5px; line-height: 1.4; }
+.warrior-notification-panel li small { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
 .warrior-notification-panel li button { display: grid; height: 26px; width: 26px; flex: 0 0 auto; place-items: center; border-radius: 50%; border: 1px solid var(--border); background: #fff; color: var(--blue); }
 .warrior-notification-panel li button:hover { background: var(--blue-soft); }
 .warrior-account-panel { display: grid; width: 200px; gap: 2px; padding: 8px; }
@@ -589,7 +664,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-account-panel a:hover, .warrior-account-panel button:hover { background: var(--blue-soft); color: var(--blue); }
 .warrior-account-panel button { color: var(--danger); }
 .warrior-account-panel button:hover { background: #fff2f0; color: var(--danger); }
-.warrior-load-error-banner { display: flex; align-items: center; gap: 10px; border: 1px solid #f0bd66; border-radius: 7px; background: #fff9ed; padding: 12px 14px; color: #785012; font-size: 12px; }
+.warrior-load-error-banner { display: flex; align-items: center; gap: 10px; border: 1px solid #f0bd66; border-radius: 7px; background: #fff9ed; padding: 12px 14px; color: #785012; font-size: 13.5px; }
 .warrior-load-error-banner > svg { flex: 0 0 auto; }
 .warrior-load-error-banner span { flex: 1; }
 .warrior-load-error-banner button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #785012; border-radius: 6px; padding: 6px 10px; color: #785012; font-weight: 800; }
@@ -599,7 +674,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-stat-tile > span { display: grid; height: 36px; width: 36px; place-items: center; border-radius: 50%; }
 .warrior-stat-tile strong { display: block; margin-top: 12px; font-size: 26px; font-weight: 800; color: var(--navy); }
 .warrior-stat-tile p { margin-top: 3px; font-size: 13px; font-weight: 700; }
-.warrior-stat-tile small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+.warrior-stat-tile small { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; }
 .warrior-stat-tile.tone-blue > span { background: var(--blue-soft); color: var(--blue); }
 .warrior-stat-tile.tone-amber > span { background: #fdf0dc; color: #9d5900; }
 .warrior-stat-tile.tone-green > span { background: #dcf6e8; color: #0b754b; }
@@ -615,7 +690,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-reward-tile > span.tone-green { background: #dcf6e8; color: #0b754b; }
 .warrior-reward-tile > span.tone-purple { background: #ede7fb; color: #5b3ec9; }
 .warrior-reward-tile strong { display: block; margin-top: 10px; font-size: 14px; }
-.warrior-reward-tile p { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.4; }
+.warrior-reward-tile p { margin-top: 4px; color: var(--muted); font-size: 13.5px; line-height: 1.4; }
 .warrior-cta-banner { display: grid; grid-template-columns: minmax(0, 1fr) 220px; align-items: center; gap: 20px; border: 1px solid #c8dcec; border-radius: 8px; background: linear-gradient(135deg, #eef6ff, #f8fbff); padding: 22px 26px; }
 .warrior-cta-banner .eyebrow { display: block; }
 .warrior-cta-banner h2 { margin-top: 5px; font-size: 24px; font-weight: 800; }
@@ -634,7 +709,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-journey-track > li { position: relative; }
 .warrior-journey-track > li > span { position: absolute; left: -30px; top: -1px; display: grid; height: 26px; width: 26px; place-items: center; border: 2px solid var(--border); border-radius: 50%; background: #fff; color: var(--muted); }
 .warrior-journey-track strong { display: block; font-size: 13px; }
-.warrior-journey-track small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+.warrior-journey-track small { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; }
 .warrior-journey-track > li.is-complete > span { border-color: #2ca56e; background: #e5f7ed; color: #16835d; }
 .warrior-journey-track > li.is-current > span { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
 .warrior-dashboard-rail { display: grid; gap: 16px; min-width: 0; }
@@ -643,11 +718,11 @@ button, input, select, textarea { font: inherit; }
 .warrior-status-badge { display: flex; margin-top: 14px; align-items: center; gap: 10px; }
 .warrior-status-badge > svg { color: var(--blue); }
 .warrior-status-badge strong { display: block; font-size: 14px; }
-.warrior-status-badge span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+.warrior-status-badge span { display: block; margin-top: 2px; color: var(--muted); font-size: 13.5px; }
 .warrior-xp-track { display: block; height: 8px; margin-top: 14px; overflow: hidden; border-radius: 4px; background: #e2edf6; }
 .warrior-xp-track i { display: block; height: 100%; background: var(--blue); }
-.warrior-status-widget > p { margin-top: 8px; color: var(--muted); font-size: 12px; }
-.warrior-status-hint { color: var(--muted); font-size: 11px; }
+.warrior-status-widget > p { margin-top: 8px; color: var(--muted); font-size: 13.5px; }
+.warrior-status-hint { color: var(--muted); font-size: 13px; }
 .warrior-status-widget .warrior-text-link { margin-top: 12px; }
 .warrior-quick-actions ul { display: grid; margin-top: 12px; gap: 4px; }
 .warrior-quick-actions li a { display: flex; align-items: center; gap: 10px; border-radius: 7px; padding: 10px; transition: background-color 140ms ease; }
@@ -655,15 +730,15 @@ button, input, select, textarea { font: inherit; }
 .warrior-quick-actions li a > span:first-child { display: grid; height: 36px; width: 36px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
 .warrior-quick-actions li a > span:nth-child(2) { flex: 1; min-width: 0; }
 .warrior-quick-actions li a strong { display: block; font-size: 13px; color: var(--navy); }
-.warrior-quick-actions li a small { display: block; margin-top: 1px; color: var(--muted); font-size: 11px; }
+.warrior-quick-actions li a small { display: block; margin-top: 1px; color: var(--muted); font-size: 13px; }
 .warrior-mini-stats { display: grid; margin-top: 10px; gap: 8px; }
-.warrior-mini-stats > div { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px; font-size: 12px; }
+.warrior-mini-stats > div { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px; font-size: 13.5px; }
 .warrior-mini-stats dt { color: var(--muted); }
 .warrior-mini-stats dd { font-weight: 800; color: var(--navy); }
 .warrior-coming-soon { display: grid; min-height: 320px; place-items: center; gap: 8px; border: 1px dashed #aacceb; border-radius: 8px; background: #fff; padding: 40px 20px; text-align: center; color: var(--muted); }
 .warrior-coming-soon > span { display: grid; height: 56px; width: 56px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
 .warrior-coming-soon h2 { color: var(--navy); font-size: 19px; font-weight: 800; }
-.warrior-coming-soon-note { max-width: 46ch; font-size: 12px; }
+.warrior-coming-soon-note { max-width: 46ch; font-size: 13.5px; }
 .warrior-profile-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .warrior-profile-header-row h1 { font-size: clamp(22px, 2.4vw, 27px); font-weight: 800; }
 .warrior-profile-header-row p { margin-top: 6px; color: var(--muted); font-size: 13px; }
@@ -676,7 +751,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-profile-avatar-row { display: flex; margin-top: 14px; align-items: center; gap: 12px; }
 .warrior-profile-avatar { display: grid; height: 64px; width: 64px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
 .warrior-profile-fact-grid { display: grid; margin-top: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.warrior-profile-fact-grid dt { color: var(--muted); font-size: 11px; }
+.warrior-profile-fact-grid dt { color: var(--muted); font-size: 13px; }
 .warrior-profile-fact-grid dd { margin-top: 3px; overflow-wrap: anywhere; font-size: 13px; font-weight: 700; }
 .warrior-profile-fact-grid .wide { grid-column: span 3; }
 .warrior-inline-verified { display: inline-block; margin-left: 4px; color: #16835d; vertical-align: -1px; }
@@ -684,10 +759,10 @@ button, input, select, textarea { font: inherit; }
 .warrior-completion-widget { text-align: center; }
 .warrior-completion-ring { display: grid; height: 96px; width: 96px; margin: 14px auto 0; place-items: center; border-radius: 50%; }
 .warrior-completion-ring > span { display: grid; height: 76px; width: 76px; place-items: center; border-radius: 50%; background: #fff; color: var(--navy); font-size: 15px; font-weight: 800; }
-.warrior-completion-widget > p:last-child { margin-top: 10px; color: var(--muted); font-size: 12px; }
+.warrior-completion-widget > p:last-child { margin-top: 10px; color: var(--muted); font-size: 13.5px; }
 .warrior-badges-placeholder { display: grid; margin-top: 12px; place-items: center; gap: 8px; border: 1px dashed #cfe0ef; border-radius: 7px; padding: 18px; text-align: center; color: var(--muted); }
 .warrior-badges-placeholder svg { color: var(--blue); }
-.warrior-badges-placeholder p { font-size: 12px; }
+.warrior-badges-placeholder p { font-size: 13.5px; }
 
 @media (max-width: 1080px) {
   .warrior-dashboard-main { grid-template-columns: 1fr; }
@@ -722,7 +797,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-category-tile.is-selected { border-color: var(--blue); background: var(--blue-soft); box-shadow: 0 0 0 2px rgb(7 95 185 / .18); }
 .warrior-category-tile > span { display: grid; height: 36px; width: 36px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
 .warrior-category-tile strong { margin-top: 6px; font-size: 13px; color: var(--navy); }
-.warrior-category-tile small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.warrior-category-tile small { color: var(--muted); font-size: 13px; line-height: 1.4; }
 .warrior-evidence-list { display: grid; margin-top: 16px; gap: 10px; }
 .warrior-evidence-row { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; }
 .warrior-evidence-row > span:first-child { display: grid; height: 36px; width: 36px; place-items: center; border-radius: 6px; background: var(--blue-soft); color: var(--blue); }
@@ -733,23 +808,23 @@ button, input, select, textarea { font: inherit; }
 .warrior-review-evidence-list { display: grid; margin-top: 8px; gap: 6px; }
 .warrior-review-evidence-list li { display: flex; align-items: center; gap: 8px; color: #274664; font-size: 13px; }
 .warrior-tips-before-submit { display: grid; margin-bottom: 12px; gap: 6px; }
-.warrior-tips-before-submit p { display: flex; align-items: center; gap: 8px; color: #174a83; font-size: 12px; }
+.warrior-tips-before-submit p { display: flex; align-items: center; gap: 8px; color: #174a83; font-size: 13.5px; }
 .warrior-report-success { display: flex; flex-direction: column; align-items: center; border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 40px 24px; text-align: center; }
 .warrior-report-success h1 { margin-top: 18px; font-size: clamp(24px, 2.6vw, 32px); font-weight: 800; }
 .warrior-report-success > p { margin-top: 8px; max-width: 56ch; color: var(--muted); }
 .warrior-reference-box { display: flex; margin-top: 20px; flex-direction: column; align-items: center; gap: 4px; border: 1px solid #b8dfc9; border-radius: 7px; background: #f1fbf5; padding: 14px 22px; }
-.warrior-reference-box span { color: var(--muted); font-size: 12px; }
+.warrior-reference-box span { color: var(--muted); font-size: 13.5px; }
 .warrior-reference-box strong { color: #0b754b; font-size: 22px; font-weight: 800; letter-spacing: .04em; }
 .warrior-next-steps-grid { display: grid; margin-top: 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .warrior-next-steps-grid > div { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
 .warrior-next-steps-grid span { display: grid; height: 40px; width: 40px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
 .warrior-next-steps-grid strong { font-size: 13px; }
-.warrior-next-steps-grid small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.warrior-next-steps-grid small { color: var(--muted); font-size: 13px; line-height: 1.4; }
 .warrior-secure-note { display: flex; align-items: flex-start; gap: 10px; }
 .warrior-secure-note strong { display: block; font-size: 13px; }
-.warrior-secure-note p { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.warrior-secure-note p { margin-top: 3px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 .warrior-reminder-list { display: grid; margin-top: 10px; gap: 8px; }
-.warrior-reminder-list li { position: relative; padding-left: 16px; color: #274664; font-size: 12px; line-height: 1.5; }
+.warrior-reminder-list li { position: relative; padding-left: 16px; color: #274664; font-size: 13.5px; line-height: 1.5; }
 .warrior-reminder-list li::before { content: ""; position: absolute; top: 6px; left: 0; height: 5px; width: 5px; border-radius: 50%; background: var(--blue); }
 .warrior-report-list { display: grid; margin-top: 14px; gap: 8px; }
 .warrior-report-list-row { display: grid; grid-template-columns: 40px 1fr auto auto; align-items: center; gap: 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 12px 14px; transition: border-color 150ms ease, box-shadow 150ms ease; }
@@ -757,20 +832,20 @@ button, input, select, textarea { font: inherit; }
 .warrior-report-list-row > span:first-child { display: grid; height: 36px; width: 36px; place-items: center; border-radius: 6px; background: var(--blue-soft); color: var(--blue); }
 .warrior-report-list-row strong, .warrior-report-list-row small { display: block; }
 .warrior-report-list-row small { margin-top: 2px; color: var(--muted); }
-.warrior-status-pill-inline { display: inline-flex; align-items: center; border-radius: 14px; padding: 4px 10px; font-size: 11px; font-weight: 800; white-space: nowrap; }
+.warrior-status-pill-inline { display: inline-flex; align-items: center; border-radius: 14px; padding: 4px 10px; font-size: 13px; font-weight: 800; white-space: nowrap; }
 .warrior-status-pill-inline.tone-blue { background: var(--blue-soft); color: var(--blue); }
 .warrior-status-pill-inline.tone-green { background: #dcf6e8; color: #0b754b; }
 .warrior-status-pill-inline.tone-red { background: #fde2df; color: #9a2a20; }
 .warrior-status-pill-inline.tone-muted { background: #eef2f6; color: var(--muted); }
 .warrior-track-card { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 20px; }
 .warrior-track-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.warrior-track-summary dt { color: var(--muted); font-size: 11px; }
+.warrior-track-summary dt { color: var(--muted); font-size: 13px; }
 .warrior-track-summary dd { margin-top: 3px; font-size: 14px; font-weight: 800; color: var(--navy); }
 .warrior-track-timeline { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; border-left: 0; padding-left: 0; }
 .warrior-track-timeline > li { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; padding: 0 4px; }
 .warrior-track-timeline > li > span { position: static; flex: 0 0 auto; }
-.warrior-track-timeline strong { font-size: 12px; line-height: 1.3; }
-.warrior-track-timeline small { font-size: 10px; }
+.warrior-track-timeline strong { font-size: 13.5px; line-height: 1.3; }
+.warrior-track-timeline small { font-size: 13px; }
 .warrior-timeline-vertical { grid-template-columns: 1fr !important; margin-top: 14px; border-left: 2px solid var(--border); padding-left: 16px; gap: 14px; }
 .warrior-timeline-vertical > li > span { position: absolute; left: -27px; top: -1px; height: 22px; width: 22px; }
 .warrior-podium-grid { display: grid; margin-top: 18px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
@@ -779,14 +854,14 @@ button, input, select, textarea { font: inherit; }
 .warrior-podium-tile.rank-2 { order: 1; }
 .warrior-podium-tile.rank-3 { border-color: #e3a781; background: #fff8f3; order: 3; }
 .warrior-podium-tile.is-you { box-shadow: 0 0 0 2px rgb(7 95 185 / .25); }
-.warrior-podium-rank { display: grid; height: 24px; width: 24px; place-items: center; border-radius: 50%; background: #eef2f6; color: var(--navy); font-size: 12px; font-weight: 800; }
+.warrior-podium-rank { display: grid; height: 24px; width: 24px; place-items: center; border-radius: 50%; background: #eef2f6; color: var(--navy); font-size: 13.5px; font-weight: 800; }
 .warrior-podium-badge { display: grid; height: 52px; width: 52px; margin-top: 6px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
 .warrior-podium-tile.rank-1 .warrior-podium-badge { background: #fdf1cf; color: #b8860b; }
 .warrior-podium-tile.rank-2 .warrior-podium-badge { background: #e9edf2; color: #64748b; }
 .warrior-podium-tile.rank-3 .warrior-podium-badge { background: #fbe3d2; color: #a0522d; }
 .warrior-podium-tile strong { margin-top: 8px; font-size: 13px; }
-.warrior-podium-tile small { color: var(--muted); font-size: 12px; }
-.warrior-podium-rank-title { margin-top: 4px; color: var(--blue); font-size: 11px; font-weight: 800; }
+.warrior-podium-tile small { color: var(--muted); font-size: 13.5px; }
+.warrior-podium-rank-title { margin-top: 4px; color: var(--blue); font-size: 13px; font-weight: 800; }
 .warrior-leaderboard-table { margin-top: 12px; overflow-x: auto; }
 /* min-width keeps the columns from squeezing into each other when the content area is
    narrow (or when a longer Hindi/uppercase header needs the room) - the table scrolls
@@ -818,7 +893,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-podium-tile.rank-3 .warrior-podium-ribbon { background: #d99a66; color: #5c3315; }
 /* The header wraps rather than nowrapping: a longer translated label (Hindi especially)
    must push to a second line, never overflow its cell into the next column. */
-.warrior-leaderboard-row.warrior-leaderboard-head { border-top: 0; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; white-space: normal; align-items: end; line-height: 1.25; }
+.warrior-leaderboard-row.warrior-leaderboard-head { border-top: 0; color: var(--muted); font-size: 13px; font-weight: 800; text-transform: uppercase; white-space: normal; align-items: end; line-height: 1.25; }
 .warrior-leaderboard-row.is-you { background: var(--blue-soft); font-weight: 800; }
 /* Awareness posters. The art is a mix of portrait and landscape, so each card gets a
    fixed aspect frame and the image is contained (never cropped) - a poster's headline
@@ -833,7 +908,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-awareness-card.is-wide .warrior-awareness-image { height: 150px; }
 .warrior-awareness-caption { display: block; padding: 12px 13px 14px; }
 .warrior-awareness-caption strong { display: block; color: var(--navy); font-size: 13px; font-weight: 800; line-height: 1.35; }
-.warrior-awareness-caption small { display: -webkit-box; margin-top: 5px; overflow: hidden; color: var(--muted); font-size: 11.5px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.warrior-awareness-caption small { display: -webkit-box; margin-top: 5px; overflow: hidden; color: var(--muted); font-size: 13px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .warrior-awareness-helpline { display: flex; align-items: center; gap: 8px; margin-top: 16px; border-radius: 7px; background: var(--blue-soft); padding: 11px 14px; color: var(--navy); font-size: 13px; font-weight: 700; }
 
 .warrior-poster-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgb(6 20 38 / .72); padding: 20px; }
@@ -874,7 +949,7 @@ button, input, select, textarea { font: inherit; }
 .warrior-badge-tile.tone-gold .warrior-badge-icon-wrap { background: #fdf1cf; color: #b8860b; }
 .warrior-badge-tile.is-locked { background: #f7f9fb; opacity: .75; }
 .warrior-badge-tile.is-locked .warrior-badge-icon-wrap { background: #eef2f6; color: var(--muted); }
-.warrior-badge-lock { position: absolute; right: -2px; bottom: -2px; display: grid; height: 20px; width: 20px; place-items: center; border-radius: 50%; border: 2px solid #f7f9fb; background: #d7dde3; color: #57626e; font-size: 11px; }
+.warrior-badge-lock { position: absolute; right: -2px; bottom: -2px; display: grid; height: 20px; width: 20px; place-items: center; border-radius: 50%; border: 2px solid #f7f9fb; background: #d7dde3; color: #57626e; font-size: 13px; }
 
 /* Real colorful emoji glyphs used in place of monochrome line icons for badges/medals/rewards -
    font-size sized per container since emoji don't take a numeric "size" prop like an SVG icon. */
@@ -885,18 +960,23 @@ button, input, select, textarea { font: inherit; }
 .warrior-stat-tile > span.warrior-emoji-badge { font-size: 20px; }
 .warrior-reward-tile > span.warrior-emoji-badge { font-size: 22px; }
 .warrior-badge-tile strong { margin-top: 4px; font-size: 13px; }
-.warrior-badge-tile small { color: var(--muted); font-size: 11px; line-height: 1.4; }
-.warrior-badge-locked-note { margin-top: 2px; color: var(--muted); font-size: 10px; font-style: italic; }
-.warrior-resource-category-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.warrior-resource-category-tile { display: flex; flex-direction: column; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 18px 10px; text-align: center; }
-.warrior-resource-category-tile > span { display: grid; height: 40px; width: 40px; place-items: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
-.warrior-resource-category-tile strong { font-size: 12px; color: var(--navy); }
+.warrior-badge-tile small { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.warrior-badge-locked-note { margin-top: 2px; color: var(--muted); font-size: 13px; font-style: italic; }
+/* These were six tall boxes holding one icon and two words each, so most of the
+   page above the fold was empty white. Laid out on a row the icon and the label
+   read as one object, the tile is less than half the height, and the eye gets
+   through all six categories in a glance instead of scrolling past them. */
+.warrior-resource-category-grid { display: grid; margin-top: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.warrior-resource-category-tile { display: flex; flex-direction: row; align-items: center; gap: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; padding: 14px 16px; text-align: left; box-shadow: 0 1px 2px rgb(24 33 48 / 0.04); transition: border-color .15s, box-shadow .15s; }
+.warrior-resource-category-tile:hover { border-color: #bcd8f4; box-shadow: var(--shadow); }
+.warrior-resource-category-tile > span { display: grid; height: 40px; width: 40px; flex-shrink: 0; place-items: center; border-radius: 11px; background: var(--blue-soft); color: var(--blue); }
+.warrior-resource-category-tile strong { font-size: 14px; font-weight: 600; line-height: 1.35; color: var(--navy); }
 .warrior-resource-list { display: grid; margin-top: 12px; gap: 8px; }
 .warrior-resource-row { border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
 .warrior-resource-row-toggle { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 15px; text-align: left; }
 .warrior-resource-row-toggle:hover { background: #f8fbfe; }
 .warrior-resource-row-toggle strong { display: block; font-size: 13px; color: var(--navy); }
-.warrior-resource-row-toggle small { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+.warrior-resource-row-toggle small { display: block; margin-top: 2px; color: var(--muted); font-size: 13.5px; }
 .warrior-resource-row-toggle > span:last-child { flex: 0 0 auto; color: var(--blue); font-size: 18px; font-weight: 800; }
 .warrior-resource-row-body { border-top: 1px solid var(--border); background: #f8fbfe; padding: 13px 15px; color: #274664; font-size: 13px; line-height: 1.6; }
 
@@ -929,18 +1009,18 @@ button, input, select, textarea { font: inherit; }
 /* Session 6.3/6.4 follow-up fixes: drafts, review edit links, evidence view, pagination, search */
 .warrior-report-list-row.is-draft { cursor: default; }
 .warrior-report-row-actions { display: flex; grid-column: 4; gap: 8px; }
-.warrior-report-row-actions button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 12px; font-weight: 700; color: var(--blue); background: #fff; }
+.warrior-report-row-actions button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 13.5px; font-weight: 700; color: var(--blue); background: #fff; }
 .warrior-report-row-actions button:hover { background: var(--blue-soft); }
 .warrior-report-row-actions button:last-child { color: var(--danger); }
 .warrior-report-row-actions button:last-child:hover { background: #fff2f0; }
 .warrior-review-section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.warrior-review-section-head button { display: inline-flex; align-items: center; gap: 5px; color: var(--blue); font-size: 12px; font-weight: 700; }
+.warrior-review-section-head button { display: inline-flex; align-items: center; gap: 5px; color: var(--blue); font-size: 13.5px; font-weight: 700; }
 .warrior-review-section-head button:hover { text-decoration: underline; }
 .warrior-evidence-list-viewable li { display: flex; align-items: center; gap: 8px; }
 .warrior-evidence-list-viewable li span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .warrior-evidence-list-viewable li button { display: grid; height: 26px; width: 26px; flex: 0 0 auto; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: #fff; color: var(--blue); }
 .warrior-evidence-list-viewable li button:hover { background: var(--blue-soft); }
-.warrior-leaderboard-pagination { display: flex; margin-top: 12px; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--muted); }
+.warrior-leaderboard-pagination { display: flex; margin-top: 12px; align-items: center; justify-content: space-between; gap: 12px; font-size: 13.5px; color: var(--muted); }
 .warrior-pagination-controls { display: flex; align-items: center; gap: 10px; }
 .warrior-pagination-controls button { display: grid; height: 30px; width: 30px; place-items: center; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--navy); }
 .warrior-pagination-controls button:disabled { cursor: not-allowed; opacity: .5; }
@@ -964,35 +1044,35 @@ button, input, select, textarea { font: inherit; }
 .secure-india-live-hero { position: relative; overflow: hidden; background: #0b3768; color: #fff; }
 .secure-india-live-hero::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .12; background-image: linear-gradient(rgb(255 255 255 / .16) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / .16) 1px, transparent 1px); background-size: 38px 38px; mask-image: linear-gradient(90deg, transparent 5%, #000 70%); }
 .secure-india-live-hero > div { position: relative; z-index: 1; padding-top: 30px; padding-bottom: 0; }
-.secure-india-kicker { display: flex; align-items: center; gap: 7px; color: #9fc6ef !important; font-size: 11px !important; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+.secure-india-kicker { display: flex; align-items: center; gap: 7px; color: #9fc6ef !important; font-size: 13px !important; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
 .secure-india-live-hero h1 { margin-top: 7px; max-width: 760px; font-size: clamp(29px, 4vw, 46px); font-weight: 850; line-height: 1.05; letter-spacing: -.035em; text-wrap: balance; }
 .secure-india-live-hero > div > p:not(.secure-india-kicker) { max-width: 68ch; margin-top: 12px; color: #d8e8f8; font-size: 14px; line-height: 1.65; }
-.secure-india-source-flag { display: inline-flex; margin-top: 18px; align-items: center; gap: 9px; border-left: 3px solid #f2a12b; background: rgb(255 255 255 / .08); padding: 9px 13px; color: #eaf4ff; font-size: 11px; line-height: 1.45; }
-.secure-india-source-flag strong { display: block; color: #ffc463; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+.secure-india-source-flag { display: inline-flex; margin-top: 18px; align-items: center; gap: 9px; border-left: 3px solid #f2a12b; background: rgb(255 255 255 / .08); padding: 9px 13px; color: #eaf4ff; font-size: 13px; line-height: 1.45; }
+.secure-india-source-flag strong { display: block; color: #ffc463; font-size: 13px; letter-spacing: .07em; text-transform: uppercase; }
 .secure-india-metrics { display: grid; margin-top: 24px; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid rgb(255 255 255 / .16); border-bottom: 0; background: rgb(255 255 255 / .06); }
 .secure-india-metrics > div { display: flex; min-height: 72px; flex-direction: column-reverse; justify-content: center; border-right: 1px solid rgb(255 255 255 / .16); padding: 12px 18px; }
 .secure-india-metrics > div:last-child { border-right: 0; }
-.secure-india-metrics dt { margin-top: 3px; color: #b8d2ea; font-size: 10.5px; }
+.secure-india-metrics dt { margin-top: 3px; color: #b8d2ea; font-size: 13px; }
 .secure-india-metrics dd { color: #fff; font-size: 23px; font-weight: 850; font-variant-numeric: tabular-nums; line-height: 1; }
 .secure-india-content { display: grid; gap: 18px; padding-top: 18px; }
 .secure-india-filter-panel { display: grid; grid-template-columns: minmax(120px, 1.05fr) minmax(112px, 1fr) minmax(112px, 1fr) auto auto auto; gap: 12px; align-items: end; border: 1px solid #dae2eb; background: #fff; padding: 15px 17px; box-shadow: 0 8px 24px rgb(11 55 104 / .05); }
-.secure-india-filter-panel label, .secure-india-filter-panel legend { display: block; color: #536477; font-size: 10px; font-weight: 750; }
-.secure-india-filter-panel select { display: block; width: 100%; height: 36px; margin-top: 5px; border: 1px solid #cdd8e4; border-radius: 3px; background: #fff; padding: 0 30px 0 9px; color: #17324f; font-size: 12px; }
+.secure-india-filter-panel label, .secure-india-filter-panel legend { display: block; color: #536477; font-size: 13px; font-weight: 750; }
+.secure-india-filter-panel select { display: block; width: 100%; height: 36px; margin-top: 5px; border: 1px solid #cdd8e4; border-radius: 3px; background: #fff; padding: 0 30px 0 9px; color: #17324f; font-size: 13.5px; }
 .secure-india-filter-panel fieldset { min-width: 0; }
 .secure-india-segmented { display: flex; height: 36px; margin-top: 5px; border: 1px solid #cdd8e4; border-radius: 3px; overflow: hidden; }
-.secure-india-segmented button { min-width: 38px; border-right: 1px solid #cdd8e4; background: #fff; padding: 0 10px; color: #536477; font-size: 11px; font-weight: 800; transition: background .18s, color .18s; }
+.secure-india-segmented button { min-width: 38px; border-right: 1px solid #cdd8e4; background: #fff; padding: 0 10px; color: #536477; font-size: 13px; font-weight: 800; transition: background .18s, color .18s; }
 .secure-india-segmented button:last-child { border-right: 0; }
 .secure-india-segmented button[aria-pressed="true"] { background: #0b4d91; color: #fff; }
 .secure-india-segmented button:focus-visible, .secure-india-filter-panel select:focus-visible { outline: 3px solid rgb(11 79 179 / .25); outline-offset: 2px; }
-.secure-india-data-note { display: flex; align-items: center; gap: 10px; border-left: 3px solid #f2a12b; background: #fff8e9; padding: 10px 13px; color: #644817; font-size: 11px; }
+.secure-india-data-note { display: flex; align-items: center; gap: 10px; border-left: 3px solid #f2a12b; background: #fff8e9; padding: 10px 13px; color: #644817; font-size: 13px; }
 .secure-india-data-note strong { flex: 0 0 auto; color: #8a5800; text-transform: uppercase; letter-spacing: .05em; }
 .secure-india-main-grid { display: grid; grid-template-columns: minmax(0, 1.72fr) minmax(300px, .88fr); gap: 18px; align-items: start; }
 .secure-india-map-card, .secure-india-ranking, .secure-india-hot-section, .secure-india-methodology { border: 1px solid #dae2eb; background: #fff; }
 .secure-india-map-card, .secure-india-ranking, .secure-india-hot-section { padding: 18px; }
 .secure-india-section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; color: #0b4d91; }
-.secure-india-section-head p { color: #c76515; font-size: 9px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.secure-india-section-head p { color: #c76515; font-size: 13px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
 .secure-india-section-head h2 { margin-top: 2px; color: #102e4d; font-size: 16px; font-weight: 850; letter-spacing: -.01em; }
-.secure-india-section-head > span { color: #63768a; font-size: 10px; }
+.secure-india-section-head > span { color: #63768a; font-size: 13px; }
 .secure-india-map-layout { display: grid; margin-top: 12px; grid-template-columns: minmax(0, 1fr) 150px; gap: 12px; min-height: 430px; background-color: #f5f8f3; background-image: linear-gradient(#dfe8de 1px, transparent 1px), linear-gradient(90deg, #dfe8de 1px, transparent 1px); background-size: 28px 28px; padding: 12px; }
 .secure-india-map { width: 100%; height: 420px; filter: drop-shadow(0 7px 11px rgb(26 48 40 / .13)); }
 .secure-india-map g { cursor: pointer; outline: none; }
@@ -1001,49 +1081,49 @@ button, input, select, textarea { font: inherit; }
 .secure-india-map g:hover circle, .secure-india-map g:focus-visible circle, .secure-india-map g.is-active circle { filter: drop-shadow(0 0 2px #6f0f0f); stroke: #791a18; stroke-width: 1.2; }
 .secure-india-map g:focus-visible circle { stroke: #072f61; stroke-width: 2; }
 .secure-india-map-detail { align-self: center; border-top: 3px solid #c83a2e; background: #fff; padding: 16px 13px; box-shadow: 0 10px 26px rgb(20 48 69 / .12); }
-.secure-india-map-detail > span { color: #6a7a8b; font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.secure-india-map-detail > span { color: #6a7a8b; font-size: 13px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
 .secure-india-map-detail h3 { margin-top: 5px; color: #102e4d; font-size: 17px; font-weight: 850; }
-.secure-india-map-detail p { color: #6a7a8b; font-size: 11px; }
+.secure-india-map-detail p { color: #6a7a8b; font-size: 13px; }
 .secure-india-map-detail > strong { display: block; margin-top: 14px; color: #102e4d; font-size: 28px; font-weight: 850; font-variant-numeric: tabular-nums; }
-.secure-india-map-detail > small { display: block; color: #6a7a8b; font-size: 9px; }
-.secure-india-map-detail em { display: flex; margin-top: 12px; align-items: center; gap: 4px; font-size: 10px; font-style: normal; font-weight: 800; }
+.secure-india-map-detail > small { display: block; color: #6a7a8b; font-size: 13px; }
+.secure-india-map-detail em { display: flex; margin-top: 12px; align-items: center; gap: 4px; font-size: 13px; font-style: normal; font-weight: 800; }
 .secure-india-map-detail em.up, .secure-india-ranking .up { color: #a32722; }
 .secure-india-map-detail em.down, .secure-india-ranking .down { color: #19704b; }
-.secure-india-map-disclaimer { margin-top: 10px; color: #63768a; font-size: 10px; line-height: 1.5; }
+.secure-india-map-disclaimer { margin-top: 10px; color: #63768a; font-size: 13px; line-height: 1.5; }
 .secure-india-table-wrap { margin-top: 12px; overflow-x: auto; }
-.secure-india-ranking table { width: 100%; border-collapse: collapse; font-size: 11px; }
-.secure-india-ranking th { border-bottom: 2px solid #d9e2eb; padding: 7px 5px; color: #64778c; font-size: 9px; text-align: left; text-transform: uppercase; }
+.secure-india-ranking table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.secure-india-ranking th { border-bottom: 2px solid #d9e2eb; padding: 7px 5px; color: #64778c; font-size: 13px; text-align: left; text-transform: uppercase; }
 .secure-india-ranking td { border-bottom: 1px solid #e6ebf1; padding: 8px 5px; color: #294057; font-variant-numeric: tabular-nums; }
 .secure-india-ranking tr.is-active { background: #eef5fd; }
 .secure-india-ranking td button { color: #102e4d; text-align: left; }
 .secure-india-ranking td button:hover strong { color: #0b5db2; text-decoration: underline; }
 .secure-india-ranking td strong, .secure-india-ranking td small { display: block; }
-.secure-india-ranking td small { margin-top: 1px; color: #7a8998; font-size: 9px; }
+.secure-india-ranking td small { margin-top: 1px; color: #7a8998; font-size: 13px; }
 .secure-india-hot-section { min-width: 0; }
 .secure-india-zone-grid, .secure-india-crime-grid { display: grid; margin-top: 14px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .secure-india-zone-grid > button, .secure-india-crime-grid > article { position: relative; min-width: 0; border: 1px solid #dfe6ed; border-right: 0; background: #fff; padding: 15px 13px; text-align: left; }
 .secure-india-zone-grid > button:last-child, .secure-india-crime-grid > article:last-child { border-right: 1px solid #dfe6ed; }
 .secure-india-zone-grid > button { transition: background .18s, transform .18s; }
 .secure-india-zone-grid > button:hover, .secure-india-zone-grid > button:focus-visible { z-index: 1; background: #f6faff; transform: translateY(-2px); outline: 2px solid #0b5db2; outline-offset: -2px; }
-.secure-india-zone-grid > button > span, .secure-india-crime-grid > article > span { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 4px; background: #c96c17; color: #fff; font-size: 10px; font-weight: 850; }
+.secure-india-zone-grid > button > span, .secure-india-crime-grid > article > span { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 4px; background: #c96c17; color: #fff; font-size: 13px; font-weight: 850; }
 .secure-india-zone-grid strong, .secure-india-zone-grid small, .secure-india-zone-grid b, .secure-india-zone-grid em { display: block; }
-.secure-india-zone-grid strong { margin-top: 10px; color: #17324f; font-size: 12px; }
-.secure-india-zone-grid small { color: #748496; font-size: 9px; }
+.secure-india-zone-grid strong { margin-top: 10px; color: #17324f; font-size: 13.5px; }
+.secure-india-zone-grid small { color: #748496; font-size: 13px; }
 .secure-india-zone-grid b { margin-top: 8px; color: #0b4d91; font-size: 19px; font-variant-numeric: tabular-nums; }
-.secure-india-zone-grid em { display: flex; margin-top: 10px; align-items: center; justify-content: space-between; color: #b35e10; font-size: 9px; font-style: normal; font-weight: 800; }
+.secure-india-zone-grid em { display: flex; margin-top: 10px; align-items: center; justify-content: space-between; color: #b35e10; font-size: 13px; font-style: normal; font-weight: 800; }
 .secure-india-crime-grid > article > span { background: #0b4d91; }
-.secure-india-crime-grid h3 { margin-top: 10px; color: #17324f; font-size: 12px; font-weight: 800; }
+.secure-india-crime-grid h3 { margin-top: 10px; color: #17324f; font-size: 13.5px; font-weight: 800; }
 .secure-india-crime-grid strong { display: inline-block; margin-top: 9px; color: #0b4d91; font-size: 20px; font-variant-numeric: tabular-nums; }
-.secure-india-crime-grid small { display: block; min-height: 28px; color: #748496; font-size: 9px; line-height: 1.4; }
-.secure-india-crime-grid a { display: flex; margin-top: 10px; align-items: center; justify-content: space-between; border-top: 3px solid #dce5ed; padding-top: 8px; color: #b35e10; font-size: 9px; font-weight: 800; text-decoration: none; }
+.secure-india-crime-grid small { display: block; min-height: 28px; color: #748496; font-size: 13px; line-height: 1.4; }
+.secure-india-crime-grid a { display: flex; margin-top: 10px; align-items: center; justify-content: space-between; border-top: 3px solid #dce5ed; padding-top: 8px; color: #b35e10; font-size: 13px; font-weight: 800; text-decoration: none; }
 .secure-india-crime-grid a:hover, .secure-india-crime-grid a:focus-visible { color: #0b4d91; border-color: #0b4d91; }
 .secure-india-suspect-band, .secure-india-cta, .secure-india-learning { display: flex; align-items: center; justify-content: space-between; gap: 18px; border-radius: 4px; padding: 16px 18px; }
 .secure-india-suspect-band { background: #e7f1fb; border: 1px solid #c6dbef; color: #0b4d91; }
 .secure-india-suspect-band > div, .secure-india-learning > div { display: flex; align-items: center; gap: 12px; }
 .secure-india-suspect-band strong, .secure-india-suspect-band small, .secure-india-learning strong, .secure-india-learning small { display: block; }
 .secure-india-suspect-band strong, .secure-india-learning strong { color: #102e4d; font-size: 13px; }
-.secure-india-suspect-band small, .secure-india-learning small { margin-top: 2px; color: #586d83; font-size: 10px; }
-.secure-india-suspect-band > a, .secure-india-cta > a, .secure-india-learning > a { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; border-radius: 3px; padding: 9px 14px; font-size: 11px; font-weight: 850; text-decoration: none; transition: background .18s, transform .18s; }
+.secure-india-suspect-band small, .secure-india-learning small { margin-top: 2px; color: #586d83; font-size: 13px; }
+.secure-india-suspect-band > a, .secure-india-cta > a, .secure-india-learning > a { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; border-radius: 3px; padding: 9px 14px; font-size: 13px; font-weight: 850; text-decoration: none; transition: background .18s, transform .18s; }
 .secure-india-suspect-band > a { background: #0b4d91; color: #fff; }
 .secure-india-cta { background: #0b3768; color: #fff; }
 .secure-india-cta strong { color: #fff; }
@@ -1054,11 +1134,11 @@ button, input, select, textarea { font: inherit; }
 .secure-india-suspect-band > a:hover, .secure-india-suspect-band > a:focus-visible, .secure-india-cta > a:hover, .secure-india-cta > a:focus-visible { background: #082a50; transform: translateY(-1px); }
 .secure-india-learning > a:hover, .secure-india-learning > a:focus-visible { background: #fff; }
 .secure-india-methodology { padding: 15px 18px; }
-.secure-india-methodology summary { cursor: pointer; color: #17324f; font-size: 12px; font-weight: 800; }
-.secure-india-methodology p { max-width: 90ch; margin-top: 10px; color: #586d83; font-size: 11px; line-height: 1.6; }
+.secure-india-methodology summary { cursor: pointer; color: #17324f; font-size: 13.5px; font-weight: 800; }
+.secure-india-methodology p { max-width: 90ch; margin-top: 10px; color: #586d83; font-size: 13px; line-height: 1.6; }
 .secure-india-methodology dl { display: flex; margin-top: 10px; gap: 24px; }
-.secure-india-methodology dt { color: #758599; font-size: 9px; text-transform: uppercase; }
-.secure-india-methodology dd { color: #17324f; font-size: 10px; font-weight: 700; }
+.secure-india-methodology dt { color: #758599; font-size: 13px; text-transform: uppercase; }
+.secure-india-methodology dd { color: #17324f; font-size: 13px; font-weight: 700; }
 .secure-india-map-skeleton { min-height: 480px; border: 1px solid #dae2eb; background: linear-gradient(90deg, #edf2f6 25%, #f8fafc 50%, #edf2f6 75%); background-size: 200% 100%; animation: secure-india-loading 1.4s infinite; }
 .secure-india-state { display: flex; align-items: flex-start; gap: 12px; border-left: 4px solid #b42318; background: #fff0ee; padding: 15px; color: #8f2118; }
 .secure-india-state h2 { font-size: 14px; font-weight: 800; }.secure-india-state p { margin-top: 3px; font-size: 11px; }
@@ -1066,12 +1146,12 @@ button, input, select, textarea { font: inherit; }
 
 /* --- Session 10.1: interactive map, derived legend and shared meters --- */
 .secure-india-subtitle { margin-top: 6px; color: #a9cdec !important; font-size: 13px !important; font-weight: 600; }
-.secure-india-helpline { display: flex; align-items: center; gap: 8px; padding-top: 2px; color: #63768a; font-size: 12px; }
-.secure-india-reset { display: inline-flex; height: 36px; align-self: end; align-items: center; gap: 6px; border: 1px solid #cdd8e4; border-radius: 3px; background: #fff; padding: 0 13px; color: #4a5c70; font-size: 11px; font-weight: 800; transition: background .18s, color .18s; }
+.secure-india-helpline { display: flex; align-items: center; gap: 8px; padding-top: 2px; color: #63768a; font-size: 13.5px; }
+.secure-india-reset { display: inline-flex; height: 36px; align-self: end; align-items: center; gap: 6px; border: 1px solid #cdd8e4; border-radius: 3px; background: #fff; padding: 0 13px; color: #4a5c70; font-size: 13px; font-weight: 800; transition: background .18s, color .18s; }
 .secure-india-reset:hover:not(:disabled), .secure-india-reset:focus-visible { background: #eef4fb; color: #0b4d91; border-color: #9dbcdc; }
 .secure-india-reset:disabled { opacity: .45; cursor: not-allowed; }
 .secure-india-breadcrumb { display: flex; align-items: center; gap: 2px; }
-.secure-india-state button { margin-top: 9px; border: 1px solid #b42318; border-radius: 3px; background: #fff; padding: 6px 13px; color: #8f2118; font-size: 11px; font-weight: 800; }
+.secure-india-state button { margin-top: 9px; border: 1px solid #b42318; border-radius: 3px; background: #fff; padding: 6px 13px; color: #8f2118; font-size: 13px; font-weight: 800; }
 .secure-india-state button:hover, .secure-india-state button:focus-visible { background: #8f2118; color: #fff; }
 
 /* The frame keeps the SVG's own aspect ratio so tooltip percentages land on
@@ -1092,22 +1172,22 @@ button, input, select, textarea { font: inherit; }
 .secure-india-marker:focus-visible circle { stroke: #0b3768; stroke-width: 1.4; }
 .secure-india-marker-ring { fill: none; stroke: #0b3768; stroke-width: .7; stroke-dasharray: 2 1.6; }
 .secure-india-tooltip { position: absolute; z-index: 3; transform: translate(-50%, -132%); border: 1px solid #16324f; border-radius: 3px; background: #0b3768; padding: 6px 9px; color: #fff; pointer-events: none; white-space: nowrap; box-shadow: 0 6px 16px rgb(11 55 104 / .28); }
-.secure-india-tooltip strong { display: block; font-size: 11px; font-weight: 850; }
-.secure-india-tooltip span { display: block; color: #a9cdec; font-size: 9px; }
+.secure-india-tooltip strong { display: block; font-size: 13px; font-weight: 850; }
+.secure-india-tooltip span { display: block; color: #a9cdec; font-size: 13px; }
 .secure-india-tooltip b { display: inline-block; margin-top: 3px; font-size: 13px; font-variant-numeric: tabular-nums; }
-.secure-india-tooltip small { color: #a9cdec; font-size: 9px; }
+.secure-india-tooltip small { color: #a9cdec; font-size: 13px; }
 
 .secure-india-legend { border: 1px solid #e2e8ef; background: #fbfcfd; padding: 10px 11px; }
-.secure-india-legend p { color: #55677b; font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.secure-india-legend p { color: #55677b; font-size: 13px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
 .secure-india-legend ul { display: grid; margin-top: 7px; gap: 4px; }
-.secure-india-legend li { display: flex; align-items: center; gap: 7px; color: #3c4d60; font-size: 10px; font-variant-numeric: tabular-nums; }
+.secure-india-legend li { display: flex; align-items: center; gap: 7px; color: #3c4d60; font-size: 13px; font-variant-numeric: tabular-nums; }
 .secure-india-legend li span { width: 15px; height: 10px; flex: 0 0 auto; border: 1px solid rgb(0 0 0 / .18); }
 
-.secure-india-table-note { margin-top: 9px; color: #63768a; font-size: 10px; line-height: 1.5; }
+.secure-india-table-note { margin-top: 9px; color: #63768a; font-size: 13px; line-height: 1.5; }
 .secure-india-ranking caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.secure-india-rank { display: grid; width: 18px; height: 18px; place-items: center; border-radius: 3px; background: #eef2f6; color: #55677b; font-size: 9px; font-weight: 850; }
+.secure-india-rank { display: grid; width: 18px; height: 18px; place-items: center; border-radius: 3px; background: #eef2f6; color: #55677b; font-size: 13px; font-weight: 850; }
 .secure-india-rank.is-top { background: #c96c17; color: #fff; }
-.secure-india-empty { margin-top: 10px; border-left: 3px solid #9dbcdc; background: #f2f7fc; padding: 10px 12px; color: #33556f; font-size: 11px; }
+.secure-india-empty { margin-top: 10px; border-left: 3px solid #9dbcdc; background: #f2f7fc; padding: 10px 12px; color: #33556f; font-size: 13px; }
 .secure-india-map-card.is-loading .secure-india-map-layout { opacity: .55; transition: opacity .18s; }
 
 /* Meters share the map's ramp. These selectors are deliberately more specific
@@ -1146,7 +1226,7 @@ button, input, select, textarea { font: inherit; }
 .suspect-search-page { min-height: 65vh; background: #f3f6fa; padding-bottom: 48px; }
 .suspect-search-hero { background: #0b3768; color: #fff; }
 .suspect-search-hero > div { padding-top: 28px; padding-bottom: 30px; }
-.suspect-search-hero p { display: flex; align-items: center; gap: 7px; color: #ffc463; font-size: 10px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.suspect-search-hero p { display: flex; align-items: center; gap: 7px; color: #ffc463; font-size: 13px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
 .suspect-search-hero h1 { margin-top: 8px; font-size: clamp(28px, 4vw, 42px); font-weight: 850; letter-spacing: -.03em; }
 .suspect-search-hero span { display: block; max-width: 70ch; margin-top: 10px; color: #d4e5f5; font-size: 14px; line-height: 1.65; }
 .suspect-search-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, .7fr); gap: 18px; padding-top: 20px; align-items: start; }
@@ -1154,16 +1234,16 @@ button, input, select, textarea { font: inherit; }
 .suspect-search-panel-head { display: flex; align-items: flex-start; gap: 12px; }
 .suspect-search-panel-head > span { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; background: #e7f1fb; color: #0b4d91; }
 .suspect-search-panel-head h2, .suspect-search-guidance h2, .suspect-result h2, .suspect-correction-panel h2 { color: #102e4d; font-size: 17px; font-weight: 850; }
-.suspect-search-panel-head p, .suspect-correction-panel > div > p { margin-top: 3px; color: #607489; font-size: 11px; line-height: 1.55; }
+.suspect-search-panel-head p, .suspect-correction-panel > div > p { margin-top: 3px; color: #607489; font-size: 13px; line-height: 1.55; }
 .suspect-search-panel form { margin-top: 20px; }
 .suspect-search-fields { display: grid; grid-template-columns: minmax(180px, .65fr) minmax(0, 1.35fr); gap: 14px; margin-bottom: 16px; }
-.suspect-search-privacy { display: flex; margin-top: 16px; align-items: flex-start; gap: 7px; border-top: 1px solid #e5ebf1; padding-top: 12px; color: #607489; font-size: 10px; line-height: 1.5; }
+.suspect-search-privacy { display: flex; margin-top: 16px; align-items: flex-start; gap: 7px; border-top: 1px solid #e5ebf1; padding-top: 12px; color: #607489; font-size: 13px; line-height: 1.5; }
 .suspect-search-privacy svg { flex: 0 0 auto; color: #0b4d91; }
 .suspect-search-guidance { border-top: 3px solid #f09a2b; }
 .suspect-search-guidance ul { display: grid; margin-top: 14px; gap: 13px; }
-.suspect-search-guidance li { display: flex; align-items: flex-start; gap: 8px; color: #435a71; font-size: 11px; line-height: 1.5; }
+.suspect-search-guidance li { display: flex; align-items: flex-start; gap: 8px; color: #435a71; font-size: 13px; line-height: 1.5; }
 .suspect-search-guidance li svg { width: 16px; height: 16px; flex: 0 0 auto; color: #0b5dab; }
-.suspect-search-guidance > a { display: inline-flex; margin-top: 18px; align-items: center; gap: 6px; color: #0b4d91; font-size: 11px; font-weight: 800; text-decoration: none; }
+.suspect-search-guidance > a { display: inline-flex; margin-top: 18px; align-items: center; gap: 6px; color: #0b4d91; font-size: 13px; font-weight: 800; text-decoration: none; }
 .suspect-search-guidance > a:hover { text-decoration: underline; }
 .suspect-result, .suspect-correction-panel { grid-column: 1 / -1; }
 .suspect-result { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 15px; border-left-width: 4px; }
@@ -1173,14 +1253,14 @@ button, input, select, textarea { font: inherit; }
 .suspect-result.is-error { border-left-color: #b42318; background: #fff2f0; color: #8f2118; }
 .suspect-result-kicker { color: #5c7085; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
 .suspect-result h2 { margin-top: 3px; }.suspect-result h2 + p { max-width: 80ch; margin-top: 6px; color: #3e566e; font-size: 13px; line-height: 1.6; }
-.suspect-result > div > strong { display: block; margin-top: 11px; color: #253f59; font-size: 11px; line-height: 1.55; }
+.suspect-result > div > strong { display: block; margin-top: 11px; color: #253f59; font-size: 13px; line-height: 1.55; }
 .suspect-result-actions { display: flex; margin-top: 18px; flex-wrap: wrap; align-items: center; gap: 10px; }
-.suspect-result-actions > button:not(.button) { display: inline-flex; min-height: 38px; align-items: center; gap: 6px; border: 1px solid #9badbf; border-radius: 4px; background: #fff; padding: 8px 12px; color: #234665; font-size: 11px; font-weight: 800; }
+.suspect-result-actions > button:not(.button) { display: inline-flex; min-height: 38px; align-items: center; gap: 6px; border: 1px solid #9badbf; border-radius: 4px; background: #fff; padding: 8px 12px; color: #234665; font-size: 13px; font-weight: 800; }
 .suspect-result-actions > button:hover { background: #edf4fb; }
 .suspect-correction-panel { display: grid; grid-template-columns: .72fr 1.28fr; gap: 28px; border-top: 3px solid #0b4d91; }
 .suspect-correction-panel form { display: grid; gap: 14px; }
 .suspect-correction-success { display: flex; align-items: flex-start; gap: 10px; background: #e9f7ef; padding: 14px; color: #175f42; }
-.suspect-correction-success span, .suspect-correction-success strong { display: block; }.suspect-correction-success span { font-size: 11px; line-height: 1.55; }.suspect-correction-success strong { font-size: 13px; }
+.suspect-correction-success span, .suspect-correction-success strong { display: block; }.suspect-correction-success span { font-size: 13px; line-height: 1.55; }.suspect-correction-success strong { font-size: 13px; }
 
 @media (max-width: 980px) {
   .secure-india-filter-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -1211,3 +1291,744 @@ button, input, select, textarea { font: inherit; }
   html { scroll-behavior: auto; }
 }
 
+
+/* ---------------------------------------------------------------------------
+   Design pass: shared refinements that belong with the tokens above rather than
+   inside any one page.
+   --------------------------------------------------------------------------- */
+
+/* Field labels carry the question a citizen is answering, so they read at the same
+   weight as a short heading rather than as caption text. */
+label { font-weight: 600; letter-spacing: -0.005em; }
+
+/* The emergency band is the loudest object on the home page, which is correct - it
+   is the helpline. A slight gradient stops it reading as a flat printed rectangle. */
+.home-portal [aria-label] > .support-action:first-child { border-right: 1px solid rgb(255 255 255 / .16); }
+
+/* Body copy sits at a comfortable measure. Beyond about 70 characters the eye
+   loses its place returning to the next line, which matters most to the readers
+   this portal is actually for. */
+p { max-width: 74ch; }
+.home-hero p, .warrior-landing-hero p { max-width: 56ch; }
+
+/* ===========================================================================
+   Home page, rebuilt.
+
+   The old composition was a boxed hero with a narrow rail of five cramped cards
+   beside it, then six thumbnail-sized category cards in a six-column grid with a
+   sidebar taking a third of the width. Every section was the same two-column
+   shape, so the page had no rhythm and nothing had room to be read.
+
+   This is a sequence of full-width sections with one join: the action rail lifts
+   over the lower edge of the hero so the fold reads as a single composition.
+   =========================================================================== */
+
+.home-portal { padding-bottom: 56px; }
+.home-section { margin-top: 52px; }
+
+/* --- hero ---------------------------------------------------------------- */
+.home-hero-band { position: relative; isolation: isolate; overflow: hidden; background: #062d68; }
+.home-hero-image { z-index: 0; }
+/* Left-weighted, so the headline sits on the darkest part of the picture and
+   stays readable whatever the photograph is doing behind it. */
+.home-hero-veil { position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgb(5 30 66 / .95) 0%, rgb(5 30 66 / .86) 46%, rgb(5 30 66 / .58) 100%); }
+.home-hero-inner { position: relative; z-index: 2; padding: 38px 0 62px; color: #fff; }
+/* Latin face first, Devanagari after: the condensed and painted faces carry no
+   Devanagari glyphs, so Hindi falls through to Noto on its own. Listing Noto
+   first - as the older rules in this file do - would hand Latin text to Noto's
+   own Latin and quietly cancel the choice. */
+.home-hero-eyebrow { margin: 0 0 14px; font-family: var(--font-condensed), var(--font-devanagari), var(--font-sans), sans-serif; color: #9dc6f5; font-size: 15px; font-weight: 600; letter-spacing: .28em; text-transform: uppercase; }
+/* The one display headline, and the only place the serif appears. Devanagari has
+   no counterpart, so Hindi keeps its own stack and its own size, set below. */
+.home-hero-title { max-width: none; margin: 0; font-family: var(--type-display); font-size: clamp(2rem, 4.6vw, 3.6rem); font-weight: 800; line-height: 1.32; letter-spacing: .002em; text-transform: uppercase; font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144; }
+/* Hindi gets the same prominence without the painted face it cannot have. */
+html[lang="hi"] .home-hero-title { font-size: clamp(2.1rem, 4.6vw, 3.5rem); font-weight: 700; line-height: 1.3; letter-spacing: normal; text-transform: none; font-variation-settings: normal; }
+.home-hero-copy { max-width: 52ch; margin: 22px 0 0; color: #d7e7fa; font-size: 17px; line-height: 1.6; }
+.home-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+
+/* --- action rail --------------------------------------------------------- */
+/* Stacked, not side by side. Five tiles across 1180px leaves about 126px for the
+   words once an icon and a chevron have taken their share, which broke every title
+   onto two lines and left the chevron stranded beside the first one. */
+/* A rounded square rather than a circle: it reads as an app tile, and it sits
+   better beside two lines of text than a circle does. */
+.home-action-chevron { position: absolute; top: 22px; right: 16px; flex-shrink: 0; color: #c2ccd8; transition: color .15s ease, transform .15s ease; }
+.home-action-tile:hover .home-action-chevron { color: var(--blue); transform: translateX(2px); }
+.home-helpline-secondary .home-action-chevron { position: static; color: #a9b7c7; }
+.home-helpline-secondary:hover .home-action-chevron { color: var(--blue); }
+
+/* --- helpline ------------------------------------------------------------ */
+.home-helpline { display: grid; margin-top: 18px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.home-helpline-primary, .home-helpline-secondary { display: flex; align-items: center; gap: 14px; border-radius: var(--radius); padding: 18px 22px; }
+/* The emergency number is the one place on this page allowed to shout. */
+/* Both helpline cards are whole clickable surfaces, so they get the same small
+   lift the category cards do - one hover language across the page, not three. */
+.home-helpline-primary, .home-helpline-secondary { transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+.home-helpline-primary:hover, .home-helpline-secondary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+.home-helpline-primary { background: linear-gradient(100deg, #07306e 0%, #0a4d9e 100%); color: #fff; box-shadow: var(--shadow); }
+.home-helpline-secondary { border: 1px solid var(--border); background: #fff; box-shadow: var(--shadow); }
+.home-helpline-secondary:hover { border-color: #bcd8f4; }
+.home-helpline-icon { display: grid; height: 46px; width: 46px; flex-shrink: 0; place-items: center; border-radius: 50%; border: 1px solid rgb(255 255 255 / .45); }
+.home-helpline-icon.is-quiet { border-color: #cfe2f6; background: #eaf3fd; color: var(--blue); }
+.home-helpline-number { display: block; font-size: 27px; font-weight: 750; letter-spacing: .01em; line-height: 1.1; }
+.home-helpline-title { display: block; color: var(--navy); font-size: 16px; font-weight: 650; }
+.home-helpline-label { display: block; margin-top: 3px; color: #bcd8f4; font-size: 13.5px; }
+.home-helpline-label.is-quiet { color: var(--muted); }
+.home-helpline-secondary > span:nth-child(2) { flex: 1; min-width: 0; }
+
+/* --- categories ---------------------------------------------------------- */
+/* The illustration is a tile beside the words, not a 4:3 banner above them. At
+   six across it was a thumbnail with a caption; at this size it is an object with
+   a description. */
+/* A text link with an arrow, not a filled button. Six filled buttons in a grid
+   read as six equally urgent demands; the card itself is the target. */
+
+/* --- updates ------------------------------------------------------------- */
+
+/* --- learning ------------------------------------------------------------ */
+/* Not a link itself (the button inside is), so it sits rather than lifts - but it
+   was the one surface on the page with no shadow at all, which made it read as a
+   hole rather than as a card. */
+.home-learning { display: flex; align-items: center; gap: 20px; border: 1px solid #cfe2f6; border-radius: var(--radius); background: linear-gradient(100deg, #eef6ff 0%, #f8fbff 100%); padding: 24px 26px; box-shadow: var(--shadow); }
+.home-learning-icon { display: grid; height: 52px; width: 52px; flex-shrink: 0; place-items: center; border-radius: 14px; background: var(--blue); color: #fff; }
+.home-learning-text { flex: 1; min-width: 0; }
+.home-learning-text h2 { color: var(--navy); font-size: 19px; font-weight: 700; }
+.home-learning-text p { margin-top: 5px; max-width: 70ch; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+
+@media (max-width: 1100px) {
+}
+
+@media (max-width: 760px) {
+  .home-hero-inner { padding: 32px 0 58px; }
+  .home-hero-veil { background: linear-gradient(180deg, rgb(5 30 66 / .88) 0%, rgb(5 30 66 / .95) 100%); }
+  .home-helpline { grid-template-columns: 1fr; }
+  .home-section { margin-top: 38px; }
+  .home-learning { flex-direction: column; align-items: flex-start; }
+}
+
+/* --- hero: words left, Cyber Saathi right ---------------------------------
+   The hero used to lead with "Register a complaint", which is the same offer the
+   six category cards below make six more times - and it asks the citizen to pick
+   the right box before they have said what happened. The panel replaces it with
+   the one route nothing else on the page offers: describe it in your own words.
+   -------------------------------------------------------------------------- */
+.home-hero-inner { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); align-items: center; gap: 48px; }
+.home-hero-words { min-width: 0; }
+/* The headline no longer has the whole width to itself, so it wraps sooner. */
+.home-hero-title { max-width: 16ch; }
+.home-hero-copy { max-width: 44ch; }
+
+.home-hero-saathi {
+  min-width: 0;
+  border-radius: var(--radius-lg);
+  /* Solid, not glass. Frosted glass over this photograph put a man's shoulder and
+     a glowing shield directly behind the sentences, which is unreadable for the
+     people this portal is actually for. A solid card also makes Cyber Saathi read
+     as the product's front door rather than a caption on the picture. */
+  background: #fff;
+  padding: 30px 30px 26px;
+  box-shadow: 0 20px 48px rgb(3 18 42 / .38);
+}
+.home-hero-saathi-action {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 22px;
+  min-height: 52px; border-radius: var(--radius-sm);
+  background: var(--blue); padding: 0 24px;
+  color: #fff; font-size: 15.5px; font-weight: 650;
+  box-shadow: 0 1px 2px rgb(7 95 185 / .28), 0 6px 16px rgb(7 95 185 / .26);
+  transition: background-color .15s ease;
+}
+
+/* Four tiles now that Cyber Saathi has moved into the hero. */
+
+@media (max-width: 1100px) {
+  .home-hero-inner { grid-template-columns: 1fr; gap: 34px; }
+  .home-hero-title, .home-hero-copy { max-width: 26ch; }
+  .home-hero-copy { max-width: 56ch; }
+}
+
+@media (max-width: 760px) {
+}
+
+/* ===========================================================================
+   Home v3 - three groups, three shapes.
+
+   Everything on this page used to be a white rounded rectangle of one size, so
+   nothing had rank: the route a frightened citizen most needs looked exactly like
+   the one they least need. Each group now has a form that matches what it is.
+   =========================================================================== */
+
+/* --- 1. Cyber Saathi: a named assistant, not a paragraph ------------------ */
+.home-saathi { min-width: 0; border-radius: var(--radius-lg); background: #fff; padding: 26px 26px 24px; box-shadow: 0 20px 48px rgb(3 18 42 / .38); }
+.home-saathi-id { display: flex; align-items: center; gap: 13px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+/* The mark: a ring, a gradient disc and a presence dot. It gives Cyber Saathi a
+   face on a page where every other thing is a flat tinted square. */
+.home-saathi-avatar { position: relative; display: grid; height: 52px; width: 52px; flex-shrink: 0; place-items: center; border-radius: 50%; background: linear-gradient(145deg, #1c6fd0 0%, #06356f 100%); color: #fff; box-shadow: 0 0 0 4px #eaf3fd; }
+.home-saathi-avatar::after { content: ""; position: absolute; right: -1px; bottom: -1px; height: 14px; width: 14px; border: 2.5px solid #fff; border-radius: 50%; background: #17a673; }
+.home-saathi-id-text { display: block; min-width: 0; }
+.home-saathi-name { display: block; color: var(--navy); font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+.home-saathi-status { display: block; margin-top: 1px; color: #17a673; font-size: 13px; font-weight: 600; }
+.home-saathi-eyebrow { margin: 18px 0 0; color: var(--blue); font-size: 13px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; }
+.home-saathi-title { margin: 7px 0 0; color: var(--navy); font-size: 21px; font-weight: 700; line-height: 1.25; letter-spacing: -0.018em; }
+
+/* Two bubbles beat a description of two bubbles, especially for someone who has
+   never used an assistant. Deliberately static and generic. */
+.home-saathi-thread { display: grid; gap: 8px; margin-top: 16px; }
+.home-saathi-bubble { margin: 0; max-width: 92%; padding: 11px 14px; font-size: 14px; line-height: 1.5; }
+.home-saathi-bubble.is-citizen { justify-self: end; border-radius: 14px 14px 4px 14px; background: #eef1f5; color: #35435a; }
+.home-saathi-bubble.is-saathi { justify-self: start; border-radius: 14px 14px 14px 4px; background: #eaf3fd; color: #0a3d7e; }
+.home-saathi-action { display: inline-flex; align-items: center; gap: 7px; margin-top: 20px; min-height: 52px; width: 100%; justify-content: center; border-radius: var(--radius-sm); background: var(--blue); padding: 0 24px; color: #fff; font-size: 15.5px; font-weight: 650; box-shadow: 0 1px 2px rgb(7 95 185 / .28), 0 6px 16px rgb(7 95 185 / .26); transition: background-color .15s ease; }
+.home-saathi-action:hover { background: #064e9c; }
+.home-saathi-note { margin: 11px 0 0; color: #7d8a99; font-size: 13.5px; text-align: center; }
+
+/* --- 2. Quick actions: one shelf, four segments --------------------------- */
+/* Four destinations did not need four hundred pixels of page. One object with
+   hairline divisions reads as a set, and takes a third of the room. */
+.home-shelf { position: relative; z-index: 3; display: grid; margin-top: -44px; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
+.home-shelf-item { display: flex; align-items: flex-start; gap: 12px; border-left: 1px solid var(--border); padding: 17px 18px; transition: background-color .15s ease; }
+.home-shelf-item:first-child { border-left: 0; }
+.home-shelf-item:hover { background: #f7fafd; }
+.home-shelf-icon { display: grid; height: 38px; width: 38px; flex-shrink: 0; place-items: center; border-radius: 11px; background: #eaf3fd; color: var(--blue); }
+.home-shelf-icon.is-alert { background: var(--teal-soft); color: var(--teal); }
+.home-shelf-text { display: block; min-width: 0; }
+.home-shelf-title { display: block; color: var(--navy); font-size: 14.5px; font-weight: 650; line-height: 1.25; }
+.home-shelf-copy { display: block; margin-top: 3px; color: var(--muted); font-size: 13.5px; line-height: 1.4; }
+
+/* --- 3. Report Cyber Crime: a bento ------------------------------------- */
+/* Women and Child Safety is the sensitive route and the only one offering a
+   choice of how to file, so it takes the large cell and says so at a glance. */
+.home-bento { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+/* Each category carries one colour so the grid reads as a system rather than as
+   six white boxes. It is deliberately faint: the tint is visible in the icon
+   well and as a wash that dies out before the middle of the card, which is the
+   treatment the featured card already used in blue - extended, not invented. */
+.home-bento-card {
+  --tint: #f1f2f4; --tint-edge: var(--border); --wash: #fbfbfa;
+  display: flex; flex-direction: column; border: 1px solid var(--tint-edge); border-radius: var(--radius);
+  background: linear-gradient(150deg, var(--wash) 0%, #fff 46%); padding: 20px; box-shadow: var(--shadow);
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.home-bento-card[data-category="women"]     { --tint: #c5dcf7; --tint-edge: #9dc4ec; --wash: #e1edfd; }
+.home-bento-card[data-category="financial"] { --tint: #fae1bb; --tint-edge: #dfbc81; --wash: #fff5e3; }
+.home-bento-card[data-category="identity"]  { --tint: #d2d7f5; --tint-edge: #afbae6; --wash: #ebedfa; }
+.home-bento-card[data-category="harassment"]{ --tint: #e6d7f5; --tint-edge: #c8b3e2; --wash: #f2ebfa; }
+.home-bento-card[data-category="commerce"]  { --tint: #cce6d4; --tint-edge: #a4cdb1; --wash: #e6f5eb; }
+.home-bento-card[data-category="other"]     { --tint: #cadceb; --tint-edge: #a4c0d6; --wash: #e8f0f5; }
+.home-bento-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+.home-bento-card.is-featured { grid-column: span 2; grid-row: span 2; padding: 30px; }
+.home-bento-body { display: flex; flex: 1; gap: 16px; }
+.home-bento-card.is-featured .home-bento-body { flex-direction: row; align-items: center; gap: 28px; }
+.home-bento-media { position: relative; height: 74px; width: 74px; flex-shrink: 0; overflow: hidden; border: 1px solid var(--tint-edge); border-radius: 14px; background: var(--tint); }
+.home-bento-card.is-featured .home-bento-media { height: 132px; width: 132px; border-radius: 20px; }
+.home-bento-text { display: block; min-width: 0; }
+.home-bento-title { display: block; color: var(--navy); font-size: 16.5px; font-weight: 650; line-height: 1.25; }
+.home-bento-card.is-featured .home-bento-title { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+.home-bento-copy { display: block; margin-top: 7px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.home-bento-card.is-featured .home-bento-copy { margin-top: 12px; font-size: 16px; line-height: 1.6; }
+.home-bento-actions { display: flex; min-height: 46px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; }
+.home-bento-card.is-featured .home-bento-actions { min-height: 0; flex-direction: row; align-items: center; justify-content: flex-start; gap: 26px; margin-top: 24px; padding-top: 20px; }
+.home-bento-cta { display: inline-flex; align-items: center; gap: 4px; color: var(--blue); font-size: 14px; font-weight: 650; }
+.home-bento-card.is-featured .home-bento-cta { font-size: 15.5px; }
+.home-bento-cta:hover { text-decoration: underline; text-underline-offset: 3px; }
+.home-bento-cta.is-quiet { color: var(--muted); font-weight: 500; }
+.home-bento-cta.is-quiet:hover { color: var(--navy); }
+
+/* --- 4. What's new: a notice board -------------------------------------- */
+/* It was three equal cards spending a whole band of the page on three short
+   lines. It is a board of dated advisories - tag, headline, arrow - so it is a
+   list beside a masthead, and takes about a third of the height. */
+.home-board { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); overflow: hidden; border-radius: var(--radius); box-shadow: var(--shadow); }
+.home-board-side { display: flex; flex-direction: column; justify-content: center; background: linear-gradient(155deg, #0a3d7e 0%, #062d68 100%); padding: 26px 26px; color: #fff; }
+.home-board-eyebrow { margin: 0; color: #8dc0f3; font-size: 13px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; }
+.home-board-heading { margin: 8px 0 0; font-size: 25px; font-weight: 700; letter-spacing: -0.02em; }
+.home-board-count { margin: 10px 0 0; color: #b9d5f2; font-size: 13.5px; }
+.home-board-all { display: inline-flex; align-items: center; gap: 5px; margin-top: 18px; align-self: flex-start; border-bottom: 1px solid rgb(255 255 255 / .35); padding-bottom: 2px; color: #fff; font-size: 14px; font-weight: 650; }
+.home-board-all:hover { border-bottom-color: #fff; }
+.home-board-list { margin: 0; list-style: none; padding: 0; border: 1px solid var(--border); border-left: 0; background: #fff; }
+.home-board-list > li + li { border-top: 1px solid var(--border); }
+.home-board-row { display: flex; align-items: flex-start; gap: 14px; padding: 17px 22px; transition: background-color .15s ease; }
+.home-board-row:hover { background: #f7fafd; }
+.home-board-icon { display: grid; height: 34px; width: 34px; flex-shrink: 0; place-items: center; border-radius: 10px; background: #eaf3fd; color: var(--blue); }
+.home-board-row-text { display: block; min-width: 0; flex: 1; }
+.home-board-tag { display: inline-block; border-radius: 999px; background: #eef1f5; padding: 2px 9px; color: #56657a; font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.home-board-title { display: block; margin-top: 5px; color: var(--navy); font-size: 15.5px; font-weight: 650; line-height: 1.3; }
+.home-board-copy { display: block; margin-top: 2px; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+.home-board-chevron { flex-shrink: 0; margin-top: 12px; color: #c2ccd8; transition: color .15s ease; }
+.home-board-row:hover .home-board-chevron { color: var(--blue); }
+
+@media (max-width: 1100px) {
+  .home-shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-shelf-item:nth-child(3) { border-left: 0; }
+  .home-shelf-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+  .home-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-bento-card.is-featured { grid-column: span 2; grid-row: span 1; }
+  .home-bento-card.is-featured .home-bento-body { flex-direction: row; align-items: center; }
+  .home-board { grid-template-columns: 1fr; }
+  .home-board-list { border-left: 1px solid var(--border); }
+}
+
+@media (max-width: 760px) {
+  .home-saathi { padding: 22px 20px 20px; }
+  .home-saathi-title { font-size: 19px; }
+  .home-shelf { grid-template-columns: 1fr; margin-top: -36px; }
+  .home-shelf-item { border-left: 0; }
+  .home-shelf-item + .home-shelf-item { border-top: 1px solid var(--border); }
+  .home-bento { grid-template-columns: 1fr; }
+  .home-bento-card.is-featured { grid-column: span 1; padding: 22px; }
+  .home-bento-card.is-featured .home-bento-body { flex-direction: column; }
+  .home-bento-card.is-featured .home-bento-title { font-size: 22px; }
+  .home-bento-card.is-featured .home-bento-media { height: 96px; width: 96px; }
+  .home-board-row { padding: 15px 18px; }
+}
+
+/* --- condensed labels ------------------------------------------------------
+   Every short, shouty string on the home page - eyebrows, tags, CTAs, the
+   section heading - moves to the condensed face. These are the strings where
+   condensed type reads as deliberate; body copy stays in Inter, because a
+   narrow face costs legibility exactly where this portal cannot afford it.
+   Latin first in every stack, so Hindi falls through to Noto by itself.
+   -------------------------------------------------------------------------- */
+.home-saathi-eyebrow,
+.home-board-eyebrow,
+.home-board-tag,
+.home-bento-cta,
+.home-helpline-label,
+.portal-section-heading h2,
+.home-bento-card.is-featured .home-bento-title {
+  font-family: var(--font-condensed), var(--font-devanagari), var(--font-sans), sans-serif;
+}
+
+.home-saathi-eyebrow, .home-board-eyebrow { font-size: 14px; font-weight: 600; letter-spacing: .24em; }
+.home-board-tag { font-size: 13.5px; font-weight: 600; letter-spacing: .16em; padding: 2px 10px; }
+.home-bento-cta { font-size: 16px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.home-bento-card.is-featured .home-bento-cta { font-size: 18px; }
+.portal-section-heading h2 { font-size: 29px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
+
+/* --- the featured card, filled -------------------------------------------
+   This card spans two rows but held only 70px of text, leaving a measured 109px
+   of dead space above its links. The title now runs as a staggered display
+   block that uses that height on purpose, and a short reassurance line sits
+   under it - the most useful sentence this particular card can carry.
+   -------------------------------------------------------------------------- */
+.home-bento-stack { display: block; }
+.home-bento-stack .line { display: block; font-family: var(--font-condensed), var(--font-devanagari), var(--font-sans), sans-serif; font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 700; line-height: .96; letter-spacing: .01em; text-transform: uppercase; color: var(--navy); }
+.home-bento-stack .line.is-second { margin-left: 1.6em; }
+html[lang="hi"] .home-bento-stack .line { font-size: clamp(1.5rem, 2.6vw, 2.1rem); line-height: 1.35; text-transform: none; letter-spacing: 0; }
+html[lang="hi"] .home-bento-stack .line.is-second { margin-left: 1.1em; }
+
+.home-bento-reassure { display: block; margin-top: 16px; max-width: 40ch; color: #35435a; font-size: 15.5px; font-style: italic; line-height: 1.6; }
+
+@media (max-width: 900px) {
+  .home-bento-stack .line.is-second { margin-left: .8em; }
+  .home-bento-reassure { font-size: 14.5px; }
+}
+
+/* Devanagari must never be letterspaced: the tracking that makes Latin caps look
+   deliberate pulls matras away from the consonant they belong to, so the script
+   reads as broken rather than as styled. */
+html[lang="hi"] .home-hero-eyebrow,
+html[lang="hi"] .home-saathi-eyebrow,
+html[lang="hi"] .home-board-eyebrow,
+html[lang="hi"] .home-board-tag,
+html[lang="hi"] .home-bento-cta,
+html[lang="hi"] .portal-section-heading h2 {
+  letter-spacing: normal;
+  text-transform: none;
+}
+html[lang="hi"] .portal-section-heading h2 { font-size: 25px; font-weight: 700; }
+
+/* ===========================================================================
+   TYPE SYSTEM SWEEP
+   Everything below exists because the three roles above were applied to the
+   home page's big moments and nowhere else, which left the site reading as two
+   designs at once: a styled hero and card, and an untouched header, notice
+   board and learning strip. This is the audit - every title-shaped string on
+   the site, named explicitly, so nothing is left behind again.
+   Sizes go up a little wherever the condensed face replaces Inter: a narrow
+   face at the same px reads lighter, and these are the strings that must not
+   read lighter.
+   =========================================================================== */
+
+/* --- the shell: header, nav, breadcrumbs, footer ------------------------- */
+.utility-bar,
+.brand-lockup strong,
+.brand-support strong,
+.brand-support span,
+.nav-list a,
+.breadcrumbs,
+.portal-footer strong,
+.portal-footer a {
+  font-family: var(--type-title);
+}
+.utility-bar { font-size: 13.5px; letter-spacing: .03em; }
+.brand-lockup strong { font-size: 23px; font-weight: 700; letter-spacing: .01em; }
+.brand-support strong { font-size: 14px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.brand-support span { font-size: 26px; font-weight: 700; }
+.nav-list a { font-size: 16.5px; font-weight: 600; letter-spacing: .04em; }
+.nav-list a.is-active { font-weight: 700; }
+.breadcrumbs { font-size: 14.5px; letter-spacing: .03em; }
+
+/* --- the hero is the one display moment ---------------------------------- */
+.home-hero-title { font-family: var(--type-display); }
+
+/* --- every remaining title on the home page ------------------------------ */
+.home-saathi-name,
+.home-saathi-title,
+.home-shelf-title,
+.home-helpline-title,
+.home-helpline-number,
+.home-helpline-label,
+.home-bento-title,
+.home-board-heading,
+.home-board-count,
+.home-board-all,
+.home-board-title {
+  font-family: var(--type-title);
+}
+.home-saathi-name { font-size: 19px; font-weight: 700; letter-spacing: .01em; }
+.home-saathi-title { font-size: 24px; font-weight: 700; letter-spacing: .01em; }
+.home-shelf-title { font-size: 16.5px; font-weight: 700; letter-spacing: .03em; }
+.home-helpline-title { font-size: 18px; font-weight: 700; letter-spacing: .02em; }
+.home-helpline-number { font-size: 31px; font-weight: 700; letter-spacing: .02em; }
+.home-helpline-label { font-size: 15px; font-weight: 500; letter-spacing: .05em; }
+.home-bento-title { font-size: 20px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+.home-board-heading { font-size: 29px; font-weight: 700; letter-spacing: .02em; }
+.home-board-count { font-size: 15px; font-weight: 500; letter-spacing: .04em; }
+.home-board-all { font-size: 16px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.home-board-title { font-size: 18px; font-weight: 700; letter-spacing: .02em; }
+
+/* Body copy is deliberately NOT in this sweep. .home-bento-copy,
+   .home-board-copy, .home-shelf-copy, .home-hero-copy, .brand-reassurance and
+   the Saathi bubbles stay in Inter, because that is where the reading happens
+   and a condensed face costs legibility exactly there. */
+
+/* Hindi: no Latin display face applies, and tracking breaks the script. */
+html[lang="hi"] .utility-bar,
+html[lang="hi"] .brand-lockup strong,
+html[lang="hi"] .brand-support strong,
+html[lang="hi"] .nav-list a,
+html[lang="hi"] .breadcrumbs,
+html[lang="hi"] .home-shelf-title,
+html[lang="hi"] .home-bento-title,
+html[lang="hi"] .home-board-all,
+html[lang="hi"] .home-board-heading,
+html[lang="hi"] .home-saathi-title {
+  letter-spacing: normal;
+  text-transform: none;
+}
+html[lang="hi"] .nav-list a { font-size: 15px; }
+html[lang="hi"] .brand-lockup strong { font-size: 20px; }
+html[lang="hi"] .home-bento-title { font-size: 18px; }
+
+/* --- the staggered hero headline -----------------------------------------
+   Three lines, each stepped in by a different amount, so the block reads as a
+   composed shape rather than as text that happened to wrap. Indents are in em,
+   so they track the headline size instead of drifting apart when it scales.
+   -------------------------------------------------------------------------- */
+.home-hero-title .line { display: block; }
+.home-hero-title .line-b { margin-left: 3.1em; }
+.home-hero-title .line-c { margin-left: 1em; }
+
+/* Devanagari: no caps, no tracking, and a line-height that leaves room for the
+   matras above and below - .98 would clip them. */
+html[lang="hi"] .home-hero-title .line-b { margin-left: 2.3em; }
+html[lang="hi"] .home-hero-title .line-c { margin-left: .7em; }
+
+@media (max-width: 900px) {
+  /* On a phone the indents eat the measure, so the stagger relaxes. */
+  .home-hero-title .line-b { margin-left: 1.1em; }
+  .home-hero-title .line-c { margin-left: .5em; }
+}
+
+/* --- Cyber Saathi: a way in, not a poster ---------------------------------
+   The card carried a stock robot glyph and a two-line sample exchange. It now
+   carries its own mark, the question in the hero's display face so the two read
+   as one voice, and three openings in a citizen's own words.
+   -------------------------------------------------------------------------- */
+
+/* Tie the card to the hero: same face, same soft/wonk, one size down. */
+.home-saathi-title {
+  font-family: var(--type-display);
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.012em;
+  line-height: 1.15;
+  font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+}
+html[lang="hi"] .home-saathi-title { font-size: 23px; font-variation-settings: normal; line-height: 1.45; }
+
+/* The mark needs more room to breathe than a glyph did. */
+.home-saathi-avatar { height: 56px; width: 56px; }
+
+.home-saathi-chips-lead { margin: 14px 0 0; color: var(--muted); font-family: var(--type-title); font-size: 15px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
+html[lang="hi"] .home-saathi-chips-lead { letter-spacing: normal; text-transform: none; font-size: 14px; }
+
+.home-saathi-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+.home-saathi-chip {
+  display: inline-flex; align-items: center; min-height: 34px;
+  border: 1px solid #cfe2f6; border-radius: 999px; background: #f5faff;
+  padding: 0 13px; color: #0a3d7e; font-size: 14px; font-weight: 500;
+  transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
+}
+.home-saathi-chip:hover { transform: translateY(-1px); border-color: #9ac6ef; background: #eaf3fd; }
+
+/* The card grew by a block, so its own padding gives the room back. */
+.home-saathi { padding: 18px 22px 16px; }
+.home-saathi-action { margin-top: 14px; min-height: 48px; }
+
+/* The thread is the card's most expensive block by height. Tightened rather than
+   cut, because the pair of bubbles is what makes this read as a conversation
+   instead of a product blurb. */
+.home-saathi-id { padding-bottom: 13px; }
+.home-saathi-eyebrow { margin-top: 13px; }
+.home-saathi-thread { gap: 6px; margin-top: 11px; }
+.home-saathi-bubble { padding: 9px 13px; font-size: 13.5px; line-height: 1.45; }
+.home-saathi-note { margin-top: 8px; }
+
+/* --- Cyber Saathi gets a colour of its own --------------------------------
+   The six report cards each carry one colour so the grid reads as a system.
+   Cyber Saathi was the one card on the page with no colour at all - white on
+   navy - which left the portal's own named character looking like a container
+   rather than a character. It takes the same three-token treatment the report
+   cards use, in a teal that is next to the portal blue without being it: the
+   assistant is part of the family, not another button.
+   -------------------------------------------------------------------------- */
+.home-saathi {
+  --saathi-tint: #d6eef1;
+  --saathi-edge: #a6d3d9;
+  --saathi-wash: #eefafb;
+  --saathi-ink: #0d6070;
+  background: linear-gradient(158deg, var(--saathi-wash) 0%, #fff 42%);
+  border: 1px solid var(--saathi-edge);
+}
+
+/* The mark sits in its own colour, so it is recognisably Saathi's rather than
+   just another blue circle like the ones in the shelf. */
+.home-saathi-avatar {
+  background: linear-gradient(150deg, #17879b 0%, #0a4a63 100%);
+  box-shadow: 0 0 0 4px var(--saathi-wash);
+}
+.home-saathi-id { border-bottom-color: var(--saathi-edge); }
+.home-saathi-eyebrow { color: var(--saathi-ink); }
+
+/* The reply bubble is Saathi speaking, so it speaks in Saathi's colour; the
+   citizen's bubble stays neutral grey, which keeps the two voices apart. */
+.home-saathi-bubble.is-saathi { background: var(--saathi-tint); color: #0a4453; }
+
+.home-saathi-chip { border-color: var(--saathi-edge); background: var(--saathi-wash); color: var(--saathi-ink); }
+.home-saathi-chip:hover { border-color: #7cbcc6; background: var(--saathi-tint); }
+
+@media (max-width: 1100px) {
+  /* The card meets the page background rather than the photograph here, so the
+     wash would sit on white and disappear; the border carries it instead. */
+  .home-saathi { background: linear-gradient(158deg, var(--saathi-wash) 0%, #fff 58%); }
+}
+
+/* ===========================================================================
+   PHONE: GIVE THE SCREEN BACK
+   Measured on a 390x844 phone, every page spent 342px - 41% of the screen -
+   on chrome before the content started, and 549px (65%) on the reporting
+   routes. Nothing overflowed sideways, so the layout "fitted"; it just left a
+   citizen scrolling past four stacked bars to reach the thing they came for.
+   Rather than shrink text, this removes what a phone does not need: a
+   disclaimer that is repeated verbatim in the footer, a subtitle under a
+   wordmark that already says it, a reassurance sentence the hero repeats, and
+   a breadcrumb that on the home page reads "Home".
+   =========================================================================== */
+@media (max-width: 700px) {
+  /* --- utility bar: 89px -> one 38px row ---------------------------------- */
+  /* The notice is word-for-word in the footer, so on a phone it is a second
+     copy charging 50px of the first screen. */
+  .utility-notice { display: none; }
+  .utility-content { justify-content: flex-end; gap: 10px; min-height: 38px; padding-block: 0; }
+  .utility-bar { font-size: 13px; }
+
+  /* --- brand header: 159px -> one 58px row -------------------------------- */
+  /* flex-direction must be stated: an earlier phone rule turns this into a
+     column, and display:flex alone inherits that and keeps stacking. */
+  .brand-header .brand-content {
+    display: flex; flex-direction: row; flex-wrap: nowrap;
+    align-items: center; justify-content: space-between;
+    gap: 12px; min-height: 58px; padding-block: 0;
+  }
+  .brand-lockup { min-width: 0; flex: 0 1 auto; }
+  .brand-header-actions { flex: 0 0 auto; width: auto; }
+  /* The wordmark already says it; the strapline is duplication at this width. */
+  .brand-lockup small { display: none; }
+  .brand-lockup strong { font-size: 20px; }
+  .brand-mark { height: 34px; width: 34px; }
+  /* The hero's first paragraph says the same thing, better. */
+  .brand-reassurance { display: none; }
+  .brand-header-actions { gap: 10px; flex-shrink: 0; }
+  /* Keep the number, drop the label above it - the phone icon is the label. */
+  .brand-support strong { display: none; }
+  .brand-support span { font-size: 20px; margin-top: 0; }
+
+  /* --- nav: 52px -> 46px, and still a full-width tap target --------------- */
+  .nav-list { gap: 0; }
+  .nav-list a { padding: 12px 12px; font-size: 15.5px; min-height: 46px; }
+  .nav-list a.is-active::after { left: 12px; right: 12px; }
+
+  /* --- breadcrumbs: 42px -> 0 --------------------------------------------- */
+  /* One line of navigation history is not worth 5% of a phone screen when the
+     back button does the same job; it stays for everyone on a wider screen. */
+  .breadcrumbs { display: none; }
+
+  /* --- the reporting routes' helpline strip ------------------------------- */
+
+  /* --- tap targets -------------------------------------------------------- */
+  /* 18 interactive elements on the home page were under 40px tall. */
+  .home-saathi-chip { min-height: 42px; font-size: 14.5px; }
+  .home-bento-cta { min-height: 40px; }
+  .home-board-all { min-height: 40px; }
+  .public-footer a, .utility-bar a { display: inline-flex; align-items: center; min-height: 40px; }
+  .text-size-control button { min-height: 36px; min-width: 36px; }
+
+  /* --- the hero, so Cyber Saathi is reachable without a long scroll ------- */
+  .home-hero-inner { padding: 20px 0 26px; gap: 22px; }
+  .home-hero-eyebrow { margin-bottom: 10px; font-size: 13px; letter-spacing: .2em; }
+  .home-hero-copy { margin-top: 14px; font-size: 15.5px; }
+  .home-hero-actions { margin-top: 16px; }
+}
+
+@media (max-width: 700px) {
+  /* The audit named these six by hand: brand lockup, helpline link, text-size
+     buttons, the support band's "Call 1930", and Cyber Saathi's Type/Voice
+     toggle. All sat between 26px and 36px, which is under a fingertip. */
+  .brand-lockup, .brand-support { min-height: 44px; }
+  .text-size-control button { min-height: 40px; min-width: 40px; padding: 0 11px; }
+  .support-band a, .helpline-callout a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; }
+  .cyber-saathi-page button { min-height: 44px; }
+
+  /* The reporting routes' helpline strip was 154px on its own - the single
+     biggest remaining block of chrome, and it repeats the number already in the
+     header. Kept, because on a fraud report it is the most useful thing on the
+     screen, but as one line rather than three. */
+}
+
+@media (max-width: 700px) {
+  /* Cyber Saathi's composer is built from Tailwind utilities rather than named
+     classes, so these are targeted by the utilities the component actually
+     uses: the Type/Voice group, the icon buttons, and the inline confirm pair.
+     All were 32-36px - under a fingertip on the one screen where a distressed
+     person is typing what happened to them. */
+  [role="group"] > button { min-height: 44px; padding-inline: 14px; }
+  button.grid.h-10 { height: 44px; width: 44px; }
+  button.h-9, button.inline-flex.h-9 { height: 44px; }
+}
+
+/* The nav is a horizontal scroller so it survives nine items on a narrow screen,
+   but on Windows that renders a permanent scrollbar track inside the bar - a
+   control that looks interactive, is not, and appears on every page. Hidden,
+   scrolling kept: dragging, wheel and keyboard all still work. */
+.nav-list { scrollbar-width: none; -ms-overflow-style: none; }
+.nav-list::-webkit-scrollbar { display: none; }
+
+/* Same treatment anywhere else the shell scrolls sideways by design. */
+.report-table-scroll, .home-board-list { scrollbar-width: none; }
+.report-table-scroll::-webkit-scrollbar, .home-board-list::-webkit-scrollbar { display: none; }
+
+/* ===========================================================================
+   SITE-WIDE PASS: bringing the rest of the pages up to the home page's system
+   Found by auditing all routes at 1280px and at 390px rather than by eye.
+   =========================================================================== */
+
+/* --- surfaces that read as holes ------------------------------------------
+   Two card types across the site had a border and a radius but no shadow, so
+   they sat flat on the paper instead of above it - the same thing that made
+   Learning Corner look like a hole in the home page. */
+.contact-route-card, .warrior-awareness-card { box-shadow: var(--shadow); }
+.contact-route-card:hover, .contact-route-card:focus-visible { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+
+/* --- tap targets on Secure India -----------------------------------------
+   Its controls were the worst on the site: 24 elements under 40px, and the
+   time-range and metric toggles are exactly what someone prods repeatedly. */
+.secure-india-segmented button { min-height: 42px; padding: 0 14px; }
+.secure-india-reset { min-height: 42px; padding: 0 16px; }
+.secure-india-panel a, .secure-india-callout a { display: inline-flex; align-items: center; min-height: 42px; }
+
+@media (max-width: 700px) {
+  .secure-india-zone-grid > button, .secure-india-crime-grid > article { min-height: 64px; }
+  .secure-india-ranking td button { min-height: 44px; }
+
+  /* --- the reporting routes' chrome ---------------------------------------
+     Five routes still spent 301px before content, all of it this strip plus the
+     shell. It repeats the number already in the header, so on a phone it keeps
+     the headline and the call button and drops the explanatory sentence. */
+}
+
+/* --- the category colour system, carried to the reporting form -------------
+   The home page gives each of the six report categories a colour. The form that
+   actually files the report showed the same six as identical white boxes, so
+   the colour was decoration on the home page rather than a language. These are
+   keyed on the category's own code from the API, so the two screens cannot
+   drift apart - the same category is the same colour wherever it appears. */
+.citizen-category-option { --tint: #f1f2f4; --tint-edge: var(--border); --wash: #fbfbfa; }
+.citizen-category-option[data-category-code="WOMEN_AND_CHILD_SAFETY"] { --tint: #c5dcf7; --tint-edge: #9dc4ec; --wash: #e1edfd; }
+.citizen-category-option[data-category-code="FINANCIAL_FRAUD"]        { --tint: #fae1bb; --tint-edge: #dfbc81; --wash: #fff5e3; }
+.citizen-category-option[data-category-code="IDENTITY_MISUSE"]        { --tint: #d2d7f5; --tint-edge: #afbae6; --wash: #ebedfa; }
+.citizen-category-option[data-category-code="ONLINE_HARASSMENT"]      { --tint: #e6d7f5; --tint-edge: #c8b3e2; --wash: #f2ebfa; }
+.citizen-category-option[data-category-code="E_COMMERCE_FRAUD"]       { --tint: #cce6d4; --tint-edge: #a4cdb1; --wash: #e6f5eb; }
+.citizen-category-option[data-category-code="OTHER_CYBER_CONCERN"]    { --tint: #cadceb; --tint-edge: #a4c0d6; --wash: #e8f0f5; }
+
+.citizen-category-option {
+  border-color: var(--tint-edge);
+  background: linear-gradient(150deg, var(--wash) 0%, #fff 46%);
+  box-shadow: var(--shadow);
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.citizen-category-option:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+/* Selected has to be unmistakable on a form, so it takes the full tint rather
+   than the wash - the colour still identifies the category, the weight says
+   "this is the one you chose". */
+.citizen-category-option[aria-pressed="true"] {
+  background: var(--tint);
+  border-color: var(--tint-edge);
+  box-shadow: inset 0 0 0 2px var(--tint-edge), var(--shadow);
+}
+.citizen-category-option strong { font-family: var(--type-title); font-size: 18px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
+html[lang="hi"] .citizen-category-option strong { font-size: 16px; letter-spacing: normal; text-transform: none; }
+
+/* Back links were 21px tall - a real target on a phone, and the one control
+   someone uses when they have gone the wrong way. */
+.warrior-back-link, .secure-india-back-link, a[class*="back-link"] { min-height: 44px; }
+.secure-india-suspect-band > a, .secure-india-cta > a, .secure-india-learning > a { min-height: 44px; padding: 0 16px; }
+
+/* The last two: an inline link inside a crime card on Secure India, and the
+   "back to the map" link in the suspect-search guidance panel. Both were
+   unclassed inline links inside named containers. */
+.secure-india-crime-grid > article > a,
+.suspect-search-guidance > a {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
+}
+
+@media (max-width: 700px) {
+  /* The strip stayed tall because the headline wrapped to three lines inside a
+     nowrap row. Tightened to two lines at most; the explanatory sentence is
+     already hidden on a phone and the number is in the header as well. */
+}
+
+@media (max-width: 700px) {
+  /* --- the reporting-route helpline strip, settled -------------------------
+     This strip was 130px on a phone, the single largest remaining block of
+     chrome on five routes. The cause was not wrapping text: an earlier phone
+     rule sets `flex-direction: column` on it, and every override I wrote
+     changed gap and padding without restating direction, so it kept stacking
+     icon / text / full-width button. Stating `row` is the fix - the same trap
+     the brand header had.
+     The strip stays, because on a page where someone is reporting money being
+     taken, the number to freeze the transfer is the most useful thing on the
+     screen. It just says it in one line. */
+  .helpline-callout > div {
+    display: flex; flex-direction: row; flex-wrap: nowrap;
+    align-items: center; gap: 10px; padding: 9px 0;
+  }
+  .helpline-callout-icon { height: 36px; width: 36px; }
+  .helpline-callout p { min-width: 0; font-size: 14px; }
+  .helpline-callout strong { font-size: 15px; line-height: 1.25; }
+  /* The sentence is explanatory; the headline and the button carry the job. */
+  .helpline-callout p > span { display: none; }
+  .helpline-callout a {
+    width: auto; flex-shrink: 0; display: inline-flex; align-items: center;
+    min-height: 44px; padding: 0 14px; white-space: nowrap;
+  }
+}

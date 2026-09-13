@@ -3,9 +3,20 @@ import Link from "next/link";
 import {hasLocale} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
-import { BellRing, Bot, BookOpenCheck, ClipboardCheck, GraduationCap, Lightbulb, Megaphone, PhoneCall, ShieldCheck, Siren, UserRoundPlus } from "lucide-react";
+import { BookOpenCheck, ChevronRight, Siren } from "lucide-react";
 
 import {routing} from "@/lib/i18n/routing";
+import {
+  DrawnBell,
+  DrawnBulb,
+  DrawnCap,
+  DrawnClipboard,
+  DrawnMegaphone,
+  DrawnPhone,
+  DrawnShield,
+  DrawnWarrior
+} from "@/components/ui/DrawnIcons";
+import {SaathiMark} from "@/components/ui/SaathiMark";
 
 type Props = {params: Promise<{locale: string}>};
 
@@ -19,6 +30,7 @@ const categoryAssets: Record<CategoryKey, string> = {
   commerce: "/images/home/categories/ecommerce-fraud.png",
   other: "/images/home/categories/other-concern.png"
 };
+
 
 export default async function LocaleHomePage({params}: Props) {
   const {locale} = await params;
@@ -43,117 +55,208 @@ export default async function LocaleHomePage({params}: Props) {
   const reportingHref = (mode: "anonymous" | "identified", category: string) => `${reportHref}?mode=${mode}&category=${category}`;
   const categories: CategoryKey[] = ["women", "financial", "identity", "harassment", "commerce", "other"];
   const updates = [
-    {key: "fakeCalls", icon: PhoneCall},
-    {key: "advisory", icon: Megaphone},
-    {key: "tips", icon: Lightbulb}
+    {key: "fakeCalls", icon: DrawnPhone},
+    {key: "advisory", icon: DrawnMegaphone},
+    {key: "tips", icon: DrawnBulb}
   ] as const;
+  // Cyber Saathi is no longer one tile among five - it is the panel in the hero,
+  // because talking it through is the entry point this portal is actually for.
   const quickLinks = [
-    {key: "saathi", href: `/${locale}/cyber-saathi`, icon: Bot},
-    {key: "warrior", href: `/${locale}/cyber-warrior`, icon: UserRoundPlus},
-    {key: "learn", href: learningHref, icon: BellRing},
-    {key: "secure", href: secureIndiaHref, icon: ShieldCheck},
-    {key: "track", href: trackHref, icon: ClipboardCheck}
+    {key: "warrior", href: `/${locale}/cyber-warrior`, icon: DrawnWarrior},
+    {key: "learn", href: learningHref, icon: DrawnBell},
+    {key: "secure", href: secureIndiaHref, icon: DrawnShield},
+    {key: "track", href: trackHref, icon: DrawnClipboard}
   ] as const;
 
   return (
-    <main className="home-portal overflow-x-hidden bg-[#f5f8fc] pb-10">
-      <section className="shell-container py-4">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.95fr)_minmax(292px,0.82fr)]">
-          <section className="home-hero relative min-h-[292px] overflow-hidden rounded-[8px] bg-[#062d68]" aria-labelledby="home-title">
-            <Image alt="" className="object-cover object-center" fill priority sizes="(max-width: 1024px) 100vw, 70vw" src="/images/home/cyber-safety-hero.png" />
-            <div className="absolute inset-0 bg-[#052552]/80" />
-            <div className="relative flex min-h-[292px] max-w-2xl flex-col justify-center px-6 py-7 text-white sm:px-9">
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-sky-100">{t("heroEyebrow")}</p>
-              <h1 id="home-title" className="max-w-xl text-[2rem] font-bold leading-[1.12] sm:text-[2.45rem]">{t("heroTitle")}</h1>
-              <p className="mt-4 max-w-lg text-[15px] leading-6 text-sky-50 sm:text-base sm:leading-7">{t("heroCopy")}</p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Link className="portal-primary-link" href={reportHref}>{t("reportAction")}</Link>
-                <Link className="portal-secondary-link" href={trackHref}>{t("trackAction")}</Link>
-              </div>
+    <main className="home-portal">
+      <section className="home-hero-band" aria-labelledby="home-title">
+        <Image alt="" className="home-hero-image object-cover object-center" fill priority sizes="100vw" src="/images/home/cyber-safety-hero.png" />
+        <div className="home-hero-veil" />
+        <div className="shell-container home-hero-inner">
+          <div className="home-hero-words">
+            <p className="home-hero-eyebrow">{t("heroEyebrow")}</p>
+            {/* Three staggered lines. They stay inside the one h1, so the
+                accessible name is still the whole sentence - the stagger is
+                layout, not content. */}
+            <h1 id="home-title" className="home-hero-title">
+              <span className="line line-a">{t("heroTitleA")}</span>
+              <span className="line line-b">{t("heroTitleB")}</span>
+              <span className="line line-c">{t("heroTitleC")}</span>
+            </h1>
+            <p className="home-hero-copy">{t("heroCopy")}</p>
+            <div className="home-hero-actions">
+              <Link className="portal-secondary-link" href={trackHref}>{t("trackAction")}</Link>
             </div>
-          </section>
+          </div>
 
-          <aside className="grid gap-2" aria-label={t("quickLinksLabel")}>
-            {quickLinks.map(({key, href, icon: Icon}) => {
-              // "Stay Alert" gets the warm teal accent instead of the same blue as every
-              // other tile - a small, deliberate touch of variety (matching the approved
-              // reference direction), not a full recolor of the other three.
-              const iconTint = key === "learn"
-                ? "border-[#a8d9cd] bg-[#e6f6f2] text-[#1f9a86]"
-                : "border-[#bfd9f2] bg-[#edf6ff] text-[#075bbf]";
-              return (
-                <Link key={key} href={href} className="portal-action-card group flex min-h-[66px] items-center gap-3 rounded-[8px] border border-slate-200 bg-white px-4 py-3 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]">
-                  <span aria-hidden="true" className={"grid h-10 w-10 shrink-0 place-items-center rounded-full border " + iconTint}><Icon size={20} strokeWidth={1.8} /></span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[15px] font-bold leading-5 text-[#092a58]">{t(`quick.${key}.title`)}</span>
-                    <span className="mt-0.5 block text-xs leading-5 text-slate-600">{t(`quick.${key}.copy`)}</span>
-                  </span>
-                  <span aria-hidden="true" className="text-lg text-[#315274] transition-transform duration-150 group-hover:translate-x-0.5">&gt;</span>
+          {/* Named, with a presence dot and a sample exchange. A paragraph about an
+              assistant is abstract; two bubbles are not. */}
+          <aside className="home-saathi">
+            <div className="home-saathi-id">
+              <span aria-hidden="true" className="home-saathi-avatar"><SaathiMark size={30} strokeWidth={1.9} /></span>
+              <span className="home-saathi-id-text">
+                <span className="home-saathi-name">{t("heroSaathiName")}</span>
+                <span className="home-saathi-status">{t("heroSaathiStatus")}</span>
+              </span>
+            </div>
+
+            <p className="home-saathi-eyebrow">{t("heroSaathiEyebrow")}</p>
+            <p className="home-saathi-title">{t("heroSaathiTitle")}</p>
+
+            {/* Illustrative, not a transcript - kept generic and visibly static. */}
+            <div className="home-saathi-thread" aria-hidden="true">
+              <p className="home-saathi-bubble is-citizen">{t("heroSaathiSampleUser")}</p>
+              <p className="home-saathi-bubble is-saathi">{t("heroSaathiSampleReply")}</p>
+            </div>
+
+            {/* The card used to be a poster about a chatbot. These are three real
+                openings in a citizen's own words - the ones most people arrive
+                with - so the card is a way in rather than an advertisement. */}
+            <p className="home-saathi-chips-lead">{t("heroSaathiChipsLead")}</p>
+            <div className="home-saathi-chips">
+              {(["A", "B", "C"] as const).map((slot) => (
+                <Link key={slot} className="home-saathi-chip" href={`/${locale}/cyber-saathi`}>
+                  {t(`heroSaathiChip${slot}`)}
                 </Link>
-              );
-            })}
+              ))}
+            </div>
+
+            <Link className="home-saathi-action" href={`/${locale}/cyber-saathi`}>
+              {t("heroSaathiAction")}
+              <ChevronRight aria-hidden="true" size={18} strokeWidth={2.4} />
+            </Link>
+            <p className="home-saathi-note">{t("heroSaathiNote")}</p>
           </aside>
         </div>
+      </section>
 
-        <section className="mt-3 grid overflow-hidden rounded-[8px] bg-[#073d87] text-white sm:grid-cols-2" aria-label={t("helplineLabel")}>
-          <a className="support-action flex min-h-[64px] items-center gap-3 px-5 py-3 sm:px-8" href="tel:1930">
-            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70"><Siren size={21} strokeWidth={1.8} /></span>
-            <span><span className="block text-xl font-bold">1930</span><span className="text-sm text-blue-100">{t("helplinePrimary")}</span></span>
+      {/* One shelf, four segments. These were four tall cards carrying one line each. */}
+      <div className="shell-container">
+        <nav className="home-shelf" aria-label={t("quickLinksLabel")}>
+          {quickLinks.map(({key, href, icon: Icon}) => (
+            <Link key={key} href={href} className="home-shelf-item">
+              <span aria-hidden="true" className={"home-shelf-icon" + (key === "learn" ? " is-alert" : "")}>
+                <Icon size={21} strokeWidth={1.7} />
+              </span>
+              <span className="home-shelf-text">
+                <span className="home-shelf-title">{t(`quick.${key}.title`)}</span>
+                <span className="home-shelf-copy">{t(`quick.${key}.copy`)}</span>
+              </span>
+            </Link>
+          ))}
+        </nav>
+      </div>
+
+      <div className="shell-container">
+        <section className="home-helpline" aria-label={t("helplineLabel")}>
+          <a className="home-helpline-primary" href="tel:1930">
+            <span aria-hidden="true" className="home-helpline-icon"><Siren size={22} strokeWidth={1.8} /></span>
+            <span>
+              <span className="home-helpline-number">1930</span>
+              <span className="home-helpline-label">{t("helplinePrimary")}</span>
+            </span>
           </a>
-          <Link className="support-action flex min-h-[64px] items-center gap-3 border-t border-white/20 px-5 py-3 sm:border-l sm:border-t-0 sm:px-8" href={learningHref}>
-            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/70"><BookOpenCheck size={21} strokeWidth={1.8} /></span>
-            <span><span className="block text-base font-bold">{t("helplineSecondaryTitle")}</span><span className="text-sm text-blue-100">{t("helplineSecondary")}</span></span>
+          <Link className="home-helpline-secondary" href={learningHref}>
+            <span aria-hidden="true" className="home-helpline-icon is-quiet"><BookOpenCheck size={22} strokeWidth={1.8} /></span>
+            <span>
+              <span className="home-helpline-title">{t("helplineSecondaryTitle")}</span>
+              <span className="home-helpline-label is-quiet">{t("helplineSecondary")}</span>
+            </span>
+            <ChevronRight aria-hidden="true" className="home-action-chevron" size={17} strokeWidth={2.2} />
           </Link>
         </section>
-      </section>
+      </div>
 
-      <section className="shell-container grid gap-5 xl:grid-cols-[minmax(0,1fr)_282px]">
-        <section aria-labelledby="report-categories">
-          <div className="portal-section-heading mb-4">
-            <span aria-hidden="true" />
-            <h2 id="report-categories">{t("categoriesTitle")}</h2>
-            <span aria-hidden="true" />
-          </div>
-          <div className="report-category-grid grid grid-flow-dense gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            {categories.map((category) => (
-              <article key={category} className="report-category-card group flex min-w-0 flex-col rounded-[8px] border border-slate-200 bg-white p-3 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]">
-                <Link aria-label={t(`categories.${category}.title`)} className="report-category-card-entry flex flex-1 flex-col rounded-[6px]" href={categoryEntryHref(category)}>
-                  <span className="category-media relative aspect-[4/3] overflow-hidden rounded-[6px] border border-[#e3eef8] bg-[#f7fbff]">
-                    <Image alt="" className="object-contain p-2 transition-transform duration-200 group-hover:scale-[1.03]" fill sizes="(max-width: 640px) 90vw, (max-width: 1280px) 30vw, 14vw" src={categoryAssets[category]} />
+      {/* Bento. The featured cell is the sensitive route, and it is the only one
+          that offers a choice of how to file. */}
+      <section className="shell-container home-section" aria-labelledby="report-categories">
+        <div className="portal-section-heading mb-5">
+          <span aria-hidden="true" />
+          <h2 id="report-categories">{t("categoriesTitle")}</h2>
+          <span aria-hidden="true" />
+        </div>
+        <div className="home-bento">
+          {categories.map((category) => {
+            const featured = category === "women";
+            return (
+              <article key={category} data-category={category} className={"home-bento-card" + (featured ? " is-featured" : "")}>
+                <Link aria-label={t(`categories.${category}.title`)} className="home-bento-body" href={categoryEntryHref(category)}>
+                  <span className="home-bento-media">
+                    <Image alt="" className="object-contain p-1.5" fill sizes={featured ? "132px" : "72px"} src={categoryAssets[category]} />
                   </span>
-                  <h3 className="mt-3 text-[15px] font-bold leading-5 text-[#092a58]">{t(`categories.${category}.title`)}</h3>
-                  <p className="mt-1.5 flex-1 text-[12px] leading-[1.5] text-slate-600">{t(`categories.${category}.copy`)}</p>
+                  <span className="home-bento-text">
+                    {featured ? (
+                      // Staggered, so the title uses the height this cell has
+                      // rather than leaving it empty. The accessible name comes
+                      // from the Link's aria-label, which carries the real title.
+                      <span aria-hidden="true" className="home-bento-stack">
+                        <span className="line">{t(`categories.${category}.displayA`)}</span>
+                        <span className="line is-second">{t(`categories.${category}.displayB`)}</span>
+                      </span>
+                    ) : (
+                      <span className="home-bento-title">{t(`categories.${category}.title`)}</span>
+                    )}
+                    <span className="home-bento-copy">{t(`categories.${category}.copy`)}</span>
+                    {featured ? <span className="home-bento-reassure">{t(`categories.${category}.reassure`)}</span> : null}
+                  </span>
                 </Link>
-                <div className="mt-3 grid gap-1.5">
-                  <Link className="report-card-action" href={reportingHref(category === "women" ? "anonymous" : "identified", category)}>{category === "women" ? t("anonymousAction") : t("reportAction")}</Link>
-                  {category === "women" ? <Link className="report-card-action report-card-action-secondary" href={reportingHref("identified", category)}>{t("reportAction")}</Link> : null}
+                <div className="home-bento-actions">
+                  <Link className="home-bento-cta" href={reportingHref(featured ? "anonymous" : "identified", category)}>
+                    {featured ? t("anonymousAction") : t("reportAction")}
+                    <ChevronRight aria-hidden="true" size={16} strokeWidth={2.4} />
+                  </Link>
+                  {featured ? (
+                    <Link className="home-bento-cta is-quiet" href={reportingHref("identified", category)}>
+                      {t("reportAction")}
+                      <ChevronRight aria-hidden="true" size={16} strokeWidth={2.4} />
+                    </Link>
+                  ) : null}
                 </div>
               </article>
-            ))}
-          </div>
-        </section>
-
-        <aside className="portal-updates rounded-[8px] border border-slate-200 bg-white p-5 shadow-[0_2px_9px_rgb(15_42_74_/_0.08)]" aria-labelledby="updates-title">
-          <div className="flex items-center justify-between gap-3 border-b border-slate-200 pb-3">
-            <h2 id="updates-title" className="text-lg font-bold text-[#063d86]">{t("updatesTitle")}</h2>
-            <Link className="text-xs font-bold text-[#075bbf] hover:underline" href={learningHref}>{t("viewUpdates")}</Link>
-          </div>
-          <div className="divide-y divide-slate-200">
-            {updates.map(({key, icon: Icon}) => (
-              <article key={key} className="flex gap-3 py-4">
-                <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-blue-50 text-[#075bbf]"><Icon size={18} strokeWidth={1.8} /></span>
-                <div><h3 className="text-sm font-bold text-slate-900">{t(`updates.${key}.title`)}</h3><p className="mt-1 text-xs leading-5 text-slate-600">{t(`updates.${key}.copy`)}</p><Link className="mt-1 inline-block text-xs font-bold text-[#075bbf] hover:underline" href={learningHref}>{t("readMore")}</Link></div>
-              </article>
-            ))}
-          </div>
-          <Link className="mt-2 block rounded-[6px] bg-[#075bbf] px-4 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-[#064b9d]" href={learningHref}>{t("viewUpdates")}</Link>
-        </aside>
+            );
+          })}
+        </div>
       </section>
 
-      <section id="learning" className="shell-container mt-7">
-        <div className="flex flex-col gap-4 rounded-[8px] border border-blue-100 bg-[#edf6ff] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4"><span aria-hidden="true" className="grid h-12 w-12 place-items-center rounded-[6px] bg-[#075bbf] text-white"><GraduationCap size={24} strokeWidth={1.8} /></span><div><h2 className="text-lg font-bold text-[#063d86]">{t("learningTitle")}</h2><p className="mt-1 text-sm text-slate-600">{t("learningCopy")}</p></div></div>
-          <Link className="portal-outline-link w-fit" href={learningHref}>{t("learningAction")}</Link>
+      {/* A board, not three articles: tag, headline, arrow - scan and click. */}
+      <section className="shell-container home-section" aria-labelledby="updates-title">
+        <div className="home-board">
+          <div className="home-board-side">
+            <p className="home-board-eyebrow">{t("updatesBoardLabel")}</p>
+            <h2 id="updates-title" className="home-board-heading">{t("updatesTitle")}</h2>
+            <p className="home-board-count">{t("updatesCount")}</p>
+            <Link className="home-board-all" href={learningHref}>
+              {t("viewUpdates")}
+              <ChevronRight aria-hidden="true" size={15} strokeWidth={2.4} />
+            </Link>
+          </div>
+          <ul className="home-board-list">
+            {updates.map(({key, icon: Icon}) => (
+              <li key={key}>
+                <Link className="home-board-row" href={learningHref}>
+                  <span aria-hidden="true" className="home-board-icon"><Icon size={19} strokeWidth={1.7} /></span>
+                  <span className="home-board-row-text">
+                    <span className="home-board-tag">{t(`updates.${key}.tag`)}</span>
+                    <span className="home-board-title">{t(`updates.${key}.title`)}</span>
+                    <span className="home-board-copy">{t(`updates.${key}.copy`)}</span>
+                  </span>
+                  <ChevronRight aria-hidden="true" className="home-board-chevron" size={17} strokeWidth={2.2} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section id="learning" className="shell-container home-section">
+        <div className="home-learning">
+          <span aria-hidden="true" className="home-learning-icon"><DrawnCap size={27} strokeWidth={1.6} /></span>
+          <div className="home-learning-text">
+            <h2>{t("learningTitle")}</h2>
+            <p>{t("learningCopy")}</p>
+          </div>
+          <Link className="portal-outline-link" href={learningHref}>{t("learningAction")}</Link>
         </div>
       </section>
     </main>

@@ -337,11 +337,11 @@ export function CyberSaathiConversation() {
           <header className="flex flex-col gap-4 border-b border-[#dbe5f0] bg-[#f8fbff] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <span aria-hidden="true" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#0b58c7] text-white"><Bot size={23} /></span>
-              <div className="min-w-0"><div className="flex items-center gap-2"><h1 id="saathi-title" className="text-xl font-bold text-[#08245c]">{t("title")}</h1><span className="rounded-full bg-[#e2f5e8] px-2 py-0.5 text-[11px] font-bold text-[#15803d]">{t("available")}</span></div><p className="mt-0.5 text-sm text-slate-600">{t("subtitle")}</p>{incidentCount ? <p className="mt-1 text-[11px] font-semibold text-[#315274]">{t("incidentCount", {count: incidentCount})}{queuedCount ? ` · ${t("queuedCount", {count: queuedCount})}` : ""}</p> : null}</div>
+              <div className="min-w-0"><div className="flex items-center gap-2"><h1 id="saathi-title" className="text-xl font-bold text-[#08245c]">{t("title")}</h1><span className="rounded-full bg-[#e2f5e8] px-2 py-0.5 text-[13px] font-bold text-[#15803d]">{t("available")}</span></div><p className="mt-0.5 text-sm text-slate-600">{t("subtitle")}</p>{incidentCount ? <p className="mt-1 text-[13px] font-semibold text-[#315274]">{t("incidentCount", {count: incidentCount})}{queuedCount ? ` · ${t("queuedCount", {count: queuedCount})}` : ""}</p> : null}</div>
             </div>
             <div className="flex items-center gap-2">
               <label className="sr-only" htmlFor="saathi-language">{t("languageLabel")}</label>
-              <span className="relative"><Languages aria-hidden="true" className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[#0b58c7]" size={16} /><select className="h-9 rounded-[6px] border border-[#b9cbe0] bg-white pl-8 pr-7 text-xs font-bold text-[#08245c]" id="saathi-language" onChange={(event) => changeLanguage(event.target.value as SaathiLanguage)} value={language}><option value="EN">English</option><option value="HI">हिन्दी</option><option value="HINGLISH">Hinglish</option></select></span>
+              <span className="relative"><Languages aria-hidden="true" className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[#0b58c7]" size={16} /><select className="h-9 rounded-[6px] border border-[#b9cbe0] bg-white pl-8 pr-7 text-[13.5px] font-bold text-[#08245c]" id="saathi-language" onChange={(event) => changeLanguage(event.target.value as SaathiLanguage)} value={language}><option value="EN">English</option><option value="HI">हिन्दी</option><option value="HINGLISH">Hinglish</option></select></span>
               <button aria-label={t("newConversation")} className="grid h-9 w-9 place-items-center rounded-[6px] border border-[#b9cbe0] text-[#0b58c7] hover:bg-blue-50" onClick={resetConversation} title={t("newConversation")} type="button"><RefreshCw size={16} /></button>
             </div>
           </header>
@@ -357,13 +357,13 @@ export function CyberSaathiConversation() {
                   {!turn.llm_provider && turn.kind === "safety" ? <p className="mt-2 text-[10px] font-bold uppercase tracking-wide text-[#7a5205]">{t("deterministicSafety")}</p> : null}
                   {turn.sources?.length ? (
                     <details className={`mt-3 border-t pt-3 ${turn.kind === "safety" ? "border-[#ead49e]" : "border-[#dce6f1]"}`}>
-                      <summary className="cursor-pointer text-[11px] font-bold uppercase tracking-wide text-[#315274]">{t("sourcesLabel")}</summary>
+                      <summary className="cursor-pointer text-[13px] font-bold uppercase tracking-wide text-[#315274]">{t("sourcesLabel")}</summary>
                       <ul className="mt-2 space-y-2">
                         {(turn.sources ?? []).map((source) => (
                           <li className="rounded-[6px] border border-[#c9d8e8] bg-[#f8fbff] px-3 py-2" key={source.chunk_id}>
-                            <p className="text-xs font-bold leading-5 text-[#08245c]">{source.source_title}</p>
-                            <p className="text-[11px] leading-4 text-slate-600">{source.section_title} · {source.version}</p>
-                            <a aria-label={`${t("learnMore")}: ${source.source_title}`} className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-[#0b58c7] underline-offset-2 hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b58c7]" href={source.source_url} rel="noreferrer noopener" target="_blank">{t("learnMore")}<ExternalLink aria-hidden="true" size={12} /></a>
+                            <p className="text-[13.5px] font-bold leading-5 text-[#08245c]">{source.source_title}</p>
+                            <p className="text-[13px] leading-4 text-slate-600">{source.section_title} · {source.version}</p>
+                            <a aria-label={`${t("learnMore")}: ${source.source_title}`} className="mt-1 inline-flex items-center gap-1 text-[13.5px] font-bold text-[#0b58c7] underline-offset-2 hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b58c7]" href={source.source_url} rel="noreferrer noopener" target="_blank">{t("learnMore")}<ExternalLink aria-hidden="true" size={12} /></a>
                           </li>
                         ))}
                       </ul>
@@ -376,14 +376,14 @@ export function CyberSaathiConversation() {
             {showReportPreparation && reportPreparation ? (
               <section className="mb-4 ml-10 max-w-2xl rounded-[8px] border border-[#b8cceb] bg-white p-4" aria-labelledby="saathi-report-packet">
                 <div className="flex items-center gap-2 text-[#08245c]"><FileText size={17} /><h3 className="text-sm font-bold" id="saathi-report-packet">{t("reportPacketTitle")}</h3></div>
-                <p className="mt-1 text-xs leading-5 text-slate-600">{t("reportPacketCopy")}</p>
+                <p className="mt-1 text-[13.5px] leading-5 text-slate-600">{t("reportPacketCopy")}</p>
                 <div className="mt-3 space-y-3">
                   {reportChecklistGroups.map((group) => (
                     <section key={group.key}>
-                      <h4 className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[#315274]">{group.label}</h4>
+                      <h4 className="mb-1 text-[13px] font-bold uppercase tracking-wide text-[#315274]">{group.label}</h4>
                       <ol className="list-decimal divide-y divide-slate-200 rounded-[6px] border border-slate-200 pl-8 marker:font-bold marker:text-[#0b58c7]">
                         {group.items.map((item) => (
-                          <li className="px-2 py-2 text-xs" key={item.key}>
+                          <li className="px-2 py-2 text-[13.5px]" key={item.key}>
                             <strong className="text-slate-700">{item.label}</strong>{item.value_preview ? <span className="mt-0.5 block break-words text-slate-500">{item.value_preview}</span> : null}
                           </li>
                         ))}
@@ -391,22 +391,22 @@ export function CyberSaathiConversation() {
                     </section>
                   ))}
                 </div>
-                {reportPreparation.attachments.length ? <ul className="mt-3 space-y-1 text-xs text-slate-600">{reportPreparation.attachments.map((item) => <li className="flex items-center gap-2" key={item.id}><Paperclip size={12} />{item.file_name} · {item.media_summary}</li>)}</ul> : null}
-                <p className="mt-3 text-[11px] leading-4 text-slate-500">{t("attachmentRuntimeNote")}</p>
+                {reportPreparation.attachments.length ? <ul className="mt-3 space-y-1 text-[13.5px] text-slate-600">{reportPreparation.attachments.map((item) => <li className="flex items-center gap-2" key={item.id}><Paperclip size={12} />{item.file_name} · {item.media_summary}</li>)}</ul> : null}
+                <p className="mt-3 text-[13px] leading-4 text-slate-500">{t("attachmentRuntimeNote")}</p>
                 {reportPreparation.draft_prepared ? (
                   canHandoff && handoff?.target === "report_crime" ? <button className="mt-4 flex min-h-10 w-full items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" onClick={continueToReport} type="button">{t("reviewEditReport")}<ArrowRight size={17} /></button> : null
                 ) : (
                   <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                    <button className="min-h-10 rounded-[6px] border border-[#b9cbe0] px-3 text-xs font-bold text-[#0b4fb3]" onClick={() => inputRef.current?.focus()} type="button">{t("addAnotherDetail")}</button>
-                    <button className="min-h-10 rounded-[6px] border border-[#b9cbe0] px-3 text-xs font-bold text-[#0b4fb3] disabled:opacity-50" disabled={attaching} onClick={() => attachmentInputRef.current?.click()} type="button">{t("uploadEvidenceAction")}</button>
-                    <button className="min-h-10 rounded-[6px] bg-[#0b4fb3] px-3 text-xs font-bold text-white disabled:opacity-50" disabled={sending || pendingEntities.length > 0} onClick={() => void sendMessage(t("prepareReportMessage"), undefined, true)} type="button">{t("prepareReportDraft")}</button>
+                    <button className="min-h-10 rounded-[6px] border border-[#b9cbe0] px-3 text-[13.5px] font-bold text-[#0b4fb3]" onClick={() => inputRef.current?.focus()} type="button">{t("addAnotherDetail")}</button>
+                    <button className="min-h-10 rounded-[6px] border border-[#b9cbe0] px-3 text-[13.5px] font-bold text-[#0b4fb3] disabled:opacity-50" disabled={attaching} onClick={() => attachmentInputRef.current?.click()} type="button">{t("uploadEvidenceAction")}</button>
+                    <button className="min-h-10 rounded-[6px] bg-[#0b4fb3] px-3 text-[13.5px] font-bold text-white disabled:opacity-50" disabled={sending || pendingEntities.length > 0} onClick={() => void sendMessage(t("prepareReportMessage"), undefined, true)} type="button">{t("prepareReportDraft")}</button>
                   </div>
                 )}
               </section>
             ) : null}
             {pendingEntities.length ? (
               <section className="mb-4 ml-10 max-w-xl rounded-[8px] border border-[#b8cceb] bg-white p-4" aria-label={t("confirmationTitle")}>
-                <p className="text-xs font-bold uppercase text-[#315274]">{t("confirmationTitle")}</p>
+                <p className="text-[13.5px] font-bold uppercase text-[#315274]">{t("confirmationTitle")}</p>
                 <ol className="mt-2 list-decimal space-y-1 pl-5 text-base font-bold text-[#08245c]">
                   {pendingEntities.map((entity) => {
                     const value = entity.normalized_value && !Number.isNaN(Number(entity.normalized_value))
@@ -423,7 +423,7 @@ export function CyberSaathiConversation() {
               // centred so it reads as an event in the conversation rather than a
               // message from either side. At the top of the scroller nobody saw it.
               <div className="mb-4 flex justify-center" role="status">
-                <p className="flex max-w-[92%] items-start gap-2 rounded-[8px] border border-[#cddff5] bg-[#eef5ff] px-3.5 py-2 text-xs leading-5 text-[#174574]">
+                <p className="flex max-w-[92%] items-start gap-2 rounded-[8px] border border-[#cddff5] bg-[#eef5ff] px-3.5 py-2 text-[13.5px] leading-5 text-[#174574]">
                   <Languages aria-hidden="true" className="mt-0.5 shrink-0" size={14} />
                   {t("languageChangedNote", {language: t("languageNames." + languageNotice)})}
                 </p>
@@ -438,10 +438,10 @@ export function CyberSaathiConversation() {
           <form className="border-t border-[#dbe5f0] bg-white p-4" onSubmit={submit}>
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
               <div aria-label={t("inputModeLabel")} className="inline-flex rounded-[6px] border border-[#b9cbe0] bg-[#f7faff] p-1" role="group">
-                <button aria-pressed={inputMode === "text"} className={`inline-flex min-h-8 items-center gap-1.5 rounded-[4px] px-3 text-xs font-bold ${inputMode === "text" ? "bg-white text-[#0b4fb3] shadow-sm" : "text-slate-600"}`} onClick={() => { voice.stopSpeech(); setInputMode("text"); }} type="button"><Keyboard size={14} />{t("textMode")}</button>
-                <button aria-pressed={inputMode === "voice"} className={`inline-flex min-h-8 items-center gap-1.5 rounded-[4px] px-3 text-xs font-bold ${inputMode === "voice" ? "bg-[#0b4fb3] text-white" : "text-slate-600"}`} onClick={() => setInputMode("voice")} type="button"><Mic size={14} />{t("voiceMode")}</button>
+                <button aria-pressed={inputMode === "text"} className={`inline-flex min-h-8 items-center gap-1.5 rounded-[4px] px-3 text-[13.5px] font-bold ${inputMode === "text" ? "bg-white text-[#0b4fb3] shadow-sm" : "text-slate-600"}`} onClick={() => { voice.stopSpeech(); setInputMode("text"); }} type="button"><Keyboard size={14} />{t("textMode")}</button>
+                <button aria-pressed={inputMode === "voice"} className={`inline-flex min-h-8 items-center gap-1.5 rounded-[4px] px-3 text-[13.5px] font-bold ${inputMode === "voice" ? "bg-[#0b4fb3] text-white" : "text-slate-600"}`} onClick={() => setInputMode("voice")} type="button"><Mic size={14} />{t("voiceMode")}</button>
               </div>
-              {voice.capabilities ? <span className="text-[11px] font-semibold text-slate-500">{voice.capabilities.configured ? `${voice.capabilities.provider} · ${voice.capabilities.realtime_stt_model}` : t("voiceProviderUnavailableShort")}</span> : null}
+              {voice.capabilities ? <span className="text-[13px] font-semibold text-slate-500">{voice.capabilities.configured ? `${voice.capabilities.provider} · ${voice.capabilities.realtime_stt_model}` : t("voiceProviderUnavailableShort")}</span> : null}
             </div>
 
             {inputMode === "voice" ? (
@@ -450,13 +450,13 @@ export function CyberSaathiConversation() {
                   <span aria-hidden="true" className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${voice.status === "listening" ? "bg-red-100 text-red-700" : "bg-blue-100 text-[#0b58c7]"}`}>
                     {loading || sending || voice.status === "processing" ? <LoaderCircle className="motion-safe:animate-spin" size={16} /> : voice.status === "listening" ? <Waves className="motion-safe:animate-pulse" size={16} /> : voice.status === "speaking" ? <Volume2 size={16} /> : <Mic size={16} />}
                   </span>
-                  <p aria-live="polite" className="min-w-0 text-xs leading-5 text-slate-600"><strong className="mr-1.5 font-bold text-[#173c71]" id="voice-status-title">{t(`voiceStatus.${voiceStatusKey}`)}</strong>{loading || sending ? t("voiceHelp.processing") : voice.errorCode ? t(`voiceErrors.${voiceErrorKey}`) : t(`voiceHelp.${voice.status}`)}</p>
+                  <p aria-live="polite" className="min-w-0 text-[13.5px] leading-5 text-slate-600"><strong className="mr-1.5 font-bold text-[#173c71]" id="voice-status-title">{t(`voiceStatus.${voiceStatusKey}`)}</strong>{loading || sending ? t("voiceHelp.processing") : voice.errorCode ? t(`voiceErrors.${voiceErrorKey}`) : t(`voiceHelp.${voice.status}`)}</p>
                 </div>
 
                 <div className="mt-2 flex items-center gap-2">
                   <label className="min-w-0 flex-1">
                     <span className="sr-only">{t("chooseMicrophone")}</span>
-                    <select className="h-10 w-full truncate rounded-[6px] border border-[#b9cbe0] bg-white px-3 text-xs font-semibold text-slate-700 focus:border-[#0b58c7] focus:outline-none focus:ring-2 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-500" disabled={voice.status === "listening" || voice.status === "processing"} onChange={(event) => voice.setSelectedDeviceId(event.target.value)} value={voice.selectedDeviceId}>
+                    <select className="h-10 w-full truncate rounded-[6px] border border-[#b9cbe0] bg-white px-3 text-[13.5px] font-semibold text-slate-700 focus:border-[#0b58c7] focus:outline-none focus:ring-2 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-500" disabled={voice.status === "listening" || voice.status === "processing"} onChange={(event) => voice.setSelectedDeviceId(event.target.value)} value={voice.selectedDeviceId}>
                       <option value="">{t("defaultMicrophone")}</option>
                       {voice.inputDevices.map((device) => <option key={device.deviceId} value={device.deviceId}>{device.label}</option>)}
                     </select>
@@ -469,7 +469,7 @@ export function CyberSaathiConversation() {
                   </div>
                 </div>
 
-                {voice.partialTranscript ? <div className="mt-2 flex min-w-0 gap-2 border-t border-current/10 pt-2 text-xs leading-5"><span className="shrink-0 font-bold text-[#315274]">{t("liveTranscript")}</span><p className="min-w-0 break-words text-slate-700">{voice.partialTranscript}</p></div> : null}
+                {voice.partialTranscript ? <div className="mt-2 flex min-w-0 gap-2 border-t border-current/10 pt-2 text-[13.5px] leading-5"><span className="shrink-0 font-bold text-[#315274]">{t("liveTranscript")}</span><p className="min-w-0 break-words text-slate-700">{voice.partialTranscript}</p></div> : null}
               </section>
             ) : null}
 
@@ -481,9 +481,9 @@ export function CyberSaathiConversation() {
               {inputMode === "text" ? <button aria-label={t("voiceButton")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] border border-[#c6d4e4] text-[#0b58c7] hover:bg-blue-50 active:scale-[0.98]" disabled={loading || sending} onClick={() => { setInputMode("voice"); void voice.startListening(); }} title={t("voiceButton")} type="button"><Mic size={18} /></button> : null}
               <button aria-label={t("send")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] bg-[#0b4fb3] text-white disabled:cursor-not-allowed disabled:opacity-50" disabled={!message.trim() || loading || sending} title={t("send")} type="submit"><Send size={18} /></button>
             </div>
-            {attachmentError ? <p className="mt-2 text-xs font-semibold text-red-700" role="alert">{attachmentError}</p> : null}
-            <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-slate-500"><span className="flex items-center gap-1"><LockKeyhole size={12} />{t("privacyNote")}</span><span>{message.length}/4000</span></div>
-            <label className="mt-3 flex items-start gap-2 text-xs leading-5 text-slate-600">
+            {attachmentError ? <p className="mt-2 text-[13.5px] font-semibold text-red-700" role="alert">{attachmentError}</p> : null}
+            <div className="mt-2 flex items-center justify-between gap-3 text-[13px] text-slate-500"><span className="flex items-center gap-1"><LockKeyhole size={12} />{t("privacyNote")}</span><span>{message.length}/4000</span></div>
+            <label className="mt-3 flex items-start gap-2 text-[13.5px] leading-5 text-slate-600">
               <input checked={state?.storage_consent ?? false} className="mt-1" disabled={!state} onChange={(event) => setState((current) => current ? {...current, storage_consent: event.target.checked} : current)} type="checkbox" />
               <span>{t("storageConsent")}</span>
             </label>
@@ -496,12 +496,12 @@ export function CyberSaathiConversation() {
             <p className="mt-3 text-sm leading-6 text-slate-600">{t("safeNextStepCopy")}</p>
             {reportPreparation?.packet_ready ? (
               <div className="mt-4 border-t border-slate-200 pt-4">
-                <p className="text-xs font-bold text-[#315274]">{t("reportingModeTitle")}</p>
-                <div className="mt-2 grid grid-cols-2 gap-2"><button className={`rounded-[6px] border px-2 py-2 text-xs font-bold ${state?.reporting_mode === "anonymous" ? "border-[#0b58c7] bg-blue-50 text-[#0b58c7]" : "border-slate-200 text-slate-600 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"}`} disabled={!anonymousAllowed} onClick={() => void sendMessage(t("modeAnonymousMessage"), "anonymous")} title={!anonymousAllowed ? t("anonymousUnavailable") : undefined} type="button">{t("anonymous")}</button><button className={`rounded-[6px] border px-2 py-2 text-xs font-bold ${state?.reporting_mode === "identified" ? "border-[#0b58c7] bg-blue-50 text-[#0b58c7]" : "border-slate-200 text-slate-600"}`} onClick={() => void sendMessage(t("modeIdentifiedMessage"), "identified")} type="button">{t("identified")}</button></div>
-                {!anonymousAllowed ? <p className="mt-2 text-[11px] leading-4 text-slate-500">{t("anonymousUnavailable")}</p> : null}
+                <p className="text-[13.5px] font-bold text-[#315274]">{t("reportingModeTitle")}</p>
+                <div className="mt-2 grid grid-cols-2 gap-2"><button className={`rounded-[6px] border px-2 py-2 text-[13.5px] font-bold ${state?.reporting_mode === "anonymous" ? "border-[#0b58c7] bg-blue-50 text-[#0b58c7]" : "border-slate-200 text-slate-600 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"}`} disabled={!anonymousAllowed} onClick={() => void sendMessage(t("modeAnonymousMessage"), "anonymous")} title={!anonymousAllowed ? t("anonymousUnavailable") : undefined} type="button">{t("anonymous")}</button><button className={`rounded-[6px] border px-2 py-2 text-[13.5px] font-bold ${state?.reporting_mode === "identified" ? "border-[#0b58c7] bg-blue-50 text-[#0b58c7]" : "border-slate-200 text-slate-600"}`} onClick={() => void sendMessage(t("modeIdentifiedMessage"), "identified")} type="button">{t("identified")}</button></div>
+                {!anonymousAllowed ? <p className="mt-2 text-[13px] leading-4 text-slate-500">{t("anonymousUnavailable")}</p> : null}
               </div>
             ) : null}
-            {canHandoff && handoff ? handoff.target === "report_crime" ? <button className="mt-4 flex min-h-10 w-full items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" onClick={continueToReport} type="button">{t("reviewEditReport")}<ArrowRight size={17} /></button> : handoff.target === "search_suspect_reports" ? <button className="mt-4 flex min-h-10 w-full items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" onClick={continueToSuspectSearch} type="button">{handoffActionLabel(handoff.target)}<ArrowRight size={17} /></button> : handoff.implementation_status === "planned" ? <div className="mt-4 rounded-[6px] border border-amber-200 bg-amber-50 px-3 py-3"><p className="text-sm font-bold text-amber-900">{handoffActionLabel(handoff.target)}</p><p className="mt-1 text-xs leading-5 text-amber-800">{t("plannedWorkflowNote")}</p></div> : <Link className="mt-4 flex min-h-10 items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" href={handoffPath}>{handoffActionLabel(handoff.target)}<ArrowRight size={17} /></Link> : <p className="mt-4 rounded-[6px] bg-[#edf4ff] px-3 py-2.5 text-xs leading-5 text-[#174574]">{pendingEntities.length ? t("confirmBeforeHandoff") : reportPreparation?.packet_ready && !reportPreparation?.draft_prepared ? t("prepareDraftPrompt") : handoff?.target === "report_crime" && !reportPreparation?.ready_for_review ? t("completePacketBeforeHandoff") : handoff?.target === "report_crime" ? t("chooseModeBeforeHandoff") : t("describePrompt")}</p>}
+            {canHandoff && handoff ? handoff.target === "report_crime" ? <button className="mt-4 flex min-h-10 w-full items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" onClick={continueToReport} type="button">{t("reviewEditReport")}<ArrowRight size={17} /></button> : handoff.target === "search_suspect_reports" ? <button className="mt-4 flex min-h-10 w-full items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" onClick={continueToSuspectSearch} type="button">{handoffActionLabel(handoff.target)}<ArrowRight size={17} /></button> : handoff.implementation_status === "planned" ? <div className="mt-4 rounded-[6px] border border-amber-200 bg-amber-50 px-3 py-3"><p className="text-sm font-bold text-amber-900">{handoffActionLabel(handoff.target)}</p><p className="mt-1 text-[13.5px] leading-5 text-amber-800">{t("plannedWorkflowNote")}</p></div> : <Link className="mt-4 flex min-h-10 items-center justify-between rounded-[6px] bg-[#0b4fb3] px-4 py-2 text-sm font-bold text-white" href={handoffPath}>{handoffActionLabel(handoff.target)}<ArrowRight size={17} /></Link> : <p className="mt-4 rounded-[6px] bg-[#edf4ff] px-3 py-2.5 text-[13.5px] leading-5 text-[#174574]">{pendingEntities.length ? t("confirmBeforeHandoff") : reportPreparation?.packet_ready && !reportPreparation?.draft_prepared ? t("prepareDraftPrompt") : handoff?.target === "report_crime" && !reportPreparation?.ready_for_review ? t("completePacketBeforeHandoff") : handoff?.target === "report_crime" ? t("chooseModeBeforeHandoff") : t("describePrompt")}</p>}
           </section>
           <section className="rounded-[8px] border border-[#d7e2ef] bg-white p-5">
             <h2 className="font-bold text-[#08245c]">{t("boundariesTitle")}</h2>

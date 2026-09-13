@@ -24,8 +24,12 @@ function describedBy({description, error, id}: Pick<FieldBaseProps, "description
 }
 
 const fieldClassName = [
-  "mt-1 block min-h-11 w-full rounded-[var(--radius)] border bg-white px-3 py-2 text-[var(--ink)]",
-  "placeholder:text-[#7a899b] focus:border-[var(--blue)]",
+  // Inputs share the control radius with buttons rather than the card radius, so a
+  // field does not look like a small card. Roomier padding and a 15px value make
+  // long-form reporting less tiring to fill in.
+  "mt-1 block min-h-12 w-full rounded-[var(--radius-sm)] border bg-white px-3.5 py-2.5 text-[15px] text-[var(--ink)]",
+  "shadow-[inset_0_1px_2px_rgb(24_33_48_/_0.04)] transition-colors",
+  "placeholder:text-[#8e9aa8] hover:border-[var(--border-strong)] focus:border-[var(--blue)]",
   "disabled:cursor-not-allowed disabled:bg-[#eef3f8] disabled:text-[var(--muted)]"
 ].join(" ");
 

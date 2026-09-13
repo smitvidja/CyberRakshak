@@ -144,7 +144,10 @@
     "categories": {
       "women": {
         "title": "Women and Child Safety",
-        "copy": "Report online abuse, stalking, blackmail, or child-safety concerns."
+        "copy": "Report online abuse, stalking, blackmail, or child-safety concerns.",
+        "displayA": "Women",
+        "displayB": "& Child Safety",
+        "reassure": "You can report this without giving your name. No one will ask you for money."
       },
       "financial": {
         "title": "Financial Fraud",
@@ -170,17 +173,38 @@
     "updates": {
       "fakeCalls": {
         "title": "Beware of fake calls",
-        "copy": "Do not share OTPs, passwords, or banking details with anyone."
+        "copy": "Do not share OTPs, passwords, or banking details with anyone.",
+        "tag": "Advisory"
       },
       "advisory": {
         "title": "New safety advisory",
-        "copy": "Keep social profiles private and verify before you pay."
+        "copy": "Keep social profiles private and verify before you pay.",
+        "tag": "Alert"
       },
       "tips": {
         "title": "Cyber security tips",
-        "copy": "Simple steps to protect your digital life every day."
+        "copy": "Simple steps to protect your digital life every day.",
+        "tag": "Guidance"
       }
-    }
+    },
+    "heroSaathiEyebrow": "Easiest way to report",
+    "heroSaathiTitle": "Not sure where to start?",
+    "heroSaathiCopy": "Tell Cyber Saathi what happened in your own words. It will understand, guide you step by step, and prepare your complaint for you.",
+    "heroSaathiAction": "Talk to Cyber Saathi",
+    "heroSaathiNote": "Available in Hindi and English",
+    "heroSaathiName": "Cyber Saathi",
+    "heroSaathiStatus": "Available now",
+    "heroSaathiSampleUser": "Someone is threatening to post my photos.",
+    "heroSaathiSampleReply": "You are not alone, and you do not have to pay. Let us save the evidence first, then report it together.",
+    "updatesBoardLabel": "Notice board",
+    "updatesCount": "3 updates this week",
+    "heroTitleA": "A safer way",
+    "heroTitleB": "to report",
+    "heroTitleC": "cyber harm",
+    "heroSaathiChipsLead": "Or start from one of these",
+    "heroSaathiChipA": "Money taken",
+    "heroSaathiChipB": "Threats or blackmail",
+    "heroSaathiChipC": "Account hacked"
   },
   "validation": {
     "required": "This field is required.",

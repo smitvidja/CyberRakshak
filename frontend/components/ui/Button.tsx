@@ -12,17 +12,22 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
 };
 
+// A filled button gets a soft shadow in its own colour so it reads as a raised
+// control rather than a coloured rectangle; the outline variant gets a warm border
+// so it does not glow blue against warm paper.
 const buttonVariantClasses: Record<ButtonVariant, string> = {
-  primary: "border border-[var(--blue)] bg-[var(--blue)] text-white hover:bg-[#064e9c]",
-  secondary: "border border-[#06366f] bg-[#06366f] text-white hover:bg-[#042a58]",
-  outline: "border border-[var(--blue)] bg-white text-[var(--blue)] hover:bg-[var(--blue-soft)]",
-  danger: "border border-[var(--danger)] bg-[var(--danger)] text-white hover:bg-[#8f1d14]"
+  primary: "border border-[var(--blue)] bg-[var(--blue)] text-white shadow-[0_1px_2px_rgb(7_95_185_/_0.28),0_4px_12px_rgb(7_95_185_/_0.22)] hover:bg-[#064e9c] hover:border-[#064e9c]",
+  secondary: "border border-[#06366f] bg-[#06366f] text-white shadow-[0_1px_2px_rgb(8_46_102_/_0.28),0_4px_12px_rgb(8_46_102_/_0.20)] hover:bg-[#042a58]",
+  outline: "border border-[var(--border-strong)] bg-white text-[var(--navy)] shadow-[0_1px_2px_rgb(24_33_48_/_0.05)] hover:border-[var(--blue)] hover:bg-[var(--blue-soft)] hover:text-[var(--blue)]",
+  danger: "border border-[var(--danger)] bg-[var(--danger)] text-white shadow-[0_1px_2px_rgb(180_35_24_/_0.28),0_4px_12px_rgb(180_35_24_/_0.20)] hover:bg-[#8f1d14]"
 };
 
+// Every size clears a 44px touch target at md and above - the portal is used on
+// phones by people who are not steady with them.
 const buttonSizeClasses: Record<ButtonSize, string> = {
-  sm: "min-h-9 px-3 text-sm",
-  md: "min-h-11 px-4 text-sm",
-  lg: "min-h-12 px-5 text-base"
+  sm: "min-h-9 px-3.5 text-sm",
+  md: "min-h-11 px-5 text-[15px]",
+  lg: "min-h-[52px] px-7 text-base"
 };
 
 export function Button({
@@ -38,7 +43,7 @@ export function Button({
   return (
     <button
       className={[
-        "inline-flex items-center justify-center gap-2 rounded-[var(--radius)] font-bold transition-colors",
+        "inline-flex items-center justify-center gap-2 rounded-[var(--radius-sm)] font-semibold tracking-[-0.005em] transition-colors",
         "disabled:cursor-not-allowed disabled:opacity-60",
         buttonVariantClasses[variant],
         buttonSizeClasses[size],
