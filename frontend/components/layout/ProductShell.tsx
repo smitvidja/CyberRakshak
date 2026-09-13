@@ -9,6 +9,7 @@ import {useState, type ReactNode} from "react";
 
 import {getAccessToken, getMockIdentityProfile, getReportCategoryHint} from "@/lib/auth/citizen-session";
 import {routing} from "@/lib/i18n/routing";
+import {ToastProvider} from "@/components/ui/Toast";
 import {useIsomorphicLayoutEffect} from "@/lib/hooks/useIsomorphicLayoutEffect";
 
 // "A- A+" was rendered as a single plain <span> of static text - not a button, no
@@ -196,7 +197,7 @@ export function ProductShell({children}: ProductShellProps) {
     );
   }, [pathname]);
 
-  return <div className="app-shell">
+  return <ToastProvider><div className="app-shell">
     <div className="utility-bar"><div className="shell-container utility-content"><span className="utility-notice"><Shield aria-hidden="true" size={13} />{t("utilityNotice")}</span><div className="utility-actions">
       <span className="text-size-control">
         <button aria-label={t("decreaseTextSize")} disabled={fontScale <= FONT_SCALE_MIN} onClick={() => adjustFontScale(-1)} type="button">A-</button>
@@ -222,5 +223,5 @@ export function ProductShell({children}: ProductShellProps) {
     {children}
     <section className="support-band"><div className="shell-container"><strong>{t("supportTitle")}</strong><span>{t("supportCopy")}</span><a href={"tel:" + t("supportNumber")}>{t("callSupport")}</a></div></section>
     <footer className="public-footer"><div className="shell-container footer-content"><span>{t("footerCopyright")}</span><nav aria-label={t("footerNavigation")}><a href="#privacy">{t("privacy")}</a><a href="#accessibility">{t("accessibility")}</a><a href="#terms">{t("terms")}</a></nav></div></footer>
-  </div>;
+  </div></ToastProvider>;
 }

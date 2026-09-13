@@ -70,10 +70,28 @@ export function CyberSaathiConversation() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const attachmentInputRef = useRef<HTMLInputElement>(null);
   const initializedRef = useRef(false);
+  const [voicePartCount, setVoicePartCount] = useState(0);
   const directVoiceSendRef = useRef<(transcript: string) => void>(() => undefined);
+  // Each finished recording ADDS to what is already in the box rather than
+  // replacing it.
+  //
+  // Sarvam's batch endpoint refuses a recording past ~29 seconds, so someone with
+  // a long story to tell has to stop and start again. Replacing the text threw the
+  // first half away, which is the worst possible moment to lose a sentence: the
+  // citizen has just described what happened to them. Now they can record it in
+  // parts and send the whole thing once, and the send carries the combined text,
+  // not only the newest fragment.
   const handleVoiceTranscript = useCallback((transcript: string, sendImmediately: boolean) => {
-    setMessage(transcript);
-    if (sendImmediately) queueMicrotask(() => directVoiceSendRef.current(transcript));
+    const addition = transcript.trim();
+    if (!addition) return;
+    let combined = addition;
+    setMessage((current) => {
+      const existing = current.trim();
+      combined = (existing ? existing + " " + addition : addition).slice(0, 4000);
+      return combined;
+    });
+    setVoicePartCount((count) => count + 1);
+    if (sendImmediately) queueMicrotask(() => directVoiceSendRef.current(combined));
   }, []);
   const voice = useCyberSaathiVoice({
     conversationId: state?.id,
@@ -162,6 +180,7 @@ export function CyberSaathiConversation() {
       setLanguage(result.data.state.language);
       setLanguageNotice(null);
       setMessage("");
+      setVoicePartCount(0);
       if (speakResponse) {
         const responseElapsed = Math.round(performance.now() - conversationStarted);
         const assistantTurn = [...result.data.state.turns].reverse().find((turn) => turn.role === "assistant");
@@ -494,7 +513,7 @@ export function CyberSaathiConversation() {
               <button aria-label={t("send")} className="grid h-10 w-10 shrink-0 place-items-center rounded-[6px] bg-[#0b4fb3] text-white disabled:cursor-not-allowed disabled:opacity-50" disabled={!message.trim() || loading || sending} title={t("send")} type="submit"><Send size={18} /></button>
             </div>
             {attachmentError ? <p className="mt-2 text-[13.5px] font-semibold text-red-700" role="alert">{attachmentError}</p> : null}
-            <div className="mt-2 flex items-center justify-between gap-3 text-[13px] text-slate-500"><span className="flex items-center gap-1"><LockKeyhole size={12} />{t("privacyNote")}</span><span>{message.length}/4000</span></div>
+            <div className="mt-2 flex items-center justify-between gap-3 text-[13px] text-slate-500"><span className="flex items-center gap-1"><LockKeyhole size={12} />{t("privacyNote")}</span><span className="flex items-center gap-3">{voicePartCount > 1 && message.trim() ? <span className="font-semibold text-[#0b4fb3]">{t("voiceParts", {count: voicePartCount})}</span> : null}<span>{message.length}/4000</span></span></div>
             <label className="mt-3 flex items-start gap-2 text-[13.5px] leading-5 text-slate-600">
               <input checked={state?.storage_consent ?? false} className="mt-1" disabled={!state} onChange={(event) => setState((current) => current ? {...current, storage_consent: event.target.checked} : current)} type="checkbox" />
               <span>{t("storageConsent")}</span>

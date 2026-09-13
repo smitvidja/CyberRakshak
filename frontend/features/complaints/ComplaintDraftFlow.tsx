@@ -15,6 +15,7 @@ import type {ApiRecord} from "@/lib/api/auth";
 import {addComplaintEvidence, getAccessToken, getComplaintDraft, getComplaintEvidence, getReportCategoryHint, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
 import {clearCyberSaathiReportHandoff, getCyberSaathiReportHandoff, updateCyberSaathiReportHandoffFiles} from "@/lib/cyber-saathi/report-handoff";
 import {setGuestEvidenceFiles} from "@/lib/auth/guest-report-session";
+import {useToast} from "@/components/ui/Toast";
 
 type Category = {code: string; description: string | null; id: string; name: string};
 type FieldErrors = Record<string, string>;
@@ -134,6 +135,7 @@ function workflowSteps(t: ReturnType<typeof useTranslations>, current: "incident
 
 export function ComplaintIncidentStep({draftId}: {draftId: string}) {
   const t = useTranslations("complaintDraft");
+  const {toast} = useToast();
   const locale = useLocale();
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -351,6 +353,9 @@ export function ComplaintIncidentStep({draftId}: {draftId: string}) {
       updateCyberSaathiReportHandoffFiles(failedFiles);
     }
     setComplaintDraft({data: result.data, id: savedDraftId});
+    // Fired on the server's confirmation, not on the click - the citizen is
+    // being told their report is stored, so it has to be true.
+    toast(t("savedToast"));
     setForm(incidentFromDraft(result.data));
     setMessage(t("saved"));
     setSaving(false);
