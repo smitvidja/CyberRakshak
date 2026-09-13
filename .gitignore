@@ -45,3 +45,7 @@ Thumbs.db
 # ARE committed; these are only the source backend/scripts/prepare_awareness_assets.py
 # reads from. Re-run that script after replacing anything in here.
 demo-assets/Resources/
+
+# Screenshot output from design review runs - regenerated on demand, 25 MB and
+# growing, and never source.
+design/previews/
