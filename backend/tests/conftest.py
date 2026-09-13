@@ -23,6 +23,14 @@ os.environ.setdefault("VOICE_ENABLED", "false")
 
 from app.core.database import SessionLocal, engine, get_db_session
 from app.core.public_rate_limit import (
+    saathi_analysis_burst_rate_limiter,
+    saathi_analysis_hourly_rate_limiter,
+    saathi_message_burst_rate_limiter,
+    saathi_message_hourly_rate_limiter,
+    saathi_start_hourly_rate_limiter,
+    saathi_start_rate_limiter,
+    saathi_voice_burst_rate_limiter,
+    saathi_voice_hourly_rate_limiter,
     suspect_correction_rate_limiter,
     suspect_search_rate_limiter,
 )
@@ -38,6 +46,14 @@ def _reset_public_rate_limiters() -> None:
     """
     suspect_search_rate_limiter.reset()
     suspect_correction_rate_limiter.reset()
+    saathi_start_rate_limiter.reset()
+    saathi_start_hourly_rate_limiter.reset()
+    saathi_message_burst_rate_limiter.reset()
+    saathi_message_hourly_rate_limiter.reset()
+    saathi_voice_burst_rate_limiter.reset()
+    saathi_voice_hourly_rate_limiter.reset()
+    saathi_analysis_burst_rate_limiter.reset()
+    saathi_analysis_hourly_rate_limiter.reset()
 
 
 @pytest.fixture

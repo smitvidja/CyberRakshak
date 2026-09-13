@@ -321,7 +321,14 @@ equivalent by default — §5 still applies there.
 ## 12. Reverse proxies and the public rate limiter
 
 The suspect-search and correction endpoints are unauthenticated, so they are rate
-limited per client. Working out *which* client a request came from is the whole
+limited per client. So is every Cyber Saathi endpoint that spends money - sending
+a message, starting a conversation, voice transcription and synthesis, knowledge
+search and attachment analysis. Each has two windows: a per-minute burst limit
+sized so a distressed citizen typing quickly is never refused, and an hourly
+ceiling, because a caller sitting exactly on the burst limit all day is the
+expensive case and a per-minute limit does nothing about it. At 12 messages a
+minute sustained that would be roughly 17,000 paid calls a day; the hourly
+ceiling bounds it to a few hundred. Working out *which* client a request came from is the whole
 problem, and it has two failure modes that are easy to ship and hard to notice.
 
 **Trusting the connection.** Behind a proxy the address the app sees is the

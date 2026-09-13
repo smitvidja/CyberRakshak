@@ -2,12 +2,24 @@ from uuid import UUID
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile, WebSocket, status
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile, WebSocket, status
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.core.errors import APIError, success_response
+from app.core.client_identity import resolve_client_key
+from app.core.config import get_settings
+from app.core.public_rate_limit import (
+    saathi_analysis_burst_rate_limiter,
+    saathi_analysis_hourly_rate_limiter,
+    saathi_message_burst_rate_limiter,
+    saathi_message_hourly_rate_limiter,
+    saathi_start_hourly_rate_limiter,
+    saathi_start_rate_limiter,
+    saathi_voice_burst_rate_limiter,
+    saathi_voice_hourly_rate_limiter,
+)
 from app.core.database import get_db_session
 from app.schemas.common import SuccessResponse
 from app.schemas.cyber_saathi import (
@@ -37,6 +49,21 @@ from app.services.cyber_saathi_voice import SarvamVoiceAdapter, VoiceProviderErr
 
 
 router = APIRouter(prefix="/cyber-saathi", tags=["cyber-saathi"])
+def _public_client_key(request: Request) -> str:
+    """Who is calling, as far as the app is allowed to believe.
+
+    Identical to the suspect endpoints: X-Forwarded-For is only read as far as
+    TRUSTED_PROXY_HOPS says a proxy actually exists, so the key cannot be chosen
+    by the caller.
+    """
+    return resolve_client_key(request, get_settings().trusted_proxy_hops)
+
+
+def _spend(request: Request, burst, hourly) -> None:
+    """Charge one paid call against both windows before doing the work."""
+    key = _public_client_key(request)
+    burst.check(key)
+    hourly.check(key)
 
 
 @router.post(
@@ -46,8 +73,10 @@ router = APIRouter(prefix="/cyber-saathi", tags=["cyber-saathi"])
 )
 def start_conversation(
     payload: ConversationCreate,
+    request: Request,
     session: Annotated[Session, Depends(get_db_session)],
 ) -> dict[str, object]:
+    _spend(request, saathi_start_rate_limiter, saathi_start_hourly_rate_limiter)
     response = CyberSaathiService.start(payload)
     CyberSaathiPersistence.save(session, response.state)
     return success_response(response)
@@ -71,8 +100,10 @@ def resume_conversation(
 def send_message(
     conversation_id: UUID,
     payload: ConversationMessageRequest,
+    request: Request,
     session: Annotated[Session, Depends(get_db_session)],
 ) -> dict[str, object]:
+    _spend(request, saathi_message_burst_rate_limiter, saathi_message_hourly_rate_limiter)
     if payload.state.storage_consent:
         try:
             stored = CyberSaathiPersistence.load(session, conversation_id)
@@ -192,7 +223,8 @@ async def analyze_conversation_attachment(
     "/understand",
     response_model=SuccessResponse[UnderstandingResult],
 )
-def understand_message(payload: UnderstandingRequest) -> dict[str, object]:
+def understand_message(payload: UnderstandingRequest, request: Request) -> dict[str, object]:
+    _spend(request, saathi_analysis_burst_rate_limiter, saathi_analysis_hourly_rate_limiter)
     return success_response(
         UnderstandingEngine.analyze(payload.message, payload.preferred_language)
     )
@@ -202,7 +234,8 @@ def understand_message(payload: UnderstandingRequest) -> dict[str, object]:
     "/knowledge/search",
     response_model=SuccessResponse[KnowledgeSearchResponse],
 )
-def search_knowledge(payload: KnowledgeSearchRequest) -> dict[str, object]:
+def search_knowledge(payload: KnowledgeSearchRequest, request: Request) -> dict[str, object]:
+    _spend(request, saathi_analysis_burst_rate_limiter, saathi_analysis_hourly_rate_limiter)
     return success_response(KnowledgeService.search(payload))
 
 
@@ -221,7 +254,9 @@ def voice_capabilities() -> dict[str, object]:
 async def transcribe_voice_recording(
     file: Annotated[UploadFile, File(...)],
     language: Annotated[LanguageCode, Form()],
+    request: Request,
 ) -> dict[str, object]:
+    _spend(request, saathi_voice_burst_rate_limiter, saathi_voice_hourly_rate_limiter)
     audio = await file.read()
     try:
         result = await SarvamVoiceAdapter().transcribe(
@@ -240,7 +275,8 @@ async def transcribe_voice_recording(
 
 
 @router.post("/voice/speech", response_class=StreamingResponse)
-async def synthesize_voice_response(payload: VoiceSpeechRequest) -> StreamingResponse:
+async def synthesize_voice_response(payload: VoiceSpeechRequest, request: Request) -> StreamingResponse:
+    _spend(request, saathi_voice_burst_rate_limiter, saathi_voice_hourly_rate_limiter)
     try:
         prepared = await SarvamVoiceAdapter().synthesize(
             text=payload.text,

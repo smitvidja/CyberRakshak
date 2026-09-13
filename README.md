@@ -425,7 +425,9 @@ Stated plainly, because a prototype that pretends otherwise is worse than one th
 - **The knowledge corpus is bounded by the index format** — 128 chunks from 27 government
   sources, against a hard ceiling of 500 chunks / 8 MB in a single JSON index. Growing much
   past this is an architecture change (a real vector store), not more crawling.
-- **The rate limiter is per process.** Exact for a single instance; it multiplies if you add
+- **The rate limiter is per process.** It covers the suspect endpoints and every paid
+  Cyber Saathi route, with a burst and an hourly window each. Exact for a single instance;
+  it multiplies if you add
   workers or instances.
 - **No OCR.** An image-only résumé returns a controlled error rather than pretending to read it.
 - **Hindi PDFs are not text-selectable** (see the safety section above).

@@ -95,3 +95,42 @@ suspect_search_rate_limiter = PublicSearchRateLimiter()
 # Sharing the search limiter's bucket would let a flood of corrections lock a
 # citizen out of searching, and vice versa.
 suspect_correction_rate_limiter = PublicSearchRateLimiter(limit=5, window_seconds=60)
+
+
+# --- Cyber Saathi -----------------------------------------------------------
+# Every one of these is unauthenticated, publicly reachable, and spends money per
+# call - the LLM gateway for a message, Sarvam for speech and transcription,
+# hosted embeddings for a knowledge search. Until now none of them had a limit at
+# all, which meant a single script could run up an API bill or exhaust the day's
+# quota and take Cyber Saathi down for every citizen using it.
+#
+# Each endpoint gets TWO windows, because one is not enough:
+#   * a burst window, sized so a distressed person typing quickly is never
+#     stopped, but a script is;
+#   * an hourly window, because a caller sitting exactly on the burst limit all
+#     day is the expensive case and a per-minute limit does nothing about it.
+#     At 12/minute sustained that would be ~17,000 paid calls a day; the hourly
+#     ceiling brings it to a bounded few hundred.
+#
+# The numbers are deliberately generous per minute and firm per hour: a citizen
+# in trouble must never be refused, and nobody legitimately holds a two-hour
+# conversation with an intake assistant.
+
+# Sending a message: the expensive path (LLM + retrieval).
+saathi_message_burst_rate_limiter = PublicSearchRateLimiter(limit=12, window_seconds=60)
+saathi_message_hourly_rate_limiter = PublicSearchRateLimiter(limit=120, window_seconds=3600)
+
+# Starting a conversation writes a row and costs a classification. A person starts
+# one, occasionally two; a script starts thousands.
+saathi_start_rate_limiter = PublicSearchRateLimiter(limit=6, window_seconds=60)
+saathi_start_hourly_rate_limiter = PublicSearchRateLimiter(limit=40, window_seconds=3600)
+
+# Voice: Sarvam bills per transcription and per synthesis, and a voice turn is a
+# message turn, so the budget tracks the message budget rather than undercutting it.
+saathi_voice_burst_rate_limiter = PublicSearchRateLimiter(limit=15, window_seconds=60)
+saathi_voice_hourly_rate_limiter = PublicSearchRateLimiter(limit=150, window_seconds=3600)
+
+# Understanding, knowledge search and attachment analysis: cheaper per call, but
+# each still reaches a hosted embedding or vision model.
+saathi_analysis_burst_rate_limiter = PublicSearchRateLimiter(limit=20, window_seconds=60)
+saathi_analysis_hourly_rate_limiter = PublicSearchRateLimiter(limit=200, window_seconds=3600)
