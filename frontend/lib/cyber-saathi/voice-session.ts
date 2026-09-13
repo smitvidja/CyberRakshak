@@ -56,3 +56,27 @@ export class VoiceSessionCoordinator {
     return this.active !== null;
   }
 }
+
+/**
+ * Sarvam's batch speech-to-text refuses a recording longer than this, so the
+ * realtime socket is the only path that can transcribe one.
+ */
+export const REST_FALLBACK_MAX_DURATION_MS = 29_000;
+
+/**
+ * How long to wait for the realtime provider's final transcript before retrying
+ * over the batch endpoint.
+ *
+ * This was a flat four seconds, which is why a sixty-second recording behaved
+ * like a thirty-second one. Nothing caps the recording at thirty: the API allows
+ * sixty, and the REST endpoint accepts about five minutes of audio. But after
+ * four quiet seconds the session gave up on the realtime path and retried over
+ * batch - which refuses a recording that long, so the retry could never succeed
+ * and the citizen was left with whatever partial text had arrived.
+ *
+ * A longer capture takes longer to finalise, so it is given the time. A short
+ * one keeps the quick retry, because there batch genuinely can rescue it.
+ */
+export function restFallbackDelayMs(capturedMs: number): number {
+  return capturedMs > REST_FALLBACK_MAX_DURATION_MS ? 15_000 : 4_000;
+}

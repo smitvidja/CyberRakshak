@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import {beforeEach, test} from "node:test";
 
 import {VoiceCaptureError, VoiceRecorder} from "../lib/cyber-saathi/voice-recorder";
-import {VoiceSessionCoordinator} from "../lib/cyber-saathi/voice-session";
+import {
+  REST_FALLBACK_MAX_DURATION_MS,
+  restFallbackDelayMs,
+  VoiceSessionCoordinator
+} from "../lib/cyber-saathi/voice-session";
 
 class FakeTrack {
   label = "Test microphone";
@@ -134,4 +138,23 @@ test("worklet failure identifies its stage and releases the track", async () => 
   await assert.rejects(recorder.start(() => undefined), (error) => error instanceof VoiceCaptureError && error.stage === "audio-worklet" && error.browserName === "NotSupportedError");
   await recorder.stop();
   assert.equal(stream.track.readyState, "ended");
+});
+
+test("a long recording waits for the realtime transcript instead of a batch retry that would be refused", () => {
+  // The reported symptom was "voice only records thirty seconds". Nothing caps
+  // it there - the API allows sixty and the REST endpoint accepts minutes. The
+  // session simply gave up on the realtime path after four seconds and retried
+  // over a batch endpoint that refuses a recording that long, so the retry could
+  // never succeed and the citizen kept only the partial text.
+  assert.equal(restFallbackDelayMs(5_000), 4_000, "a short capture keeps the quick retry");
+  assert.equal(restFallbackDelayMs(REST_FALLBACK_MAX_DURATION_MS), 4_000, "exactly at the batch limit is still rescuable");
+
+  const justOver = restFallbackDelayMs(REST_FALLBACK_MAX_DURATION_MS + 1);
+  assert.ok(justOver > 4_000, "past the batch limit the retry cannot work, so do not rush it");
+
+  // The case the citizen actually hit: a full-length recording.
+  assert.ok(
+    restFallbackDelayMs(60_000) > 4_000,
+    "a sixty-second recording must be given time to finalise on the realtime path"
+  );
 });
