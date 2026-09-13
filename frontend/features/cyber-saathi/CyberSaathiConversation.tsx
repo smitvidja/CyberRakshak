@@ -9,13 +9,15 @@ import {useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEven
 import {useCyberSaathiVoice} from "@/features/cyber-saathi/useCyberSaathiVoice";
 import {cyberSaathiApi} from "@/lib/api/cyber-saathi";
 import {prepareCyberSaathiReportHandoff} from "@/lib/cyber-saathi/report-handoff";
-import {setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
+import {CYBER_SAATHI_CONVERSATION_KEY, setReportCategoryHint, setReportMode} from "@/lib/auth/citizen-session";
 import {saveSuspectHandoff} from "@/lib/suspect-handoff";
 import type {ConversationState, ReportingMode, SaathiLanguage} from "@/types/cyber-saathi";
 
 // v2 adds explicit storage consent and server-backed recovery; keep v1 untouched
 // instead of silently treating an older browser-only payload as consented data.
-const STORAGE_KEY = "cyberrakshak.cyber-saathi.conversation.v2";
+// Defined in citizen-session so logout can clear it; re-exported here as the
+// name this file already used.
+const STORAGE_KEY = CYBER_SAATHI_CONVERSATION_KEY;
 // Kept beside the conversation rather than inside it: this is a browser-only UI
 // preference, and the conversation payload is validated by the API.
 const LANGUAGE_CHOSEN_KEY = "cyberrakshak.cyber-saathi.language-chosen";

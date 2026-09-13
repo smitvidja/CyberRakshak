@@ -13,6 +13,8 @@
   "include": [
     "lib/cyber-saathi/voice-recorder.ts",
     "lib/cyber-saathi/voice-session.ts",
-    "tests/voice-lifecycle.test.ts"
+    "tests/voice-lifecycle.test.ts",
+    "lib/auth/citizen-session.ts",
+    "tests/citizen-session.test.ts"
   ]
 }

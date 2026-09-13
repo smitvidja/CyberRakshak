@@ -12,7 +12,7 @@ import {StatePanel, StatusChip, SurfaceCard} from "@/components/ui/Surface";
 import {complaintsApi, evidenceApi} from "@/lib/api/complaints";
 import {downloadComplaintCopy, getComplaintCopyAccessSnapshot, getServerComplaintCopyAccessSnapshot, rememberComplaintCopyAccess, subscribeToComplaintCopyAccess} from "@/lib/complaint-copy";
 import type {ApiRecord} from "@/lib/api/auth";
-import {getAccessToken, getComplaintDraft, getComplaintEvidence, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
+import {clearCyberSaathiCase, getAccessToken, getComplaintDraft, getComplaintEvidence, getReportMode, setComplaintDraft} from "@/lib/auth/citizen-session";
 import {getGuestEvidenceFiles, markGuestDraftForFinalSubmit} from "@/lib/auth/guest-report-session";
 
 type TrackingRecord = ApiRecord & {history?: ApiRecord[]};
@@ -134,6 +134,9 @@ export function ComplaintReviewStep({draftId}: {draftId: string}) {
       return;
     }
     setComplaintDraft({data: result.data, id: draftId});
+    // Filed. The conversation that produced it should not still be sitting on the
+    // screen afterwards - the citizen is finished, and the machine may not be theirs.
+    clearCyberSaathiCase();
     const complaintNumber = asString(result.data.complaint_number);
     // An anonymous submission returns its download capability exactly once.
     rememberComplaintCopyAccess(complaintNumber, {
