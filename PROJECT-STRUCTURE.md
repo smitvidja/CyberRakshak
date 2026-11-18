@@ -83,6 +83,7 @@ CyberRakshak/
 │   │   └── hi.json
 │   ├── public/
 │   ├── tests/              (node:test unit tests; `npm test`)
+│   │   └── e2e/            (real-browser journeys; `npm run test:e2e`, see docs/E2E-TESTING.md)
 │   └── types/
 ├── backend/
 │   ├── app/
