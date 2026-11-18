@@ -28,11 +28,11 @@ from app.schemas.cyber_saathi import (
     KnowledgeSourceMetadata,
     LanguageCode,
 )
-from app.services.cyber_saathi_semantic_embeddings import (
+from app.services.cyber_saathi.semantic_embeddings import (
     GeminiSemanticEmbeddingProvider,
     SemanticEmbeddingError,
 )
-from app.services.cyber_saathi_understanding import DATA_DIR
+from app.services.cyber_saathi.understanding import DATA_DIR
 
 
 KNOWLEDGE_DIR = DATA_DIR / "authoritative_knowledge"

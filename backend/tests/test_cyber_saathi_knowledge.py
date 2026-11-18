@@ -12,9 +12,9 @@ from app.schemas.cyber_saathi import (
     KnowledgeSearchRequest,
     LanguageCode,
 )
-from app.services.cyber_saathi_service import CyberSaathiService
-from app.services import cyber_saathi_knowledge as knowledge_module
-from app.services.cyber_saathi_knowledge import (
+from app.services.cyber_saathi.service import CyberSaathiService
+from app.services.cyber_saathi import knowledge as knowledge_module
+from app.services.cyber_saathi.knowledge import (
     INDEX_PATH,
     MAX_INDEX_BYTES,
     SOURCE_PACK_PATH,
@@ -23,7 +23,7 @@ from app.services.cyber_saathi_knowledge import (
     load_source_pack,
     rebuild_index,
 )
-from app.services.cyber_saathi_knowledge_evaluation import evaluate
+from app.services.cyber_saathi.knowledge_evaluation import evaluate
 
 
 def setup_module() -> None:
@@ -95,7 +95,7 @@ def test_every_priority_domain_has_chunk_level_coverage() -> None:
 def test_persisted_index_is_read_by_a_fresh_python_process() -> None:
     command = (
         "from app.schemas.cyber_saathi import KnowledgeSearchRequest; "
-        "from app.services.cyber_saathi_knowledge import KnowledgeService; "
+        "from app.services.cyber_saathi.knowledge import KnowledgeService; "
         "r=KnowledgeService.search(KnowledgeSearchRequest(query='phishing fake link safety')); "
         "print(r.index_version, r.no_result)"
     )
@@ -167,7 +167,7 @@ def test_knowledge_search_api_has_bounded_results_and_source_metadata() -> None:
 def test_knowledge_gold_set_meets_relevance_source_and_no_result_gates() -> None:
     result = evaluate()
 
-    from app.services.cyber_saathi_knowledge_evaluation import load_cases
+    from app.services.cyber_saathi.knowledge_evaluation import load_cases
 
     assert result["status"] == "passed"
     # Derived, not pinned: the gold set is meant to grow, and a magic number turns

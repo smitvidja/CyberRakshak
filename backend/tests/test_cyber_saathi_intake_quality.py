@@ -18,8 +18,8 @@ from app.schemas.cyber_saathi import (
     CrimeDomain,
     LanguageCode,
 )
-from app.services.cyber_saathi_conversation import infer_reporting_for
-from app.services.cyber_saathi_service import CyberSaathiService
+from app.services.cyber_saathi.conversation import infer_reporting_for
+from app.services.cyber_saathi.service import CyberSaathiService
 
 
 def _start(language: LanguageCode = LanguageCode.HI) -> ConversationState:
@@ -287,7 +287,7 @@ def test_anonymous_is_not_offered_and_then_refused() -> None:
     ],
 )
 def test_saying_you_have_the_evidence_counts_however_it_is_phrased(message: str) -> None:
-    from app.services.cyber_saathi_service import FLOW_ACTION_SUBJECTS
+    from app.services.cyber_saathi.service import FLOW_ACTION_SUBJECTS
 
     assert CyberSaathiService._states_completed_action(
         message, FLOW_ACTION_SUBJECTS["harassment_evidence_preserved"]
@@ -295,7 +295,7 @@ def test_saying_you_have_the_evidence_counts_however_it_is_phrased(message: str)
 
 
 def test_wider_verb_coverage_does_not_swallow_a_denial() -> None:
-    from app.services.cyber_saathi_service import FLOW_ACTION_SUBJECTS
+    from app.services.cyber_saathi.service import FLOW_ACTION_SUBJECTS
 
     assert not CyberSaathiService._states_completed_action(
         "मैंने स्क्रीनशॉट नहीं लिए", FLOW_ACTION_SUBJECTS["harassment_evidence_preserved"]

@@ -32,14 +32,14 @@ import time
 from typing import Any
 
 from app.core.config import Settings, get_settings
-from app.services.cyber_saathi_llm import (
+from app.services.cyber_saathi.llm import (
     GenerationProfile,
     LLMProvider,
     MultiProviderLLMGateway,
     PromptPackage,
     ProviderFailure,
 )
-from app.services.resume_structuring import (
+from app.services.resume.structuring import (
     MAX_BIO_CHARS,
     MAX_DESCRIPTION_CHARS,
     MAX_ITEMS_PER_SECTION,

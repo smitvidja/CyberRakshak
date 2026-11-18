@@ -9,7 +9,7 @@ from docx import Document
 from fpdf import FPDF
 from pypdf import PdfReader, PdfWriter
 
-from app.services.resume_extraction import (
+from app.services.resume.extraction import (
     CorruptResume,
     EmptyResumeText,
     EncryptedResume,
@@ -18,8 +18,8 @@ from app.services.resume_extraction import (
     UnsupportedResumeFormat,
     extract_resume_text,
 )
-from app.services.resume_parser_service import DocumentResumeParser, MockResumeParser, get_resume_parser
-from app.services.resume_structuring import structure_resume
+from app.services.resume.parser_service import DocumentResumeParser, MockResumeParser, get_resume_parser
+from app.services.resume.structuring import structure_resume
 
 KNOWN_SKILLS = ["Network Security", "Threat Analysis", "Incident Response", "Fraud Investigation", "Cyber Law"]
 

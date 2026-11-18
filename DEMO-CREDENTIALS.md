@@ -33,7 +33,7 @@ city, and mobile as that identity's mock eKYC record, with skills drawn from the
 skill catalog (so the same skills are selectable in the review form).
 
 **Note on parsing:** the resume parser is a **static mock**
-(`backend/app/services/resume_parser_service.py`) - it always returns the same synthetic sample
+(`backend/app/services/resume/parser_service.py`) - it always returns the same synthetic sample
 data (skills, one education entry, one experience entry, one certification) regardless of which
 file is uploaded. There's no real text-extraction/AI parsing in this MVP. The demo resumes make
 the *upload* step realistic; they do not change what gets pre-filled in the review step. That

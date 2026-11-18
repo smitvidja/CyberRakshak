@@ -23,8 +23,8 @@ The corpus is intentionally separate from the Session 9.2 supplementary datasets
 
 ```powershell
 cd backend
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi_knowledge
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi_knowledge_evaluation
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi.knowledge
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi.knowledge_evaluation
 ```
 
 The evaluation command persists `backend/app/data/cyber_saathi/knowledge_evaluation_report.json`, including failures, actual and expected no-result rates, exact chunk/domain correctness, false-positive/negative counts, and real nearest-rank p95 latency.

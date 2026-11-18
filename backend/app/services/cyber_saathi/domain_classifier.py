@@ -31,12 +31,12 @@ from pathlib import Path
 from typing import Any
 
 from app.schemas.cyber_saathi import CrimeDomain
-from app.services.cyber_saathi_semantic_embeddings import (
+from app.services.cyber_saathi.semantic_embeddings import (
     GeminiSemanticEmbeddingProvider,
     SemanticEmbeddingError,
 )
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "cyber_saathi"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "cyber_saathi"
 EXEMPLARS_PATH = DATA_DIR / "domain_exemplars.json"
 CENTROIDS_PATH = DATA_DIR / "domain_centroids.json"
 

@@ -17,7 +17,7 @@ from app.schemas.cyber_saathi import (
     TurnPurpose,
     UnderstandingResult,
 )
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 
 
 ACTION_BLOCKED_MARKERS = (

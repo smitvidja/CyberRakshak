@@ -19,8 +19,8 @@ from app.repositories.warrior_repository import WarriorRepository
 from app.schemas.cyber_warrior import ResumeConfirmationRequest
 from app.services.audit_service import AuditService
 from app.services.notification_service import NotificationService
-from app.services.resume_extraction import ResumeExtractionError
-from app.services.resume_parser_service import get_resume_parser
+from app.services.resume.extraction import ResumeExtractionError
+from app.services.resume.parser_service import get_resume_parser
 from app.services.storage_service import (
     FileTooLargeError,
     StorageError,

@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from app.services.cyber_saathi_knowledge import (
+from app.services.cyber_saathi.knowledge import (
     SOURCE_PACK_PATH,
     KnowledgeService,
     _source_pack_hash,

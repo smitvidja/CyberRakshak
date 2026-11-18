@@ -108,7 +108,7 @@ Dense similarity can be persuasive even for an unrelated sentence. For that reas
 
 ```powershell
 cd backend
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi_knowledge --semantic
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi.knowledge --semantic
 ```
 
 This command sends reviewed public source chunks—not citizen conversations or evidence—to the configured Gemini embedding API. It must be run only after the deployment owner approves that external processing. Regular API startup never performs ingestion.

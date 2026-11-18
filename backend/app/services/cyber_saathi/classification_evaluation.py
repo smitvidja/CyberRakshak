@@ -20,7 +20,7 @@ Three sets, reported separately because they answer different questions:
 
 Run with a provider configured to exercise the semantic path:
 
-    ./.venv/Scripts/python.exe -m app.services.cyber_saathi_classification_evaluation
+    ./.venv/Scripts/python.exe -m app.services.cyber_saathi.classification_evaluation
 
 With no provider it still runs and reports the lexicon alone, which is the
 configuration the test suite uses.
@@ -35,10 +35,10 @@ from pathlib import Path
 from typing import Any
 
 from app.schemas.cyber_saathi import CrimeDomain
-from app.services.cyber_saathi_domain_classifier import classify_semantically
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi.domain_classifier import classify_semantically
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "cyber_saathi"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "cyber_saathi"
 EVALUATION_CASES_PATH = DATA_DIR / "classification_evaluation_cases.json"
 EVALUATION_REPORT_PATH = DATA_DIR / "classification_evaluation_report.json"
 

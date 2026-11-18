@@ -1,7 +1,7 @@
 import httpx
 
 from app.core.config import Settings
-from app.services.cyber_saathi_semantic_embeddings import (
+from app.services.cyber_saathi.semantic_embeddings import (
     GeminiSemanticEmbeddingProvider,
     redact_for_embedding,
 )

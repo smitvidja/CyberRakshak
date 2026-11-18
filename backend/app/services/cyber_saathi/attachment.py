@@ -20,7 +20,7 @@ from pypdf import PdfReader
 
 from app.core.errors import APIError
 from app.schemas.cyber_saathi import AttachmentAnalysis
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 
 
 MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024

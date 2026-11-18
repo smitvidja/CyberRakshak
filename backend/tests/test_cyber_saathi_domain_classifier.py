@@ -21,9 +21,9 @@ from app.schemas.cyber_saathi import (
     Intent,
     LanguageCode,
 )
-from app.services import cyber_saathi_domain_classifier as classifier
-from app.services.cyber_saathi_service import CyberSaathiService
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi import domain_classifier as classifier
+from app.services.cyber_saathi.service import CyberSaathiService
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 
 
 def _install_centroids(monkeypatch, centroids: dict[str, list[float]], query: list[float]) -> None:
@@ -158,7 +158,7 @@ def test_a_resolved_domain_also_lifts_confidence_and_intent(monkeypatch) -> None
     "मुझे स्पष्ट नहीं है कि क्या हुआ" about a message we had just understood.
     """
     monkeypatch.setattr(
-        "app.services.cyber_saathi_service.classify_semantically",
+        "app.services.cyber_saathi.service.classify_semantically",
         lambda message, lexicon_confident=False: CrimeDomain.ONLINE_HARASSMENT,
     )
     state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.HI)).state
@@ -178,7 +178,7 @@ def test_an_incident_that_already_has_a_domain_is_not_reclassified(monkeypatch) 
     """Cost control: this must be about one embedding per conversation, not per turn."""
     calls: list[str] = []
     monkeypatch.setattr(
-        "app.services.cyber_saathi_service.classify_semantically",
+        "app.services.cyber_saathi.service.classify_semantically",
         lambda message, lexicon_confident=False: calls.append(message) or CrimeDomain.MALWARE,
     )
     state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.HI)).state
@@ -194,7 +194,7 @@ def test_a_classifier_failure_never_breaks_the_reply(monkeypatch) -> None:
     def explode(message: str, lexicon_confident: bool = False):
         raise RuntimeError("provider down")
 
-    monkeypatch.setattr("app.services.cyber_saathi_service.classify_semantically", explode)
+    monkeypatch.setattr("app.services.cyber_saathi.service.classify_semantically", explode)
     state = CyberSaathiService.start(ConversationCreate(language=LanguageCode.HI)).state
     updated = CyberSaathiService.reply(
         state.id,

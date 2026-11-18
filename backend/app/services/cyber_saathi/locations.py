@@ -26,7 +26,7 @@ from typing import NamedTuple
 
 # Deliberately not imported from the understanding engine: that module imports this
 # one, and taking DATA_DIR from it would make the pair circular.
-DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "cyber_saathi"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "cyber_saathi"
 LOCATIONS_PATH = DATA_DIR / "india_locations.json"
 
 # The same token rule the rest of the pipeline uses: ``\w`` splits Devanagari

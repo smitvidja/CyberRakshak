@@ -12,9 +12,9 @@ from app.schemas.cyber_saathi import (
     LanguageCode,
     ReportingMode,
 )
-from app.services import cyber_saathi_phrasing as phrasing
-from app.services.cyber_saathi_service import CyberSaathiService
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi import phrasing as phrasing
+from app.services.cyber_saathi.service import CyberSaathiService
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 
 
 def _start(language: LanguageCode = LanguageCode.HI) -> ConversationState:
@@ -127,7 +127,7 @@ def test_phrasing_is_off_unless_an_operator_turns_it_on() -> None:
 
 def test_a_phrasing_failure_never_costs_the_citizen_their_answer(monkeypatch) -> None:
     monkeypatch.setattr(
-        "app.services.cyber_saathi_service.phrase_next_question",
+        "app.services.cyber_saathi.service.phrase_next_question",
         lambda **kwargs: (_ for _ in ()).throw(RuntimeError("provider down")),
     )
     state = _start()
@@ -137,7 +137,7 @@ def test_a_phrasing_failure_never_costs_the_citizen_their_answer(monkeypatch) ->
 
     # And when it simply declines, the deterministic sentence stands.
     monkeypatch.setattr(
-        "app.services.cyber_saathi_service.phrase_next_question", lambda **kwargs: None
+        "app.services.cyber_saathi.service.phrase_next_question", lambda **kwargs: None
     )
     assert "क्या हुआ?" in CyberSaathiService._acknowledge_and_ask(state, "slot", "yes", "क्या हुआ?")
 

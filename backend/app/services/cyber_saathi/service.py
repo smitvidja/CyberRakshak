@@ -44,7 +44,7 @@ from app.schemas.cyber_saathi import (
     UnderstandingResult,
     WorkflowHandoff,
 )
-from app.services.cyber_saathi_conversation import (
+from app.services.cyber_saathi.conversation import (
     blocked_action,
     build_report_preparation,
     classify_turn_purpose,
@@ -52,12 +52,12 @@ from app.services.cyber_saathi_conversation import (
     message_fingerprint,
     normalized_text,
 )
-from app.services.cyber_saathi_locations import ResolvedLocation, resolve_answer
-from app.services.cyber_saathi_knowledge import KnowledgeService
-from app.services.cyber_saathi_llm import get_llm_gateway
-from app.services.cyber_saathi_domain_classifier import classify_semantically
-from app.services.cyber_saathi_phrasing import phrase_next_question
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi.locations import ResolvedLocation, resolve_answer
+from app.services.cyber_saathi.knowledge import KnowledgeService
+from app.services.cyber_saathi.llm import get_llm_gateway
+from app.services.cyber_saathi.domain_classifier import classify_semantically
+from app.services.cyber_saathi.phrasing import phrase_next_question
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 
 
 YES_MARKERS = {"yes", "correct", "confirm", "haan", "ha", "हाँ", "सही"}

@@ -20,12 +20,12 @@ from app.schemas.cyber_saathi import (
     ReportingMode,
     Urgency,
 )
-from app.services.cyber_saathi_llm import (
+from app.services.cyber_saathi.llm import (
     LLMResponseValidator,
     PromptAssembler,
     SafetyValidationFailure,
 )
-from app.services.cyber_saathi_understanding import DATA_DIR
+from app.services.cyber_saathi.understanding import DATA_DIR
 
 
 CASES_PATH = DATA_DIR / "llm_evaluation_cases.json"

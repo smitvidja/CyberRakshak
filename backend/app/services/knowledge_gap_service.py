@@ -30,7 +30,7 @@ from sqlalchemy.orm import Session
 
 from app.core.errors import APIError
 from app.models import KnowledgeGapSignal
-from app.services.cyber_saathi_persistence import redact_text
+from app.services.cyber_saathi.persistence import redact_text
 
 MAX_SAMPLE_CHARS = 500
 OPEN = "OPEN"

@@ -23,13 +23,13 @@ from app.schemas.cyber_saathi import (
     EntityType,
     LanguageCode,
 )
-from app.services.cyber_saathi_locations import (
+from app.services.cyber_saathi.locations import (
     looks_like_place_name,
     resolve_answer,
     resolve_location,
     state_for_city,
 )
-from app.services.cyber_saathi_service import QUESTION_GUIDANCE, CyberSaathiService
+from app.services.cyber_saathi.service import QUESTION_GUIDANCE, CyberSaathiService
 
 
 # --------------------------------------------------------------- the gazetteer

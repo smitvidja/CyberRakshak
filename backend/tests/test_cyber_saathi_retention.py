@@ -12,8 +12,8 @@ from app.core.errors import APIError
 from app.models import CyberSaathiConversation
 from app.repositories.cyber_saathi_repository import CyberSaathiRepository
 from app.schemas.cyber_saathi import ConversationCreate
-from app.services.cyber_saathi_persistence import CyberSaathiPersistence
-from app.services.cyber_saathi_service import CyberSaathiService
+from app.services.cyber_saathi.persistence import CyberSaathiPersistence
+from app.services.cyber_saathi.service import CyberSaathiService
 
 
 def _conversation(session: Session, *, expires_in_days: int) -> CyberSaathiConversation:

@@ -23,8 +23,8 @@ from app.schemas.cyber_saathi import (
     ReportingMode,
     Urgency,
 )
-from app.services import cyber_saathi_service as service_module
-from app.services.cyber_saathi_llm import (
+from app.services.cyber_saathi import service as service_module
+from app.services.cyber_saathi.llm import (
     GeminiAdapter,
     LLMResponseValidator,
     MultiProviderLLMGateway,
@@ -33,7 +33,7 @@ from app.services.cyber_saathi_llm import (
     ProviderFailure,
     SafetyValidationFailure,
 )
-from app.services.cyber_saathi_service import CyberSaathiService
+from app.services.cyber_saathi.service import CyberSaathiService
 
 
 def settings(**overrides) -> Settings:

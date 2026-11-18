@@ -24,10 +24,10 @@ from app.schemas.cyber_saathi import (
     KnowledgeSearchResponse,
     ReportingMode,
 )
-from app.services import cyber_saathi_service as service_module
-from app.services.cyber_saathi_service import CyberSaathiService
-from app.services.cyber_saathi_knowledge import KnowledgeService
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi import service as service_module
+from app.services.cyber_saathi.service import CyberSaathiService
+from app.services.cyber_saathi.knowledge import KnowledgeService
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 
 
 def test_suspect_search_handoff_only_carries_a_confirmed_identifier() -> None:

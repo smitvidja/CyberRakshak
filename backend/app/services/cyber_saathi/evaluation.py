@@ -2,12 +2,12 @@ import json
 from collections import Counter
 
 from app.schemas.cyber_saathi import Urgency
-from app.services.cyber_saathi_dataset import (
+from app.services.cyber_saathi.dataset import (
     DATA_DIR,
     prepare_examples,
     validate_registry,
 )
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 
 
 def macro_f1(expected: list[str], predicted: list[str]) -> float:

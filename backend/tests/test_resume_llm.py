@@ -14,8 +14,8 @@ from typing import Any
 import pytest
 
 from app.core.config import Settings
-from app.services.cyber_saathi_llm import LLMProvider, MultiProviderLLMGateway, ProviderFailure
-from app.services.resume_llm import (
+from app.services.cyber_saathi.llm import LLMProvider, MultiProviderLLMGateway, ProviderFailure
+from app.services.resume.llm import (
     RESUME_RESPONSE_SCHEMA,
     build_prompt_package,
     merge_with_deterministic,

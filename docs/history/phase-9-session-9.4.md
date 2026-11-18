@@ -71,7 +71,7 @@ Safe health command after adding credentials:
 
 ```powershell
 cd backend
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi_llm --health-check
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi.llm --health-check
 ```
 
 It prints provider, model, status, and latency only. It never prints credentials.
@@ -94,7 +94,7 @@ The hosted Gemini smoke took about four seconds. The larger ceiling avoids prema
 
 ```powershell
 cd backend
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi_llm_evaluation
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi.llm_evaluation
 .\.venv\Scripts\python.exe -m pytest tests/test_cyber_saathi_llm.py -q
 ```
 

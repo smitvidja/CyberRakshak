@@ -6,7 +6,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from app.schemas.cyber_saathi import CrimeDomain, Intent, LanguageCode, Sentiment, Urgency
-from app.services.cyber_saathi_understanding import DATA_DIR
+from app.services.cyber_saathi.understanding import DATA_DIR
 
 
 class NormalizedExample(BaseModel):

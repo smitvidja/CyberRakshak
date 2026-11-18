@@ -28,7 +28,7 @@ flowchart LR
 | Stage | Current implementation |
 | --- | --- |
 | Source of truth | `backend/app/data/cyber_saathi/authoritative_knowledge/sources.json` |
-| Index build | An explicit CLI operation in `cyber_saathi_knowledge.py`; never run on API startup |
+| Index build | An explicit CLI operation in `app/services/cyber_saathi/knowledge.py`; never run on API startup |
 | Index artifact | `knowledge_index.json`, limited to 500 chunks and 8 MiB |
 | Embeddings | Always local deterministic sparse vectors; optional hosted multilingual dense vectors, generated only through explicit ingestion; no local model download |
 | Retrieval guards | Source-pack hash, content hashes, index version, sparse/dense vector dimensions, lexical grounding, domain filter, relevance threshold, and `top_k` cap |

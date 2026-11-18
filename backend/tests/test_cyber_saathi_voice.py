@@ -8,7 +8,7 @@ from pydantic import SecretStr
 from app.core.config import get_settings
 from app.main import app
 from app.schemas.cyber_saathi import LanguageCode, VoiceTranscription
-from app.services.cyber_saathi_voice import (
+from app.services.cyber_saathi.voice import (
     PreparedSpeechStream,
     SarvamVoiceAdapter,
     VoiceProviderError,

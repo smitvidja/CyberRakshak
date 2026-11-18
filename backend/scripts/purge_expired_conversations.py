@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.core.database import SessionLocal  # noqa: E402
 from app.repositories.cyber_saathi_repository import CyberSaathiRepository  # noqa: E402
-from app.services.cyber_saathi_persistence import CyberSaathiPersistence  # noqa: E402
+from app.services.cyber_saathi.persistence import CyberSaathiPersistence  # noqa: E402
 
 
 def main() -> int:

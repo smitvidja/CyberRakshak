@@ -63,7 +63,7 @@ The response returns `no_result` when retrieval is weak instead of inventing a p
 
 ```powershell
 cd backend
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi_knowledge
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi.knowledge
 ```
 
 The API never rebuilds embeddings at startup and does not perform live government or portal lookups. The current file-backed index always contains a lightweight 384-dimensional sparse vector. An operator may explicitly ingest optional 768-dimensional multilingual dense vectors with `--semantic`; query ranking then combines lexical grounding, sparse similarity, and dense similarity. A stale source-pack hash, invalid chunk hash, unsupported index schema, invalid vector dimensions, more than 500 chunks, or an index larger than 8 MiB causes retrieval to fail closed until explicit re-ingestion. Dense-only retrieval is allowed only within an inferred knowledge domain; unscoped queries still require lexical grounding.

@@ -443,7 +443,7 @@ the repository.
 
 ```bash
 cd backend
-./.venv/Scripts/python.exe -m app.services.cyber_saathi_knowledge --semantic
+./.venv/Scripts/python.exe -m app.services.cyber_saathi.knowledge --semantic
 ```
 
 Rebuilding without `--semantic` produces a valid index with the dense vectors
@@ -504,8 +504,8 @@ so changing the classifier or the corpus without re-running them fails CI.
 
 ```bash
 cd backend
-./.venv/Scripts/python.exe -m app.services.cyber_saathi_classification_evaluation
-./.venv/Scripts/python.exe -m app.services.cyber_saathi_knowledge_evaluation
+./.venv/Scripts/python.exe -m app.services.cyber_saathi.classification_evaluation
+./.venv/Scripts/python.exe -m app.services.cyber_saathi.knowledge_evaluation
 ```
 
 **Classification** answers "which crime is this?" and reports three sets

@@ -15,16 +15,16 @@ from app.schemas.cyber_saathi import (
     LanguageCode,
     Urgency,
 )
-from app.services.cyber_saathi_dataset import (
+from app.services.cyber_saathi.dataset import (
     generate_controlled_variants,
     load_inspection,
     load_sources,
     prepare_examples,
     validate_registry,
 )
-from app.services.cyber_saathi_evaluation import evaluate
-from app.services.cyber_saathi_service import CyberSaathiService
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi.evaluation import evaluate
+from app.services.cyber_saathi.service import CyberSaathiService
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 
 
 def test_understanding_api_returns_structured_result() -> None:

@@ -12,7 +12,7 @@
 | Conversation integration | Existing conversation service consumes structured understanding | Session 9.1 regression suite |
 | Critical entity confirmation | Amount, phone, email, UPI ID, transaction ID, URL, provider, date and time | Entity and conversation confirmation tests |
 | Sentiment and confidence behavior | Conversation response strategy and focused confidence-band clarification | Response-level service tests |
-| Repeatable evaluation | `python -m app.services.cyber_saathi_evaluation` | 69-case threshold-enforced command with exact entity matching |
+| Repeatable evaluation | `python -m app.services.cyber_saathi.evaluation` | 69-case threshold-enforced command with exact entity matching |
 
 ## Dataset policy
 
@@ -61,9 +61,9 @@ Commands:
 
 ```powershell
 cd backend
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi_dataset
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi_dataset --output app\data\cyber_saathi\normalized_examples.jsonl
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi_evaluation
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi.dataset
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi.dataset --output app\data\cyber_saathi\normalized_examples.jsonl
+.\.venv\Scripts\python.exe -m app.services.cyber_saathi.evaluation
 ```
 
 ## Evaluation result

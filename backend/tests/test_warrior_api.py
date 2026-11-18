@@ -115,7 +115,7 @@ def test_resume_parser_failure_is_persisted_without_profile_changes(api_client: 
         async def parse(self, **kwargs):
             raise RuntimeError("synthetic parser failure")
 
-    from app.services import resume_service
+    from app.services.resume import service as resume_service
     monkeypatch.setattr(resume_service, "get_resume_parser", lambda: FailingParser())
     uploaded = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("resume.pdf", synthetic_resume_pdf(), "application/pdf")})
 

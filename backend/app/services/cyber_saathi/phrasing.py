@@ -24,7 +24,7 @@ import json
 from typing import Any
 
 from app.core.config import get_settings
-from app.services.cyber_saathi_llm import (
+from app.services.cyber_saathi.llm import (
     GenerationProfile,
     MultiProviderLLMGateway,
     PromptPackage,

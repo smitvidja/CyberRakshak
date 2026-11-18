@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from app.schemas.cyber_saathi import KnowledgeDomain, KnowledgeSearchRequest
-from app.services.cyber_saathi_knowledge import EVALUATION_CASES_PATH, KnowledgeService
+from app.services.cyber_saathi.knowledge import EVALUATION_CASES_PATH, KnowledgeService
 
 
 EVALUATION_REPORT_PATH = EVALUATION_CASES_PATH.with_name("knowledge_evaluation_report.json")

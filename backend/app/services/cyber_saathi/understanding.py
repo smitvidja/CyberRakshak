@@ -17,10 +17,10 @@ from app.schemas.cyber_saathi import (
     Urgency,
     confidence_band,
 )
-from app.services.cyber_saathi_locations import resolve_location
+from app.services.cyber_saathi.locations import resolve_location
 
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "cyber_saathi"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "cyber_saathi"
 TAXONOMY = json.loads((DATA_DIR / "taxonomy.json").read_text(encoding="utf-8"))
 
 DEVANAGARI_PATTERN = re.compile(r"[\u0900-\u097f]")
@@ -109,7 +109,7 @@ PROVIDERS = {
 PLATFORMS = ("instagram", "facebook", "whatsapp", "telegram", "x.com", "twitter", "snapchat", "youtube")
 ACCOUNT_SERVICES = ("bank account", "email account", "social media account", "upi account", "wallet")
 # The city and state lists now live in india_locations.json and are resolved by
-# app.services.cyber_saathi_locations: twenty-three hard-coded cities meant a
+# app.services.cyber_saathi.locations: twenty-three hard-coded cities meant a
 # complaint from anywhere else carried no city at all.
 CRITICAL_TYPES = {EntityType(value) for value in TAXONOMY["critical_entity_types"]}
 

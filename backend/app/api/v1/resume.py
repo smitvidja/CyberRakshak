@@ -12,7 +12,7 @@ from app.models.enums import UserRole
 from app.schemas.common import ErrorResponse, SuccessResponse
 from app.schemas.cyber_warrior import CyberWarriorProfileResponse, ResumeConfirmationRequest
 from app.schemas.resume import ResumeParsingResultResponse
-from app.services.resume_service import ResumeService
+from app.services.resume.service import ResumeService
 
 router = APIRouter(prefix="/resume", tags=["resume"])
 WarriorUser = Annotated[User, Depends(require_roles(UserRole.CYBER_WARRIOR))]

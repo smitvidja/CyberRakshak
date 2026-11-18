@@ -32,7 +32,7 @@ from app.schemas.cyber_saathi import (
 )
 
 
-PROMPTS_PATH = Path(__file__).resolve().parents[1] / "data" / "cyber_saathi" / "llm_prompts.json"
+PROMPTS_PATH = Path(__file__).resolve().parents[2] / "data" / "cyber_saathi" / "llm_prompts.json"
 MAX_RECENT_TURNS = 6
 MAX_RECENT_TURN_CHARS = 420
 MAX_OLDER_SUMMARY_CHARS = 900

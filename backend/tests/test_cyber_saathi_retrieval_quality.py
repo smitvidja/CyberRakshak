@@ -16,14 +16,14 @@ from app.schemas.cyber_saathi import (
     KnowledgeSearchRequest,
     LanguageCode,
 )
-from app.services.cyber_saathi_knowledge import (
+from app.services.cyber_saathi.knowledge import (
     KnowledgeChunk,
     KnowledgeService,
     _meaningful_tokens,
     _stem,
     is_refused_query,
 )
-from app.services.cyber_saathi_service import CyberSaathiService
+from app.services.cyber_saathi.service import CyberSaathiService
 
 WOMEN_CHILD = KnowledgeDomain.WOMEN_CHILD_ONLINE_SAFETY
 

@@ -3,9 +3,9 @@ from typing import Any, Protocol
 from starlette.concurrency import run_in_threadpool
 
 from app.core.config import get_settings
-from app.services.resume_extraction import extract_resume_text
-from app.services.resume_llm import merge_with_deterministic, structure_resume_with_model
-from app.services.resume_structuring import structure_resume
+from app.services.resume.extraction import extract_resume_text
+from app.services.resume.llm import merge_with_deterministic, structure_resume_with_model
+from app.services.resume.structuring import structure_resume
 
 
 class ResumeParser(Protocol):

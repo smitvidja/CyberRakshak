@@ -8,7 +8,7 @@ from app.schemas.cyber_saathi import (
     RETRIEVAL_BACKED_STATUSES,
     LanguageCode,
 )
-from app.services.cyber_saathi_service import CyberSaathiService
+from app.services.cyber_saathi.service import CyberSaathiService
 
 
 DOMAIN_CASES = (

@@ -8,7 +8,7 @@ database/seeds/seed_reference_data.py - so the reviewer form's skill
 dropdown actually contains the skills the resume claims.
 
 IMPORTANT: these files only make the *upload* step look realistic. The resume
-parser itself is still a static mock (app/services/resume_parser_service.py),
+parser itself is still a static mock (app/services/resume/parser_service.py),
 so the extracted/pre-filled review data is the same canned sample regardless
 of which of these files is uploaded. They are demo props, not parser input.
 

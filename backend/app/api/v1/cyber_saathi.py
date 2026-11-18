@@ -39,13 +39,13 @@ from app.schemas.cyber_saathi import (
     VoiceSpeechRequest,
     VoiceTranscription,
 )
-from app.services.cyber_saathi_service import CyberSaathiService
-from app.services.cyber_saathi_attachment import read_and_analyze_attachment
-from app.services.cyber_saathi_knowledge import KnowledgeService
-from app.services.cyber_saathi_persistence import CyberSaathiPersistence
-from app.services.cyber_saathi_understanding import UnderstandingEngine
+from app.services.cyber_saathi.service import CyberSaathiService
+from app.services.cyber_saathi.attachment import read_and_analyze_attachment
+from app.services.cyber_saathi.knowledge import KnowledgeService
+from app.services.cyber_saathi.persistence import CyberSaathiPersistence
+from app.services.cyber_saathi.understanding import UnderstandingEngine
 from app.services.knowledge_gap_service import UNFILED_CRIME_DOMAINS, KnowledgeGapService
-from app.services.cyber_saathi_voice import SarvamVoiceAdapter, VoiceProviderError
+from app.services.cyber_saathi.voice import SarvamVoiceAdapter, VoiceProviderError
 
 
 router = APIRouter(prefix="/cyber-saathi", tags=["cyber-saathi"])
