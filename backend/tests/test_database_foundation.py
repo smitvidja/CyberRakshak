@@ -75,3 +75,19 @@ def test_wildcard_cors_origin_is_never_the_default(monkeypatch: pytest.MonkeyPat
     assert "*" not in Settings(_env_file=None).cors_origins
 
     get_settings.cache_clear()
+
+
+def test_models_and_migrations_describe_the_same_schema() -> None:
+    """`alembic check` against the migrated test database.
+
+    The knowledge-gap uniqueness once existed only in a migration; autogenerate
+    would have dropped it, silently turning the gap upsert into a growing log.
+    Any model change without a matching migration (or the reverse) fails here.
+    """
+    from pathlib import Path
+
+    from alembic import command
+    from alembic.config import Config
+
+    config = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
+    command.check(config)
