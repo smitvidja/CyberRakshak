@@ -1,45 +1,58 @@
-# Frontend dependencies and build output
-frontend/node_modules/
-frontend/.next/
-frontend/out/
-frontend/coverage/
+# Patterns without a leading "/" apply in every folder, so a new package or
+# service is covered without editing this file.
+
+# --- Secrets -----------------------------------------------------------------
+# Every .env variant (.env.production, .env.staging, ...) is ignored; only the
+# documented example files are committed.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# --- Dependencies and build output -------------------------------------------
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
 frontend/.voice-test-build/
 
-# Python environments, caches, and test output
-backend/.venv/
-backend/venv/
+# --- Python environments, caches, and test output ----------------------------
+.venv/
+venv/
 __pycache__/
 *.py[cod]
-backend/.pytest_cache/
-backend/.mypy_cache/
-backend/.coverage
-backend/htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Environment configuration (example files remain trackable)
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-frontend/.env
-frontend/.env.local
-backend/.env
-backend/.env.local
-
-# Local runtime data and uploaded artifacts
+# --- Local runtime data and uploaded artifacts -------------------------------
 postgres_data/
 uploads/
 storage/
-backend/uploads/
-backend/storage/
 dataset-CyberSathi/
 knowledge-sources/
 
-# Logs and operating-system files
+# --- Scratch space, logs, and tool state -------------------------------------
+.tmp/
+tmp/
+.codex-runtime/
 *.log
+.claude/settings.local.json
+
+# --- Editor and operating-system files ---------------------------------------
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
+desktop.ini
 
+# --- Large or regenerated design material ------------------------------------
 # Raw awareness-poster source art (~21MB of PNGs + a duplicate PDF) - not needed at
 # runtime. The optimized WebP outputs and the real PDF live in frontend/public/ and
 # ARE committed; these are only the source backend/scripts/prepare_awareness_assets.py
