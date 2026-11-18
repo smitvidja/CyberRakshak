@@ -18,7 +18,7 @@ node_modules/
 out/
 coverage/
 *.tsbuildinfo
-frontend/.voice-test-build/
+.test-build/
 
 # --- Python environments, caches, and test output ----------------------------
 .venv/

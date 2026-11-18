@@ -6,8 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:voice": "tsc -p tsconfig.voice-tests.json && node --test .voice-test-build/tests/",
-    "lint": "eslint app components features lib"
+    "test": "tsc -p tsconfig.tests.json && node --require ./tests/support/register-aliases.cjs --test .test-build/tests/*.test.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint app components features lib tests"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

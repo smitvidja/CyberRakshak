@@ -6,15 +6,10 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "noEmit": false,
-    "outDir": ".voice-test-build",
+    "outDir": ".test-build",
+    "rootDir": ".",
     "sourceMap": false,
     "target": "ES2022"
   },
-  "include": [
-    "lib/cyber-saathi/voice-recorder.ts",
-    "lib/cyber-saathi/voice-session.ts",
-    "tests/voice-lifecycle.test.ts",
-    "lib/auth/citizen-session.ts",
-    "tests/citizen-session.test.ts"
-  ]
+  "include": ["tests/**/*.ts"]
 }
