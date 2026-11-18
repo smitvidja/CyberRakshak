@@ -13,7 +13,7 @@ Target 30-40 minutes per session where scope permits. This is a diagnostic timeb
 - Chat compaction twice hid roughly 12 hours of visible conversation, but repository work remained intact.
 - Session 6.2 was pushed as da249d5 (feat(warrior): add resume application flow).
 - Preserved verification: 5 focused tests and 47 full backend tests passed; lint passed; build passed with 32 routes; no hydration errors or desktop/mobile overflow; persisted status UNDER_REVIEW.
-- Full original record: docs/session-6.2-postmortem.md.
+- Full original record: docs/history/session-6.2-postmortem.md.
 
 ## Avoidable Delay Record
 

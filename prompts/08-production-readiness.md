@@ -48,11 +48,11 @@ flowchart TD
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Product / Planning, Security, and Full-Stack Feature as needed
 - `PROJECT.md`
-- `01-TECH-STACK.md`
-- `03-ARCHITECTURE.md`
-- `06-API.md`
-- `08-SECURITY.md`
-- `05-FRONTEND.md` and `07-DESIGN-SYSTEM.md` only for final UI/mobile polish
+- `docs/specs/01-TECH-STACK.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/06-API.md`
+- `docs/specs/08-SECURITY.md`
+- `docs/specs/05-FRONTEND.md` and `docs/specs/07-DESIGN-SYSTEM.md` only for final UI/mobile polish
 
 ## Phase Completion Criteria
 
@@ -78,12 +78,12 @@ Prepare frontend, backend, database, storage, CORS, and environment configuratio
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Security and Product / Planning
-- `01-TECH-STACK.md`
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
-- `05-FRONTEND.md`
-- `06-API.md`
-- `08-SECURITY.md`
+- `docs/specs/01-TECH-STACK.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/08-SECURITY.md`
 
 ## Current State
 
@@ -179,10 +179,10 @@ Prepare safe demo data, mock credentials, final documentation, and compliance no
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Product / Planning and Security
 - `PROJECT.md`
-- `01-TECH-STACK.md`
-- `03-ARCHITECTURE.md`
-- `08-SECURITY.md`
-- `07-DESIGN-SYSTEM.md` for official-logo/political-photo restriction
+- `docs/specs/01-TECH-STACK.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/08-SECURITY.md`
+- `docs/specs/07-DESIGN-SYSTEM.md` for official-logo/political-photo restriction
 
 ## Current State
 
@@ -275,10 +275,10 @@ Verify the deployed or demo environment from a user's perspective and finalize t
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature and Frontend / UI
 - `PROJECT.md`
-- `05-FRONTEND.md`
-- `06-API.md`
-- `08-SECURITY.md`
-- `07-DESIGN-SYSTEM.md` for final visual checks
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/08-SECURITY.md`
+- `docs/specs/07-DESIGN-SYSTEM.md` for final visual checks
 - Key visual references:
   - `design/home/Home page.png`
   - `design/victim_Report/Step 0 — Updated VictimUser Reporting Flow.png`

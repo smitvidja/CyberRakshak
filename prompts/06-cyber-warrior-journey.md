@@ -57,12 +57,12 @@ flowchart TD
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature for vertical slices; Frontend / UI for static surfaces
 - `PROJECT.md`
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md`
-- `04-BACKEND.md` only when backend changes are required
-- `02-DATABASE.md` only for persistence-contract changes
-- `08-SECURITY.md` for resume parsing, mock identity, authorization, and volunteer role boundaries
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md`
+- `docs/specs/04-BACKEND.md` only when backend changes are required
+- `docs/specs/02-DATABASE.md` only for persistence-contract changes
+- `docs/specs/08-SECURITY.md` for resume parsing, mock identity, authorization, and volunteer role boundaries
 - Exact design references listed per session
 
 ## Phase Completion Criteria
@@ -90,10 +90,10 @@ Implement the Cyber Warrior entry and mock identity/eligibility screens that lea
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Frontend / UI, plus Full-Stack Feature if auth/profile APIs are touched
 - `PROJECT.md`
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md` for auth/profile support
-- `08-SECURITY.md` for mock identity rules
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md` for auth/profile support
+- `docs/specs/08-SECURITY.md` for mock identity rules
 - `design/Read.md.txt`
 - `design/cyber_warrior/Step 0 — Become a Cyber Warrior.png`
 - `design/cyber_warrior/Step 1.1 — Identity Verification.png`
@@ -198,12 +198,12 @@ Implement the Cyber Warrior resume upload, parsing progress/result review, profi
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature
 - `PROJECT.md`
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md`
-- `04-BACKEND.md` if resume/application endpoints need changes
-- `02-DATABASE.md` for Cyber Warrior profile/application/resume entities
-- `08-SECURITY.md` for AI/resume safety
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md`
+- `docs/specs/04-BACKEND.md` if resume/application endpoints need changes
+- `docs/specs/02-DATABASE.md` for Cyber Warrior profile/application/resume entities
+- `docs/specs/08-SECURITY.md` for AI/resume safety
 - `design/cyber_warrior/Step 2 Resume Upload + Application Detail.png`
 - `design/cyber_warrior/Step 3 — Review Application & Submit.png`
 - `design/cyber_warrior/Step 4 — Application Submitted  Under Review.png`
@@ -314,12 +314,12 @@ Implement the Cyber Warrior dashboard, application status surfaces, quick action
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature or Frontend / UI depending on API readiness
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md`
-- `04-BACKEND.md` if dashboard/profile endpoints need changes
-- `02-DATABASE.md` for profile/application/report summary entities
-- `08-SECURITY.md` for ownership rules
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md`
+- `docs/specs/04-BACKEND.md` if dashboard/profile endpoints need changes
+- `docs/specs/02-DATABASE.md` for profile/application/report summary entities
+- `docs/specs/08-SECURITY.md` for ownership rules
 - `design/cyber_warrior/Step 5 — Cyber Warrior Dashboard.png`
 - `design/cyber_warrior/Step 14 — Cyber Warrior Profile.png`
 
@@ -424,12 +424,12 @@ Implement the Cyber Warrior report flow and tracking pages, plus profile-adjacen
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature for report flow; Frontend / UI for static resources/gamification
 - `PROJECT.md`
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md`
-- `04-BACKEND.md` if report endpoints need changes
-- `02-DATABASE.md` for warrior reports/evidence
-- `08-SECURITY.md` for volunteer role and evidence rules
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md`
+- `docs/specs/04-BACKEND.md` if report endpoints need changes
+- `docs/specs/02-DATABASE.md` for warrior reports/evidence
+- `docs/specs/08-SECURITY.md` for volunteer role and evidence rules
 - `design/cyber_warrior/Step 6 — Report Cybercrime Identify Incident.png`
 - `design/cyber_warrior/Step 7 Describe What You Found.png`
 - `design/cyber_warrior/Step 8 Add Evidence.png`

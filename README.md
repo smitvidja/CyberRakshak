@@ -390,10 +390,10 @@ cd frontend && npm run lint && npx tsc --noEmit && npm run build
 
 | Document | What's in it |
 |---|---|
-| [`02-DATABASE.md`](02-DATABASE.md) | All 25 tables, relationships, enums |
-| [`03-ARCHITECTURE.md`](03-ARCHITECTURE.md) | Layering, boundaries, data flow |
-| [`06-API.md`](06-API.md) | Endpoint contracts and response shapes |
-| [`08-SECURITY.md`](08-SECURITY.md) | Threat model, guardrails, the authority rule |
+| [`docs/specs/02-DATABASE.md`](docs/specs/02-DATABASE.md) | All 25 tables, relationships, enums |
+| [`docs/specs/03-ARCHITECTURE.md`](docs/specs/03-ARCHITECTURE.md) | Layering, boundaries, data flow |
+| [`docs/specs/06-API.md`](docs/specs/06-API.md) | Endpoint contracts and response shapes |
+| [`docs/specs/08-SECURITY.md`](docs/specs/08-SECURITY.md) | Threat model, guardrails, the authority rule |
 | [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Deploying, proxies, the knowledge index, growing the corpus |
 | [`DEMO-CREDENTIALS.md`](DEMO-CREDENTIALS.md) | Demo identities for the full journey |
 

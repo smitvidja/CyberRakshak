@@ -136,7 +136,7 @@ ever returned to a public caller.
 Search counts `VERIFIED` reports matching the exact normalized value and returns a bounded
 aggregate. Correction requests persist an HMAC fingerprint of the normalized identifier rather
 than the value itself. `PublicSearchRateLimiter` provides in-process throttling for the public
-endpoint. See `08-SECURITY.md` for the full control set.
+endpoint. See `docs/specs/08-SECURITY.md` for the full control set.
 
 ## Authorization
 

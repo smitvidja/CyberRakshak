@@ -93,7 +93,7 @@ docs/secure-india-dataset.md
 
 ## API and security contracts
 
-Documented in `06-API.md` and `08-SECURITY.md`. Key guarantees:
+Documented in `docs/specs/06-API.md` and `docs/specs/08-SECURITY.md`. Key guarantees:
 
 - identifiers travel in a request body, never a URL, and never reach browser history;
 - only `VERIFIED` reports contribute to a public match;

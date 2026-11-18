@@ -44,7 +44,7 @@ complaints. `POST /resume/upload` now advertises PDF/DOCX only.
 
 All three verified up **and** down on a throwaway database. The container entrypoint runs
 `alembic upgrade head` on start, so they apply on deploy with no manual step. The schema is now
-24 tables, reconciled in `02-DATABASE.md`.
+24 tables, reconciled in `docs/specs/02-DATABASE.md`.
 
 ## Security posture
 

@@ -12,7 +12,7 @@ For every implementation task, read:
 
 Then load only the minimum sufficient task-specific context.
 
-For frontend work, also read `design.md` and inspect the visual references in all three `design/` folders before making a design decision.
+For frontend work, also read `docs/specs/design.md` and inspect the visual references in all three `design/` folders before making a design decision.
 
 For every Phase 9 / Cyber Saathi session, also read `docs/phase-9-operating-memory.md` before planning, coding, testing, or resuming interrupted work. It records the mandatory timebox, proven Windows shell/URL setup, bounded verification sequence, design acceptance rule, and checkpoint format established after the Phase 6 delays.
 
@@ -21,12 +21,12 @@ For every Phase 9 / Cyber Saathi session, also read `docs/phase-9-operating-memo
 ```mermaid
 flowchart TD
   A[Builder Brief / safety constraints] --> B[PROJECT.md]
-  B --> C[03-ARCHITECTURE.md]
-  C --> D[02-DATABASE.md]
-  C --> E[06-API.md]
-  C --> F[04-BACKEND.md]
-  C --> G[05-FRONTEND.md]
-  G --> H[07-DESIGN-SYSTEM.md]
+  B --> C[docs/specs/03-ARCHITECTURE.md]
+  C --> D[docs/specs/02-DATABASE.md]
+  C --> E[docs/specs/06-API.md]
+  C --> F[docs/specs/04-BACKEND.md]
+  C --> G[docs/specs/05-FRONTEND.md]
+  G --> H[docs/specs/07-DESIGN-SYSTEM.md]
   H --> I[design/ visual references]
   I --> J[Implementation]
 ```
@@ -41,11 +41,11 @@ If two sources conflict, document the conflict and ask for confirmation before c
 - Keep business logic out of UI components and route handlers.
 - Reuse existing components, services, schemas, and helpers before creating new ones.
 - Do not create duplicate domain folders, duplicate API clients, or alternate backend structures.
-- Do not invent new database tables without checking `02-DATABASE.md`.
+- Do not invent new database tables without checking `docs/specs/02-DATABASE.md`.
 
 ## Design Rules
 
-- Treat `design.md` and `design/` as the visual source of truth. Before frontend work, inspect `design/cyber_warrior/`, `design/home/`, and `design/victim_Report/`; implement only the folders within the requested scope.
+- Treat `docs/specs/design.md` and `design/` as the visual source of truth. Before frontend work, inspect `design/cyber_warrior/`, `design/home/`, and `design/victim_Report/`; implement only the folders within the requested scope.
 - Apply the victim report navbar/header pattern across the product.
 - Do not use official government emblems/logos or political photos in the implemented prototype; use neutral placeholder branding.
 - Preserve steps, review states, tracking timelines, declarations, cards, sidebars, and support bands shown in the references.

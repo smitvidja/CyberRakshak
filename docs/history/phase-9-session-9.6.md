@@ -114,7 +114,7 @@ No heavyweight runtime, local LLM, vector database, or startup index rebuild was
 
 ## Handoff To Next Session
 
-After the owner confirms the new physical 60-second/direct-send interaction, Phase 10 must consume the documented contracts in `docs/phase-9-completion-report.md`; it must not reinterpret preview/planned actions as live government capability.
+After the owner confirms the new physical 60-second/direct-send interaction, Phase 10 must consume the documented contracts in `docs/history/phase-9-completion-report.md`; it must not reinterpret preview/planned actions as live government capability.
 
 ## Gate Status
 

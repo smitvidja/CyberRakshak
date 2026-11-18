@@ -778,7 +778,7 @@ Do not interpret a command banner, silence, or a still-running process as succes
 
 Before every frontend session commit and push, complete this checklist:
 
-- [ ] Reopen `design.md`.
+- [ ] Reopen `docs/specs/design.md`.
 - [ ] Enumerate the complete relevant design subfolder.
 - [ ] Identify every image in the session's scope.
 - [ ] Confirm every referenced screen has a route or intentional state.

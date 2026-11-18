@@ -48,12 +48,12 @@ flowchart TD
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature for vertical slices; Frontend / UI for UI-only work
 - `PROJECT.md`
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md`
-- `04-BACKEND.md` only when backend behavior must be adjusted
-- `02-DATABASE.md` only when persistence contracts are touched
-- `08-SECURITY.md` for anonymous privacy, evidence, and suspect wording
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md`
+- `docs/specs/04-BACKEND.md` only when backend behavior must be adjusted
+- `docs/specs/02-DATABASE.md` only when persistence contracts are touched
+- `docs/specs/08-SECURITY.md` for anonymous privacy, evidence, and suspect wording
 - Exact design references listed per session
 
 ## Phase Completion Criteria
@@ -82,10 +82,10 @@ Implement the citizen entry experience that lets users choose anonymous or ident
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Frontend / UI, plus Full-Stack Feature if auth/profile APIs are touched
 - `PROJECT.md`
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md` for auth/user/profile endpoints
-- `08-SECURITY.md` for mock identity and anonymous privacy
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md` for auth/user/profile endpoints
+- `docs/specs/08-SECURITY.md` for mock identity and anonymous privacy
 - `design/Read.md.txt`
 - `design/victim_Report/Step 0 — Updated VictimUser Reporting Flow.png`
 - `design/victim_Report/Step 1 — Updated VictimUser Reporting Flow.png`
@@ -198,12 +198,12 @@ Implement the complaint draft flow for incident details, people involved/suspect
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md`
-- `04-BACKEND.md` if API behavior must be adjusted
-- `02-DATABASE.md` for complaint/evidence entities
-- `08-SECURITY.md` for file validation and anonymous privacy
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md`
+- `docs/specs/04-BACKEND.md` if API behavior must be adjusted
+- `docs/specs/02-DATABASE.md` for complaint/evidence entities
+- `docs/specs/08-SECURITY.md` for file validation and anonymous privacy
 - `design/victim_Report/Step 3 — Report an Incident.png`
 - `design/victim_Report/Step 4 — People Involved.png`
 
@@ -320,12 +320,12 @@ Complete the citizen complaint journey from review/declaration through final sub
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature
 - `PROJECT.md`
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md`
-- `04-BACKEND.md` if submit/track behavior must be adjusted
-- `02-DATABASE.md` for complaint status/history
-- `08-SECURITY.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md`
+- `docs/specs/04-BACKEND.md` if submit/track behavior must be adjusted
+- `docs/specs/02-DATABASE.md` for complaint status/history
+- `docs/specs/08-SECURITY.md`
 - `design/victim_Report/Step 5 — Review & Submit.png`
 - `design/victim_Report/Step 6 — Report Submitted Successfully.png`
 - `design/victim_Report/Step 7 — Track Your Report.png`
@@ -442,12 +442,12 @@ Implement the public suspect reporting/check experience in a way that supports r
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature or Frontend / UI depending on backend readiness
 - `PROJECT.md`
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `06-API.md`
-- `04-BACKEND.md` if suspect APIs must be adjusted
-- `02-DATABASE.md` for `reported_suspects` and evidence links
-- `08-SECURITY.md` for legal/product wording
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/06-API.md`
+- `docs/specs/04-BACKEND.md` if suspect APIs must be adjusted
+- `docs/specs/02-DATABASE.md` for `reported_suspects` and evidence links
+- `docs/specs/08-SECURITY.md` for legal/product wording
 - `design/home/Home page.png`
 - `design/victim_Report/Step 0 — Updated VictimUser Reporting Flow.png`
 

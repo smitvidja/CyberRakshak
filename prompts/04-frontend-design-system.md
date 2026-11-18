@@ -48,10 +48,10 @@ flowchart TD
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Frontend / UI
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `01-TECH-STACK.md`
-- `06-API.md` only for API client work
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/01-TECH-STACK.md`
+- `docs/specs/06-API.md` only for API client work
 - Specific design images listed per session
 
 ## Phase Completion Criteria
@@ -77,8 +77,8 @@ Implement the shared visual tokens and product shell used across home, citizen, 
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Frontend / UI
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
 - `design/Read.md.txt`
 - `design/home/Home page.png`
 - `design/victim_Report/Step 0 — Updated VictimUser Reporting Flow.png`
@@ -187,8 +187,8 @@ Build reusable UI components needed by citizen and Cyber Warrior workflows.
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Frontend / UI
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
 - `design/victim_Report/Step 3 — Report an Incident.png`
 - `design/victim_Report/Step 5 — Review & Submit.png`
 - `design/victim_Report/Step 7 — Track Your Report.png`
@@ -295,9 +295,9 @@ Create the central frontend API client and feature state conventions used by all
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Frontend / UI
-- `05-FRONTEND.md`
-- `06-API.md`
-- `01-TECH-STACK.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/01-TECH-STACK.md`
 
 ## Current State
 
@@ -330,7 +330,7 @@ None. This is frontend infrastructure, not visual screen work.
 
 ## Implementation
 
-- Frontend: create API modules matching `06-API.md` domains.
+- Frontend: create API modules matching `docs/specs/06-API.md` domains.
 - Frontend: provide typed helpers for success/error responses.
 - i18n: ensure validation and API error messages can display translated user-safe text.
 
@@ -389,8 +389,8 @@ Establish repeatable visual, responsive, and accessibility checks for future UI 
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Frontend / UI
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
 - Representative references:
   - `design/victim_Report/Step 0 — Updated VictimUser Reporting Flow.png`
   - `design/victim_Report/Step 8 — My Reports.png`

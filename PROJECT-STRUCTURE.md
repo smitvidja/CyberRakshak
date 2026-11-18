@@ -10,16 +10,10 @@ CyberRakshak/
 ├── AGENTS.md
 ├── SKILLS.md
 ├── PROJECT-STRUCTURE.md
-├── 01-TECH-STACK.md
-├── 02-DATABASE.md
-├── 03-ARCHITECTURE.md
-├── 04-BACKEND.md
-├── 05-FRONTEND.md
-├── 06-API.md
-├── 07-DESIGN-SYSTEM.md
-├── 08-SECURITY.md
+├── DEMO-CREDENTIALS.md        (stays at root: the app's own UI points users to it)
 ├── README.md
 ├── .gitignore
+├── .github/workflows/ci.yml
 ├── docker-compose.yml
 ├── design/
 │   ├── Read.md.txt
@@ -27,7 +21,21 @@ CyberRakshak/
 │   ├── victim_Report/
 │   └── cyber_warrior/
 ├── docs/
-│   └── README.md or generated submission notes later
+│   ├── specs/
+│   │   ├── 01-TECH-STACK.md
+│   │   ├── 02-DATABASE.md
+│   │   ├── 03-ARCHITECTURE.md
+│   │   ├── 04-BACKEND.md
+│   │   ├── 05-FRONTEND.md
+│   │   ├── 06-API.md
+│   │   ├── 07-DESIGN-SYSTEM.md
+│   │   ├── 08-SECURITY.md
+│   │   └── design.md
+│   ├── architecture/          (RAG / LLM / full-stack architecture deep dives)
+│   ├── history/               (phase + session reports, postmortems, evidence)
+│   ├── screenshots/
+│   ├── DEPLOYMENT.md, SUBMISSION.md, GIT-WORKFLOW.md
+│   └── phase-9-operating-memory.md and other current operating notes
 ├── prompts/
 │   ├── 01-foundation.md
 │   ├── 02-database-data-layer.md
@@ -94,9 +102,12 @@ CyberRakshak/
 
 ## Folder Responsibilities
 
-- Root documentation files: permanent architecture and operating contracts.
+- Root documentation files: agent and reader entry points only (`README.md`, `PROJECT.md`, `AGENTS.md`, `SKILLS.md`, `PROJECT-STRUCTURE.md`, `DEMO-CREDENTIALS.md`).
 - `design/`: visual source of truth. Do not edit design references during implementation.
-- `docs/`: optional generated submission notes or exported documentation. The 12 core architecture files stay at repository root for agent discoverability.
+- `docs/specs/`: the permanent architecture and operating contracts (tech stack, database, architecture, backend, frontend, API, design system, security, design rules). `AGENTS.md` and `SKILLS.md` link to them by full path, so agents still find them.
+- `docs/architecture/`: deeper architecture write-ups (RAG pipeline, LLM, full-stack, scale path).
+- `docs/history/`: phase and session reports, postmortems, and their evidence. Records of what happened, not current contracts.
+- `docs/`: current operating notes (deployment, submission, git workflow, phase-9 operating memory).
 - `prompts/`: phase-level implementation prompts.
 - `frontend/`: Next.js application only. No backend business logic or database access.
 - `backend/`: FastAPI API, business logic, validation, persistence integration, file handling, auth, and authorization.

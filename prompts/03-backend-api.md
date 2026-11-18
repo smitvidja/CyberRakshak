@@ -50,11 +50,11 @@ flowchart TD
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Backend
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
-- `06-API.md`
-- `02-DATABASE.md`
-- `08-SECURITY.md` for auth, authorization, file handling, audit, and mock identity boundaries
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/08-SECURITY.md` for auth, authorization, file handling, audit, and mock identity boundaries
 
 ## Phase Completion Criteria
 
@@ -80,11 +80,11 @@ Create the versioned backend API shell, consistent response/error handling, auth
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Backend
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
-- `06-API.md`
-- `08-SECURITY.md`
-- `02-DATABASE.md` for user roles only
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/08-SECURITY.md`
+- `docs/specs/02-DATABASE.md` for user roles only
 
 ## Current State
 
@@ -181,11 +181,11 @@ Implement backend services, repositories, schemas, and routes for complaint cate
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Backend
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
-- `06-API.md`
-- `02-DATABASE.md`
-- `08-SECURITY.md` for anonymous privacy and suspect wording
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/08-SECURITY.md` for anonymous privacy and suspect wording
 
 ## Current State
 
@@ -230,7 +230,7 @@ None for backend implementation. Frontend sessions will use:
 - API: implement complaint and suspect routes under `backend/app/api/v1/`.
 - Backend: use services for draft/update/submit/status logic.
 - Database: persist to `complaints`, `complaint_locations`, `complaint_suspects`, `complaint_status_history`, `reported_suspects`, and related user/category tables.
-- Integration: return response shapes expected by `06-API.md`.
+- Integration: return response shapes expected by `docs/specs/06-API.md`.
 
 ## Architecture Constraints
 
@@ -291,11 +291,11 @@ Implement backend support for file metadata, storage abstraction, notifications,
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Backend
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
-- `06-API.md`
-- `02-DATABASE.md`
-- `08-SECURITY.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/08-SECURITY.md`
 
 ## Current State
 
@@ -393,11 +393,11 @@ Implement backend APIs for Cyber Warrior profiles/applications, resume parsing r
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Backend
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
-- `06-API.md`
-- `02-DATABASE.md`
-- `08-SECURITY.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/08-SECURITY.md`
 
 ## Current State
 
@@ -445,7 +445,7 @@ None for backend implementation. Frontend sessions will use:
 
 - API: implement `/api/v1/cyber-warriors`, `/api/v1/resume`, `/api/v1/warrior-applications`, `/api/v1/warrior-reports`, and relevant `/api/v1/admin` endpoints.
 - Backend: use services for profile confirmation, application submission, report submission, status transitions, notifications, and audit logs.
-- Database: persist to Cyber Warrior tables from `02-DATABASE.md`.
+- Database: persist to Cyber Warrior tables from `docs/specs/02-DATABASE.md`.
 - AI: provide parser adapter that may return mock structured data but always stores results as untrusted pending review.
 
 ## Architecture Constraints

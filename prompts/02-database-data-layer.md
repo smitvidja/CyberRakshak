@@ -13,7 +13,7 @@ Create the approved PostgreSQL schema, SQLAlchemy models, Alembic migrations, se
 ## Phase Deliverables
 
 - SQLAlchemy models for the 20 approved MVP tables.
-- Enum definitions, relationships, constraints, and indexes from `02-DATABASE.md`.
+- Enum definitions, relationships, constraints, and indexes from `docs/specs/02-DATABASE.md`.
 - Alembic configured and an initial migration generated/reviewed.
 - Seed/mock data for complaint categories and Cyber Warrior skills.
 - Database-level tests or model tests for relationships, constraints, and seed reproducibility.
@@ -43,10 +43,10 @@ flowchart TD
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Database
-- `02-DATABASE.md`
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md` only for backend placement and SQLAlchemy integration
-- `06-API.md` only when validating API-facing naming/ownership implications
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md` only for backend placement and SQLAlchemy integration
+- `docs/specs/06-API.md` only when validating API-facing naming/ownership implications
 
 ## Phase Completion Criteria
 
@@ -59,7 +59,7 @@ flowchart TD
 
 ## Handoff
 
-Phase 3 can assume SQLAlchemy models, Alembic migrations, seed data, and database connection helpers exist and match `02-DATABASE.md`.
+Phase 3 can assume SQLAlchemy models, Alembic migrations, seed data, and database connection helpers exist and match `docs/specs/02-DATABASE.md`.
 
 # SESSION 2.1 — PostgreSQL, SQLAlchemy, and Alembic Foundation
 
@@ -72,10 +72,10 @@ Connect the backend scaffold to PostgreSQL and establish Alembic migration workf
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Database
-- `01-TECH-STACK.md`
-- `02-DATABASE.md`
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
+- `docs/specs/01-TECH-STACK.md`
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
 
 ## Current State
 
@@ -153,16 +153,16 @@ Session 2.2 can add the approved SQLAlchemy models and generate the real initial
 
 ## Objective
 
-Implement SQLAlchemy models for the approved MVP schema exactly as defined in `02-DATABASE.md`.
+Implement SQLAlchemy models for the approved MVP schema exactly as defined in `docs/specs/02-DATABASE.md`.
 
 ## Required Context
 
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Database
-- `02-DATABASE.md`
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
 
 ## Current State
 
@@ -177,7 +177,7 @@ SQLAlchemy and Alembic are wired from Session 2.1.
 ### In Scope
 
 - Models for `users`, profiles, complaints, suspects, evidence, Cyber Warrior entities, notifications, and audit logs.
-- Enum definitions from `02-DATABASE.md`.
+- Enum definitions from `docs/specs/02-DATABASE.md`.
 - Relationships, primary keys, foreign keys, nullability, timestamps, and money types.
 - Database/model representation of anonymous vs identified complaint constraints where practical.
 
@@ -185,7 +185,7 @@ SQLAlchemy and Alembic are wired from Session 2.1.
 
 - API schemas and routes.
 - Business workflows.
-- New tables not listed in `02-DATABASE.md`.
+- New tables not listed in `docs/specs/02-DATABASE.md`.
 - Police/FIR/investigator/jurisdiction entities.
 
 ## Design References
@@ -228,7 +228,7 @@ flowchart TD
 ## Acceptance Criteria
 
 - All 20 approved tables have models.
-- Enums match `02-DATABASE.md`.
+- Enums match `docs/specs/02-DATABASE.md`.
 - Relationships match the database ER diagram.
 - Migration reflects reviewed model definitions.
 - No unapproved schema expansion exists.
@@ -255,9 +255,9 @@ Finalize the data layer with required indexes, seed/mock data, and tests that pr
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Database
-- `02-DATABASE.md`
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
 
 ## Current State
 
@@ -272,7 +272,7 @@ The approved models and migration exist from Session 2.2.
 ### In Scope
 
 - Seed complaint categories and Cyber Warrior skills.
-- Add indexes from `02-DATABASE.md`.
+- Add indexes from `docs/specs/02-DATABASE.md`.
 - Add tests for key constraints and relationships.
 - Add seed script documentation or command.
 

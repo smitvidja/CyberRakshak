@@ -29,7 +29,7 @@ class KnowledgeGapSignal(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     is unverified, and anything that promoted it into the retrieval corpus would
     let whoever typed it write the guidance the next citizen receives. So a
     signal records that a domain came up short and what was asked, and a person
-    then finds a real source. See 08-SECURITY.md.
+    then finds a real source. See docs/specs/08-SECURITY.md.
 
     Rows are aggregated by question_digest, so a question asked forty times is
     one row with occurrences=40 rather than forty rows - which is also what makes

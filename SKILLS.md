@@ -26,12 +26,12 @@ Read:
 
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `design.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/design.md`
 - Inspect `design/cyber_warrior/`, `design/home/`, and `design/victim_Report/`; use only the in-scope references to implement the requested screens
 
-Also read `06-API.md` when API integration is involved. Read `03-ARCHITECTURE.md` when module boundaries or cross-layer behavior are affected.
+Also read `docs/specs/06-API.md` when API integration is involved. Read `docs/specs/03-ARCHITECTURE.md` when module boundaries or cross-layer behavior are affected.
 
 ## Backend
 
@@ -39,11 +39,11 @@ Read:
 
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
-- `04-BACKEND.md`
-- `06-API.md`
-- `03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/03-ARCHITECTURE.md`
 
-Read `02-DATABASE.md` when persistence, models, migrations, ownership, or constraints are involved.
+Read `docs/specs/02-DATABASE.md` when persistence, models, migrations, ownership, or constraints are involved.
 
 ## Database
 
@@ -51,10 +51,10 @@ Read:
 
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
-- `02-DATABASE.md`
-- `03-ARCHITECTURE.md`
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/03-ARCHITECTURE.md`
 
-Read `06-API.md` only when database changes alter API behavior.
+Read `docs/specs/06-API.md` only when database changes alter API behavior.
 
 ## Full-Stack Feature
 
@@ -62,12 +62,12 @@ Read:
 
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
-- `05-FRONTEND.md`
-- `06-API.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/06-API.md`
 
-Add `02-DATABASE.md` for persistence changes, `07-DESIGN-SYSTEM.md` for UI changes, and relevant design references for screen work.
+Add `docs/specs/02-DATABASE.md` for persistence changes, `docs/specs/07-DESIGN-SYSTEM.md` for UI changes, and relevant design references for screen work.
 
 ## Security
 
@@ -75,7 +75,7 @@ Read:
 
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
-- `08-SECURITY.md`
+- `docs/specs/08-SECURITY.md`
 - Relevant architecture/backend/frontend/API/database document based on the affected layer.
 
 ## Documentation

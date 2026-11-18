@@ -61,10 +61,10 @@ flowchart TD
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Product / Planning and Frontend / Backend context routing
-- `01-TECH-STACK.md`
-- `03-ARCHITECTURE.md`
-- `05-FRONTEND.md` for frontend setup sessions
-- `04-BACKEND.md` for backend setup sessions
+- `docs/specs/01-TECH-STACK.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/05-FRONTEND.md` for frontend setup sessions
+- `docs/specs/04-BACKEND.md` for backend setup sessions
 
 Do not load database, API, security, or design documents unless the active session explicitly needs them.
 
@@ -92,7 +92,7 @@ Create the root-level project files and directory skeleton required by `PROJECT-
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Product / Planning
-- `01-TECH-STACK.md`
+- `docs/specs/01-TECH-STACK.md`
 
 ## Current State
 
@@ -176,8 +176,8 @@ Initialize the Next.js frontend with TypeScript, Tailwind CSS, next-intl, locale
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Frontend / UI
-- `01-TECH-STACK.md`
-- `05-FRONTEND.md`
+- `docs/specs/01-TECH-STACK.md`
+- `docs/specs/05-FRONTEND.md`
 
 ## Current State
 
@@ -263,9 +263,9 @@ Initialize the FastAPI backend skeleton with environment configuration, CORS, lo
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Backend
-- `01-TECH-STACK.md`
-- `04-BACKEND.md`
-- `03-ARCHITECTURE.md`
+- `docs/specs/01-TECH-STACK.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/03-ARCHITECTURE.md`
 
 ## Current State
 
@@ -299,7 +299,7 @@ None. This is a backend foundation session.
 
 ## Implementation
 
-- Backend: create minimal FastAPI app factory or app instance following `04-BACKEND.md`.
+- Backend: create minimal FastAPI app factory or app instance following `docs/specs/04-BACKEND.md`.
 - Configuration: use environment variables, never committed secrets.
 - Testing: add a minimal test that verifies the health endpoint if test tooling is available.
 
@@ -353,9 +353,9 @@ Create the shared development workflow so later phases can run consistent checks
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Product / Planning
-- `01-TECH-STACK.md`
-- `04-BACKEND.md`
-- `05-FRONTEND.md`
+- `docs/specs/01-TECH-STACK.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/05-FRONTEND.md`
 
 ## Current State
 

@@ -110,7 +110,7 @@ search any citizen's reported location.
 7. known limitations and the correct way to describe the figures to citizens.
 
 If real complaint data is ever aggregated for this page, a separate consent, aggregation,
-privacy and data-governance contract is required first, per `08-SECURITY.md`.
+privacy and data-governance contract is required first, per `docs/specs/08-SECURITY.md`.
 
 ## Disclosure In The Product
 

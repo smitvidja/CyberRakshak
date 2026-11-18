@@ -45,12 +45,12 @@ flowchart TD
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature, Security, or Frontend / UI depending on the active session
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
-- `05-FRONTEND.md`
-- `06-API.md`
-- `08-SECURITY.md`
-- `07-DESIGN-SYSTEM.md` only for visual/accessibility checks
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/08-SECURITY.md`
+- `docs/specs/07-DESIGN-SYSTEM.md` only for visual/accessibility checks
 - Relevant design images listed per session
 
 ## Phase Completion Criteria
@@ -77,11 +77,11 @@ Verify backend contracts, migrations, database persistence, storage adapter beha
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Backend and Database
-- `02-DATABASE.md`
-- `03-ARCHITECTURE.md`
-- `04-BACKEND.md`
-- `06-API.md`
-- `08-SECURITY.md`
+- `docs/specs/02-DATABASE.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/04-BACKEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/08-SECURITY.md`
 
 ## Current State
 
@@ -116,7 +116,7 @@ None. This is backend/integration validation.
 
 - Backend: run and improve tests under `backend/tests/`.
 - Database: verify Alembic migration and seed scripts on a clean database.
-- API: compare OpenAPI/route behavior against `06-API.md`.
+- API: compare OpenAPI/route behavior against `docs/specs/06-API.md`.
 - Storage: verify upload metadata behavior through the storage adapter.
 
 ## Architecture Constraints
@@ -124,7 +124,7 @@ None. This is backend/integration validation.
 - Fix bugs inside existing module boundaries.
 - Do not bypass services/repositories to make tests pass.
 - Do not weaken authorization or validation.
-- Schema changes require checking and updating `02-DATABASE.md`.
+- Schema changes require checking and updating `docs/specs/02-DATABASE.md`.
 
 ## User / System Flow
 
@@ -175,10 +175,10 @@ Verify the primary citizen and Cyber Warrior journeys through the actual fronten
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Full-Stack Feature
 - `PROJECT.md`
-- `03-ARCHITECTURE.md`
-- `05-FRONTEND.md`
-- `06-API.md`
-- `08-SECURITY.md`
+- `docs/specs/03-ARCHITECTURE.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/06-API.md`
+- `docs/specs/08-SECURITY.md`
 - `design/victim_Report/Step 0 — Updated VictimUser Reporting Flow.png`
 - `design/victim_Report/Step 3 — Report an Incident.png`
 - `design/victim_Report/Step 5 — Review & Submit.png`
@@ -300,10 +300,10 @@ Harden the implemented MVP by verifying security boundaries, responsive behavior
 - `AGENTS.md`
 - `PROJECT-STRUCTURE.md`
 - `SKILLS.md` -> Security and Frontend / UI
-- `05-FRONTEND.md`
-- `07-DESIGN-SYSTEM.md`
-- `08-SECURITY.md`
-- `06-API.md`
+- `docs/specs/05-FRONTEND.md`
+- `docs/specs/07-DESIGN-SYSTEM.md`
+- `docs/specs/08-SECURITY.md`
+- `docs/specs/06-API.md`
 - Representative design references:
   - `design/victim_Report/Step 0 — Updated VictimUser Reporting Flow.png`
   - `design/victim_Report/Step 8 — My Reports.png`

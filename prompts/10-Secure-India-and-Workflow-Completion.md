@@ -29,7 +29,7 @@ Do not split either workflow into a disconnected demo. Each session must include
 Before implementing Session 10.1:
 
 1. Read `AGENTS.md`, `PROJECT-STRUCTURE.md`, `SKILLS.md`, and the relevant architecture/design documents selected through `SKILLS.md`.
-2. Read `docs/phase-9-operating-memory.md`, `docs/phase-9-session-9.6.md`, and `docs/phase-9-completion-report.md`.
+2. Read `docs/phase-9-operating-memory.md`, `docs/history/phase-9-session-9.6.md`, and `docs/history/phase-9-completion-report.md`.
 3. Confirm the Phase 9 owner physical check for the 60-second voice limit and `Finish & send` interaction is recorded as passed, or explicitly record the owner's decision to waive/defer that physical-only check. Do not silently erase the gate.
 4. Inspect the working tree and preserve all existing user changes.
 5. Inspect current routes, API clients, models, services, tests, i18n, auth/session helpers, and shared components before proposing new layers.
@@ -114,7 +114,7 @@ CyberRakshak is not connected to live police, government, bank, UIDAI, telecom, 
 - Reuse existing authentication, authorization, audit, notification, upload, i18n, design-system, and error-response conventions.
 - Do not place business logic in React components or FastAPI route functions.
 - Do not create duplicate complaint, suspect, resume, storage, or session architectures.
-- Do not add a database table or migration without reconciling it with `02-DATABASE.md` and updating that contract.
+- Do not add a database table or migration without reconciling it with `docs/specs/02-DATABASE.md` and updating that contract.
 
 ## 3.5 Language and accessibility
 
@@ -329,7 +329,7 @@ Requirements:
 - Normalize case, whitespace, phone punctuation/country conventions, URL host/scheme rules, and social handles only where equivalence is safe and documented.
 - Preserve the citizen's original display input only as needed for the current UI; search/audit/log paths must mask or hash sensitive values.
 - Use exact canonical match. Do not allow wildcard, partial, prefix, fuzzy, bulk, or autocomplete enumeration of identifiers.
-- If efficient/privacy-preserving lookup requires a normalized or keyed-hash column, add a reviewed Alembic migration and reconcile `02-DATABASE.md`; never invent a shadow data store.
+- If efficient/privacy-preserving lookup requires a normalized or keyed-hash column, add a reviewed Alembic migration and reconcile `docs/specs/02-DATABASE.md`; never invent a shadow data store.
 
 ## 5.9 Public search eligibility and result contract
 
@@ -633,7 +633,7 @@ Requirements:
 - Do not infer protected traits or score employability.
 - Do not make hiring, eligibility, certification, or trustworthiness decisions from resume text.
 
-If persistence needs provenance/confidence fields, reconcile the schema with `02-DATABASE.md` and add a migration. Do not store unnecessary full-text duplicates.
+If persistence needs provenance/confidence fields, reconcile the schema with `docs/specs/02-DATABASE.md` and add a migration. Do not store unnecessary full-text duplicates.
 
 ## 6.7 Review-first UI contract
 
@@ -743,7 +743,7 @@ Use a separate high-entropy, narrowly scoped complaint-access capability:
 - redact it from logs, errors, analytics, referrers, URLs, filenames, and PDF content;
 - use an authorization header or another non-URL transport for the download request.
 
-If the current schema cannot support this safely, add the smallest reviewed model/migration and update `02-DATABASE.md`, `06-API.md`, and `08-SECURITY.md`.
+If the current schema cannot support this safely, add the smallest reviewed model/migration and update `docs/specs/02-DATABASE.md`, `docs/specs/06-API.md`, and `docs/specs/08-SECURITY.md`.
 
 Losing the anonymous capability may mean the full copy cannot be recovered. Explain this honestly; do not weaken privacy by asking for or silently attaching identity.
 
@@ -1057,12 +1057,12 @@ Create/update only the relevant durable records:
 1. Session 10.1 completion report.
 2. Session 10.2 completion report.
 3. Phase 10 completion report.
-4. `02-DATABASE.md` for any approved schema/migration changes.
-5. `03-ARCHITECTURE.md` for new data/rendering/parser boundaries.
-6. `04-BACKEND.md` for services/adapters/security behavior.
-7. `05-FRONTEND.md` for routes/components/states.
-8. `06-API.md` for Secure India, search/correction, resume, and complaint-copy contracts.
-9. `08-SECURITY.md` for public search, resume parsing, PDF output, and anonymous capability controls.
+4. `docs/specs/02-DATABASE.md` for any approved schema/migration changes.
+5. `docs/specs/03-ARCHITECTURE.md` for new data/rendering/parser boundaries.
+6. `docs/specs/04-BACKEND.md` for services/adapters/security behavior.
+7. `docs/specs/05-FRONTEND.md` for routes/components/states.
+8. `docs/specs/06-API.md` for Secure India, search/correction, resume, and complaint-copy contracts.
+9. `docs/specs/08-SECURITY.md` for public search, resume parsing, PDF output, and anonymous capability controls.
 10. Dataset/source/methodology documentation for Secure India.
 11. Parser support/limitations and privacy disclosure.
 12. Complaint-copy content/redaction/access rules.
@@ -1162,7 +1162,7 @@ If BLOCKED, do not begin the next session.
 
 # 13. FINAL PHASE 10 HANDOFF
 
-After Session 10.2 passes, create `docs/phase-10-completion-report.md` containing:
+After Session 10.2 passes, create `docs/history/phase-10-completion-report.md` containing:
 
 - final routes/components;
 - backend APIs/services/repositories/adapters;

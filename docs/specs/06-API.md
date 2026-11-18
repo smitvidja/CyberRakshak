@@ -143,7 +143,7 @@ Filters are validated against the snapshot and rejected with `422 INVALID_FILTER
 unknown state or a city outside the selected state is a validation error, not an empty
 result. Responses expose aggregate geography only - never complaint rows, reporters,
 evidence or coordinates taken from citizen data. `source_type` is `SYNTHETIC` and must not
-be changed without the source contract described in `08-SECURITY.md`.
+be changed without the source contract described in `docs/specs/08-SECURITY.md`.
 
 ## Complaint Copy API
 
