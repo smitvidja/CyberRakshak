@@ -1,0 +1,100 @@
+name: CI
+
+# Runs the same checks used locally before every push: the full backend suite against
+# a real, migrated and seeded Postgres, and frontend lint + type-check + unit tests.
+# No secrets are needed - tests/conftest.py switches off the LLM, embeddings and voice.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: cyberrakshak
+          POSTGRES_PASSWORD: cyberrakshak_local_only
+          POSTGRES_DB: cyberrakshak
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cyberrakshak"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # Throwaway CI database and a dummy signing key - neither is a real secret.
+      DATABASE_URL: postgresql+psycopg://cyberrakshak:cyberrakshak_local_only@localhost:5432/cyberrakshak
+      SECRET_KEY: ci-only-signing-key-not-a-secret-0123456789
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12" # matches backend/Dockerfile
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Apply migrations
+        run: python -m alembic upgrade head
+
+      - name: Seed reference data
+        # Tests expect the complaint categories and skills a real install starts with.
+        run: python ../database/seeds/seed_reference_data.py
+
+      - name: Run tests
+        run: python -m pytest -q
+
+  frontend:
+    name: Frontend (lint, types, tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22" # matches frontend/Dockerfile
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
