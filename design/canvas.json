@@ -1,0 +1,14 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "title": "A - Drawn paper", "x": 0, "y": 0, "w": 1280, "h": 1420 },
+    { "file": "DirectionB.dc.html", "title": "B - Photograph + ink", "x": 1400, "y": 0, "w": 1280, "h": 1000 },
+    { "file": "DirectionC.dc.html", "title": "C - Ask first", "x": 2800, "y": 0, "w": 1280, "h": 1000 }
+  ],
+  "annotations": [
+    { "id": "how-to-read", "x": 0, "y": -190, "w": 300, "text": "Three homepage directions. All three use the app's real tokens - navy #082e66, blue #075fb9, paper #faf9f6/#f3f2ee, Space Grotesk headings, Inter body, 9/12/18px radii. Pick one, or pick parts." },
+    { "id": "note-a", "x": 340, "y": -190, "w": 300, "text": "A - Drawn paper. Closest to the design you showed me: light ground, the ink drawing IS the hero, numbered pastel cards. Tradeoff: the photograph goes away." },
+    { "id": "note-b", "x": 1400, "y": -190, "w": 300, "text": "B - Photograph + ink. Keeps the photo you asked me to restore, and lays the drawing over it in light ink along the bottom. Cyber Saathi is the big right-hand card. Tradeoff: drawing reads quieter over a dark photo." },
+    { "id": "note-c", "x": 2800, "y": -190, "w": 300, "text": "C - Ask first. No scenery: the page opens by asking what happened, with four plain choices. Drawing sits in the margin. Tradeoff: less welcoming, much faster to act on." }
+  ],
+  "launch": { "view": "canvas" }
+}
