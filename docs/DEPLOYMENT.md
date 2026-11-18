@@ -504,8 +504,8 @@ so changing the classifier or the corpus without re-running them fails CI.
 
 ```bash
 cd backend
-./.venv/Scripts/python.exe -m app.services.cyber_saathi.classification_evaluation
-./.venv/Scripts/python.exe -m app.services.cyber_saathi.knowledge_evaluation
+./.venv/Scripts/python.exe -m evals.classification_evaluation
+./.venv/Scripts/python.exe -m evals.knowledge_evaluation
 ```
 
 **Classification** answers "which crime is this?" and reports three sets

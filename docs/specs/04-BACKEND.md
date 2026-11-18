@@ -17,8 +17,11 @@ backend/
 │   ├── schemas/
 │   ├── api/v1/
 │   ├── services/
+│   │   ├── cyber_saathi/
+│   │   └── resume/
 │   ├── repositories/
 │   └── utils/
+├── evals/          (offline quality evaluations; never imported by the app)
 ├── alembic/
 ├── tests/
 └── requirements.txt

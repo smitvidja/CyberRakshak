@@ -94,7 +94,7 @@ The hosted Gemini smoke took about four seconds. The larger ceiling avoids prema
 
 ```powershell
 cd backend
-.\.venv\Scripts\python.exe -m app.services.cyber_saathi.llm_evaluation
+.\.venv\Scripts\python.exe -m evals.llm_evaluation
 .\.venv\Scripts\python.exe -m pytest tests/test_cyber_saathi_llm.py -q
 ```
 

@@ -13,7 +13,7 @@ import json
 import pytest
 
 from app.schemas.cyber_saathi import CrimeDomain
-from app.services.cyber_saathi import classification_evaluation as evaluation
+from evals import classification_evaluation as evaluation
 
 
 def _report() -> dict:
@@ -86,7 +86,7 @@ def test_the_committed_report_was_produced_with_the_semantic_path_live() -> None
     decided = report["metrics"]["decided_by"]
     assert decided.get("semantic", 0) > 0, (
         "the committed report was generated without a provider; re-run "
-        "python -m app.services.cyber_saathi.classification_evaluation"
+        "python -m evals.classification_evaluation"
     )
 
 

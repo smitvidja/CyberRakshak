@@ -92,11 +92,12 @@ CyberRakshak/
 │   │   ├── schemas/
 │   │   ├── api/v1/
 │   │   ├── services/
-│   │   │   ├── cyber_saathi/   (Cyber Saathi: conversation, understanding, knowledge, LLM, voice, evaluations)
+│   │   │   ├── cyber_saathi/   (Cyber Saathi runtime: conversation, understanding, knowledge, LLM, voice)
 │   │   │   ├── resume/         (resume extraction, structuring, LLM pass, parser)
 │   │   │   └── *_service.py    (one module per remaining domain)
 │   │   ├── repositories/
 │   │   └── utils/
+│   ├── evals/                  (offline Cyber Saathi quality measurement; `python -m evals.<name>`; not in the Docker image)
 │   ├── alembic/
 │   ├── tests/
 │   └── requirements.txt
@@ -150,6 +151,7 @@ Allowed dependencies flow inward from UI to API to services to data/storage. Bac
 - Business logic: `backend/app/services/`. A domain that grows past a handful of modules gets its own package (as `cyber_saathi/` and `resume/` did) instead of a shared filename prefix.
 - Database queries: `backend/app/repositories/`
 - Migrations: `backend/alembic/`
+- Offline evaluations (dataset normalisation, understanding / classification / retrieval / LLM quality reports): `backend/evals/`. The app must never import from `evals`. Reports are written to `backend/app/data/cyber_saathi/` unless `--output` is given.
 - Backend tests: `backend/tests/`
 - Frontend tests: `frontend/tests/` (shared helpers in `frontend/tests/support/`)
 

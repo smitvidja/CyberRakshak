@@ -18,8 +18,13 @@ backend/.mypy_cache/
 backend/.coverage
 backend/htmlcov/
 
-# Dev-only code: tests and one-off asset/demo scripts have no place in the runtime image.
+# Dev-only code: tests, offline evaluations and one-off asset/demo scripts have no place
+# in the runtime image.
 backend/tests/
+backend/evals/
+
+# Local server logs can hold request details; they must never ship in an image.
+**/*.log
 backend/scripts/
 # ...except the retention purge, which docker-entrypoint.sh runs on every start.
 # Excluding the whole directory meant `python -m scripts.purge_expired_conversations`

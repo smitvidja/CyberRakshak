@@ -23,7 +23,7 @@ from app.services.cyber_saathi.knowledge import (
     load_source_pack,
     rebuild_index,
 )
-from app.services.cyber_saathi.knowledge_evaluation import evaluate
+from evals.knowledge_evaluation import evaluate
 
 
 def setup_module() -> None:
@@ -167,7 +167,7 @@ def test_knowledge_search_api_has_bounded_results_and_source_metadata() -> None:
 def test_knowledge_gold_set_meets_relevance_source_and_no_result_gates() -> None:
     result = evaluate()
 
-    from app.services.cyber_saathi.knowledge_evaluation import load_cases
+    from evals.knowledge_evaluation import load_cases
 
     assert result["status"] == "passed"
     # Derived, not pinned: the gold set is meant to grow, and a magic number turns
