@@ -19,7 +19,8 @@ CyberRakshak/
 │   ├── Read.md.txt
 │   ├── home/
 │   ├── victim_Report/
-│   └── cyber_warrior/
+│   ├── cyber_warrior/
+│   └── explorations/          (home-page direction and typography experiments; not acceptance references)
 ├── docs/
 │   ├── specs/
 │   │   ├── 01-TECH-STACK.md
