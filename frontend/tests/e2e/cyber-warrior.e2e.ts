@@ -60,14 +60,19 @@ test("a new applicant can verify, set up a profile, upload a resume, review it a
   await button(page, msg("warriorApplication.continueDetails")).click();
   await arriveAt(page, /\/cyber-warrior\/apply\/review$/);
 
-  // Review: extraction is only a suggestion. Like a careful applicant, complete every
-  // required field the extraction left empty before moving on.
+  // Review: extraction is only a suggestion, but from a well-formed resume it must
+  // arrive complete. It used to split a degree from its institution and read job
+  // descriptions as employers, leaving required fields the applicant had to repair.
   const displayName = page.getByLabel(/Display name/);
   await displayName.waitFor();
   assert.notEqual(await displayName.inputValue(), "", "the display name is pre-filled from the verified identity");
+  const empty: string[] = [];
   for (const field of await page.locator("input[required], textarea[required]").all()) {
-    if ((await field.inputValue()).trim() === "") await field.fill("Reviewed by applicant");
+    if ((await field.inputValue()).trim() === "") empty.push((await field.getAttribute("id")) ?? "?");
   }
+  assert.deepEqual(empty, [], "every required field is filled from the resume");
+  assert.equal(await page.getByLabel(/Institution/).first().inputValue(), "Savitribai Phule Pune University");
+  assert.equal(await page.getByLabel(/Organization/).first().inputValue(), "Sentinel InfoTech");
   await button(page, msg("warriorApplication.reviewAction")).click();
 
   // Final confirmation: submitting is impossible until the declaration is ticked.

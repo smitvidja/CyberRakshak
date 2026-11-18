@@ -226,3 +226,100 @@ def test_the_static_mock_profile_is_never_returned_by_the_real_parser() -> None:
     assert first["source"] == "document_parser"
     assert first["profile"]["location"] != mock["profile"]["location"]
     assert first["education"][0]["institution"] != mock["education"][0]["institution"]
+
+
+# --- two-line layouts (the common real-world shape) ---------------------------
+#
+# Before this was fixed, a degree on one line and its institution on the next became
+# two half-empty education rows; "2019 - Present" on its own line started a fake job;
+# and words like "internal" and "backend services" matched the title/employer
+# vocabulary, so description sentences became jobs. Every demo resume came out with
+# required fields empty that the applicant had to repair by hand.
+
+TWO_LINE_RESUME = [
+    "Education",
+    "B.Tech Information Technology",
+    "Rajasthan Technical University | 2010 - 2014",
+    "MBA Information Systems",
+    "Panjab University | 2014 - 2016",
+    "Experience",
+    "Application Security Engineer - Pink City Software, Jaipur",
+    "2019 - Present",
+    "Run authorized vulnerability assessments on internal web applications and guide teams through remediation.",
+    "Senior Software Engineer - Aravalli Tech, Jaipur",
+    "2014 - 2019",
+    "Built and maintained backend services, with a growing focus on secure authentication and data handling.",
+    "Certifications",
+    "AWS Certified Security - Specialty - Amazon Web Services (2023)",
+    "Synthetic demo resume for the CyberRakshak prototype - not a real person.",
+]
+
+
+def test_a_degree_and_the_institution_on_the_next_line_make_one_entry() -> None:
+    education = structure_resume("\n".join(TWO_LINE_RESUME))["education"]
+    assert education == [
+        {"institution": "Rajasthan Technical University", "degree": "B.Tech", "field_of_study": "Information Technology"},
+        {"institution": "Panjab University", "degree": "MBA", "field_of_study": "Information Systems"},
+    ]
+
+
+def test_a_date_line_belongs_to_the_role_above_and_descriptions_stay_descriptions() -> None:
+    experience = structure_resume("\n".join(TWO_LINE_RESUME))["experience"]
+    assert [(e["title"], e["organization"], e["is_current"]) for e in experience] == [
+        ("Application Security Engineer", "Pink City Software", True),
+        ("Senior Software Engineer", "Aravalli Tech", False),
+    ]
+    assert experience[0]["description"].startswith("Run authorized vulnerability assessments")
+    assert experience[1]["description"].startswith("Built and maintained backend services")
+
+
+def test_title_and_employer_words_only_count_as_whole_words() -> None:
+    # "internal" is not "intern" and "Leadership" is not "lead". These are short lines
+    # with no full stop, so only whole-word matching keeps them as descriptions.
+    experience = structure_resume(
+        "Experience\nSecurity Analyst - Sentinel InfoTech, Pune\nInternal red-team exercises\nLeadership mentoring"
+    )["experience"]
+    assert len(experience) == 1
+    assert experience[0]["description"] == "Internal red-team exercises Leadership mentoring"
+
+
+def test_a_wrapped_description_line_is_joined_not_turned_into_a_role() -> None:
+    experience = structure_resume(
+        "Experience\nIncident Response Lead - Shivalik Secure Services, Chandigarh\n2018 - Present\n"
+        "Lead a four-person response team through containment and recovery, and coordinate post-incident reviews with\n"
+        "affected departments."
+    )["experience"]
+    assert len(experience) == 1
+    assert experience[0]["description"].endswith("reviews with affected departments.")
+
+
+def test_certification_issuer_is_the_last_part_and_sentences_are_not_certifications() -> None:
+    certifications = structure_resume("\n".join(TWO_LINE_RESUME))["certifications"]
+    assert certifications == [{"name": "AWS Certified Security - Specialty", "issuing_organization": "Amazon Web Services"}]
+
+
+def test_ordinary_words_are_not_read_as_degrees() -> None:
+    assert structure_resume("Education\nGraduation date to be confirmed")["education"] == []
+
+
+@pytest.mark.parametrize(
+    "resume",
+    ["arjun-malhotra", "karan-verma", "priya-nair", "rohan-mehta", "sneha-iyer"],
+)
+def test_every_demo_resume_fills_the_required_review_fields(resume: str) -> None:
+    """The review screen requires institution + qualification and employer + role.
+    Every demo resume must arrive with all of them filled, and its current job marked."""
+    from pathlib import Path
+
+    content = (Path(__file__).resolve().parents[2] / "demo-assets" / "resumes" / f"{resume}-resume.pdf").read_bytes()
+    structured = parse(content, f"{resume}.pdf")
+    assert structured["education"], "at least one qualification"
+    for row in structured["education"]:
+        assert row["institution"] and row["degree"], row
+    assert structured["experience"], "at least one role"
+    for row in structured["experience"]:
+        assert row["organization"] and row["title"], row
+        assert row["description"], row
+    assert structured["experience"][0]["is_current"] is True
+    for row in structured["certifications"]:
+        assert "not a real person" not in row["name"].lower()

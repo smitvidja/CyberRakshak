@@ -28,7 +28,9 @@ SECTION_PATTERNS: dict[str, tuple[str, ...]] = {
 }
 
 DEGREE_TOKENS = (
-    "bachelor", "master", "b.tech", "btech", "b.e", "be ", "m.tech", "mtech", "m.e",
+    # No bare "be": as a whole word it is ordinary English ("to be confirmed"). The
+    # degree written "BE" / "B.E." is caught by DEGREE_PREFIX and "b.e" below.
+    "bachelor", "master", "b.tech", "btech", "b.e", "m.tech", "mtech", "m.e",
     "b.sc", "bsc", "m.sc", "msc", "mba", "bca", "mca", "b.com", "m.com", "phd",
     "doctorate", "diploma", "b.a", "m.a", "higher secondary",
 )
@@ -37,16 +39,26 @@ INSTITUTION_TOKENS = (
     "iit", "nit", "iiit", "vidyalaya", "campus",
 )
 ORGANISATION_TOKENS = (
-    "ltd", "limited", "pvt", "private", "inc", "llp", "technologies", "technology",
+    "ltd", "limited", "pvt", "private", "inc", "llp", "technologies", "technology", "tech",
     "solutions", "systems", "labs", "laboratories", "services", "consulting",
     "software", "infotech", "corporation", "company", "foundation", "centre", "center",
 )
 TITLE_TOKENS = (
-    "engineer", "developer", "analyst", "intern", "manager", "consultant", "officer",
+    "engineer", "developer", "analyst", "intern", "internship", "manager", "consultant", "officer",
     "administrator", "architect", "specialist", "lead", "associate", "volunteer",
     "researcher", "trainee", "executive", "coordinator", "technician",
     "investigator", "auditor", "responder", "tester", "scientist",
 )
+# A short degree written before its subject with no "in": "B.Tech Information
+# Technology", "M.Sc. Cyber Forensics", "MBA Information Systems". Case-sensitive on
+# purpose, so ordinary words ("Be", "Ma...") never read as degrees.
+DEGREE_PREFIX = re.compile(
+    r"^(B\.?\s?Tech|M\.?\s?Tech|B\.?\s?Sc\.?|M\.?\s?Sc\.?|B\.?\s?Com\.?|M\.?\s?Com\.?|B\.?\s?E\.?|M\.?\s?E\.?"
+    r"|B\.?\s?A\.?|M\.?\s?A\.?|MBA|BBA|BCA|MCA|Ph\.?\s?D\.?)(?=[\s,(])\s*(.+)$"
+)
+# A sentence ending in one of these is still a heading ("Engineer, Acme Pvt. Ltd.").
+ABBREVIATION_ENDINGS = ("ltd.", "inc.", "co.", "pvt.", "corp.", "llp.")
+MAX_HEADING_WORDS = 12
 CURRENT_TOKENS = ("present", "current", "till date", "to date", "ongoing")
 
 BULLET = re.compile(r"^[\-•●▪\*·–—>\s]+")
@@ -96,9 +108,36 @@ def split_sections(text: str) -> dict[str, list[str]]:
     return sections
 
 
+_TOKEN_PATTERNS: dict[tuple[str, ...], re.Pattern[str]] = {}
+
+
 def _has(line: str, tokens: Iterable[str]) -> bool:
-    lowered = " " + line.lower() + " "
-    return any(token in lowered for token in tokens)
+    """True when one of the tokens appears as a whole word.
+
+    Plain substring matching read "intern" inside "internal" and "services" inside
+    "backend services", which turned description sentences into fake job entries.
+    """
+    key = tuple(tokens)
+    pattern = _TOKEN_PATTERNS.get(key)
+    if pattern is None:
+        words = sorted({re.escape(token.strip()) for token in key}, key=len, reverse=True)
+        pattern = re.compile(r"(?<![a-z0-9])(?:" + "|".join(words) + r")(?![a-z0-9])", re.IGNORECASE)
+        _TOKEN_PATTERNS[key] = pattern
+    return bool(pattern.search(line))
+
+
+def _is_sentence(line: str) -> bool:
+    """Prose (a description, a footer), as opposed to a short heading-like line."""
+    words = line.split()
+    if len(words) > MAX_HEADING_WORDS:
+        return True
+    stripped = line.rstrip()
+    return stripped.endswith(".") and len(words) > 3 and not stripped.lower().endswith(ABBREVIATION_ENDINGS)
+
+
+def _is_date_only(line: str) -> bool:
+    """A line that carries only a date range, e.g. "2019 - Present"."""
+    return bool(DATE_RANGE.search(line)) and not re.sub(r"[\W_]+", "", _strip_dates(line))
 
 
 def _strip_dates(line: str) -> str:
@@ -165,30 +204,60 @@ def _dedupe(values: list[str]) -> list[str]:
     return out
 
 
+def _education_line(line: str) -> dict[str, Any] | None:
+    """Read one line into a (possibly partial) education entry."""
+    if not _has(line, DEGREE_TOKENS) and not _has(line, INSTITUTION_TOKENS) and not DEGREE_PREFIX.match(_clean(line)):
+        return None
+    cleaned = _strip_dates(line)
+    parts = [part.strip() for part in re.split(r"[,|–—]|\s-\s", cleaned) if part.strip()]
+    degree = next((part for part in parts if _has(part, DEGREE_TOKENS) or DEGREE_PREFIX.match(part)), None)
+    institution = next((part for part in parts if _has(part, INSTITUTION_TOKENS) and part != degree), None)
+    field = None
+    if degree:
+        match = re.search(r"\bin\s+([A-Za-z &]{3,40})", degree, re.IGNORECASE)
+        if match:
+            field = match.group(1).strip()
+            degree = degree[: match.start()].strip(" ,-")
+        else:
+            # "B.Tech Information Technology": the subject follows the short degree.
+            prefix = DEGREE_PREFIX.match(degree)
+            if prefix and not prefix.group(2).lower().startswith(("in ", "of ")):
+                degree, field = prefix.group(1).strip(), prefix.group(2).strip()
+    if field is None:
+        field = next((part for part in parts if part not in {degree, institution} and len(part) > 3), None)
+    if not degree and not institution:
+        return None
+    return {"institution": institution, "degree": degree, "field_of_study": field}
+
+
 def _education_from(lines: list[str]) -> list[dict[str, Any]]:
+    """Education entries, one per qualification.
+
+    Resumes commonly put the degree on one line and the institution (with dates) on
+    the next. Reading each line alone produced two half-empty rows - one with only a
+    degree, one with only an institution - that the applicant then had to repair.
+    A line that supplies exactly the half the previous entry is missing completes it.
+    """
     entries: list[dict[str, Any]] = []
     for line in lines:
-        if not _has(line, DEGREE_TOKENS) and not _has(line, INSTITUTION_TOKENS):
+        entry = _education_line(line)
+        if entry is None:
             continue
-        cleaned = _strip_dates(line)
-        parts = [part.strip() for part in re.split(r"[,|–—]|\s-\s", cleaned) if part.strip()]
-        degree = next((part for part in parts if _has(part, DEGREE_TOKENS)), None)
-        institution = next((part for part in parts if _has(part, INSTITUTION_TOKENS)), None)
-        field = None
-        if degree:
-            match = re.search(r"\bin\s+([A-Za-z &]{3,40})", degree, re.IGNORECASE)
-            if match:
-                field = match.group(1).strip()
-                degree = degree[: match.start()].strip(" ,-")
-        if field is None:
-            field = next((part for part in parts if part not in {degree, institution} and len(part) > 3), None)
-        if not degree and not institution:
-            continue
-        entry = {"institution": institution, "degree": degree, "field_of_study": field}
+        previous = entries[-1] if entries else None
+        if previous is not None:
+            needs_institution = previous["degree"] and not previous["institution"]
+            needs_degree = previous["institution"] and not previous["degree"]
+            if (needs_institution and entry["institution"] and not entry["degree"]) or (
+                needs_degree and entry["degree"] and not entry["institution"]
+            ):
+                previous["institution"] = previous["institution"] or entry["institution"]
+                previous["degree"] = previous["degree"] or entry["degree"]
+                previous["field_of_study"] = previous["field_of_study"] or entry["field_of_study"]
+                continue
         if entry not in entries:
+            if len(entries) >= MAX_ITEMS_PER_SECTION:
+                break
             entries.append(entry)
-        if len(entries) >= MAX_ITEMS_PER_SECTION:
-            break
     return entries
 
 
@@ -196,7 +265,15 @@ def _experience_from(lines: list[str]) -> list[dict[str, Any]]:
     entries: list[dict[str, Any]] = []
     pending: dict[str, Any] | None = None
     for line in lines:
-        looks_like_heading = _has(line, ORGANISATION_TOKENS) or _has(line, TITLE_TOKENS) or bool(DATE_RANGE.search(line))
+        if _is_date_only(line):
+            # "2019 - Present" on its own line belongs to the role above it; it is
+            # not a new role. This is also where "currently working here" lives.
+            if pending is not None and _has(line, CURRENT_TOKENS):
+                pending["is_current"] = True
+            continue
+        looks_like_heading = not _is_sentence(line) and (
+            _has(line, ORGANISATION_TOKENS) or _has(line, TITLE_TOKENS) or bool(DATE_RANGE.search(line))
+        )
         if looks_like_heading:
             if pending:
                 entries.append(pending)
@@ -235,13 +312,19 @@ def _certifications_from(lines: list[str]) -> list[dict[str, Any]]:
     entries: list[dict[str, Any]] = []
     for line in lines:
         cleaned = _strip_dates(line)
-        if len(cleaned) < 3:
+        if len(cleaned) < 3 or _is_sentence(cleaned):
+            # A sentence (a footer, a note) is not a certification name.
             continue
         issuer = None
-        match = re.split(r"\s(?:-|–|—|\||by|from)\s", cleaned, maxsplit=1, flags=re.IGNORECASE)
-        name = match[0].strip()
-        if len(match) > 1 and match[1].strip():
-            issuer = match[1].strip()
+        # Split at the LAST separator: in "AWS Certified Security - Specialty - Amazon
+        # Web Services" the issuer is the final part, and "Specialty" is in the name.
+        separators = list(re.finditer(r"\s(?:-|–|—|\||by|from)\s", cleaned, flags=re.IGNORECASE))
+        if separators:
+            last = separators[-1]
+            name = cleaned[: last.start()].strip()
+            issuer = cleaned[last.end():].strip() or None
+        else:
+            name = cleaned.strip()
         if not name:
             continue
         entry = {"name": name[:120], "issuing_organization": issuer[:120] if issuer else None}
