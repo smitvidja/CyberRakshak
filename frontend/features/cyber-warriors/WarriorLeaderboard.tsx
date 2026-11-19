@@ -9,7 +9,7 @@ import {ChevronLeft, ChevronRight} from "lucide-react";
 import {warriorReportsApi} from "@/lib/api/cyber-warriors";
 import {getWarriorIdentity, getWarriorToken} from "@/lib/auth/warrior-session";
 import {WarriorShellPage} from "./WarriorAppShell";
-import {computeBadgeFlags, computeWarriorPoints, mockWarriors, rankTier, type BadgeFlags} from "./warriorReportMeta";
+import {BADGES, computeBadgeFlags, computeWarriorPoints, mockWarriors, rankTier} from "./warriorReportMeta";
 
 type LeaderboardRow = {name: string; points: number; reportsSubmitted: number; resolvedCount: number; you: boolean; warriorId: string};
 
@@ -24,15 +24,7 @@ function rankTitle(points: number, t: (key: string) => string) {
 // these read as far more "medal-like" at a glance than a flat SVG outline.
 const podiumEmoji = ["🥇", "🥈", "🥉"];
 
-// Same 5 badges shown on the Badges & Rewards page, rendered here as small icons only (no
-// title/description needed at this size) so a row's real earned badges are visible at a glance.
-const badgeIcons: Array<{emoji: string; flag: keyof BadgeFlags; tone: string}> = [
-  {emoji: "📝", flag: "starter", tone: "tone-blue"},
-  {emoji: "🏆", flag: "active", tone: "tone-green"},
-  {emoji: "🛡️", flag: "resolved", tone: "tone-amber"},
-  {emoji: "🚀", flag: "rising", tone: "tone-purple"},
-  {emoji: "🌟", flag: "elite", tone: "tone-gold"}
-];
+// Row badges use the shared BADGES list, so they match the Badges & Rewards page.
 
 export function WarriorLeaderboard() {
   const t = useTranslations("warriorLeaderboard");
@@ -110,7 +102,7 @@ export function WarriorLeaderboard() {
             </div>
             {pageRows.map((row, index) => {
               const flags = computeBadgeFlags({points: row.points, resolvedCount: row.resolvedCount, submittedCount: row.reportsSubmitted});
-              const earned = badgeIcons.filter((item) => flags[item.flag]);
+              const earned = BADGES.filter((item) => flags[item.flag]);
               return (
               <div className={"warrior-leaderboard-row " + (row.you ? "is-you" : "")} key={row.warriorId}>
                 <span>{pageStart + index + 1}</span>

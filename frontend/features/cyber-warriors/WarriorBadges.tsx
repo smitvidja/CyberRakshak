@@ -8,11 +8,12 @@ import {warriorReportsApi} from "@/lib/api/cyber-warriors";
 import {getWarriorToken} from "@/lib/auth/warrior-session";
 import {WarriorShellPage} from "./WarriorAppShell";
 import {
+  BADGES,
+  computeBadgeFlags,
   computeRank,
   computeWarriorPoints,
-  RANK_GOLD_THRESHOLD,
-  RANK_SILVER_THRESHOLD,
-  rankTier
+  levelProgress,
+  nextTier
 } from "./warriorReportMeta";
 
 export function WarriorBadges() {
@@ -48,22 +49,22 @@ export function WarriorBadges() {
     return <main className="warrior-page"><div className="shell-container warrior-application-loading">{t("loading")}</div></main>;
   }
 
-  const badges: Array<{desc: string; earned: boolean; emoji: string; title: string; tone: string}> = [
-    {desc: t("badgeStarterCopy"), earned: submittedCount >= 1, emoji: "📝", title: t("badgeStarterTitle"), tone: "tone-blue"},
-    {desc: t("badgeActiveCopy"), earned: submittedCount >= 5, emoji: "🏆", title: t("badgeActiveTitle"), tone: "tone-green"},
-    {desc: t("badgeResolvedCopy"), earned: resolvedCount >= 1, emoji: "🛡️", title: t("badgeResolvedTitle"), tone: "tone-amber"},
-    {desc: t("badgeRisingCopy"), earned: points >= RANK_SILVER_THRESHOLD, emoji: "🚀", title: t("badgeRisingTitle"), tone: "tone-purple"},
-    {desc: t("badgeEliteCopy"), earned: points >= RANK_GOLD_THRESHOLD, emoji: "🌟", title: t("badgeEliteTitle"), tone: "tone-gold"}
-  ];
+  const flags = computeBadgeFlags({points, resolvedCount, submittedCount});
+  const badges = BADGES.map((badge) => ({
+    desc: badge.points === undefined ? t(badge.copyKey) : t(badge.copyKey, {points: badge.points}),
+    earned: flags[badge.flag],
+    emoji: badge.emoji,
+    title: t(badge.titleKey),
+    tone: badge.tone
+  }));
   const earnedCount = badges.filter((badge) => badge.earned).length;
 
-  const tier = rankTier(points);
   const {rank, total} = computeRank(points);
-  const previousThreshold = tier === "GOLD" ? RANK_GOLD_THRESHOLD : tier === "SILVER" ? RANK_SILVER_THRESHOLD : 0;
-  const nextThreshold = tier === "GOLD" ? null : tier === "SILVER" ? RANK_GOLD_THRESHOLD : RANK_SILVER_THRESHOLD;
-  const progressPercent = nextThreshold ? Math.min(100, Math.round(((points - previousThreshold) / (nextThreshold - previousThreshold)) * 100)) : 100;
-  const tierLabel = tier === "GOLD" ? t("rankGold") : tier === "SILVER" ? t("rankSilver") : t("rankBronze");
-  const nextTierLabel = tier === "BRONZE" ? t("rankSilver") : t("rankGold");
+  const {next: nextThreshold, percent: progressPercent, tier} = levelProgress(points);
+  const tierName = {BRONZE: t("rankBronze"), GOLD: t("rankGold"), SILVER: t("rankSilver")} as const;
+  const tierLabel = tierName[tier];
+  const upcoming = nextTier(tier);
+  const nextTierLabel = upcoming ? tierName[upcoming] : tierLabel;
 
   return (
     <WarriorShellPage active="badges">

@@ -90,12 +90,47 @@ export function rankTier(points: number): RankTier {
   return "BRONZE";
 }
 
+// Where a warrior stands inside their tier. The dashboard "Warrior Status" card and the
+// Badges & Rewards "Current Level" tile both read this, so the same person never shows
+// as two different levels on two pages (the dashboard used to hard-code "Level 1, 0 XP").
+export type LevelProgress = {
+  level: 1 | 2 | 3;
+  next: number | null;
+  percent: number;
+  points: number;
+  tier: RankTier;
+};
+
+export function levelProgress(points: number): LevelProgress {
+  const tier = rankTier(points);
+  const floor = tier === "GOLD" ? RANK_GOLD_THRESHOLD : tier === "SILVER" ? RANK_SILVER_THRESHOLD : 0;
+  const next = tier === "GOLD" ? null : tier === "SILVER" ? RANK_GOLD_THRESHOLD : RANK_SILVER_THRESHOLD;
+  const percent = next === null ? 100 : Math.max(0, Math.min(100, Math.round(((points - floor) / (next - floor)) * 100)));
+  return {level: tier === "GOLD" ? 3 : tier === "SILVER" ? 2 : 1, next, percent, points, tier};
+}
+
+export function nextTier(tier: RankTier): RankTier | null {
+  return tier === "BRONZE" ? "SILVER" : tier === "SILVER" ? "GOLD" : null;
+}
+
 // Which of the 5 Badges & Rewards badges are earned, given only fields that are actually tracked
 // (report counts and computed points). Shared by the Badges page and the Leaderboard's "Badges"
 // column so both surfaces agree on who has earned what. resolvedCount is only known for the real
 // signed-in warrior - demo/mock leaderboard rows pass 0, so they never claim the "Case Closer"
 // badge without real evidence for it.
 export type BadgeFlags = {active: boolean; elite: boolean; resolved: boolean; rising: boolean; starter: boolean};
+
+// The five badges, in display order. Titles/copy live in messages under warriorBadges.
+// Shared by the Badges page and the Profile page's "Badges Earned" card.
+// Point-threshold badges carry their threshold, so the copy ("Earned {points} points") is
+// rendered from the same constant the rule uses and cannot drift (it once said 50 for a 60 rule).
+export const BADGES: ReadonlyArray<{copyKey: string; emoji: string; flag: keyof BadgeFlags; points?: number; titleKey: string; tone: string}> = [
+  {copyKey: "badgeStarterCopy", emoji: "📝", flag: "starter", titleKey: "badgeStarterTitle", tone: "tone-blue"},
+  {copyKey: "badgeActiveCopy", emoji: "🏆", flag: "active", titleKey: "badgeActiveTitle", tone: "tone-green"},
+  {copyKey: "badgeResolvedCopy", emoji: "🛡️", flag: "resolved", titleKey: "badgeResolvedTitle", tone: "tone-amber"},
+  {copyKey: "badgeRisingCopy", emoji: "🚀", flag: "rising", points: RANK_SILVER_THRESHOLD, titleKey: "badgeRisingTitle", tone: "tone-purple"},
+  {copyKey: "badgeEliteCopy", emoji: "🌟", flag: "elite", points: RANK_GOLD_THRESHOLD, titleKey: "badgeEliteTitle", tone: "tone-gold"}
+];
 
 export function computeBadgeFlags(input: {points: number; resolvedCount: number; submittedCount: number}): BadgeFlags {
   return {

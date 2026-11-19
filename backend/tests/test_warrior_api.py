@@ -378,3 +378,69 @@ def test_an_old_draft_cannot_be_submitted_without_a_confirmed_resume(api_client:
     submitted = client.post(f"/api/v1/warrior-applications/{legacy.id}/submit", headers=headers)
     assert submitted.status_code == 200
     assert submitted.json()["data"]["status"] == "UNDER_REVIEW"
+
+
+# --- Warrior ID and availability preferences ---------------------------------
+
+
+def test_every_profile_gets_its_own_server_assigned_warrior_id(api_client: tuple[TestClient, Session]) -> None:
+    import re
+
+    client, _ = api_client
+    first, second = warrior_headers(client), warrior_headers(client)
+    one, two = create_profile(client, first), create_profile(client, second)
+
+    for profile in (one, two):
+        assert re.fullmatch(r"CW\d{6}\d{7}", profile["warrior_code"]), profile["warrior_code"]
+    assert one["warrior_code"] != two["warrior_code"]
+    assert client.get("/api/v1/cyber-warriors/me", headers=first).json()["data"]["warrior_code"] == one["warrior_code"]
+
+
+def test_a_warrior_cannot_choose_or_change_their_warrior_id(api_client: tuple[TestClient, Session]) -> None:
+    client, _ = api_client
+    headers = warrior_headers(client)
+    original = create_profile(client, headers)["warrior_code"]
+
+    updated = client.patch("/api/v1/cyber-warriors/me", headers=headers, json={"warrior_code": "CW0000000000001", "bio": "Updated."})
+    assert updated.status_code == 200
+    assert updated.json()["data"]["warrior_code"] == original
+    assert updated.json()["data"]["bio"] == "Updated."
+
+
+def test_availability_and_preferences_round_trip(api_client: tuple[TestClient, Session]) -> None:
+    client, _ = api_client
+    headers = warrior_headers(client)
+    created = create_profile(client, headers)
+    assert created["availability"] is None and created["preferred_tasks"] is None
+
+    preferences = {
+        "availability": "10_TO_15",
+        "preferred_tasks": ["REPORT_REVIEW", "EVIDENCE_ANALYSIS"],
+        "preferred_communication": ["EMAIL", "PORTAL"],
+        "willing_to_volunteer": True,
+    }
+    updated = client.patch("/api/v1/cyber-warriors/me", headers=headers, json=preferences)
+    assert updated.status_code == 200
+    stored = client.get("/api/v1/cyber-warriors/me", headers=headers).json()["data"]
+    assert {key: stored[key] for key in preferences} == preferences
+
+    # Clearing works too.
+    cleared = client.patch("/api/v1/cyber-warriors/me", headers=headers, json={"preferred_tasks": None, "willing_to_volunteer": False})
+    assert cleared.json()["data"]["preferred_tasks"] is None
+    assert cleared.json()["data"]["willing_to_volunteer"] is False
+    assert cleared.json()["data"]["availability"] == "10_TO_15", "fields not sent are left alone"
+
+
+def test_preferences_only_accept_the_fixed_choices(api_client: tuple[TestClient, Session]) -> None:
+    client, _ = api_client
+    headers = warrior_headers(client)
+    create_profile(client, headers)
+    for bad in (
+        {"availability": "ALWAYS"},
+        {"preferred_tasks": ["HACKING"]},
+        {"preferred_tasks": ["AWARENESS", "AWARENESS"]},
+        {"preferred_communication": ["CARRIER_PIGEON"]},
+        {"preferred_communication": "EMAIL"},
+    ):
+        response = client.patch("/api/v1/cyber-warriors/me", headers=headers, json=bad)
+        assert response.status_code == 422, bad

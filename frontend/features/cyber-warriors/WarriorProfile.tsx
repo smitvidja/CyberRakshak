@@ -9,9 +9,10 @@ import {ArrowRight, Award, BookOpen, CheckCircle2, Pencil, ShieldCheck, Trophy, 
 import {cyberWarriorsApi, warriorApplicationsApi, warriorReportsApi, type WarriorApplication, type SkillCatalogItem} from "@/lib/api/cyber-warriors";
 import {getWarriorIdentity, getWarriorProfileSetup, getWarriorToken} from "@/lib/auth/warrior-session";
 import {WarriorShellPage} from "./WarriorAppShell";
-import {computeWarriorPoints} from "./warriorReportMeta";
+import {WarriorAvailabilitySection, type WarriorPreferences} from "./WarriorAvailabilitySection";
+import {BADGES, computeBadgeFlags, computeWarriorPoints} from "./warriorReportMeta";
 
-type ProfileApiRecord = {
+type ProfileApiRecord = WarriorPreferences & {
   bio: string | null;
   certifications: Array<{name: string}>;
   created_at: string;
@@ -19,6 +20,7 @@ type ProfileApiRecord = {
   location: string | null;
   skills: Array<{proficiency_level: string | null; skill_id: string; years_of_experience: number | null}>;
   verification_status: string;
+  warrior_code: string;
 };
 
 type ProfileState = {
@@ -30,6 +32,7 @@ type ProfileState = {
 
 export function WarriorProfile() {
   const t = useTranslations("warriorProfile");
+  const tBadges = useTranslations("warriorBadges");
   const locale = useLocale();
   const router = useRouter();
   const [state, setState] = useState<ProfileState>({application: null, profile: null, reports: [], skillCatalog: []});
@@ -87,6 +90,9 @@ export function WarriorProfile() {
   const submittedCount = reports.filter((r) => r.status !== "DRAFT").length;
   const underReviewCount = reports.filter((r) => r.status === "SUBMITTED" || r.status === "UNDER_REVIEW").length;
   const resolvedCount = reports.filter((r) => r.status === "ACCEPTED").length;
+  const points = computeWarriorPoints(reports);
+  const badgeFlags = computeBadgeFlags({points, resolvedCount, submittedCount});
+  const earnedBadges = BADGES.filter((badge) => badgeFlags[badge.flag]);
 
   return (
     <WarriorShellPage
@@ -94,7 +100,7 @@ export function WarriorProfile() {
       identity={{
         label: t("roleLabel"),
         verified: application?.status === "APPROVED" || application?.status === "UNDER_REVIEW" || application?.status === "SUBMITTED",
-        warriorId: application?.application_number ?? t("notAvailable")
+        warriorId: profile?.warrior_code ?? t("notAvailable")
       }}
     >
       <div className="warrior-dashboard-content">
@@ -113,7 +119,7 @@ export function WarriorProfile() {
           </div>
           <dl className="warrior-profile-fact-grid">
             <div><dt>{t("username")}</dt><dd>{identity?.accountEmail ?? notProvided}</dd></div>
-            <div><dt>{t("warriorId")}</dt><dd>{application?.application_number ?? notProvided}</dd></div>
+            <div><dt>{t("warriorId")}</dt><dd>{profile?.warrior_code ?? notProvided}</dd></div>
             <div><dt>{t("dateOfJoining")}</dt><dd>{profile?.created_at ? dateFormatter.format(new Date(profile.created_at)) : notProvided}</dd></div>
             <div><dt>{t("dateOfBirth")}</dt><dd>{identity?.profile.date_of_birth ? dateFormatter.format(new Date(identity.profile.date_of_birth)) : notProvided}</dd></div>
             <div><dt>{t("gender")}</dt><dd>{identity?.profile.gender ?? notProvided}</dd></div>
@@ -133,6 +139,18 @@ export function WarriorProfile() {
           </dl>
         </section>
 
+        {profile ? (
+          <WarriorAvailabilitySection
+            onSaved={(next) => setState((current) => (current.profile ? {...current, profile: {...current.profile, ...next}} : current))}
+            preferences={{
+              availability: profile.availability ?? null,
+              preferred_communication: profile.preferred_communication ?? null,
+              preferred_tasks: profile.preferred_tasks ?? null,
+              willing_to_volunteer: profile.willing_to_volunteer ?? null
+            }}
+          />
+        ) : null}
+
         <section className="warrior-profile-section">
           <h2>{t("bioTitle")}</h2>
           <p className="warrior-profile-bio">{profile?.bio || notProvided}</p>
@@ -147,7 +165,18 @@ export function WarriorProfile() {
         </div>
         <div className="warrior-status-widget">
           <h2>{t("badgesTitle")}</h2>
-          <div className="warrior-badges-placeholder"><Award aria-hidden="true" size={26} /><p>{t("badgesComingCopy")}</p></div>
+          {earnedBadges.length ? (
+            <ul className="warrior-earned-badges">
+              {earnedBadges.map((badge) => (
+                <li className={badge.tone} key={badge.flag} title={tBadges(badge.titleKey)}>
+                  <span aria-hidden="true">{badge.emoji}</span>
+                  <span className="sr-only">{tBadges(badge.titleKey)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="warrior-badges-placeholder"><Award aria-hidden="true" size={26} /><p>{t("badgesNoneYet")}</p></div>
+          )}
           <Link className="warrior-text-link" href={"/" + locale + "/cyber-warrior/badges"}>{t("viewBadges")}<ArrowRight aria-hidden="true" size={15} /></Link>
         </div>
         <div className="warrior-quick-actions">
@@ -156,7 +185,7 @@ export function WarriorProfile() {
             <div><dt>{t("statSubmitted")}</dt><dd>{submittedCount}</dd></div>
             <div><dt>{t("statUnderReview")}</dt><dd>{underReviewCount}</dd></div>
             <div><dt>{t("statResolved")}</dt><dd>{resolvedCount}</dd></div>
-            <div><dt>{t("statPoints")}</dt><dd>{computeWarriorPoints(reports)}</dd></div>
+            <div><dt>{t("statPoints")}</dt><dd>{points}</dd></div>
           </dl>
         </div>
         <div className="warrior-quick-actions">

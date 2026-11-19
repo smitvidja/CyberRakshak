@@ -217,8 +217,13 @@ tighter budget and also answers `429 RATE_LIMITED`.
 ## Cyber Warrior APIs
 
 - `POST /cyber-warriors/profile`
-- `GET /cyber-warriors/me`
-- `PATCH /cyber-warriors/me`
+- `GET /cyber-warriors/me` includes `warrior_code`, the Warrior ID (e.g. `CW2611190000001`). It is
+  assigned by the database when the profile is created and is never accepted from a client.
+- `PATCH /cyber-warriors/me` also takes the optional "Availability & Preferences" fields, each limited
+  to fixed codes (other values are `422`): `availability` (`UNDER_5`, `5_TO_10`, `10_TO_15`,
+  `15_TO_20`, `OVER_20`), `preferred_tasks` (`REPORT_REVIEW`, `EVIDENCE_ANALYSIS`, `AWARENESS`,
+  `OSINT_RESEARCH`, `VICTIM_SUPPORT`, `TRANSLATION`; no duplicates), `preferred_communication`
+  (`EMAIL`, `PORTAL`, `SMS`; no duplicates), `willing_to_volunteer` (boolean). Sending `null` clears a field.
 - `GET /cyber-warriors/skills` lists the skill catalog for profile/resume skill selection.
 - `POST /resume/upload` accepts PDF or DOCX only (10 MB). Returns a `ResumeParsingResult`;
   a failed attempt is `201` with `status=FAILED` plus a translatable `error_code`, not an error response.

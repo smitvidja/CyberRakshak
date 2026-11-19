@@ -136,6 +136,10 @@ Minimum indexes:
 - `suspect_correction_requests(identifier_type, identifier_fingerprint)`, `suspect_correction_requests.status`
 - `evidence.complaint_id`, `evidence.suspect_report_id`, `evidence.warrior_report_id`
 - `cyber_warrior_profiles.user_id`, `cyber_warrior_profiles.verification_status`
+- `cyber_warrior_profiles.warrior_code` (unique). The Warrior ID is filled by a column default from the
+  `cyber_warrior_code_seq` sequence: `CW` + creation date (YYMMDD) + 7-digit sequence. The profile also
+  holds the optional "Availability & Preferences" fields: `availability`, `preferred_tasks` (JSONB),
+  `preferred_communication` (JSONB), `willing_to_volunteer`. All of them are fixed codes validated by the API.
 - `warrior_applications.application_number`, `warrior_applications.status`, `warrior_applications.warrior_id`
 - `warrior_reports.warrior_id`, `warrior_reports.status`
 - `notifications.user_id`, `notifications.is_read`

@@ -1,9 +1,24 @@
 from datetime import date, datetime
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.models.enums import WarriorVerificationStatus
+
+# "Availability & Preferences" (Step 14 profile reference). Fixed codes rather than
+# free text: the UI translates them (EN/HI) and they cannot carry personal data.
+Availability = Literal["UNDER_5", "5_TO_10", "10_TO_15", "15_TO_20", "OVER_20"]
+PreferredTask = Literal[
+    "REPORT_REVIEW", "EVIDENCE_ANALYSIS", "AWARENESS", "OSINT_RESEARCH", "VICTIM_SUPPORT", "TRANSLATION"
+]
+PreferredCommunication = Literal["EMAIL", "PORTAL", "SMS"]
+
+
+def _no_duplicates(value: list[str] | None) -> list[str] | None:
+    if value is not None and len(set(value)) != len(value):
+        raise ValueError("Each option may be selected only once.")
+    return value
 
 
 class ProfileCreate(BaseModel):
@@ -20,6 +35,13 @@ class ProfileUpdate(BaseModel):
     location: str | None = Field(default=None, max_length=255)
     github_url: str | None = Field(default=None, max_length=500)
     linkedin_url: str | None = Field(default=None, max_length=500)
+    availability: Availability | None = None
+    preferred_tasks: list[PreferredTask] | None = Field(default=None, max_length=6)
+    preferred_communication: list[PreferredCommunication] | None = Field(default=None, max_length=3)
+    willing_to_volunteer: bool | None = None
+
+    _unique_tasks = field_validator("preferred_tasks")(_no_duplicates)
+    _unique_channels = field_validator("preferred_communication")(_no_duplicates)
 
 
 class SkillInput(BaseModel):
@@ -105,7 +127,12 @@ class CyberWarriorProfileResponse(ProfileCreate):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    warrior_code: str
     verification_status: WarriorVerificationStatus
+    availability: str | None = None
+    preferred_tasks: list[str] | None = None
+    preferred_communication: list[str] | None = None
+    willing_to_volunteer: bool | None = None
     created_at: datetime
     updated_at: datetime
     skills: list[SkillResponse] = Field(default_factory=list)

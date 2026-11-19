@@ -2,11 +2,14 @@ import assert from "node:assert/strict";
 import {test} from "node:test";
 
 import {
+  BADGES,
   computeBadgeFlags,
   computeRank,
   computeReportTimeline,
   computeWarriorPoints,
+  levelProgress,
   mockWarriors,
+  nextTier,
   rankTier,
   RANK_GOLD_THRESHOLD,
   RANK_SILVER_THRESHOLD,
@@ -77,4 +80,37 @@ test("each report category has a unique value and an unknown type falls back to 
   assert.equal(new Set(values).size, values.length);
   assert.equal(reportCategoryLabelKey("PHISHING"), "categoryPhishing");
   assert.equal(reportCategoryLabelKey("NOT_A_TYPE" as never), "categoryOther");
+});
+
+test("level progress places points inside their tier and points at the next one", () => {
+  assert.deepEqual(levelProgress(0), {level: 1, next: RANK_SILVER_THRESHOLD, percent: 0, points: 0, tier: "BRONZE"});
+  assert.equal(levelProgress(RANK_SILVER_THRESHOLD / 2).percent, 50);
+  const silver = levelProgress(RANK_SILVER_THRESHOLD);
+  assert.deepEqual([silver.level, silver.tier, silver.next, silver.percent], [2, "SILVER", RANK_GOLD_THRESHOLD, 0]);
+  const gold = levelProgress(RANK_GOLD_THRESHOLD + 500);
+  assert.deepEqual([gold.level, gold.tier, gold.next, gold.percent], [3, "GOLD", null, 100]);
+});
+
+test("the level always agrees with the rank tier used by the leaderboard", () => {
+  for (const points of [0, 1, 6, 59, 60, 61, 149, 150, 151, 999]) {
+    assert.equal(levelProgress(points).tier, rankTier(points), `points ${points}`);
+  }
+  assert.equal(nextTier("BRONZE"), "SILVER");
+  assert.equal(nextTier("SILVER"), "GOLD");
+  assert.equal(nextTier("GOLD"), null);
+});
+
+test("the shared badge list covers every badge flag exactly once", () => {
+  const flags = Object.keys(computeBadgeFlags({points: 0, resolvedCount: 0, submittedCount: 0})).sort();
+  assert.deepEqual(BADGES.map((badge) => badge.flag).sort(), flags);
+  assert.equal(new Set(BADGES.map((badge) => badge.titleKey)).size, BADGES.length);
+});
+
+test("point badges announce the same threshold the rule uses", () => {
+  // The Rising badge copy once said 50 points while the rule awarded it at 60.
+  const byFlag = Object.fromEntries(BADGES.map((badge) => [badge.flag, badge.points]));
+  assert.equal(byFlag.rising, RANK_SILVER_THRESHOLD);
+  assert.equal(byFlag.elite, RANK_GOLD_THRESHOLD);
+  assert.deepEqual(computeBadgeFlags({points: RANK_SILVER_THRESHOLD - 1, resolvedCount: 0, submittedCount: 0}).rising, false);
+  assert.deepEqual(computeBadgeFlags({points: RANK_SILVER_THRESHOLD, resolvedCount: 0, submittedCount: 0}).rising, true);
 });

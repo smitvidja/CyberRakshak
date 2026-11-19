@@ -637,6 +637,11 @@ button, input, select, textarea { font: inherit; }
 .warrior-dashboard-header-row > div:first-child > p { margin-top: 6px; color: var(--muted); font-size: 14px; }
 .warrior-dashboard-header-right { display: grid; justify-items: end; gap: 10px; }
 .warrior-dashboard-meta { display: grid; justify-items: end; gap: 2px; color: var(--muted); font-size: 13.5px; }
+/* Step 5: Warrior ID and "Member since" each stay on one line beside the welcome heading. */
+.warrior-dashboard-meta span { white-space: nowrap; }
+/* Spans both main-grid columns (content + rail), right-aligned, as in the reference. */
+.warrior-dashboard-topbar-row { display: flex; grid-column: 1 / -1; justify-content: flex-end; }
+.warrior-dashboard-topbar-row .warrior-topbar-identity { white-space: nowrap; }
 .warrior-topbar { display: flex; align-items: center; gap: 12px; }
 .warrior-topbar-menu { position: relative; }
 .warrior-topbar-bell { position: relative; display: grid; height: 38px; width: 38px; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: #fff; color: var(--navy); }
@@ -691,17 +696,12 @@ button, input, select, textarea { font: inherit; }
 .warrior-reward-tile > span.tone-purple { background: #ede7fb; color: #5b3ec9; }
 .warrior-reward-tile strong { display: block; margin-top: 10px; font-size: 14px; }
 .warrior-reward-tile p { margin-top: 4px; color: var(--muted); font-size: 13.5px; line-height: 1.4; }
-.warrior-cta-banner { display: grid; grid-template-columns: minmax(0, 1fr) 220px; align-items: center; gap: 20px; border: 1px solid #c8dcec; border-radius: 8px; background: linear-gradient(135deg, #eef6ff, #f8fbff); padding: 22px 26px; }
+.warrior-cta-banner { display: grid; grid-template-columns: minmax(0, 1fr) 300px; align-items: center; gap: 20px; border: 1px solid #c8dcec; border-radius: 8px; background: linear-gradient(135deg, #eef6ff, #f8fbff); padding: 22px 26px; }
 .warrior-cta-banner .eyebrow { display: block; }
 .warrior-cta-banner h2 { margin-top: 5px; font-size: 24px; font-weight: 800; }
 .warrior-cta-banner > div:first-child > p { margin: 8px 0 16px; max-width: 52ch; color: var(--muted); font-size: 13px; line-height: 1.55; }
-.warrior-cta-visual { position: relative; display: grid; height: 150px; place-items: center; }
-.warrior-cta-figure { display: grid; height: 96px; width: 96px; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; }
-.warrior-cta-orbit { position: absolute; display: grid; height: 38px; width: 38px; place-items: center; border-radius: 50%; background: #fff; color: var(--blue); box-shadow: 0 4px 10px rgb(15 42 74 / .12); }
-.warrior-cta-orbit-1 { top: 0; left: 18%; }
-.warrior-cta-orbit-2 { top: 8%; right: 6%; }
-.warrior-cta-orbit-3 { bottom: 6%; left: 4%; }
-.warrior-cta-orbit-4 { bottom: 0; right: 16%; }
+.warrior-cta-visual { position: relative; display: grid; height: 170px; place-items: center; }
+.warrior-cta-illustration { display: block; height: 100%; width: 100%; }
 .warrior-journey { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 20px 22px; }
 .warrior-journey h2 { font-size: 18px; font-weight: 800; }
 .warrior-journey > p { margin-top: 4px; color: var(--muted); font-size: 13px; }
@@ -712,6 +712,15 @@ button, input, select, textarea { font: inherit; }
 .warrior-journey-track small { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; }
 .warrior-journey-track > li.is-complete > span { border-color: #2ca56e; background: #e5f7ed; color: #16835d; }
 .warrior-journey-track > li.is-current > span { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+/* Step 5 reference: the journey is a horizontal row of five steps joined by a dashed
+   line. Above 700px it is laid out that way; on phones it stays the vertical list. */
+@media (min-width: 701px) {
+  .warrior-journey-track { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; border-left: 0; padding-left: 0; text-align: center; }
+  .warrior-journey-track > li { display: grid; justify-items: center; align-content: start; gap: 2px; }
+  .warrior-journey-track > li > span { position: relative; left: auto; top: auto; z-index: 1; height: 48px; width: 48px; margin-bottom: 8px; }
+  .warrior-journey-track > li:not(:last-child)::after { content: ""; position: absolute; top: 24px; left: calc(50% + 30px); right: calc(-50% + 30px); border-top: 2px dashed var(--border); }
+  .warrior-journey-track > li.is-complete:not(:last-child)::after { border-top-color: #9fd9bd; }
+}
 .warrior-dashboard-rail { display: grid; gap: 16px; min-width: 0; }
 .warrior-status-widget, .warrior-quick-actions { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 18px; }
 .warrior-status-widget h2, .warrior-quick-actions h2 { font-size: 15px; font-weight: 800; }
@@ -763,6 +772,35 @@ button, input, select, textarea { font: inherit; }
 .warrior-badges-placeholder { display: grid; margin-top: 12px; place-items: center; gap: 8px; border: 1px dashed #cfe0ef; border-radius: 7px; padding: 18px; text-align: center; color: var(--muted); }
 .warrior-badges-placeholder svg { color: var(--blue); }
 .warrior-badges-placeholder p { font-size: 13.5px; }
+/* Profile "Badges Earned" card: the real earned badges, same icons/tones as Badges & Rewards. */
+.warrior-earned-badges { display: flex; margin-top: 12px; flex-wrap: wrap; gap: 10px; }
+.warrior-earned-badges li { display: grid; height: 42px; width: 42px; place-items: center; border-radius: 50%; font-size: 20px; }
+.warrior-earned-badges li.tone-blue { background: #e1edfb; }
+.warrior-earned-badges li.tone-green { background: #dcf3e6; }
+.warrior-earned-badges li.tone-amber { background: #fdecd2; }
+.warrior-earned-badges li.tone-purple { background: #ece3fb; }
+.warrior-earned-badges li.tone-gold { background: #fdf1cf; }
+/* "Availability & Preferences" (Step 14 reference): four columns on wide screens. Placed
+   before the 960px/700px blocks below so their .warrior-profile-fact-grid column counts
+   still take over at the same breakpoints as the other profile grids. */
+.warrior-profile-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.warrior-section-edit { display: inline-flex; min-height: 36px; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 12px; color: var(--blue); font-size: 13px; font-weight: 750; }
+.warrior-section-edit:hover { border-color: var(--blue); }
+.warrior-section-edit:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.warrior-availability-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.warrior-yes-no { display: inline-flex; align-items: center; gap: 5px; }
+.warrior-yes-no.is-yes svg { color: #16835d; }
+.warrior-yes-no.is-no svg { color: var(--muted); }
+.warrior-inline-success { margin-top: 12px; color: #16835d; font-size: 13px; font-weight: 750; }
+.warrior-availability-form { display: grid; margin-top: 16px; gap: 18px; }
+.warrior-availability-form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.warrior-choice-group { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 16px; border: 1px solid var(--border); border-radius: 7px; padding: 12px 14px 14px; }
+.warrior-choice-group legend { padding: 0 6px; font-size: 13px; font-weight: 800; }
+.warrior-availability-actions { display: flex; justify-content: flex-end; gap: 10px; }
+@media (max-width: 700px) {
+  .warrior-availability-form-row, .warrior-choice-group { grid-template-columns: 1fr; }
+  .warrior-availability-actions { flex-direction: column-reverse; }
+}
 
 @media (max-width: 1080px) {
   .warrior-dashboard-main { grid-template-columns: 1fr; }

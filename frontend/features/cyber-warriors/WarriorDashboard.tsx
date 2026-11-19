@@ -8,27 +8,24 @@ import {
   AlarmClock,
   ArrowRight,
   Award,
-  Bug,
   CheckCircle2,
   Clock3,
   FileText,
   Globe2,
-  Lock,
-  Mail,
   RefreshCw,
   ShieldAlert,
   Star,
   Trophy,
   TriangleAlert,
-  User,
-  UserRound
+  User
 } from "lucide-react";
 
 import {cyberWarriorsApi, warriorApplicationsApi, warriorReportsApi, type WarriorApplication} from "@/lib/api/cyber-warriors";
 import {notificationsApi, type NotificationRecord} from "@/lib/api/notifications";
 import {getWarriorIdentity, getWarriorToken} from "@/lib/auth/warrior-session";
 import {WarriorShellPage, WarriorTopBar} from "./WarriorAppShell";
-import {computeWarriorPoints} from "./warriorReportMeta";
+import {WarriorCtaIllustration} from "./WarriorCtaIllustration";
+import {computeWarriorPoints, levelProgress} from "./warriorReportMeta";
 
 type WarriorReportSummary = {status: string};
 
@@ -38,12 +35,14 @@ type DashboardData = {
   notifications: NotificationRecord[];
   profileCreatedAt: string | null;
   reports: WarriorReportSummary[];
+  warriorCode: string | null;
 };
 
-const emptyData: DashboardData = {application: null, identityName: "", notifications: [], profileCreatedAt: null, reports: []};
+const emptyData: DashboardData = {application: null, identityName: "", notifications: [], profileCreatedAt: null, reports: [], warriorCode: null};
 
 export function WarriorDashboard() {
   const t = useTranslations("warriorDashboard");
+  const tBadges = useTranslations("warriorBadges");
   const locale = useLocale();
   const router = useRouter();
   const [data, setData] = useState<DashboardData>(emptyData);
@@ -77,7 +76,8 @@ export function WarriorDashboard() {
       identityName: identity?.profile.full_name ?? "",
       notifications: notificationsResult.ok ? notificationsResult.data : [],
       profileCreatedAt: profileResult.ok ? String(profileResult.data.created_at ?? "") : null,
-      reports: reportsResult.ok ? reportsResult.data.map((item) => ({status: String((item as {status?: unknown}).status ?? "")})) : []
+      reports: reportsResult.ok ? reportsResult.data.map((item) => ({status: String((item as {status?: unknown}).status ?? "")})) : [],
+      warriorCode: profileResult.ok && profileResult.data.warrior_code ? String(profileResult.data.warrior_code) : null
     });
     setLoading(false);
   }, [locale, router, t]);
@@ -98,11 +98,14 @@ export function WarriorDashboard() {
     return <main className="warrior-page"><div className="shell-container warrior-application-loading">{t("loadingDashboard")}</div></main>;
   }
 
-  const {application, identityName, notifications, profileCreatedAt, reports} = data;
+  const {application, identityName, notifications, profileCreatedAt, reports, warriorCode} = data;
   const dateFormatter = new Intl.DateTimeFormat(locale, {dateStyle: "medium"});
   const formatDate = (value: string | null) => (value ? dateFormatter.format(new Date(value)) : "");
 
   const submittedCount = reports.filter((r) => r.status !== "DRAFT").length;
+  // Same rule as the Badges & Rewards page, so one warrior never shows two levels.
+  const progress = levelProgress(computeWarriorPoints(reports));
+  const tierName = {BRONZE: tBadges("rankBronze"), GOLD: tBadges("rankGold"), SILVER: tBadges("rankSilver")} as const;
   const underReviewCount = reports.filter((r) => r.status === "SUBMITTED" || r.status === "UNDER_REVIEW").length;
   const resolvedCount = reports.filter((r) => r.status === "ACCEPTED").length;
 
@@ -161,6 +164,17 @@ export function WarriorDashboard() {
 
   return (
     <WarriorShellPage active="dashboard">
+      {/* Step 5 reference: bell + avatar sit in their own row at the top right, above both
+          the content and the Warrior Status rail - not squeezed beside the welcome text. */}
+      <div className="warrior-dashboard-topbar-row">
+        <WarriorTopBar
+          name={identityName || t("fallbackName")}
+          notifications={notifications}
+          onMarkRead={markNotificationRead}
+          profileHref={"/" + locale + "/cyber-warrior/profile"}
+          roleLabel={t("roleLabel")}
+        />
+      </div>
       <div className="warrior-dashboard-content">
         <div className="warrior-dashboard-header-row">
           <div>
@@ -168,15 +182,8 @@ export function WarriorDashboard() {
             <p>{t("welcomeCopy")}</p>
           </div>
           <div className="warrior-dashboard-header-right">
-            <WarriorTopBar
-              name={identityName || t("fallbackName")}
-              notifications={notifications}
-              onMarkRead={markNotificationRead}
-              profileHref={"/" + locale + "/cyber-warrior/profile"}
-              roleLabel={t("roleLabel")}
-            />
             <div className="warrior-dashboard-meta">
-              <span><strong>{t("warriorId")}:</strong> {application?.application_number ?? t("notAvailable")}</span>
+              <span><strong>{t("warriorId")}:</strong> {warriorCode ?? t("notAvailable")}</span>
               <span>{t("memberSince", {date: profileCreatedAt ? formatDate(profileCreatedAt) : t("notAvailable")})}</span>
             </div>
           </div>
@@ -209,11 +216,7 @@ export function WarriorDashboard() {
             <Link className="portal-primary-link" href={"/" + locale + "/cyber-warrior/reports/new"}>{t("ctaAction")}<ArrowRight aria-hidden="true" size={17} /></Link>
           </div>
           <div className="warrior-cta-visual" aria-hidden="true">
-            <span className="warrior-cta-figure"><UserRound size={54} /></span>
-            <span className="warrior-cta-orbit warrior-cta-orbit-1"><Mail size={18} /></span>
-            <span className="warrior-cta-orbit warrior-cta-orbit-2"><Lock size={18} /></span>
-            <span className="warrior-cta-orbit warrior-cta-orbit-3"><Bug size={18} /></span>
-            <span className="warrior-cta-orbit warrior-cta-orbit-4"><Globe2 size={18} /></span>
+            <WarriorCtaIllustration className="warrior-cta-illustration" />
           </div>
         </section>
 
@@ -235,9 +238,9 @@ export function WarriorDashboard() {
       <aside className="warrior-dashboard-rail">
         <div className="warrior-status-widget">
           <h2>{t("statusTitle")}</h2>
-          <div className="warrior-status-badge"><Award aria-hidden="true" size={22} /><div><strong>{t("rankRookie")}</strong><span>{t("levelLabel", {level: 1})}</span></div></div>
-          <div className="warrior-xp-track"><i style={{width: "0%"}} /></div>
-          <p>{t("xpCopy", {current: 0, total: 100})}</p>
+          <div className="warrior-status-badge"><Award aria-hidden="true" size={22} /><div><strong>{tierName[progress.tier]}</strong><span>{t("levelLabel", {level: progress.level})}</span></div></div>
+          <div className="warrior-xp-track" role="progressbar" aria-label={t("statusTitle")} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percent}><i style={{width: progress.percent + "%"}} /></div>
+          <p>{progress.next === null ? tBadges("maxTierLabel") : t("xpCopy", {current: progress.points, total: progress.next})}</p>
           <p className="warrior-status-hint">{t("xpHint")}</p>
           <Link className="warrior-text-link" href={"/" + locale + "/cyber-warrior/leaderboard"}>{t("viewLeaderboard")}<ArrowRight aria-hidden="true" size={15} /></Link>
         </div>

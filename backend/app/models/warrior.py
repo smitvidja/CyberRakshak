@@ -15,6 +15,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -38,12 +39,24 @@ class CyberWarriorProfile(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "cyber_warrior_profiles"
     __table_args__ = (
         Index("ix_cyber_warrior_profiles_verification_status", "verification_status"),
+        Index("ix_cyber_warrior_profiles_warrior_code", "warrior_code", unique=True),
     )
 
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
         unique=True,
         nullable=False,
+    )
+    # The Warrior ID shown on the dashboard, profile and badges pages, e.g.
+    # CW2611190000001. Assigned by the database (migration e5f6a7b8c9d0) so no code
+    # path can create a profile without one; never accepted from a client.
+    warrior_code: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        server_default=text(
+            "'CW' || to_char(now() AT TIME ZONE 'UTC', 'YYMMDD') || "
+            "lpad(nextval('cyber_warrior_code_seq')::text, 7, '0')"
+        ),
     )
     display_name: Mapped[str] = mapped_column(String(255), nullable=False)
     bio: Mapped[str | None] = mapped_column(Text)
@@ -55,6 +68,12 @@ class CyberWarriorProfile(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         nullable=False,
         default=WarriorVerificationStatus.PENDING,
     )
+    # "Availability & Preferences" (Step 14 profile reference). Fixed choice codes,
+    # validated in the schema, so they translate and cannot carry free-text PII.
+    availability: Mapped[str | None] = mapped_column(String(16))
+    preferred_tasks: Mapped[list[str] | None] = mapped_column(JSONB)
+    preferred_communication: Mapped[list[str] | None] = mapped_column(JSONB)
+    willing_to_volunteer: Mapped[bool | None] = mapped_column(Boolean)
 
     user: Mapped[User] = relationship(back_populates="cyber_warrior_profile")
     skills: Mapped[list[WarriorSkill]] = relationship(

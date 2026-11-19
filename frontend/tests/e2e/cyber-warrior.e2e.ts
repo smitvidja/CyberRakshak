@@ -113,5 +113,50 @@ test("a new applicant can verify, set up a profile, upload a resume, review it a
   await arriveAt(page, /\/cyber-warrior\/reports\/[0-9a-f-]{36}\/submitted$/);
   await page.getByRole("heading", {name: msg("warriorReport.submittedTitle")}).waitFor();
 
+  // Profile: a real, server-assigned Warrior ID (not the application number).
+  await open(page, "/en/cyber-warrior/profile");
+  const factGrid = page.locator(".warrior-profile-fact-grid").first();
+  await factGrid.waitFor();
+  const warriorId = (await factGrid.innerText()).match(/CW\d{13}/)?.[0];
+  assert.ok(warriorId, "the profile shows a Warrior ID like CW2611190000001");
+
+  // Availability & Preferences: edit, save, and it survives a reload.
+  await page.getByRole("button", {name: msg("warriorProfile.editPreferencesLabel")}).click();
+  // By id: SelectField wraps the <select> inside its <label>, so the label text includes
+  // every option and a label match is ambiguous (the section is labelled too).
+  await page.locator("#warrior-availability").selectOption("10_TO_15");
+  await page.locator("#warrior-willing").selectOption("yes");
+  await page.locator("#warrior-task-REPORT_REVIEW").check();
+  await page.locator("#warrior-task-EVIDENCE_ANALYSIS").check();
+  await page.locator("#warrior-channel-EMAIL").check();
+  const saved = page.waitForResponse((r) => r.url().includes("/cyber-warriors/me") && r.request().method() === "PATCH");
+  await button(page, msg("warriorProfile.savePreferences")).click();
+  assert.equal((await saved).status(), 200, "the preferences are saved");
+  await page.getByText(msg("warriorProfile.preferencesSaved")).waitFor();
+
+  await page.reload({waitUntil: "networkidle"});
+  const availability = page.locator("section", {has: page.getByRole("heading", {name: msg("warriorProfile.availabilityTitle")})});
+  await availability.waitFor();
+  const shown = await availability.innerText();
+  for (const expected of [
+    msg("warriorProfile.availabilityOptions.10_TO_15"),
+    msg("warriorProfile.taskOptions.REPORT_REVIEW"),
+    msg("warriorProfile.taskOptions.EVIDENCE_ANALYSIS"),
+    msg("warriorProfile.communicationOptions.EMAIL"),
+    msg("warriorProfile.yes"),
+  ]) {
+    assert.ok(shown.includes(expected), `after a reload the profile still shows "${expected}"`);
+  }
+
+  // Dashboard: the same Warrior ID, and a Warrior Status computed from the one submitted
+  // report (6 points -> Bronze, level 1, 6 of the 60 needed for Silver) - not "0 XP".
+  await open(page, "/en/cyber-warrior/dashboard");
+  await page.getByText(warriorId).first().waitFor();
+  const status = page.locator(".warrior-status-widget").first();
+  const statusText = await status.innerText();
+  assert.ok(statusText.includes(msg("warriorBadges.rankBronze")), statusText);
+  assert.ok(statusText.includes(msg("warriorDashboard.levelLabel").replace("{level}", "1")), statusText);
+  assert.ok(statusText.includes(msg("warriorDashboard.xpCopy").replace("{current}", "6").replace("{total}", "60")), statusText);
+
   assert.deepEqual(errors, []);
 });
