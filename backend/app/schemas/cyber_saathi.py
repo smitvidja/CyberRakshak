@@ -626,3 +626,102 @@ class KnowledgeGapResponse(BaseModel):
 class KnowledgeGapStatusUpdate(BaseModel):
     status: Literal["OPEN", "REVIEWED", "ACTIONED", "DISMISSED"]
     resolution_note: str | None = Field(default=None, max_length=2000)
+
+
+# --- knowledge source proposals (closing a knowledge gap) --------------------
+#
+# Validation here is the first line of defence for the corpus: a proposal must
+# point at an official publication over https, use one of the source types the
+# corpus already uses, and stay within the size limits of a source-pack section.
+
+# Official publishers the authoritative corpus already draws on. A host matches when
+# it is one of these or a subdomain of one ("www.cert-in.org.in", "i4c.mha.gov.in").
+OFFICIAL_SOURCE_DOMAINS: tuple[str, ...] = (
+    "gov.in",
+    "nic.in",
+    "cert-in.org.in",
+    "rbi.org.in",
+    "infosecawareness.in",
+)
+KnowledgeSourceType = Literal[
+    "official_public_guidance",
+    "official_public_service",
+    "official_regulatory_guidance",
+    "official_consumer_guidance",
+    "official_legal_instrument",
+]
+
+
+def is_official_source_url(url: str) -> bool:
+    from urllib.parse import urlparse
+
+    parsed = urlparse(url.strip())
+    host = (parsed.hostname or "").lower().rstrip(".")
+    if parsed.scheme != "https" or not host or parsed.username or parsed.password:
+        return False
+    return any(host == domain or host.endswith("." + domain) for domain in OFFICIAL_SOURCE_DOMAINS)
+
+
+class KnowledgeSourceProposalCreate(BaseModel):
+    gap_id: UUID | None = None
+    source_title: str = Field(min_length=3, max_length=300)
+    source_url: str = Field(min_length=12, max_length=1000)
+    source_type: KnowledgeSourceType
+    jurisdiction: str = Field(default="India", min_length=2, max_length=100)
+    language: LanguageCode
+    domains: list[KnowledgeDomain] = Field(min_length=1, max_length=6)
+    published_on: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    section_title: str = Field(min_length=3, max_length=300)
+    text: str = Field(min_length=40, max_length=5000)
+    retrieval_terms: list[Annotated[str, Field(min_length=2, max_length=60)]] = Field(default_factory=list, max_length=30)
+
+    @model_validator(mode="after")
+    def official_source_only(self) -> "KnowledgeSourceProposalCreate":
+        if not is_official_source_url(self.source_url):
+            raise ValueError(
+                "source_url must be an https link on an official domain: "
+                + ", ".join(OFFICIAL_SOURCE_DOMAINS)
+            )
+        if len(set(self.domains)) != len(self.domains):
+            raise ValueError("Each domain may be selected only once.")
+        from datetime import date
+
+        try:
+            date.fromisoformat(self.published_on)
+        except ValueError as error:
+            raise ValueError("published_on must be a real calendar date (YYYY-MM-DD).") from error
+        self.source_title = self.source_title.strip()
+        self.section_title = self.section_title.strip()
+        self.text = self.text.strip()
+        self.retrieval_terms = [term.strip() for term in self.retrieval_terms if term.strip()]
+        return self
+
+
+class KnowledgeSourceReview(BaseModel):
+    decision: Literal["APPROVED", "REJECTED"]
+    review_note: str | None = Field(default=None, max_length=2000)
+
+
+class KnowledgeSourceProposalResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    gap_id: UUID | None
+    status: str
+    source_title: str
+    source_url: str
+    source_type: str
+    jurisdiction: str
+    language: str
+    domains: list[str]
+    published_on: str
+    section_title: str
+    text: str
+    retrieval_terms: list[str]
+    proposed_by_id: UUID
+    reviewed_by_id: UUID | None
+    review_note: str | None
+    reviewed_at: datetime | None
+    published_source_id: str | None
+    published_at: datetime | None
+    created_at: datetime

@@ -203,8 +203,11 @@ def _source_pack_hash(payload: bytes) -> str:
     return hashlib.sha256(payload.replace(b"\r\n", b"\n")).hexdigest()
 
 
-def load_source_pack(path: Path = SOURCE_PACK_PATH) -> KnowledgeSourcePack:
-    return KnowledgeSourcePack.model_validate_json(path.read_text(encoding="utf-8"))
+def load_source_pack(path: Path | None = None) -> KnowledgeSourcePack:
+    # Resolved at call time, not as a default argument: a default would bind the path
+    # when the module is imported, so anything that points SOURCE_PACK_PATH elsewhere
+    # (the publish step's tests) would still silently read the real pack.
+    return KnowledgeSourcePack.model_validate_json((path or SOURCE_PACK_PATH).read_text(encoding="utf-8"))
 
 
 # Ingestion is a one-off command over the whole corpus, so a single transient 503

@@ -9,7 +9,7 @@ steps.
 |---|---|
 | `citizen.e2e.ts` | Hindi/English switching; anonymous complaint → reference number → tracking; verified citizen complaint with PDF evidence → My Reports |
 | `cyber-warrior.e2e.ts` | Wrong OTP refused; identity → profile → resume upload + review → application → first report |
-| `admin.e2e.ts` | Wrong admin password refused; admin sign-in to the knowledge-gaps console and sign-out |
+| `admin.e2e.ts` | Wrong admin password refused; admin sign-in and sign-out; one admin proposes an official source for a real gap, sees they cannot approve it, and a second admin approves it |
 
 They use `playwright-core` with the Chrome already installed (no browser download), and
 `node:test`, like the unit tests.
@@ -34,6 +34,7 @@ export DATABASE_URL=postgresql+psycopg://cyberrakshak:cyberrakshak_local_only@12
 ./.venv/Scripts/python.exe -m alembic upgrade head
 ./.venv/Scripts/python.exe ../database/seeds/seed_reference_data.py
 ADMIN_PASSWORD=e2e-admin-password-123 ./.venv/Scripts/python.exe -m scripts.create_admin e2e-admin@example.com
+ADMIN_PASSWORD=e2e-admin2-password-456 ./.venv/Scripts/python.exe -m scripts.create_admin e2e-admin2@example.com
 
 # 3. Backend on 8010 - paid AI features off, uploads to a scratch folder
 LLM_ENABLED=false RESUME_LLM_ENABLED=false VOICE_ENABLED=false RAG_SEMANTIC_EMBEDDINGS_ENABLED=false \
@@ -44,11 +45,13 @@ LOCAL_STORAGE_PATH=/tmp/cr-e2e-storage CORS_ORIGINS=http://localhost:3010 \
 NEXT_PUBLIC_API_URL=http://localhost:8010 npx next dev -p 3010
 
 # 5. The journeys (from frontend/)
-E2E_ADMIN_EMAIL=e2e-admin@example.com E2E_ADMIN_PASSWORD=e2e-admin-password-123 npm run test:e2e
+E2E_ADMIN_EMAIL=e2e-admin@example.com E2E_ADMIN_PASSWORD=e2e-admin-password-123 \nE2E_ADMIN2_EMAIL=e2e-admin2@example.com E2E_ADMIN2_PASSWORD=e2e-admin2-password-456 npm run test:e2e
 ```
 
 Without `E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD` the admin journeys are reported as
-**skipped**. `E2E_BASE_URL` and `E2E_CHROME` override the frontend URL and the Chrome path.
+**skipped**; the source-proposal journey also needs `E2E_ADMIN2_*`, because nobody approves their
+own proposal. `E2E_BASE_URL`, `E2E_API_URL` (default `http://localhost:8010`, used to create a real
+knowledge gap) and `E2E_CHROME` override the frontend URL, backend URL and Chrome path.
 
 To run again, recreate the database (step 1-2). The journeys use fixed demo identities, and
 a second run on the same database finds them already registered.

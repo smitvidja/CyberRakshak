@@ -11,12 +11,19 @@ from app.models import User
 from app.models.enums import UserRole
 from app.schemas.admin import AuditLogResponse, ComplaintStatusUpdate, ReportedSuspectStatusUpdate, SuspectCorrectionStatusUpdate, WarriorApplicationStatusUpdate
 from app.schemas.common import ErrorResponse, SuccessResponse
-from app.schemas.cyber_saathi import KnowledgeGapResponse, KnowledgeGapStatusUpdate
+from app.schemas.cyber_saathi import (
+    KnowledgeGapResponse,
+    KnowledgeGapStatusUpdate,
+    KnowledgeSourceProposalCreate,
+    KnowledgeSourceProposalResponse,
+    KnowledgeSourceReview,
+)
 from app.schemas.complaint import ComplaintResponse, ComplaintSummaryResponse
 from app.schemas.suspect import ReportedSuspectResponse, SuspectCorrectionResponse
 from app.schemas.warrior import WarriorApplicationResponse
 from app.services.admin_service import AdminService
 from app.services.knowledge_gap_service import KnowledgeGapService
+from app.services.knowledge_source_service import KnowledgeSourceService
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 AdminUser = Annotated[User, Depends(require_roles(UserRole.ADMIN))]
@@ -117,4 +124,61 @@ def update_knowledge_gap_status(
     )
     return success_response(
         KnowledgeGapResponse.model_validate(gap), message="Knowledge gap updated."
+    )
+
+
+@router.post(
+    "/knowledge-sources",
+    status_code=201,
+    response_model=SuccessResponse[KnowledgeSourceProposalResponse],
+    responses={403: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 422: {"model": ErrorResponse}},
+)
+def propose_knowledge_source(
+    payload: KnowledgeSourceProposalCreate,
+    session: Annotated[Session, Depends(get_db_session)],
+    current_user: AdminUser,
+) -> dict[str, object]:
+    """Propose an excerpt from an official publication to close a knowledge gap.
+
+    Pending until a *different* administrator approves it, and only reaches
+    citizens after the publish step writes it into the versioned source pack.
+    """
+    proposal = KnowledgeSourceService.propose(session, payload, current_user)
+    return success_response(
+        KnowledgeSourceProposalResponse.model_validate(proposal), message="Source proposed for review."
+    )
+
+
+@router.get(
+    "/knowledge-sources",
+    response_model=SuccessResponse[list[KnowledgeSourceProposalResponse]],
+    responses={403: {"model": ErrorResponse}, 422: {"model": ErrorResponse}},
+)
+def list_knowledge_sources(
+    session: Annotated[Session, Depends(get_db_session)],
+    current_user: AdminUser,
+    status_filter: Annotated[str | None, Query(alias="status", max_length=16)] = None,
+    limit: Annotated[int, Query(ge=1, le=500)] = 100,
+) -> dict[str, object]:
+    proposals = KnowledgeSourceService.list(session, status=status_filter, limit=limit)
+    return success_response([KnowledgeSourceProposalResponse.model_validate(item) for item in proposals])
+
+
+@router.patch(
+    "/knowledge-sources/{proposal_id}/review",
+    response_model=SuccessResponse[KnowledgeSourceProposalResponse],
+    responses={403: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}},
+)
+def review_knowledge_source(
+    proposal_id: UUID,
+    payload: KnowledgeSourceReview,
+    session: Annotated[Session, Depends(get_db_session)],
+    current_user: AdminUser,
+) -> dict[str, object]:
+    """Approve or reject a pending proposal. The proposer cannot review their own (403)."""
+    proposal = KnowledgeSourceService.review(
+        session, proposal_id, decision=payload.decision, review_note=payload.review_note, admin=current_user
+    )
+    return success_response(
+        KnowledgeSourceProposalResponse.model_validate(proposal), message="Proposal reviewed."
     )

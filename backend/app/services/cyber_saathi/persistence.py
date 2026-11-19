@@ -1,6 +1,5 @@
 import re
 from datetime import datetime, timedelta, timezone
-from decimal import Decimal
 
 from sqlalchemy.orm import Session
 
@@ -88,7 +87,4 @@ class CyberSaathiPersistence:
         feedback = list(record.feedback or [])
         feedback.append({"rating": rating, "comment": redact_text(comment or "")[:1000]})
         record.feedback = feedback[-20:]
-        record.quality_score = Decimal(str(sum(item["rating"] for item in record.feedback) / len(record.feedback)))
-        record.review_status = "PENDING"
-        record.eligible_for_reviewed_cache = False
         session.commit()

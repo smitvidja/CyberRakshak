@@ -138,6 +138,14 @@ demand. The boundary that makes this safe is what it does **not** do:
   unfiltered, generic safety chunks match, and the citizen is answered from material that is
   not about their crime - which reads as a hit and is the widest gap there is.
 - Harvesting runs before the retention purge, or there would be nothing left to harvest.
+- **Closing a gap takes two people and a commit.** An administrator proposes an excerpt
+  from an official publication (`knowledge_source_proposals`); the link must be https on an
+  allowlisted official domain. A *different* administrator must approve it, because the
+  proposer is refused (`SECOND_REVIEWER_REQUIRED`), so one compromised or careless account
+  cannot put text in front of citizens. Approved proposals still reach retrieval only when
+  an operator runs `scripts/publish_knowledge_sources.py`. That command writes them into the
+  version-controlled source pack and rebuilds the index, and the result is committed and
+  deployed. No API call changes what Cyber Saathi can retrieve.
 
 ## Public Suspect Search
 

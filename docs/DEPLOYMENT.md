@@ -469,18 +469,40 @@ Cyber Saathi records questions it could not answer as *knowledge gaps*, aggregat
 so a question asked forty times is one row with `occurrences: 40`. The working
 loop is:
 
-1. `GET /api/v1/admin/knowledge-gaps?status=OPEN&min_occurrences=5` - what has
-   come up often enough to be worth sourcing.
+1. In the admin console (`/en/admin/knowledge-gaps`), or
+   `GET /api/v1/admin/knowledge-gaps?status=OPEN&min_occurrences=5`: what has come
+   up often enough to be worth sourcing.
 2. Find real published guidance for it (NCRP, CERT-In, RBI, the relevant
    regulator). **Do not write the guidance yourself**, and do not paste a
    citizen's words in: the corpus is authoritative-source-only, and the answer
    given to the next citizen has to be traceable to a real publication.
-3. Add a source or section to
-   `backend/app/data/cyber_saathi/authoritative_knowledge/sources.json`, bump its
-   `version` and `reviewed_at`.
-4. Rebuild with embeddings - section 14 - and commit the index.
-5. `PATCH /api/v1/admin/knowledge-gaps/{id}/status` to `ACTIONED` with a note
-   saying which source was added.
+3. **Propose it**: "Propose a source" on the gap (or
+   `POST /api/v1/admin/knowledge-sources`). Quote the publication exactly. The link
+   must be https on an official domain (`gov.in`, `nic.in`, `cert-in.org.in`,
+   `rbi.org.in`, `infosecawareness.in`); anything else is refused.
+4. **A second administrator reviews it** in the console's *Source proposals*
+   panel. The proposer cannot approve their own proposal (`403
+   SECOND_REVIEWER_REQUIRED`). Approval moves the gap to `REVIEWED`; it is not
+   `ACTIONED` yet, because nothing has reached citizens.
+5. **Publish**, from `backend/` against the production database:
+
+   ```bash
+   ./.venv/Scripts/python.exe -m scripts.publish_knowledge_sources --dry-run    # preview
+   ./.venv/Scripts/python.exe -m scripts.publish_knowledge_sources --semantic   # publish
+   ```
+
+   This appends every approved proposal to
+   `backend/app/data/cyber_saathi/authoritative_knowledge/sources.json` (as
+   `reviewed_<id>`), bumps the pack `version`/`reviewed_at`, rebuilds the index,
+   and marks the proposals `PUBLISHED` and their gaps `ACTIONED`. `--semantic` is
+   required while the index carries semantic embeddings (it refuses otherwise,
+   rather than silently dropping them); only the new sections are embedded. If
+   the rebuild fails, both files are restored.
+6. **Commit** the two changed files and deploy. That deploy is what makes the new
+   guidance live, so every source is in git history alongside who approved it.
+
+Adding a source by hand (editing `sources.json`, section 14) still works for
+material that did not come from a gap.
 
 Not everything a citizen types is recorded. Answers to Cyber Saathi's own scripted
 intake questions and taps on an action it proposed are replies to the product, not
@@ -492,9 +514,12 @@ If a gap keeps arriving after being actioned, it stays visible with `reviewed_at
 older than `last_seen_at`. That is the signal that the source added did not
 actually answer the question, and it is deliberately not reset.
 
-Migration `d4e5f6a7b8c9` creates the table; the entrypoint applies it like any
-other. Nothing about this is automatic: no endpoint writes to the corpus, and
-there is no job that promotes a signal into retrievable content.
+Migrations `d4e5f6a7b8c9` (gap signals) and `f6a7b8c9d0e1` (source proposals)
+create the tables; the entrypoint applies them like any other. Nothing about this
+is automatic: no endpoint writes to the corpus, no job promotes a signal or a
+proposal into retrievable content, and citizen conversation text never enters
+this path. Only the publish command, run by an operator and committed, changes
+what Cyber Saathi can retrieve.
 
 ## 16. Evaluating Cyber Saathi before you ship a change
 

@@ -4,7 +4,7 @@ PostgreSQL is the database source of truth. Use UUID primary keys, `TIMESTAMPTZ`
 
 ## Core Tables
 
-The MVP schema contains 25 tables:
+The MVP schema contains 26 tables:
 
 1. `users`
 2. `citizen_profiles`
@@ -27,10 +27,11 @@ The MVP schema contains 25 tables:
 19. `notifications`
 20. `audit_logs`
 21. `mock_identity_profiles`
-22. `cyber_saathi_conversations` (consent-gated, redacted, 30-day conversation recovery and quality-review metadata; never part of the authoritative RAG corpus)
+22. `cyber_saathi_conversations` (consent-gated, redacted, 30-day conversation recovery and feedback ratings; never part of the authoritative RAG corpus)
 23. `suspect_correction_requests` (false-positive/correction reports raised against a suspect-search result; stores no raw identifier and no link to the original reporter)
 24. `complaint_access_grants` (scoped capability letting an anonymous reporter download their own complaint copy; stores only a token digest and carries no identity column)
 25. `knowledge_gap_signals` (questions the authoritative corpus could not answer, aggregated by a digest of the redacted question so repeats become a count; a reading list for a human reviewer, **never** a source of retrievable content)
+26. `knowledge_source_proposals` (an administrator's proposed excerpt from an official publication to close a gap: `PENDING` -> `APPROVED` by a *different* administrator -> `PUBLISHED` by the publish command, which writes it into the version-controlled source pack; or `REJECTED`. Never read by retrieval directly)
 
 ## Key Enums
 

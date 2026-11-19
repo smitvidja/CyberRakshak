@@ -209,6 +209,21 @@ Neither endpoint writes to the retrieval corpus. `ACTIONED` records that a human
 real source to the authoritative pack and rebuilt the index - see `docs/DEPLOYMENT.md`
 section 14. Citizen text never becomes retrievable content.
 
+Closing a gap with a reviewed official source (admin only; `docs/DEPLOYMENT.md` section 15):
+
+- `POST /admin/knowledge-sources` proposes an excerpt from an official publication, optionally
+  linked to a gap (`gap_id`). `source_url` must be https on an official domain (`gov.in`, `nic.in`,
+  `cert-in.org.in`, `rbi.org.in`, `infosecawareness.in`). `source_type` must be one of the corpus
+  types, `text` must be 40–5000 characters, and `published_on` is `YYYY-MM-DD`. Other values get `422`,
+  and an unknown gap gets `404`. Creates a `PENDING` proposal.
+- `GET /admin/knowledge-sources?status=PENDING|APPROVED|REJECTED|PUBLISHED` lists proposals, newest first.
+- `PATCH /admin/knowledge-sources/{id}/review` with `{decision: APPROVED|REJECTED, review_note}`.
+  The proposer cannot review their own proposal: `403 SECOND_REVIEWER_REQUIRED`. A proposal that is
+  no longer pending gets `409`. Approving moves a linked gap to `REVIEWED`.
+
+None of these write to the corpus. Approved proposals reach retrieval only through
+`python -m scripts.publish_knowledge_sources`, whose output is committed and deployed.
+
 `POST /suspects/corrections` stores only an HMAC fingerprint of the normalized identifier
 plus a masked display form and the stated reason, so a correction request cannot be used to
 recover the raw identifier or to reach the original reporter. It is rate limited on its own,

@@ -1,6 +1,6 @@
 "use client";
 
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 
 import {Button} from "@/components/ui/Button";
@@ -14,6 +14,7 @@ import {
   type KnowledgeGapStatus
 } from "@/lib/api/backoffice";
 import {clearAdminSession, getAdminEmail, getAdminToken, setAdminSession} from "@/lib/auth/admin-session";
+import {KnowledgeSourcePanel} from "./KnowledgeSourcePanel";
 
 const STATUSES: KnowledgeGapStatus[] = ["OPEN", "REVIEWED", "ACTIONED", "DISMISSED"];
 
@@ -47,6 +48,12 @@ export function KnowledgeGapsConsole() {
   const [openGapId, setOpenGapId] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  // Changing a filter starts a new request while the previous one may still be in
+  // flight; only the latest response may update the list, or a slow earlier one
+  // (e.g. the initial OPEN load) overwrites the list the operator asked for.
+  const latestLoad = useRef(0);
+  // The gap an admin is proposing an official source for (opens the form below the list).
+  const [proposeGap, setProposeGap] = useState<KnowledgeGap | null>(null);
 
   // Runs once on mount so a reload does not force another sign-in.
   useEffect(() => {
@@ -57,6 +64,7 @@ export function KnowledgeGapsConsole() {
 
   const load = useCallback(
     async (accessToken: string) => {
+      const requestId = ++latestLoad.current;
       setLoading(true);
       setListError("");
       const result = await adminApi.listKnowledgeGaps(
@@ -66,6 +74,7 @@ export function KnowledgeGapsConsole() {
         },
         {accessToken}
       );
+      if (requestId !== latestLoad.current) return;
       setLoading(false);
       if (!result.ok) {
         // A rejected token is the common case here, and leaving a stale one in
@@ -187,9 +196,22 @@ export function KnowledgeGapsConsole() {
                 </div>
               </div>
             ) : (
-              <Button onClick={() => { setOpenGapId(gap.id); setNote(gap.resolution_note ?? ""); }} variant="outline">
-                {t("review")}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={() => { setOpenGapId(gap.id); setNote(gap.resolution_note ?? ""); }} variant="outline">
+                  {t("review")}
+                </Button>
+                {gap.status === "OPEN" || gap.status === "REVIEWED" ? (
+                  <Button
+                    onClick={() => {
+                      setProposeGap(gap);
+                      window.requestAnimationFrame(() => document.getElementById("knowledge-sources-heading")?.scrollIntoView({behavior: "smooth"}));
+                    }}
+                    variant="outline"
+                  >
+                    {t("sources.proposeAction")}
+                  </Button>
+                ) : null}
+              </div>
             )
         }
       })),
@@ -287,6 +309,14 @@ export function KnowledgeGapsConsole() {
             rows={rows}
           />
         </div>
+
+        <KnowledgeSourcePanel
+          gaps={gaps}
+          onClosed={() => setProposeGap(null)}
+          onGapsChanged={() => void load(token)}
+          proposeFor={proposeGap}
+          token={token}
+        />
       </div>
     </main>
   );

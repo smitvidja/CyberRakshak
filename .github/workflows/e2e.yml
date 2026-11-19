@@ -38,6 +38,9 @@ jobs:
       SECRET_KEY: ci-only-signing-key-not-a-secret-0123456789
       E2E_ADMIN_EMAIL: e2e-admin@example.com
       E2E_ADMIN_PASSWORD: e2e-admin-password-123
+      E2E_ADMIN2_EMAIL: e2e-admin2@example.com
+      E2E_ADMIN2_PASSWORD: e2e-admin2-password-456
+      E2E_API_URL: http://127.0.0.1:8010
       E2E_BASE_URL: http://localhost:3010
       E2E_CHROME: /usr/bin/google-chrome
 
@@ -63,6 +66,7 @@ jobs:
           python -m alembic upgrade head
           python ../database/seeds/seed_reference_data.py
           ADMIN_PASSWORD="$E2E_ADMIN_PASSWORD" python -m scripts.create_admin "$E2E_ADMIN_EMAIL"
+          ADMIN_PASSWORD="$E2E_ADMIN2_PASSWORD" python -m scripts.create_admin "$E2E_ADMIN2_EMAIL"
 
       - name: Backend - start on 8010 (paid AI features off)
         working-directory: backend

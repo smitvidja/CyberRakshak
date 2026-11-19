@@ -25,7 +25,43 @@ export const adminApi = {
     return apiClient.get<KnowledgeGap[]>("/admin/knowledge-gaps" + (suffix ? "?" + suffix : ""), options);
   },
   updateKnowledgeGapStatus: (id: string, payload: KnowledgeGapStatusUpdate, options: ApiRequestOptions) =>
-    apiClient.patch<KnowledgeGap>("/admin/knowledge-gaps/" + id + "/status", payload, options)
+    apiClient.patch<KnowledgeGap>("/admin/knowledge-gaps/" + id + "/status", payload, options),
+  // Closing a gap with a reviewed official source: propose -> a second admin reviews ->
+  // the publish command writes it into the versioned source pack.
+  listKnowledgeSources: (status: string | undefined, options: ApiRequestOptions) =>
+    apiClient.get<KnowledgeSourceProposal[]>("/admin/knowledge-sources" + (status ? "?status=" + encodeURIComponent(status) : ""), options),
+  proposeKnowledgeSource: (payload: KnowledgeSourceProposalInput, options: ApiRequestOptions) =>
+    apiClient.post<KnowledgeSourceProposal>("/admin/knowledge-sources", payload, options),
+  reviewKnowledgeSource: (id: string, payload: {decision: "APPROVED" | "REJECTED"; review_note?: string | null}, options: ApiRequestOptions) =>
+    apiClient.patch<KnowledgeSourceProposal>("/admin/knowledge-sources/" + id + "/review", payload, options)
+};
+
+export type KnowledgeSourceStatus = "PENDING" | "APPROVED" | "REJECTED" | "PUBLISHED";
+
+export type KnowledgeSourceProposalInput = {
+  domains: string[];
+  gap_id: string | null;
+  language: string;
+  published_on: string;
+  retrieval_terms: string[];
+  section_title: string;
+  source_title: string;
+  source_type: string;
+  source_url: string;
+  text: string;
+};
+
+export type KnowledgeSourceProposal = KnowledgeSourceProposalInput & {
+  created_at: string;
+  id: string;
+  jurisdiction: string;
+  proposed_by_id: string;
+  published_at: string | null;
+  published_source_id: string | null;
+  review_note: string | null;
+  reviewed_at: string | null;
+  reviewed_by_id: string | null;
+  status: KnowledgeSourceStatus;
 };
 
 export type KnowledgeGapStatus = "OPEN" | "REVIEWED" | "ACTIONED" | "DISMISSED";

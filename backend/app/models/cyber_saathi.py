@@ -1,7 +1,7 @@
 from datetime import datetime
-from decimal import Decimal
+from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, Index, Integer, Numeric, String, Text
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -16,9 +16,6 @@ class CyberSaathiConversation(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     feedback: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     consented_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
-    review_status: Mapped[str] = mapped_column(String(24), nullable=False, default="PENDING")
-    quality_score: Mapped[Decimal | None] = mapped_column(Numeric(4, 3))
-    eligible_for_reviewed_cache: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
 
 class KnowledgeGapSignal(UUIDPrimaryKeyMixin, TimestampMixin, Base):
@@ -60,3 +57,48 @@ class KnowledgeGapSignal(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     status: Mapped[str] = mapped_column(String(24), nullable=False, default="OPEN", index=True)
     resolution_note: Mapped[str | None] = mapped_column(Text)
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class KnowledgeSourceProposal(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    """A candidate authoritative source, proposed by an administrator for a knowledge gap.
+
+    This is how a gap gets closed without letting anyone's text become guidance
+    on their own say-so (see docs/specs/08-SECURITY.md):
+
+    1. An admin proposes an excerpt from an official publication (the URL must be
+       on an allowlisted official domain) - status PENDING.
+    2. A *different* admin approves or rejects it. Nobody approves their own.
+    3. `python -m scripts.publish_knowledge_sources` writes approved proposals into
+       the version-controlled source pack and rebuilds the index. That change is
+       committed and deployed like any other, so the corpus stays separately
+       sourced, attributable and versioned - status PUBLISHED.
+
+    Nothing here is ever read by retrieval directly.
+    """
+
+    __tablename__ = "knowledge_source_proposals"
+    __table_args__ = (
+        Index("ix_knowledge_source_proposals_status", "status"),
+        Index("ix_knowledge_source_proposals_gap_id", "gap_id"),
+    )
+
+    gap_id: Mapped[UUID | None] = mapped_column(ForeignKey("knowledge_gap_signals.id", ondelete="SET NULL"))
+    # PENDING -> APPROVED -> PUBLISHED, or REJECTED.
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="PENDING")
+    source_title: Mapped[str] = mapped_column(String(300), nullable=False)
+    source_url: Mapped[str] = mapped_column(String(1000), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    jurisdiction: Mapped[str] = mapped_column(String(100), nullable=False)
+    language: Mapped[str] = mapped_column(String(16), nullable=False)
+    domains: Mapped[list[str]] = mapped_column(JSONB, nullable=False)
+    published_on: Mapped[str] = mapped_column(String(50), nullable=False)
+    section_title: Mapped[str] = mapped_column(String(300), nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    retrieval_terms: Mapped[list[str]] = mapped_column(JSONB, nullable=False, default=list)
+    proposed_by_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    reviewed_by_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id"))
+    review_note: Mapped[str | None] = mapped_column(Text)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Set by the publish command: the source_id written into sources.json.
+    published_source_id: Mapped[str | None] = mapped_column(String(100))
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

@@ -35,6 +35,8 @@ APPROVED_TABLES = {
     "cyber_warrior_profiles",
     "evidence",
     "knowledge_gap_signals",
+    # docs/specs/02-DATABASE.md table 26: reviewed official sources proposed to close a gap.
+    "knowledge_source_proposals",
     "mock_identity_profiles",
     "notifications",
     "reported_suspects",
