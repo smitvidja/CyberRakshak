@@ -236,10 +236,16 @@ export function WarriorApplicationReview() {
     }
 
     let application: WarriorApplication | null = null;
+    // The server refuses an application without a confirmed resume. That is a 409 too,
+    // so it must be told apart from "an application already exists" by its code.
+    let resumeNotConfirmed = false;
     const created = await warriorApplicationsApi.create({statement: form.statement || t("defaultStatement")}, {accessToken: token});
     if (created.ok) {
       const submitted = await warriorApplicationsApi.submit(created.data.id, {accessToken: token});
       if (submitted.ok) application = submitted.data;
+      else resumeNotConfirmed = submitted.error.code === "RESUME_NOT_CONFIRMED";
+    } else if (created.error.code === "RESUME_NOT_CONFIRMED") {
+      resumeNotConfirmed = true;
     } else if (created.error.status === 409) {
       const existing = await warriorApplicationsApi.listMine({accessToken: token});
       if (existing.ok) {
@@ -247,6 +253,7 @@ export function WarriorApplicationReview() {
         if (candidate?.status === "DRAFT") {
           const submitted = await warriorApplicationsApi.submit(candidate.id, {accessToken: token});
           if (submitted.ok) application = submitted.data;
+          else resumeNotConfirmed = submitted.error.code === "RESUME_NOT_CONFIRMED";
         } else {
           application = candidate ?? null;
         }
@@ -254,7 +261,7 @@ export function WarriorApplicationReview() {
     }
 
     if (!application) {
-      setError(t("submitError"));
+      setError(resumeNotConfirmed ? t("resumeNotConfirmedError") : t("submitError"));
       setSubmitting(false);
       return;
     }

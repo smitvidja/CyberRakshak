@@ -51,6 +51,21 @@ class WarriorRepository:
         return session.get(ResumeParsingResult, result_id)
 
     @staticmethod
+    def has_confirmed_resume(session: Session, warrior_id: UUID) -> bool:
+        """True when this warrior has explicitly reviewed and confirmed a parsed resume."""
+        return (
+            session.scalar(
+                select(ResumeParsingResult.id)
+                .where(
+                    ResumeParsingResult.warrior_id == warrior_id,
+                    ResumeParsingResult.confirmed_at.is_not(None),
+                )
+                .limit(1)
+            )
+            is not None
+        )
+
+    @staticmethod
     def get_application(
         session: Session,
         application_id: UUID,

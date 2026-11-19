@@ -120,6 +120,7 @@ class WarriorApplicationService:
         }
         if any(item.status in active_statuses for item in WarriorRepository.list_applications(session, profile.id)):
             raise APIError(status_code=409, code="CONFLICT", message="An active Cyber Warrior application already exists.")
+        WarriorApplicationService._require_confirmed_resume(session, profile.id)
         application = WarriorApplication(
             warrior_id=profile.id,
             application_number=WarriorApplicationService._number(),
@@ -145,6 +146,9 @@ class WarriorApplicationService:
                 code="CONFLICT",
                 message="Only draft applications can be submitted.",
             )
+        # Checked again here so a draft created before this rule existed cannot be
+        # submitted without a reviewed resume either.
+        WarriorApplicationService._require_confirmed_resume(session, application.warrior_id)
         application.status = WarriorApplicationStatus.UNDER_REVIEW
         application.submitted_at = datetime.now(timezone.utc)
         AuditService.record(
@@ -198,6 +202,21 @@ class WarriorApplicationService:
         if application.warrior_id != profile.id:
             raise APIError(status_code=403, code="FORBIDDEN", message="You do not have permission to access this application.")
         return application
+
+    @staticmethod
+    def _require_confirmed_resume(session: Session, warrior_id: UUID) -> None:
+        """Resume parser output is untrusted until the applicant confirms it (AGENTS.md).
+
+        Only the frontend used to enforce this - it confirms the resume before creating
+        the application - so any client calling the API directly could apply with
+        nothing reviewed. The server now refuses.
+        """
+        if not WarriorRepository.has_confirmed_resume(session, warrior_id):
+            raise APIError(
+                status_code=409,
+                code="RESUME_NOT_CONFIRMED",
+                message="Review and confirm your resume before applying.",
+            )
 
     @staticmethod
     def _number() -> str:

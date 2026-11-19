@@ -224,8 +224,10 @@ tighter budget and also answers `429 RATE_LIMITED`.
   a failed attempt is `201` with `status=FAILED` plus a translatable `error_code`, not an error response.
 - `GET /resume/parsing-results/{id}`
 - `POST /resume/parsing-results/{id}/confirm`
-- `POST /warrior-applications`
-- `POST /warrior-applications/{id}/submit`
+- `POST /warrior-applications` requires a resume parsing result this warrior has confirmed
+  (`POST /resume/parsing-results/{id}/confirm`); otherwise `409` with code `RESUME_NOT_CONFIRMED`.
+  An existing active application is also `409`, with code `CONFLICT`. Clients must tell the two apart by `error.code`.
+- `POST /warrior-applications/{id}/submit` applies the same confirmed-resume rule (`409 RESUME_NOT_CONFIRMED`).
 - `GET /warrior-applications/my`
 - `POST /warrior-reports`
 - `PATCH /warrior-reports/{id}`

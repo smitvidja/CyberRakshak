@@ -50,6 +50,29 @@ def create_profile(client: TestClient, headers: dict[str, str]) -> dict[str, obj
     return response.json()['data']
 
 
+def upload_resume(client: TestClient, headers: dict[str, str]) -> str:
+    """Upload a real resume through the parsing pipeline; returns the parsing result id."""
+    uploaded = client.post("/api/v1/resume/upload", headers=headers, files={"file": ("resume.pdf", synthetic_resume_pdf(), "application/pdf")})
+    assert uploaded.status_code == 201
+    assert uploaded.json()["data"]["status"] == "COMPLETED"
+    return uploaded.json()["data"]["id"]
+
+
+def confirm_resume(client: TestClient, headers: dict[str, str]) -> None:
+    """Upload a resume and confirm the reviewed details - what the application flow requires."""
+    result_id = upload_resume(client, headers)
+    confirmed = client.post(
+        f"/api/v1/resume/parsing-results/{result_id}/confirm",
+        headers=headers,
+        json={
+            "display_name": "Synthetic Warrior",
+            "education": [{"institution": "Synthetic Institute", "degree": "B.E."}],
+            "experience": [{"organization": "Synthetic Labs", "title": "Security Analyst", "is_current": True}],
+        },
+    )
+    assert confirmed.status_code == 200
+
+
 def test_resume_data_stays_untrusted_until_explicit_confirmation(api_client: tuple[TestClient, Session]) -> None:
     client, session = api_client
     headers = warrior_headers(client)
@@ -131,6 +154,7 @@ def test_application_and_warrior_report_submit_with_owned_evidence(api_client: t
     client, _ = api_client
     headers = warrior_headers(client)
     create_profile(client, headers)
+    confirm_resume(client, headers)
 
     application = client.post("/api/v1/warrior-applications", headers=headers, json={"statement": "I want to contribute safely."})
     assert application.status_code == 201
@@ -219,6 +243,7 @@ def test_admin_review_is_server_side_role_protected(api_client: tuple[TestClient
     client, session = api_client
     warrior = warrior_headers(client)
     create_profile(client, warrior)
+    confirm_resume(client, warrior)
     application = client.post("/api/v1/warrior-applications", headers=warrior, json={})
     application_id = application.json()['data']['id']
 
@@ -288,3 +313,68 @@ def test_confirmation_accepts_multiple_reviewed_entries(api_client: tuple[TestCl
     session.refresh(persisted)
     assert len(persisted.education) == 2
     assert len(persisted.experience) == 2
+
+
+# --- resume must be reviewed before applying ---------------------------------
+#
+# AGENTS.md: resume parser output is untrusted until the user reviews and confirms
+# it. Only the frontend used to enforce that before an application was created, so a
+# direct API call could apply with nothing reviewed.
+
+
+def test_an_application_needs_a_confirmed_resume(api_client: tuple[TestClient, Session]) -> None:
+    client, _ = api_client
+    headers = warrior_headers(client)
+    create_profile(client, headers)
+
+    no_resume = client.post("/api/v1/warrior-applications", headers=headers, json={})
+    assert no_resume.status_code == 409
+    assert no_resume.json()["error"]["code"] == "RESUME_NOT_CONFIRMED"
+
+    # Uploaded and parsed, but not yet reviewed: still refused.
+    upload_resume(client, headers)
+    unreviewed = client.post("/api/v1/warrior-applications", headers=headers, json={})
+    assert unreviewed.status_code == 409
+    assert unreviewed.json()["error"]["code"] == "RESUME_NOT_CONFIRMED"
+
+    confirm_resume(client, headers)
+    accepted = client.post("/api/v1/warrior-applications", headers=headers, json={})
+    assert accepted.status_code == 201
+
+
+def test_another_warriors_confirmed_resume_does_not_count(api_client: tuple[TestClient, Session]) -> None:
+    client, _ = api_client
+    someone_else = warrior_headers(client)
+    create_profile(client, someone_else)
+    confirm_resume(client, someone_else)
+
+    applicant = warrior_headers(client)
+    create_profile(client, applicant)
+    refused = client.post("/api/v1/warrior-applications", headers=applicant, json={})
+    assert refused.status_code == 409
+    assert refused.json()["error"]["code"] == "RESUME_NOT_CONFIRMED"
+
+
+def test_an_old_draft_cannot_be_submitted_without_a_confirmed_resume(api_client: tuple[TestClient, Session]) -> None:
+    """A draft created before the rule existed must not slip through at submit."""
+    from app.models import WarriorApplication
+
+    client, session = api_client
+    headers = warrior_headers(client)
+    profile = create_profile(client, headers)
+    from uuid import UUID
+
+    # A real UUID, not the JSON string: the session keeps this object, and the
+    # ownership check compares it with the profile's UUID.
+    legacy = WarriorApplication(warrior_id=UUID(str(profile["id"])), application_number=f"CW-APP-LEGACY-{uuid4().hex[:8]}")
+    session.add(legacy)
+    session.commit()
+
+    refused = client.post(f"/api/v1/warrior-applications/{legacy.id}/submit", headers=headers)
+    assert refused.status_code == 409
+    assert refused.json()["error"]["code"] == "RESUME_NOT_CONFIRMED"
+
+    confirm_resume(client, headers)
+    submitted = client.post(f"/api/v1/warrior-applications/{legacy.id}/submit", headers=headers)
+    assert submitted.status_code == 200
+    assert submitted.json()["data"]["status"] == "UNDER_REVIEW"

@@ -706,6 +706,7 @@
     "loadReviewError": "Could not load the resume review. Upload again.",
     "requiredDetailsError": "Complete the required education and experience fields.",
     "confirmError": "Could not confirm the reviewed resume details.",
+    "resumeNotConfirmedError": "Your resume has not been reviewed and confirmed yet. Go back to the resume step, check the extracted details, and confirm them before applying.",
     "defaultStatement": "I want to contribute responsibly as a Cyber Warrior.",
     "submitError": "Could not submit the application. Try again.",
     "loadingReview": "Loading extracted application details…",
