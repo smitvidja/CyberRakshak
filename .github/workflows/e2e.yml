@@ -1,0 +1,110 @@
+name: E2E
+
+# Browser journeys (frontend/tests/e2e) against a production build of the frontend
+# and a real backend + Postgres. Started by hand from the Actions tab ("Run
+# workflow") so it never slows down or blocks ordinary pushes. Same setup as
+# docs/E2E-TESTING.md, but against the standalone production server instead of a dev server.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  journeys:
+    name: Browser journeys
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: cyberrakshak
+          POSTGRES_PASSWORD: cyberrakshak_local_only
+          POSTGRES_DB: cyberrakshak
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cyberrakshak"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # Throwaway CI database, dummy signing key, throwaway admin - none are real secrets.
+      DATABASE_URL: postgresql+psycopg://cyberrakshak:cyberrakshak_local_only@localhost:5432/cyberrakshak
+      SECRET_KEY: ci-only-signing-key-not-a-secret-0123456789
+      E2E_ADMIN_EMAIL: e2e-admin@example.com
+      E2E_ADMIN_PASSWORD: e2e-admin-password-123
+      E2E_BASE_URL: http://localhost:3010
+      E2E_CHROME: /usr/bin/google-chrome
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Backend - install, migrate, seed, create admin
+        working-directory: backend
+        run: |
+          pip install -r requirements.txt
+          python -m alembic upgrade head
+          python ../database/seeds/seed_reference_data.py
+          ADMIN_PASSWORD="$E2E_ADMIN_PASSWORD" python -m scripts.create_admin "$E2E_ADMIN_EMAIL"
+
+      - name: Backend - start on 8010 (paid AI features off)
+        working-directory: backend
+        env:
+          LLM_ENABLED: "false"
+          RESUME_LLM_ENABLED: "false"
+          VOICE_ENABLED: "false"
+          RAG_SEMANTIC_EMBEDDINGS_ENABLED: "false"
+          LOCAL_STORAGE_PATH: /tmp/cr-e2e-storage
+          CORS_ORIGINS: http://localhost:3010
+        run: |
+          nohup python -m uvicorn app.main:app --host 127.0.0.1 --port 8010 > /tmp/backend.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8010/api/v1/complaint-categories > /dev/null && exit 0; sleep 1; done
+          cat /tmp/backend.log; exit 1
+
+      - name: Frontend - install and production build
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8010
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          npm ci
+          npx next build
+
+      - name: Frontend - start on 3010, exactly as frontend/Dockerfile runs it
+        working-directory: frontend
+        # output: "standalone" - production runs .next/standalone/server.js with the
+        # static assets and public/ copied beside it (`next start` does not apply).
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          cp -r public .next/standalone/public
+          cd .next/standalone
+          PORT=3010 HOSTNAME=127.0.0.1 nohup node server.js > /tmp/frontend.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:3010/en > /dev/null && exit 0; sleep 1; done
+          cat /tmp/frontend.log; exit 1
+
+      - name: Browser journeys
+        working-directory: frontend
+        run: npm run test:e2e
+
+      - name: Server logs (on failure)
+        if: failure()
+        run: |
+          echo "--- backend"; tail -n 80 /tmp/backend.log || true
+          echo "--- frontend"; tail -n 80 /tmp/frontend.log || true

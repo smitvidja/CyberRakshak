@@ -12,7 +12,11 @@ steps.
 | `admin.e2e.ts` | Wrong admin password refused; admin sign-in to the knowledge-gaps console and sign-out |
 
 They use `playwright-core` with the Chrome already installed (no browser download), and
-`node:test`, like the unit tests. They are **not** part of CI yet.
+`node:test`, like the unit tests.
+
+**On GitHub:** the `E2E` workflow (`.github/workflows/e2e.yml`) runs them against a
+production build, served by the same standalone `server.js` the frontend Dockerfile uses.
+It is started by hand (Actions → E2E → *Run workflow*), so it never blocks an ordinary push.
 
 ## Run them
 
